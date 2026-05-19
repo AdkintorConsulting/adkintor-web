@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adkintor - Asset Management & Maintenance Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+        
+        /* Header - solo logo grande centrado */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 48px 32px;
+            text-align: center;
+        }
+        
+        .logo-img {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        /* Contenido principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+        
+        /* Hero section - sin badge */
+        .hero {
+            text-align: center;
+            padding: 48px 0 64px;
+        }
+        
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 24px;
+        }
+        
+        .hero .tagline {
+            font-size: 20px;
+            color: #475569;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Sección "Why Adkintor?" */
+        .story-section {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            margin: 48px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .story-section h2 {
+            font-size: 32px;
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+        
+        .story-section p {
+            font-size: 18px;
+            color: #475569;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Nueva sección de inteligencia (reemplaza 2.0/3.0) */
+        .intelligence-section {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 24px;
+            padding: 48px;
+            margin: 48px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .intelligence-section h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        
+        .intelligence-section p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Misión y Visión */
+        .mission-vision {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin: 48px 0;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        
+        .card p {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 32px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 48px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+            .story-section {
+                padding: 32px;
+            }
+            .intelligence-section {
+                padding: 32px;
+            }
+            .intelligence-section p {
+                font-size: 16px;
+            }
+            .logo-img {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+    </div>
+    
+    <div class="container">
+        <div class="hero">
+            <h1>Operational Excellence<br>Through Intelligent Maintenance</h1>
+            <p class="tagline">Bridging the gap between reactive repairs and predictive strategy</p>
+        </div>
+        
+        <div class="story-section">
+            <h2>Why Adkintor?</h2>
+            <p>My name is Mauricio. I'm a Mechanical Engineer who spent years on the plant floor.</p>
+            <p>I saw the same problem everywhere: maintenance teams firefighting daily, no visibility on what's critical, spreadsheets that don't talk to each other, and no time to think about improvement.</p>
+            <p>So I built Adkintor. Not as a consultant selling reports. As an engineer who needed a system that actually works.</p>
+        </div>
+        
+        <div class="intelligence-section">
+            <h3>🚀 More than an EAMS</h3>
+            <p>Adkintor is not just an EAMS. It's an intelligence center that helps you make better maintenance decisions — before failures happen.</p>
+        </div>
+        
+        <div class="mission-vision">
+            <div class="card">
+                <h3>🎯 Mission</h3>
+                <p>To help industrial maintenance teams stop reacting and start preventing. We turn data into decisions — not more reports, but clear actions that improve availability and reduce cost.</p>
+            </div>
+            <div class="card">
+                <h3>👁️ Vision</h3>
+                <p>A world where every asset operates at its full potential because maintenance is no longer a cost center — it's a strategic partner to production and quality.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 Adkintor. All rights reserved. | info@adkintor.com</p>
+    </div>
+</body>
+</html>
