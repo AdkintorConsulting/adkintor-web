@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adkintor - Contact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 32px 32px 20px 32px;
+            text-align: center;
+        }
+        
+        .logo-img {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 24px;
+            display: block;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        
+        .nav-menu a:hover {
+            color: #3b82f6;
+        }
+        
+        .lang-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .lang-btn {
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-decoration: none;
+            color: #475569;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .page-title h1 {
+            font-size: 40px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .contact-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .email-box {
+            margin: 32px 0;
+        }
+        
+        .email-box a {
+            font-size: 28px;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .email-box a:hover {
+            text-decoration: underline;
+        }
+        
+        .info-text {
+            color: #64748b;
+            margin-top: 24px;
+            font-size: 16px;
+        }
+        
+        .footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 32px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 48px;
+        }
+        
+        @media (max-width: 768px) {
+            .page-title h1 {
+                font-size: 28px;
+            }
+            .email-box a {
+                font-size: 20px;
+            }
+            .contact-card {
+                padding: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+        <div class="nav-menu">
+            <a href="index.html">Home</a>
+            <a href="servicios.html">Services</a>
+            <a href="contacto.html">Contact</a>
+        </div>
+        <div class="lang-buttons">
+            <a href="contacto.html" class="lang-btn">🇺🇸 EN</a>
+            <a href="es/contacto.html" class="lang-btn">🇪🇸 ES</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-title">
+            <h1>Contact Us</h1>
+            <p>Let's talk about how Adkintor can help your plant</p>
+        </div>
+        
+        <div class="contact-card">
+            <div class="email-box">
+                <a href="mailto:info@adkintor.com">info@adkintor.com</a>
+            </div>
+            <p>📧 Send us an email and we'll respond within 24 hours</p>
+            <div class="info-text">
+                <p>📍 Based in Canada | Serving industrial plants worldwide</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 Adkintor. All rights reserved. | info@adkintor.com</p>
+    </div>
+</body>
+</html>
