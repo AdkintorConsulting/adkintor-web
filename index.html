@@ -3,222 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adkintor - Home</title>
+    <title>Adkintor - Asset Management & Maintenance Intelligence</title>
     <style>
+        /* Base Styles & Estandarización */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-            line-height: 1.5;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
+
+        /* Header Estándar */
         .header {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 32px 32px 20px 32px;
-            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
         .logo-img {
-            max-width: 200px;
-            width: 100%;
-            height: auto;
-            margin: 0 auto 24px;
-            display: block;
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
         }
         .nav-menu {
             display: flex;
-            justify-content: center;
-            gap: 48px;
-            margin-top: 16px;
-            flex-wrap: wrap;
+            gap: 2rem;
         }
         .nav-menu a {
             text-decoration: none;
-            color: #475569;
+            color: #94a3b8;
             font-weight: 500;
-            font-size: 16px;
-            transition: color 0.2s;
+            font-size: 1rem;
+            transition: color 0.3s ease;
         }
-        .nav-menu a:hover {
-            color: #3b82f6;
+        .nav-menu a:hover, .nav-menu a.active {
+            color: #38bdf8;
         }
         .lang-buttons {
             display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
+            gap: 0.75rem;
         }
         .lang-btn {
-            background: #f1f5f9;
-            padding: 4px 12px;
+            background: rgba(51, 65, 85, 0.5);
+            padding: 0.35rem 0.8rem;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.8rem;
             text-decoration: none;
-            color: #475569;
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s ease;
         }
         .lang-btn:hover {
-            background: #e2e8f0;
+            background: rgba(51, 65, 85, 0.9);
+            color: #fff;
+            border-color: #38bdf8;
         }
+
+        /* Contenedores y Secciones */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 48px 32px;
+            padding: 4rem 2rem;
         }
         .hero {
             text-align: center;
-            padding: 48px 0 64px;
+            padding: 3rem 0 5rem;
         }
-        .hero h1 {
-            font-size: 52px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1e293b, #3b82f6);
-            background-clip: text;
+        .hero h1, .page-title h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #f8fafc, #38bdf8);
             -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 24px;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
         }
-        .hero .tagline {
-            font-size: 20px;
-            color: #475569;
-            max-width: 700px;
+        .hero .tagline, .page-title p {
+            font-size: 1.35rem;
+            color: #94a3b8;
+            max-width: 750px;
             margin: 0 auto;
         }
+
+        /* Tarjetas Estándar */
         .story-section {
-            background: white;
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(51, 65, 85, 0.5);
             border-radius: 24px;
-            padding: 48px;
-            margin: 48px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 3.5rem;
+            margin: 3rem 0;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3);
         }
         .story-section h2 {
-            font-size: 32px;
-            margin-bottom: 24px;
-            color: #1e293b;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .story-section p {
-            font-size: 18px;
-            color: #475569;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            margin-bottom: 1.25rem;
         }
-        .intelligence-section {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
+        .story-section p:last-child { margin-bottom: 0; }
+
+        /* Banner Destacado */
+        .highlight-banner {
+            background: linear-gradient(135deg, #0eaeec 0%, #1d4ed8 100%);
             border-radius: 24px;
-            padding: 48px;
-            margin: 48px 0;
+            padding: 3.5rem;
+            margin: 4rem 0;
             text-align: center;
-            color: white;
+            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.25);
         }
-        .intelligence-section h3 {
-            font-size: 28px;
-            margin-bottom: 16px;
+        .highlight-banner h3, .highlight-banner h4 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            font-weight: 700;
         }
-        .intelligence-section p {
-            font-size: 20px;
-            opacity: 0.9;
-            max-width: 800px;
+        .highlight-banner p {
+            font-size: 1.3rem;
+            color: #e0f2fe;
+            max-width: 850px;
             margin: 0 auto;
         }
-        .mission-vision {
+
+        /* Grillas y Módulos */
+        .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin: 48px 0;
+            gap: 2rem;
+            margin: 4rem 0;
         }
         .card {
-            background: white;
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(51, 65, 85, 0.5);
             border-radius: 24px;
-            padding: 32px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+            padding: 2.5rem;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #38bdf8;
+            box-shadow: 0 15px 30px -10px rgba(56, 189, 248, 0.1);
         }
         .card h3 {
-            font-size: 24px;
-            margin-bottom: 16px;
-            color: #1e293b;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #38bdf8;
         }
         .card p {
-            color: #475569;
-            line-height: 1.6;
-        }
-        .footer {
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            padding: 32px;
-            text-align: center;
             color: #94a3b8;
-            font-size: 14px;
-            margin-top: 48px;
+            font-size: 1.05rem;
         }
+
+        /* Elementos específicos de Servicios */
+        .pdca-icon {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #38bdf8;
+            background: rgba(14, 165, 233, 0.15);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+        .card h4 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 1rem;
+            color: #818cf8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .card ul { list-style: none; }
+        .card li {
+            padding: 0.75rem 0;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+            display: flex;
+            align-items: center;
+        }
+        .card li:last-child { border-bottom: none; }
+        .check-mark { color: #38bdf8; margin-right: 0.75rem; font-weight: bold; }
+
+        /* Elementos específicos de Contacto */
+        .contact-card { text-align: center; padding: 4rem 2rem; }
+        .email-box { margin: 2rem 0; }
+        .email-box a {
+            font-size: 2rem;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .email-box a:hover {
+            color: #60a5fa;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .info-text {
+            color: #64748b;
+            font-size: 1rem;
+            border-top: 1px solid rgba(51, 65, 85, 0.4);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Footer Estándar */
+        .footer {
+            background: #090d16;
+            border-top: 1px solid rgba(51, 65, 85, 0.5);
+            padding: 2.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 5rem;
+        }
+
+        /* Responsivo */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 32px;
-            }
-            .mission-vision {
-                grid-template-columns: 1fr;
-            }
-            .story-section {
-                padding: 32px;
-            }
-            .intelligence-section {
-                padding: 32px;
-            }
-            .intelligence-section p {
-                font-size: 16px;
-            }
-            .logo-img {
-                max-width: 150px;
-            }
-            .nav-menu {
-                gap: 24px;
-            }
+            .header-container { flex-direction: column; text-align: center; }
+            .nav-actions { flex-direction: column; gap: 1rem; }
+            .hero h1, .page-title h1 { font-size: 2.3rem; }
+            .grid-2col { grid-template-columns: 1fr; }
+            .story-section, .highlight-banner, .card { padding: 2rem; }
         }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
-        <div class="nav-menu">
-            <a href="index.html">Home</a>
-            <a href="servicios.html">Services</a>
-            <a href="contacto.html">Contact</a>
-        </div>
-        <div class="lang-buttons">
-            <a href="index.html" class="lang-btn">🇺🇸 EN</a>
-            <a href="es/index.html" class="lang-btn">🇪🇸 ES</a>
+        <div class="header-container">
+            <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+            <div class="nav-actions">
+                <div class="nav-menu">
+                    <a href="index.html" class="active">Home</a>
+                    <a href="servicios.html">Services</a>
+                    <a href="contacto.html">Contact</a>
+                </div>
+                <div class="lang-buttons">
+                    <a href="index.html" class="lang-btn">🇺🇸 EN</a>
+                    <a href="index-es.html" class="lang-btn">🇪🇸 ES</a>
+                </div>
+            </div>
         </div>
     </div>
     
     <div class="container">
         <div class="hero">
             <h1>Operational Excellence<br>Through Intelligent Maintenance</h1>
-            <p class="tagline">Bridging the gap between reactive repairs and predictive strategy</p>
+            <p class="tagline">Bridging the gap between reactive firefighting and predictive reliability.</p>
         </div>
         
         <div class="story-section">
             <h2>Why Adkintor?</h2>
-            <p>My name is Mauricio. I'm a Mechanical Engineer who spent years on the plant floor.</p>
-            <p>I saw the same problem everywhere: maintenance teams firefighting daily, no visibility on what's critical, spreadsheets that don't talk to each other, and no time to think about improvement.</p>
-            <p>So I built Adkintor. Not as a consultant selling reports. As an engineer who needed a system that actually works.</p>
+            <p>My name is Mauricio. I'm a Mechanical Engineer, and I spent years on the shop floor.</p>
+            <p>I saw the same problem everywhere: maintenance teams drowning in firefighting mode, zero visibility on critical assets, disconnected spreadsheets, and no time left for strategic improvement.</p>
+            <p>That's why I built Adkintor. Not as a consultant selling slide decks, but as an engineer who engineered the system he actually needed.</p>
         </div>
         
-        <div class="intelligence-section">
-            <h3>🚀 More than an EAMS</h3>
-            <p>Adkintor is not just an EAMS. It's an intelligence center that helps you make better maintenance decisions — before failures happen.</p>
+        <div class="highlight-banner">
+            <h3>🚀 More Than an EAMS</h3>
+            <p>Adkintor is an intelligence hub that empowers your team to make data-driven maintenance decisions—before catastrophic failures strike.</p>
         </div>
         
-        <div class="mission-vision">
+        <div class="grid-2col">
             <div class="card">
                 <h3>🎯 Mission</h3>
-                <p>To help industrial maintenance teams stop reacting and start preventing. We turn data into decisions — not more reports, but clear actions that improve availability and reduce cost.</p>
+                <p>To empower industrial maintenance teams to transition from reactive chaos to precision prevention. We turn floor data into actionable insights, maximizing uptime while slashing operational costs.</p>
             </div>
             <div class="card">
                 <h3>👁️ Vision</h3>
-                <p>A world where every asset operates at its full potential because maintenance is no longer a cost center — it's a strategic partner to production and quality.</p>
+                <p>A manufacturing world where every asset operates at its peak potential, shifting maintenance from a dreaded cost center into a strategic partner for production and quality.</p>
             </div>
         </div>
     </div>
@@ -226,5 +311,6 @@
     <div class="footer">
         <p>© 2026 Adkintor. All rights reserved. | info@adkintor.com</p>
     </div>
+
 </body>
 </html>
