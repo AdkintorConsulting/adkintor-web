@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adkintor - Contacto</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background-color: #0f172a; color: #f1f5f9; line-height: 1.6; overflow-x: hidden; }
+        .header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(51, 65, 85, 0.5); padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .logo-img { max-height: 50px; width: auto; object-fit: contain; }
+        .nav-actions { display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 1rem; transition: color 0.3s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: #38bdf8; }
+        .lang-buttons { display: flex; gap: 0.75rem; }
+        .lang-btn { background: rgba(51, 65, 85, 0.5); padding: 0.35rem 0.8rem; border-radius: 20px; font-size: 0.8rem; text-decoration: none; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.1); transition: all 0.3s ease; }
+        .lang-btn:hover { background: rgba(51, 65, 85, 0.9); color: #fff; border-color: #38bdf8; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 2rem; }
+        .page-title { text-align: center; margin-bottom: 4rem; }
+        .hero h1, .page-title h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f8fafc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        .hero .tagline, .page-title p { font-size: 1.35rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+        .card { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 24px; padding: 2.5rem; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { border-color: #38bdf8; }
+        .contact-card { text-align: center; padding: 4rem 2rem; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3); }
+        .email-box { margin: 2rem 0; }
+        .email-box a { font-size: 2rem; color: #38bdf8; text-decoration: none; font-weight: 700; letter-spacing: 0.02em; transition: color 0.3s ease, text-shadow 0.3s ease; }
+        .email-box a:hover { color: #60a5fa; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        .status-text { color: #cbd5e1; font-size: 1.15rem; margin-bottom: 1.5rem; }
+        .info-text { color: #64748b; font-size: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.4); padding-top: 1.5rem; margin-top: 2rem; }
+        .footer { background: #090d16; border-top: 1px solid rgba(51, 65, 85, 0.5); padding: 2.5rem; text-align: center; color: #64748b; font-size: 0.95rem; margin-top: 5rem; }
+        @media (max-width: 768px) { .header-container { flex-direction: column; text-align: center; } .nav-actions { flex-direction: column; gap: 1rem; } .hero h1, .page-title h1 { font-size: 2.3rem; } .email-box a { font-size: 1.5rem; } .contact-card { padding: 2.5rem 1.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-container">
+            <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+            <div class="nav-actions">
+                <div class="nav-menu">
+                    <a href="index-es.html">Inicio</a>
+                    <a href="servicios-es.html">Servicios</a>
+                    <a href="contacto-es.html" class="active">Contacto</a>
+                </div>
+                <div class="lang-buttons">
+                    <a href="contacto.html" class="lang-btn">🇺🇸 EN</a>
+                    <a href="contacto-es.html" class="lang-btn">🇪🇸 ES</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-title">
+            <h1>Contáctanos</h1>
+            <p>Hablemos de cómo Adkintor puede asegurar y optimizar la disponibilidad de tu planta.</p>
+        </div>
+        
+        <div class="card contact-card">
+            <div class="email-box">
+                <a href="mailto:info@adkintor.com">info@adkintor.com</a>
+            </div>
+            <p class="status-text">📧 Envíanos un correo electrónico y nuestro equipo de ingeniería te responderá en menos de 24 horas.</p>
+            <div class="info-text">
+                <p>📍 Basados en Canadá | Atendemos operaciones industriales a nivel mundial</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 Adkintor. Todos los derechos reservados. | info@adkintor.com</p>
+    </div>
+
+</body>
+</html>
