@@ -5,171 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adkintor - Contact</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-            line-height: 1.5;
-        }
-        
-        .header {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 32px 32px 20px 32px;
-            text-align: center;
-        }
-        
-        .logo-img {
-            max-width: 200px;
-            width: 100%;
-            height: auto;
-            margin: 0 auto 24px;
-            display: block;
-        }
-        
-        .nav-menu {
-            display: flex;
-            justify-content: center;
-            gap: 48px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-menu a {
-            text-decoration: none;
-            color: #475569;
-            font-weight: 500;
-            font-size: 16px;
-            transition: color 0.2s;
-        }
-        
-        .nav-menu a:hover {
-            color: #3b82f6;
-        }
-        
-        .lang-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
-        }
-        
-        .lang-btn {
-            background: #f1f5f9;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-decoration: none;
-            color: #475569;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 48px 32px;
-        }
-        
-        .page-title {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-        
-        .page-title h1 {
-            font-size: 40px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1e293b, #3b82f6);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 16px;
-        }
-        
-        .contact-card {
-            background: white;
-            border-radius: 24px;
-            padding: 48px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        
-        .email-box {
-            margin: 32px 0;
-        }
-        
-        .email-box a {
-            font-size: 28px;
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .email-box a:hover {
-            text-decoration: underline;
-        }
-        
-        .info-text {
-            color: #64748b;
-            margin-top: 24px;
-            font-size: 16px;
-        }
-        
-        .footer {
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            padding: 32px;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 14px;
-            margin-top: 48px;
-        }
-        
-        @media (max-width: 768px) {
-            .page-title h1 {
-                font-size: 28px;
-            }
-            .email-box a {
-                font-size: 20px;
-            }
-            .contact-card {
-                padding: 32px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background-color: #0f172a; color: #f1f5f9; line-height: 1.6; overflow-x: hidden; }
+        .header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(51, 65, 85, 0.5); padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .logo-img { max-height: 50px; width: auto; object-fit: contain; }
+        .nav-actions { display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 1rem; transition: color 0.3s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: #38bdf8; }
+        .lang-buttons { display: flex; gap: 0.75rem; }
+        .lang-btn { background: rgba(51, 65, 85, 0.5); padding: 0.35rem 0.8rem; border-radius: 20px; font-size: 0.8rem; text-decoration: none; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.1); transition: all 0.3s ease; }
+        .lang-btn:hover { background: rgba(51, 65, 85, 0.9); color: #fff; border-color: #38bdf8; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 2rem; }
+        .page-title { text-align: center; margin-bottom: 4rem; }
+        .hero h1, .page-title h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f8fafc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        .hero .tagline, .page-title p { font-size: 1.35rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+        .card { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 24px; padding: 2.5rem; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { border-color: #38bdf8; }
+        .contact-card { text-align: center; padding: 4rem 2rem; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3); }
+        .email-box { margin: 2rem 0; }
+        .email-box a { font-size: 2rem; color: #38bdf8; text-decoration: none; font-weight: 700; letter-spacing: 0.02em; transition: color 0.3s ease, text-shadow 0.3s ease; }
+        .email-box a:hover { color: #60a5fa; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        .status-text { color: #cbd5e1; font-size: 1.15rem; margin-bottom: 1.5rem; }
+        .info-text { color: #64748b; font-size: 1rem; border-top: 1px solid rgba(51, 65, 85, 0.4); padding-top: 1.5rem; margin-top: 2rem; }
+        .footer { background: #090d16; border-top: 1px solid rgba(51, 65, 85, 0.5); padding: 2.5rem; text-align: center; color: #64748b; font-size: 0.95rem; margin-top: 5rem; }
+        @media (max-width: 768px) { .header-container { flex-direction: column; text-align: center; } .nav-actions { flex-direction: column; gap: 1rem; } .hero h1, .page-title h1 { font-size: 2.3rem; } .email-box a { font-size: 1.5rem; } .contact-card { padding: 2.5rem 1.5rem; } }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
-        <div class="nav-menu">
-            <a href="index.html">Home</a>
-            <a href="servicios.html">Services</a>
-            <a href="contacto.html">Contact</a>
-        </div>
-        <div class="lang-buttons">
-            <a href="contacto.html" class="lang-btn">🇺🇸 EN</a>
-            <a href="es/contacto.html" class="lang-btn">🇪🇸 ES</a>
+        <div class="header-container">
+            <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+            <div class="nav-actions">
+                <div class="nav-menu">
+                    <a href="index.html">Home</a>
+                    <a href="servicios.html">Services</a>
+                    <a href="contacto.html" class="active">Contact</a>
+                </div>
+                <div class="lang-buttons">
+                    <a href="contacto.html" class="lang-btn">🇺🇸 EN</a>
+                    <a href="contacto-es.html" class="lang-btn">🇪🇸 ES</a>
+                </div>
+            </div>
         </div>
     </div>
     
     <div class="container">
         <div class="page-title">
             <h1>Contact Us</h1>
-            <p>Let's talk about how Adkintor can help your plant</p>
+            <p>Let's talk about how Adkintor can secure and optimize your plant's uptime.</p>
         </div>
         
-        <div class="contact-card">
+        <div class="card contact-card">
             <div class="email-box">
                 <a href="mailto:info@adkintor.com">info@adkintor.com</a>
             </div>
-            <p>📧 Send us an email and we'll respond within 24 hours</p>
+            <p class="status-text">📧 Drop us a line and our engineering team will get back to you within 24 hours.</p>
             <div class="info-text">
-                <p>📍 Based in Canada | Serving industrial plants worldwide</p>
+                <p>📍 Based in Canada | Serving industrial operations worldwide</p>
             </div>
         </div>
     </div>
@@ -177,5 +72,6 @@
     <div class="footer">
         <p>© 2026 Adkintor. All rights reserved. | info@adkintor.com</p>
     </div>
+
 </body>
 </html>
