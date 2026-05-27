@@ -9,37 +9,31 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #334155; }
-        .header h1 { font-size: 1.8rem; font-weight: 600; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .kpi-card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
         .kpi-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
         .kpi-value { font-size: 2rem; font-weight: 700; }
-        .kpi-unit { font-size: 0.875rem; color: #64748b; margin-left: 4px; }
-        .kpi-trend { font-size: 0.75rem; margin-top: 8px; }
+        .kpi-unit { font-size: 0.875rem; color: #64748b; }
         .trend-up { color: #10b981; }
         .trend-down { color: #ef4444; }
         .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #334155; padding-bottom: 12px; flex-wrap: wrap; }
-        .tab-btn { background: transparent; border: none; padding: 10px 20px; font-size: 0.875rem; color: #94a3b8; cursor: pointer; border-radius: 8px; }
-        .tab-btn:hover { background: #1e293b; color: #e2e8f0; }
+        .tab-btn { background: transparent; border: none; padding: 10px 20px; color: #94a3b8; cursor: pointer; border-radius: 8px; }
         .tab-btn.active { background: #3b82f6; color: white; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        .data-table { width: 100%; background: #1e293b; border-radius: 12px; overflow: auto; border: 1px solid #334155; }
+        .data-table { width: 100%; background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow-x: auto; }
         .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #334155; }
-        .data-table th { background: #0f172a; color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; }
-        .data-table td { color: #cbd5e1; font-size: 0.875rem; }
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .data-table th { background: #0f172a; color: #94a3b8; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; }
         .badge-critical { background: #7f1d1d; color: #fca5a5; }
-        .badge-high { background: #991b1b; color: #fecaca; }
-        .badge-medium { background: #854d0e; color: #fde68a; }
         .refresh-btn { background: #3b82f6; border: none; padding: 8px 16px; border-radius: 8px; color: white; cursor: pointer; }
-        .refresh-btn:hover { background: #2563eb; }
-        .error-message { background: #7f1d1d; border: 1px solid #fca5a5; color: #fecaca; padding: 16px; border-radius: 12px; margin-bottom: 24px; }
-        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .error-message { background: #7f1d1d; padding: 16px; border-radius: 12px; margin-bottom: 24px; }
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .spinner { width: 50px; height: 50px; border: 3px solid #334155; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #334155; text-align: center; font-size: 0.75rem; color: #64748b; }
-        @media (max-width: 768px) { body { padding: 12px; } .kpi-value { font-size: 1.5rem; } }
+        @media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
@@ -70,30 +64,28 @@
         <div id="tab-backlog" class="tab-panel">
             <div class="data-table"><table style="width:100%"><thead><tr><th>Age Range</th><th>Open WOs</th></tr></thead><tbody id="backlog-table"><tr><td colspan="2">Loading...</td></tr></tbody></table></div>
         </div>
-        <div class="footer">Adkintor EAMS | Intelligence Dashboard | Data from your EAMS</div>
+        <div class="footer">Adkintor EAMS | Intelligence Dashboard | Data via Cloudflare Worker</div>
     </div>
     <div id="loading" class="loading-overlay" style="display:none"><div class="spinner"></div></div>
 
     <script>
-        // ⚠️ PON AQUÍ TU URL DE LA API (la que probaste en el navegador)
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwO9USWG84vKY4WFay6o83k7CUtRwtGhlZnrY-aQDShVt1mzdBakxIu_tXxAkVTW9v7/exec';
+        // ⚠️ PON AQUÍ LA URL DE TU WORKER DE CLOUDFLARE
+        const API_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
         
         function showLoading() { document.getElementById('loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loading').style.display = 'none'; }
         function showError(msg) {
-            const div = document.getElementById('error-container');
-            div.innerHTML = `<div class="error-message">⚠️ ${msg}</div>`;
-            setTimeout(() => div.innerHTML = '', 5000);
+            document.getElementById('error-container').innerHTML = '<div class="error-message">⚠️ ' + msg + '</div>';
+            setTimeout(() => { document.getElementById('error-container').innerHTML = ''; }, 5000);
         }
 
-        async function callAPI(funcName, args = []) {
+        async function callAPI(funcName) {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ funcion: funcName, argumentos: args })
+                body: JSON.stringify({ funcion: funcName, argumentos: [] })
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
             return result.data;
@@ -101,62 +93,45 @@
 
         async function loadExecutiveData() {
             const data = await callAPI('getKPIExecutiveDashboardData');
-            const kpis = [
+            document.getElementById('kpi-cards').innerHTML = [
                 { label: 'Availability', value: data.availability, unit: '%', trend: data.availability_trend },
                 { label: 'MTBF', value: data.mtbf, unit: 'days', trend: data.mtbf_trend },
                 { label: 'MTTR', value: data.mttr, unit: 'hrs', trend: data.mttr_trend },
                 { label: 'PM Compliance', value: data.pmCompliance, unit: '%', trend: data.pmCompliance_trend },
                 { label: 'OTIF', value: data.otif, unit: '%', trend: data.otif_trend }
-            ];
-            document.getElementById('kpi-cards').innerHTML = kpis.map(k => `
-                <div class="kpi-card">
-                    <div class="kpi-label">${k.label}</div>
-                    <div class="kpi-value">${k.value}<span class="kpi-unit">${k.unit}</span></div>
-                    ${k.trend ? `<div class="kpi-trend ${k.trend >= 0 ? 'trend-up' : 'trend-down'}">${k.trend >= 0 ? '↑' : '↓'} ${Math.abs(k.trend)}%</div>` : ''}
-                </div>
-            `).join('');
-            document.getElementById('executive-table').innerHTML = `
-                <tr><td>📊 Availability</td><td>${data.availability}%</td><td>Target: >90%</td></tr>
-                <tr><td>⏱️ MTBF</td><td>${data.mtbf} days</td><td>Mean Time Between Failures</td></tr>
-                <tr><td>🔧 MTTR</td><td>${data.mttr} hours</td><td>Mean Time To Repair</td></tr>
-                <tr><td>✅ PM Compliance</td><td>${data.pmCompliance}%</td><td>Target: >85%</td></tr>
-                <tr><td>📦 OTIF</td><td>${data.otif}%</td><td>On Time In Full</td></tr>
-                <tr><td>📋 Backlog</td><td>${data.backlogWeeks} weeks</td><td>Target: <2 weeks</td></tr>
-            `;
+            ].map(k => '<div class="kpi-card"><div class="kpi-label">' + k.label + '</div><div class="kpi-value">' + k.value + '<span class="kpi-unit">' + k.unit + '</span></div>' + (k.trend ? '<div class="kpi-trend ' + (k.trend >= 0 ? 'trend-up' : 'trend-down') + '">' + (k.trend >= 0 ? '↑' : '↓') + ' ' + Math.abs(k.trend) + '%</div>' : '') + '</div>').join('');
+            document.getElementById('executive-table').innerHTML = '<tr><td>📊 Availability</td><td>' + data.availability + '%</td><td>Target: >90%</td></tr><tr><td>⏱️ MTBF</td><td>' + data.mtbf + ' days</td><td>Mean Time Between Failures</td></tr><tr><td>🔧 MTTR</td><td>' + data.mttr + ' hours</td><td>Mean Time To Repair</td></tr><tr><td>✅ PM Compliance</td><td>' + data.pmCompliance + '%</td><td>Target: >85%</td></tr><tr><td>📦 OTIF</td><td>' + data.otif + '%</td><td>On Time In Full</td></tr><tr><td>📋 Backlog</td><td>' + data.backlogWeeks + ' weeks</td><td>Target: <2 weeks</td></tr>';
         }
 
         async function loadFinancialData() {
             const data = await callAPI('getFinancialDashboardData');
-            if (data.categories && data.categories.length) {
-                document.getElementById('financial-table').innerHTML = data.categories.map(c => `
-                    <tr><td>${c.name}</td><td>$${c.actual.toLocaleString()}</td><td>$${c.budget.toLocaleString()}</td><td class="${c.variance >= 0 ? 'trend-up' : 'trend-down'}">${c.variance >= 0 ? '+' : ''}$${Math.abs(c.variance).toLocaleString()}</td></tr>
-                `).join('');
+            if (data.categories) {
+                document.getElementById('financial-table').innerHTML = data.categories.map(c => '<tr><td>' + c.name + '</td><td>$' + c.actual.toLocaleString() + '</td><td>$' + c.budget.toLocaleString() + '</td><td class="' + (c.variance >= 0 ? 'trend-up' : 'trend-down') + '">' + (c.variance >= 0 ? '+' : '') + '$' + Math.abs(c.variance).toLocaleString() + '</td></tr>').join('');
             }
         }
 
         async function loadTopAssets() {
             const data = await callAPI('getTopFailingAssets');
             if (data.length) {
-                document.getElementById('assets-table').innerHTML = data.map(a => `
-                    <tr><td>${a.name}</td><td>${a.failures}</td><td><span class="badge ${a.criticality === 'A' ? 'badge-critical' : a.criticality === 'B' ? 'badge-high' : 'badge-medium'}">${a.criticality}</span></td></tr>
-                `).join('');
+                document.getElementById('assets-table').innerHTML = data.map(a => '<tr><td>' + a.name + '</td><td>' + a.failures + '</td><td><span class="badge badge-critical">' + a.criticality + '</span></td></tr>').join('');
             }
         }
 
         async function loadBacklog() {
             const data = await callAPI('getBacklogAnalysis');
-            if (data.categories && data.categories.length) {
-                document.getElementById('backlog-table').innerHTML = data.categories.map(c => `
-                    <tr><td>${c.range}</td><td>${c.count}</td></tr>
-                `).join('');
+            if (data.categories) {
+                document.getElementById('backlog-table').innerHTML = data.categories.map(c => '<tr><td>' + c.range + '</td><td>' + c.count + '</td></tr>').join('');
             }
         }
 
         async function loadAllData() {
             showLoading();
             try {
-                await Promise.all([loadExecutiveData(), loadFinancialData(), loadTopAssets(), loadBacklog()]);
-                console.log('✅ Data loaded');
+                await loadExecutiveData();
+                await loadFinancialData();
+                await loadTopAssets();
+                await loadBacklog();
+                console.log('✅ Data loaded at', new Date().toLocaleTimeString());
             } catch(e) {
                 showError(e.message);
                 console.error(e);
@@ -171,7 +146,7 @@
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
                 });
             });
         }
