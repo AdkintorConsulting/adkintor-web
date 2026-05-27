@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adkintor Dashboard</title>
+    <style>
+        body { font-family: Arial; background: #0f172a; color: white; padding: 20px; }
+        .kpi { background: #1e293b; padding: 20px; margin: 10px; border-radius: 12px; display: inline-block; }
+        .value { font-size: 2rem; font-weight: bold; }
+        button { background: #3b82f6; border: none; padding: 10px 20px; color: white; cursor: pointer; border-radius: 8px; }
+        pre { background: #1e293b; padding: 20px; border-radius: 12px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Adkintor EAMS Dashboard</h1>
+    <button onclick="loadData()">Load Data</button>
+    <div id="result"></div>
+
+    <script>
+        // Usar el proxy de Cloudflare (probado en tu celular)
+        const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+        
+        async function loadData() {
+            document.getElementById('result').innerHTML = '<div class="kpi"><div class="value">Loading...</div></div>';
+            
+            try {
+                const response = await fetch(PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ funcion: 'getKPIExecutiveDashboardData', argumentos: [] })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    document.getElementById('result').innerHTML = `
+                        <div class="kpi"><div class="value">${data.availability}%</div><div>Availability</div></div>
+                        <div class="kpi"><div class="value">${data.mtbf} days</div><div>MTBF</div></div>
+                        <div class="kpi"><div class="value">${data.mttr} hrs</div><div>MTTR</div></div>
+                        <div class="kpi"><div class="value">${data.pmCompliance}%</div><div>PM Compliance</div></div>
+                        <div class="kpi"><div class="value">${data.otif}%</div><div>OTIF</div></div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<div class="error">Error: ${result.error}</div>`;
+                }
+            } catch(error) {
+                document.getElementById('result').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
