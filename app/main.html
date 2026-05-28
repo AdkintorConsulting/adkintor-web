@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adkintor - Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #0f1222;
+            border-right: 1px solid #1e2337;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #b0b0b0;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #1a1f3a;
+            color: #e0e0e0;
+        }
+
+        .nav-item.active {
+            background: #1e2337;
+            color: #4a6cf7;
+            border-left: 3px solid #4a6cf7;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #0f1222;
+            border-bottom: 1px solid #1e2337;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-area h2 {
+            font-size: 18px;
+            color: #4a6cf7;
+        }
+
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #8a8faa;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid #2a2f4a;
+            color: #ff6b6b;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #1e2337;
+            border-color: #ff6b6b;
+        }
+
+        /* Dropdown Menu (tres puntos) */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .docs-btn {
+            background: none;
+            border: 1px solid #2a2f4a;
+            color: #e0e0e0;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .docs-btn:hover {
+            background: #1e2337;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #1a1f3a;
+            min-width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border: 1px solid #2a2f4a;
+            margin-top: 5px;
+        }
+
+        .dropdown-content a {
+            color: #e0e0e0;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background: #1e2337;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* EAMS Buttons */
+        .eams-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .eams-btn {
+            background: linear-gradient(135deg, #1e2337 0%, #1a1f3a 100%);
+            border: 1px solid #2a2f4a;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .eams-btn:hover {
+            transform: translateY(-2px);
+            border-color: #4a6cf7;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+        }
+
+        /* Documents Section */
+        .documents-section {
+            background: #0f1222;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .documents-section h3 {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #8a8faa;
+        }
+
+        .docs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-link {
+            color: #4a6cf7;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .doc-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Module Frame (para EAMS) */
+        .module-frame {
+            width: 100%;
+            min-height: 500px;
+            border: none;
+            background: transparent;
+        }
+
+        /* Intelligence Module Container */
+        .intel-module {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Placeholder para módulos en construcción */
+        .construction-placeholder {
+            text-align: center;
+            padding: 80px 20px;
+            background: #0f1222;
+            border-radius: 12px;
+        }
+
+        .construction-placeholder h2 {
+            color: #4a6cf7;
+            margin-bottom: 10px;
+        }
+
+        .construction-placeholder p {
+            color: #8a8faa;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-nav">
+                <div class="nav-item" data-module="kpi">
+                    <span class="nav-icon">📊</span> KPI
+                </div>
+                <div class="nav-item" data-module="wo_intel">
+                    <span class="nav-icon">📋</span> WO Intel
+                </div>
+                <div class="nav-item" data-module="pvt_intel">
+                    <span class="nav-icon">🔧</span> PVT Intel
+                </div>
+                <div class="nav-item" data-module="stk_intel">
+                    <span class="nav-icon">📦</span> STK Intel
+                </div>
+                <div class="nav-item" data-module="cal_intel">
+                    <span class="nav-icon">📅</span> CAL Intel
+                </div>
+                <div class="nav-item" data-module="consulting">
+                    <span class="nav-icon">💡</span> CONSULTING
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="logo-area">
+                    <h2>Adkintor</h2>
+                </div>
+                
+                <div class="user-controls">
+                    <span class="user-name" id="userName">Usuario</span>
+                    
+                    <div class="dropdown">
+                        <button class="docs-btn">☰</button>
+                        <div class="dropdown-content">
+                            <a href="#" onclick="alert('SOP Mantenimiento - Próximamente')">📥 SOP Mantenimiento</a>
+                            <a href="#" onclick="alert('Workflow WO - Próximamente')">📥 Workflow WO</a>
+                            <a href="#" onclick="alert('Manual de Usuario - Próximamente')">📥 Manual de Usuario</a>
+                            <a href="#" onclick="alert('Guía Rápida - Próximamente')">📥 Guía Rápida</a>
+                        </div>
+                    </div>
+                    
+                    <button id="logoutBtn" class="logout-btn">🚪 Salir</button>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div id="contentArea" class="content-area">
+                <!-- EAMS Buttons -->
+                <div class="eams-buttons">
+                    <div class="eams-btn" data-eams="ast">🔧 AST</div>
+                    <div class="eams-btn" data-eams="wo">📋 WO</div>
+                    <div class="eams-btn" data-eams="pvt">⚙️ PVT</div>
+                    <div class="eams-btn" data-eams="stk">📦 STK</div>
+                    <div class="eams-btn" data-eams="cal">📅 CAL</div>
+                </div>
+                
+                <!-- Documents Section -->
+                <div class="documents-section">
+                    <h3>📄 Documentación</h3>
+                    <div class="docs-list">
+                        <a href="#" class="doc-link" onclick="alert('SOP Mantenimiento - Próximamente')">📥 SOP Mantenimiento</a>
+                        <a href="#" class="doc-link" onclick="alert('Workflow WO - Próximamente')">📥 Workflow WO</a>
+                        <a href="#" class="doc-link" onclick="alert('Manual de Usuario - Próximamente')">📥 Manual de Usuario</a>
+                        <a href="#" class="doc-link" onclick="alert('Guía Rápida - Próximamente')">📥 Guía Rápida</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Iframe oculto para cargar módulos EAMS -->
+    <iframe id="moduleFrame" style="display:none;"></iframe>
+    
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Verificar autenticación
+        const session = Auth.getSession();
+        if (!session) {
+            window.location.href = 'index.html';
+        }
+        
+        // Mostrar nombre del usuario
+        if (session && session.name) {
+            document.getElementById('userName').textContent = session.name;
+        }
+        
+        // Variable para saber qué módulo está activo
+        let currentModule = 'eams_dashboard';
+        
+        // Cargar un módulo de Intelligence (desde sidebar)
+        function loadIntelligenceModule(moduleName) {
+            const contentArea = document.getElementById('contentArea');
+            const iframe = document.getElementById('moduleFrame');
+            
+            // Ocultar iframe, mostrar contentArea
+            iframe.style.display = 'none';
+            contentArea.style.display = 'block';
+            
+            // Contenido según el módulo
+            let html = '';
+            
+            switch(moduleName) {
+                case 'kpi':
+                    html = `
+                        <div class="intel-module">
+                            <h2>📊 KPI Dashboard</h2>
+                            <p style="color: #8a8faa; margin-top: 10px;">Cargando el dashboard KPI existente...</p>
+                            <div id="kpiContainer" style="margin-top: 20px;">
+                                <iframe src="modules/intelligence/kpi.html" style="width:100%; min-height:600px; border:none; border-radius:12px;"></iframe>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'wo_intel':
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>📋 WO Intelligence</h2>
+                            <p>Módulo en construcción. Próximamente disponible.</p>
+                        </div>
+                    `;
+                    break;
+                case 'pvt_intel':
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>🔧 PVT Intelligence</h2>
+                            <p>Módulo en construcción. Próximamente disponible.</p>
+                        </div>
+                    `;
+                    break;
+                case 'stk_intel':
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>📦 STK Intelligence</h2>
+                            <p>Módulo en construcción. Próximamente disponible.</p>
+                        </div>
+                    `;
+                    break;
+                case 'cal_intel':
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>📅 CAL Intelligence</h2>
+                            <p>Módulo en construcción. Próximamente disponible.</p>
+                        </div>
+                    `;
+                    break;
+                case 'consulting':
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>💡 Consulting Intelligence</h2>
+                            <p>Módulo en construcción. Próximamente disponible.</p>
+                        </div>
+                    `;
+                    break;
+                default:
+                    html = `
+                        <div class="construction-placeholder">
+                            <h2>Módulo no encontrado</h2>
+                            <p>Seleccione una opción del menú.</p>
+                        </div>
+                    `;
+            }
+            
+            contentArea.innerHTML = html;
+            currentModule = moduleName;
+            
+            // Actualizar active state en sidebar
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-module') === moduleName) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Cargar un módulo de EAMS (desde botones)
+        function loadEAMSModule(moduleName) {
+            const contentArea = document.getElementById('contentArea');
+            const iframe = document.getElementById('moduleFrame');
+            
+            // Ocultar contentArea, mostrar iframe
+            contentArea.style.display = 'none';
+            iframe.style.display = 'block';
+            iframe.style.width = '100%';
+            iframe.style.height = 'calc(100vh - 80px)';
+            iframe.className = 'module-frame';
+            
+            // Por ahora, placeholder (los módulos EAMS se construirán después)
+            iframe.src = `about:blank`;
+            iframe.srcdoc = `
+                <html>
+                <body style="background:#0a0e27; color:#e0e0e0; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
+                    <div style="text-align:center;">
+                        <h2>🔧 Módulo ${moduleName.toUpperCase()}</h2>
+                        <p>En construcción. Próximamente disponible.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            currentModule = `eams_${moduleName}`;
+            
+            // Quitar active de sidebar
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        // Event Listeners
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const module = item.getAttribute('data-module');
+                loadIntelligenceModule(module);
+            });
+        });
+        
+        document.querySelectorAll('.eams-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const module = btn.getAttribute('data-eams');
+                loadEAMSModule(module);
+            });
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            Auth.logout();
+        });
+        
+        // Cargar KPI por defecto
+        loadIntelligenceModule('kpi');
+    </script>
+</body>
+</html>
