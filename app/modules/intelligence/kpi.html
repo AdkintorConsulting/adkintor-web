@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: #0f1222;
+            border: 1px solid #1e2337;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4a6cf7;
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            color: #8a8faa;
+            margin-top: 8px;
+        }
+
+        .trend-up { color: #4caf50; }
+        .trend-down { color: #ff6b6b; }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4a6cf7;
+        }
+
+        table {
+            width: 100%;
+            background: #0f1222;
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #1e2337;
+        }
+
+        th {
+            background: #1a1f3a;
+            color: #4a6cf7;
+        }
+
+        .status-A { color: #ff6b6b; font-weight: bold; }
+        .status-B { color: #ffa500; }
+        .status-C { color: #4caf50; }
+    </style>
+</head>
+<body>
+    <div id="kpiContainer">
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-card">
+                <div class="kpi-value" id="availability">--</div>
+                <div class="kpi-label">Disponibilidad</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="pmCompliance">--</div>
+                <div class="kpi-label">Cumplimiento PM</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="mtbf">--</div>
+                <div class="kpi-label">MTBF (días)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="mttr">--</div>
+                <div class="kpi-label">MTTR (horas)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="otif">--</div>
+                <div class="kpi-label">OTIF (%)</div>
+            </div>
+        </div>
+
+        <h3 class="section-title">📊 Top Activos con Más Fallas</h3>
+        <table id="topAssetsTable">
+            <thead>
+                <tr><th>Activo</th><th>Fallas</th><th>Criticidad</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxU3Ez1mXbMLp8mWQ4KVX-7huiWRiMn0EjVaQ8fBrk1lCBgLZ_D1L0qm8s0HRYeF-Jh/exec';
+
+        async function callAPI(funcion, argumentos = []) {
+            const response = await fetch(PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: API_URL,
+                    payload: { funcion: funcion, argumentos: argumentos }
+                })
+            });
+            const data = await response.json();
+            return data;
+        }
+
+        async function loadDashboard() {
+            try {
+                const kpiData = await callAPI('getKPIExecutiveDashboardData');
+                if (kpiData.success && kpiData.data) {
+                    document.getElementById('availability').innerHTML = kpiData.data.availability + '%';
+                    document.getElementById('pmCompliance').innerHTML = kpiData.data.pmCompliance + '%';
+                    document.getElementById('mtbf').innerHTML = kpiData.data.mtbf;
+                    document.getElementById('mttr').innerHTML = kpiData.data.mttr;
+                    document.getElementById('otif').innerHTML = kpiData.data.otif + '%';
+                }
+
+                const assetsData = await callAPI('getTopFailingAssets');
+                if (assetsData.success && assetsData.data) {
+                    const tbody = document.querySelector('#topAssetsTable tbody');
+                    tbody.innerHTML = '';
+                    assetsData.data.forEach(asset => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = asset.name;
+                        row.insertCell(1).textContent = asset.failures;
+                        row.insertCell(2).innerHTML = `<span class="status-${asset.criticality}">${asset.criticality}</span>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading KPI:', error);
+                document.getElementById('availability').innerHTML = 'Error';
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
