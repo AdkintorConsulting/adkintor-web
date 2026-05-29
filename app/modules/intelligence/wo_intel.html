@@ -1,22 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WO Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WO Intelligence - Adkintor</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: #0a0e27;
             color: #e0e0e0;
-            padding: 40px;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4a6cf7;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #8a8faa;
+            font-size: 14px;
+        }
+
+        /* Tabla */
+        .wo-table {
+            width: 100%;
+            background: #0f1222;
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .wo-table th, .wo-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #1e2337;
+        }
+
+        .wo-table th {
+            background: #1a1f3a;
+            color: #4a6cf7;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff6b6b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .priority-medium {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .priority-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-open {
+            color: #4a6cf7;
+        }
+
+        .status-progress {
+            color: #ffa500;
+        }
+
+        .loading, .error, .empty {
+            text-align: center;
+            padding: 60px;
+            color: #8a8faa;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        /* Tarjetas de resumen */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #0f1222;
+            border: 1px solid #1e2337;
+            border-radius: 12px;
+            padding: 16px;
             text-align: center;
         }
-        h1 { color: #4a6cf7; margin-bottom: 20px; }
-        p { color: #8a8faa; }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a6cf7;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8a8faa;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
+
+<div class="header">
     <h1>📋 WO Intelligence</h1>
-    <p>Módulo en construcción. Próximamente disponible.</p>
+    <p class="subtitle">Órdenes de Trabajo priorizadas por criticidad</p>
+</div>
+
+<div id="woContent">
+    <div class="loading">Cargando órdenes de trabajo prioritarias...</div>
+</div>
+
+<script>
+    // La sesión ya tiene la API_URL del cliente (guardada por auth.js)
+    function getClientApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (!session) return null;
+        try {
+            const sessionData = JSON.parse(session);
+            return sessionData.intelligenceApiUrl;
+        } catch(e) {
+            return null;
+        }
+    }
+
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    const API_URL = getClientApiUrl();
+
+    async function callAPI(funcion, argumentos = []) {
+        if (!API_URL) {
+            throw new Error('No hay sesión activa. Por favor recargue la página.');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: API_URL,
+                payload: { funcion: funcion, argumentos: argumentos }
+            })
+        });
+        const data = await response.json();
+        return data;
+    }
+
+    function getPriorityClass(priority) {
+        const p = (priority || '').toUpperCase();
+        if (p === 'EMERGENCY' || p === 'URGENT' || p === 'HIGH') return 'priority-high';
+        if (p === 'MEDIUM') return 'priority-medium';
+        return 'priority-low';
+    }
+
+    function getStatusClass(status) {
+        const s = (status || '').toUpperCase();
+        if (s === 'OPEN' || s === 'CREATED') return 'status-open';
+        if (s === 'IN PROGRESS') return 'status-progress';
+        return '';
+    }
+
+    function renderWOs(data) {
+        const wos = Array.isArray(data) ? data : (data.data || data.wos || []);
+        
+        if (!wos || wos.length === 0) {
+            document.getElementById('woContent').innerHTML = '<div class="empty">📭 No hay órdenes de trabajo prioritarias en este momento</div>';
+            return;
+        }
+
+        // Calcular estadísticas
+        const total = wos.length;
+        const highPriority = wos.filter(wo => {
+            const p = (wo.Priority || wo.priority || '').toUpperCase();
+            return p === 'EMERGENCY' || p === 'URGENT' || p === 'HIGH';
+        }).length;
+
+        const html = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">${total}</div>
+                    <div class="stat-label">Total Priorizadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${highPriority}</div>
+                    <div class="stat-label">Alta Prioridad</div>
+                </div>
+            </div>
+            <table class="wo-table">
+                <thead>
+                    <tr>
+                        <th>WO Number</th>
+                        <th>Equipo</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Técnico</th>
+                        <th>Fecha Creación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${wos.map(wo => `
+                        <tr>
+                            <td><strong>${wo['WO Number'] || wo.woNumber || wo.folio || '-'}</strong></td>
+                            <td>${wo['Equipment Name'] || wo.equipment || wo['Asset Name'] || '-'}</td>
+                            <td><span class="${getPriorityClass(wo.Priority || wo.priority)}">${wo.Priority || wo.priority || 'Normal'}</span></td>
+                            <td class="${getStatusClass(wo.Status || wo.status)}">${wo.Status || wo.status || '-'}</td>
+                            <td>${wo['Assigned Technician'] || wo.technician || '-'}</td>
+                            <td>${wo['Creation Date/Time'] || wo.creationDate || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        
+        document.getElementById('woContent').innerHTML = html;
+    }
+
+    async function loadWOs() {
+        try {
+            const result = await callAPI('getPrioritizedWOs');
+            
+            if (result.success) {
+                renderWOs(result.data);
+            } else {
+                document.getElementById('woContent').innerHTML = `<div class="error">❌ Error: ${result.error || 'No se pudieron cargar las WO'}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('woContent').innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
+        }
+    }
+
+    loadWOs();
+</script>
 </body>
 </html>
