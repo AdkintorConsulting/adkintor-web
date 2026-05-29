@@ -5,10 +5,10 @@
 const API = {
     /**
      * Llama a cualquier API a través del proxy
-     * @param {string} targetUrl - URL de la API destino (Google Apps Script)
+     * @param {string} targetUrl - URL de la API destino
      * @param {string} action - Acción a ejecutar
      * @param {object} data - Datos adicionales
-     * @returns {Promise} - Respuesta de la API
+     * @returns {Promise}
      */
     async call(targetUrl, action, data = {}) {
         const payload = {
@@ -46,13 +46,26 @@ const API = {
     },
     
     /**
-     * Login de usuario
+     * Login contra la MASTER API (para saber qué cliente es)
      * @param {string} email - Email del usuario
      * @param {string} password - Contraseña
-     * @param {string} apiUrl - URL de la API de INTELLIGENCE
-     * @returns {Promise} - Datos del usuario
+     * @returns {Promise}
      */
-    async login(email, password, apiUrl) {
+    async masterLogin(email, password) {
+        return await this.call(ADKINTOR_CONFIG.masterApiUrl, 'web_login_master', {
+            email: email,
+            password: password
+        });
+    },
+    
+    /**
+     * Login contra la API específica del cliente (validación final)
+     * @param {string} email - Email del usuario
+     * @param {string} password - Contraseña
+     * @param {string} apiUrl - URL de la API del cliente
+     * @returns {Promise}
+     */
+    async clientLogin(email, password, apiUrl) {
         return await this.call(apiUrl, 'web_login', {
             email: email,
             password: password
