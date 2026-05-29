@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPI Dashboard</title>
+    <title>KPI Dashboard - Adkintor</title>
     <style>
         * {
             margin: 0;
@@ -18,10 +18,57 @@
             padding: 20px;
         }
 
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4a6cf7;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .period-selector select {
+            padding: 8px 12px;
+            background: #1e2337;
+            border: 1px solid #2a2f4a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-export {
+            background: #2a2f4a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-export:hover {
+            background: #4a6cf7;
+        }
+
+        /* KPI Grid */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
             margin-bottom: 30px;
         }
 
@@ -40,20 +87,31 @@
         }
 
         .kpi-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #8a8faa;
             margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-trend {
+            font-size: 11px;
+            margin-top: 6px;
         }
 
         .trend-up { color: #4caf50; }
         .trend-down { color: #ff6b6b; }
 
+        /* Section Titles */
         .section-title {
             font-size: 18px;
-            margin-bottom: 15px;
+            margin: 24px 0 16px 0;
             color: #4a6cf7;
+            border-left: 3px solid #4a6cf7;
+            padding-left: 12px;
         }
 
+        /* Tables */
         table {
             width: 100%;
             background: #0f1222;
@@ -71,52 +129,85 @@
         th {
             background: #1a1f3a;
             color: #4a6cf7;
+            font-weight: 600;
         }
 
-        .status-A { color: #ff6b6b; font-weight: bold; }
-        .status-B { color: #ffa500; }
-        .status-C { color: #4caf50; }
+        /* Status colors */
+        .critical-a { color: #ff6b6b; font-weight: bold; }
+        .critical-b { color: #ffa500; }
+        .critical-c { color: #4caf50; }
+
+        /* Loading & Error */
+        .loading, .error {
+            text-align: center;
+            padding: 60px;
+            color: #8a8faa;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        /* 2 column layout for financial */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: #0f1222;
+            border: 1px solid #1e2337;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e2337;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            background: #1e2337;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <div id="kpiContainer">
-        <div class="kpi-grid" id="kpiGrid">
-            <div class="kpi-card">
-                <div class="kpi-value" id="availability">--</div>
-                <div class="kpi-label">Disponibilidad</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-value" id="pmCompliance">--</div>
-                <div class="kpi-label">Cumplimiento PM</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-value" id="mtbf">--</div>
-                <div class="kpi-label">MTBF (días)</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-value" id="mttr">--</div>
-                <div class="kpi-label">MTTR (horas)</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-value" id="otif">--</div>
-                <div class="kpi-label">OTIF (%)</div>
-            </div>
-        </div>
 
-        <h3 class="section-title">📊 Top Activos con Más Fallas</h3>
-        <table id="topAssetsTable">
-            <thead>
-                <tr><th>Activo</th><th>Fallas</th><th>Criticidad</th></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+<div class="header">
+    <h1>📊 KPI Intelligence Dashboard</h1>
+    <div class="period-selector">
+        <select id="yearSelect"></select>
+        <select id="monthSelect"></select>
+        <button class="btn-export" id="exportBtn">📄 Exportar PDF</button>
     </div>
+</div>
 
-    <script>
-        const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxU3Ez1mXbMLp8mWQ4KVX-7huiWRiMn0EjVaQ8fBrk1lCBgLZ_D1L0qm8s0HRYeF-Jh/exec';
+<div id="dashboardContent">
+    <div class="loading">Cargando datos reales desde EAMS...</div>
+</div>
 
-        async function callAPI(funcion, argumentos = []) {
+<script>
+    // Configuración
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyyYPN4YkTbBcS4t-Ik4_pEjG40j4yZUryx99nxSlH3-NxG2s1dWzNulf8QW9aj3BPX/exec';
+
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+
+    // Llamar a la API
+    async function callAPI(funcion, argumentos = []) {
+        try {
             const response = await fetch(PROXY_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -127,37 +218,183 @@
             });
             const data = await response.json();
             return data;
+        } catch (error) {
+            console.error('API Error:', error);
+            return { success: false, error: error.message };
         }
+    }
 
-        async function loadDashboard() {
-            try {
-                const kpiData = await callAPI('getKPIExecutiveDashboardData');
-                if (kpiData.success && kpiData.data) {
-                    document.getElementById('availability').innerHTML = kpiData.data.availability + '%';
-                    document.getElementById('pmCompliance').innerHTML = kpiData.data.pmCompliance + '%';
-                    document.getElementById('mtbf').innerHTML = kpiData.data.mtbf;
-                    document.getElementById('mttr').innerHTML = kpiData.data.mttr;
-                    document.getElementById('otif').innerHTML = kpiData.data.otif + '%';
-                }
-
-                const assetsData = await callAPI('getTopFailingAssets');
-                if (assetsData.success && assetsData.data) {
-                    const tbody = document.querySelector('#topAssetsTable tbody');
-                    tbody.innerHTML = '';
-                    assetsData.data.forEach(asset => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = asset.name;
-                        row.insertCell(1).textContent = asset.failures;
-                        row.insertCell(2).innerHTML = `<span class="status-${asset.criticality}">${asset.criticality}</span>`;
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading KPI:', error);
-                document.getElementById('availability').innerHTML = 'Error';
+    // Cargar KPIs reales
+    async function loadKPIData() {
+        const container = document.getElementById('dashboardContent');
+        container.innerHTML = '<div class="loading">📡 Cargando datos reales desde EAMS...</div>';
+        
+        try {
+            const result = await callAPI('getKPIDashboardData', [currentYear, currentMonth]);
+            
+            if (result.success && result.data) {
+                renderDashboard(result.data);
+            } else {
+                container.innerHTML = `<div class="error">❌ Error: ${result.error || 'No se pudieron cargar los datos'}</div>`;
             }
+        } catch (error) {
+            container.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
         }
+    }
 
-        loadDashboard();
-    </script>
+    // Renderizar el dashboard
+    function renderDashboard(data) {
+        const k = data.kpis;
+        const topAssets = data.topAssets || [];
+        const financial = data.financial;
+        const backlog = data.backlog;
+        const woDist = data.woDistribution;
+        const calibrations = data.calibrations || [];
+        const trends = data.trends;
+        const period = data.period;
+
+        const html = `
+            <!-- KPIs -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.availability}%</div>
+                    <div class="kpi-label">Disponibilidad</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.pmCompliance}%</div>
+                    <div class="kpi-label">Cumplimiento PM</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.mtbf}</div>
+                    <div class="kpi-label">MTBF (días)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.mttr}</div>
+                    <div class="kpi-label">MTTR (horas)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.equipmentDown}</div>
+                    <div class="kpi-label">Equipos Detenidos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${k.otif}%</div>
+                    <div class="kpi-label">OTIF</div>
+                </div>
+            </div>
+
+            <!-- Top Assets -->
+            <h3 class="section-title">🏆 Top Activos con Más Fallas</h3>
+            <table>
+                <thead><tr><th>Activo</th><th>Fallas</th><th>Downtime (hrs)</th><th>Costo Estimado</th></tr></thead>
+                <tbody>
+                    ${topAssets.map(a => `
+                        <tr>
+                            <td>${a.assetName || a.assetId}</td>
+                            <td>${a.failures}</td>
+                            <td>${a.downtimeHours}</td>
+                            <td>$${a.cost?.toLocaleString() || '0'}</td>
+                        </tr>
+                    `).join('')}
+                    ${topAssets.length === 0 ? '<tr><td colspan="4">No hay datos</td></tr>' : ''}
+                </tbody>
+            </table>
+
+            <!-- Backlog y Distribución WO -->
+            <div class="two-columns">
+                <div class="info-box">
+                    <h3 style="margin-bottom: 12px;">📋 Backlog de WO</h3>
+                    <div class="info-row"><span>&lt;7 días</span><span class="badge">${backlog.less7d || 0}</span></div>
+                    <div class="info-row"><span>7-14 días</span><span class="badge">${backlog.seven14d || 0}</span></div>
+                    <div class="info-row"><span>15-30 días</span><span class="badge">${backlog.fifteen30d || 0}</span></div>
+                    <div class="info-row"><span>&gt;30 días</span><span class="badge">${backlog.more30d || 0}</span></div>
+                    <div class="info-row" style="font-weight: bold;"><span>TOTAL ABIERTAS</span><span class="badge">${backlog.total || 0}</span></div>
+                </div>
+                <div class="info-box">
+                    <h3 style="margin-bottom: 12px;">📊 Distribución WO</h3>
+                    <div class="info-row"><span>Preventivo</span><span class="badge">${woDist.preventive || 0}%</span></div>
+                    <div class="info-row"><span>Correctivo</span><span class="badge">${woDist.corrective || 0}%</span></div>
+                    <div class="info-row"><span>Urgente</span><span class="badge">${woDist.urgent || 0}%</span></div>
+                    <div class="info-row"><span>Mejora</span><span class="badge">${woDist.improvement || 0}%</span></div>
+                </div>
+            </div>
+
+            <!-- Financiero -->
+            <h3 class="section-title">💰 Resumen Financiero</h3>
+            <div class="two-columns">
+                <div class="info-box">
+                    <div class="info-row"><span>Gasto Real</span><span class="badge">$${financial.actual?.toLocaleString() || '0'}</span></div>
+                    <div class="info-row"><span>Presupuesto</span><span class="badge">$${financial.budget?.toLocaleString() || '0'}</span></div>
+                    <div class="info-row"><span>Variación</span><span class="badge" style="color: ${financial.variance > 0 ? '#ff6b6b' : '#4caf50'}">${financial.variance > 0 ? '+' : ''}$${financial.variance?.toLocaleString() || '0'} (${financial.variancePercent || 0}%)</span></div>
+                </div>
+                <div class="info-box">
+                    <h3 style="margin-bottom: 12px;">📅 Próximas Calibraciones</h3>
+                    ${calibrations.map(c => `
+                        <div class="info-row"><span>${c.instrument}</span><span class="badge">${c.dueDate}</span></div>
+                    `).join('')}
+                    ${calibrations.length === 0 ? '<div class="info-row"><span>No hay calibraciones próximas</span></div>' : ''}
+                </div>
+            </div>
+        `;
+
+        document.getElementById('dashboardContent').innerHTML = html;
+    }
+
+    // Exportar a PDF (usa tu función real exportToPDF)
+    async function exportToPDF() {
+        try {
+            const result = await callAPI('exportToPDF', [currentYear, currentMonth]);
+            if (result.success && result.data) {
+                const win = window.open();
+                win.document.write(result.data);
+                win.document.close();
+            } else {
+                alert('Error al generar PDF: ' + (result.error || 'Desconocido'));
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // Inicializar selectores
+    function initSelectors() {
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+        
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear - 1; y <= currentYear; y++) {
+            const option = document.createElement('option');
+            option.value = y;
+            option.textContent = y;
+            if (y === currentYear) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+        
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        months.forEach((m, i) => {
+            const option = document.createElement('option');
+            option.value = i + 1;
+            option.textContent = m;
+            if (i + 1 === currentMonth) option.selected = true;
+            monthSelect.appendChild(option);
+        });
+        
+        yearSelect.addEventListener('change', () => {
+            currentYear = parseInt(yearSelect.value);
+            loadKPIData();
+        });
+        
+        monthSelect.addEventListener('change', () => {
+            currentMonth = parseInt(monthSelect.value);
+            loadKPIData();
+        });
+    }
+
+    // Eventos
+    document.getElementById('exportBtn').addEventListener('click', exportToPDF);
+    
+    // Inicializar
+    initSelectors();
+    loadKPIData();
+</script>
 </body>
 </html>
