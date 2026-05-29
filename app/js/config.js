@@ -1,5 +1,14 @@
+// ============================================
+// ADKINTOR - Configuración Central
+// ============================================
+
 const ADKINTOR_CONFIG = {
+    // URL del proxy (único punto de entrada)
     proxyUrl: 'https://adkintor-proxy.empty-bonus-1852.workers.dev/',
-    intelligenceApiUrl: 'https://script.google.com/macros/s/AKfycbyyYPN4YkTbBcS4t-Ik4_pEjG40j4yZUryx99nxSlH3-NxG2s1dWzNulf8QW9aj3BPX/exec',
+    
+    // URL de la MASTER API (directorio de usuarios)
+    masterApiUrl: 'https://script.google.com/macros/s/AKfycbxOqoPUwX39imttm0rvBQQsIhlplZW4myOPjeady_nWl6Xlzo7kwuzuLOMpSeuz3LgxaA/exec',
+    
+    // Duración de sesión (7 días en milisegundos)
     sessionDuration: 7 * 24 * 60 * 60 * 1000
 };
