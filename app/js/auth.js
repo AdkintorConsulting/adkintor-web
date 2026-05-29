@@ -4,39 +4,53 @@
 
 const Auth = {
     /**
-     * Inicia sesión
+     * Inicia sesión (flujo de dos pasos)
+     * 1. Consulta a Master API para saber qué cliente
+     * 2. Consulta a la API del cliente para validar credenciales
      * @param {string} email - Email del usuario
      * @param {string} password - Contraseña
-     * @returns {Promise} - Resultado del login
+     * @returns {Promise}
      */
     async login(email, password) {
         try {
-            // Usar la URL de INTELLIGENCE (DEMO por ahora)
-            const apiUrl = ADKINTOR_CONFIG.intelligenceApiUrl;
+            // PASO 1: Master API - ¿quién es este usuario?
+            const masterResult = await API.masterLogin(email, password);
             
-            const response = await API.login(email, password, apiUrl);
-            
-            if (response.status === 'success') {
-                const userData = response.data;
-                
-                // Guardar sesión
-                const session = {
-                    email: userData.email,
-                    role: userData.role,
-                    clientId: userData.client_id,
-                    name: userData.name,
-                    language: userData.language || 'en',
-                    intelligenceApiUrl: apiUrl,
-                    eamsApiUrl: userData.api_url || '',
-                    timestamp: Date.now()
-                };
-                
-                localStorage.setItem('adkintor_session', JSON.stringify(session));
-                
-                return { success: true, session: session };
-            } else {
-                return { success: false, error: response.message };
+            if (masterResult.status !== 'success') {
+                return { success: false, error: masterResult.message };
             }
+            
+            const clientApiUrl = masterResult.data.api_url;
+            
+            if (!clientApiUrl) {
+                return { success: false, error: 'No se encontró API para este cliente' };
+            }
+            
+            // PASO 2: API del cliente - validar credenciales
+            const clientResult = await API.clientLogin(email, password, clientApiUrl);
+            
+            if (clientResult.status !== 'success') {
+                return { success: false, error: clientResult.message };
+            }
+            
+            const userData = clientResult.data;
+            
+            // Guardar sesión
+            const session = {
+                email: userData.email,
+                role: userData.role,
+                clientId: userData.client_id,
+                clientName: masterResult.data.client_name,
+                name: userData.name,
+                language: userData.language || 'en',
+                intelligenceApiUrl: clientApiUrl,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('adkintor_session', JSON.stringify(session));
+            
+            return { success: true, session: session };
+            
         } catch (error) {
             console.error('Login error:', error);
             return { success: false, error: error.message };
@@ -45,7 +59,7 @@ const Auth = {
     
     /**
      * Verifica si hay una sesión activa
-     * @returns {object|null} - Datos de sesión o null
+     * @returns {object|null}
      */
     getSession() {
         const sessionStr = localStorage.getItem('adkintor_session');
@@ -56,7 +70,6 @@ const Auth = {
             const now = Date.now();
             const age = now - session.timestamp;
             
-            // Verificar expiración (7 días)
             if (age > ADKINTOR_CONFIG.sessionDuration) {
                 this.logout();
                 return null;
@@ -67,6 +80,15 @@ const Auth = {
             console.error('Session parsing error:', error);
             return null;
         }
+    },
+    
+    /**
+     * Obtiene la URL de la API del cliente activo
+     * @returns {string|null}
+     */
+    getClientApiUrl() {
+        const session = this.getSession();
+        return session ? session.intelligenceApiUrl : null;
     },
     
     /**
