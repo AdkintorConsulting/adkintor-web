@@ -1,4 +1,172 @@
-<!DOCTYPE html>
+// ESTO ESTÁ BIEN
+const session = localStorage.getItem('adkintor_session');
+
+if (!session) {
+    window.location.href = '/app/index.html';
+}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ADKINTOR EAMS + INTELLIGENCE</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/app/css/layout.css">
+    
+    <!-- Global Configuration -->
+    <script src="/app/js/config.js"></script>
+    <script src="/app/js/auth.js"></script>
+    
+    <!-- Session Verification -->
+    <script>
+        // Verify session - redirect to login if not exists
+        // ESTO ESTÁ BIEN
+        const session = localStorage.getItem('adkintor_session');
+
+        if (!session) {
+            window.location.href = '/app/index.html';
+        }
+        }
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo-area">
+                <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR Logo" class="logo-img" id="logoBtn">
+                <h1 class="app-title">ADKINTOR EAMS + INTELLIGENCE</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                </button>
+                <div class="dropdown-docs">
+                    <button class="btn-docs" id="docsDropdownBtn">
+                        <i class="fas fa-bars"></i> ☰
+                    </button>
+                    <div class="dropdown-content" id="docsDropdown">
+                        <div class="dropdown-section">
+                            <div class="section-title">SOP & WORKFLOW</div>
+                            <a href="#" data-doc="SOP Maintenance">SOP Maintenance</a>
+                            <a href="#" data-doc="Workflow WO">Workflow WO</a>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="section-title">ADKINTOR MANUALS</div>
+                            <a href="#" data-doc="User Manual">User Manual</a>
+                            <a href="#" data-doc="Quick Start Guide">Quick Start Guide</a>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="section-title">FAQ's</div>
+                            <a href="#" data-doc="Frequently Asked Questions">Frequently Asked Questions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html">
+                        <i class="fas fa-tasks"></i> WORK ORDERS
+                    </button>
+                    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html">
+                        <i class="fas fa-calendar-alt"></i> PREVENTIVE
+                    </button>
+                    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html">
+                        <i class="fas fa-boxes"></i> INVENTORY
+                    </button>
+                    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html">
+                        <i class="fas fa-microscope"></i> CALIBRATION
+                    </button>
+                    <button class="sidebar-btn" data-module="kpi" data-url="/app/modules/intelligence/kpi.html">
+                        <i class="fas fa-chart-line"></i> KPI
+                    </button>
+                    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html">
+                        <i class="fas fa-chalkboard-user"></i> CONSULTING
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="content-area">
+                <!-- EAMS BUTTONS (6 buttons) -->
+                <div class="eams-buttons">
+                    <button class="eams-btn" data-eams="asset">ASSET</button>
+                    <button class="eams-btn" data-eams="work_order">WORK ORDER</button>
+                    <button class="eams-btn" data-eams="preventive">PREVENTIVE</button>
+                    <button class="eams-btn" data-eams="calibrations">CALIBRATIONS</button>
+                    <button class="eams-btn" data-eams="inventory">INVENTORY</button>
+                    <button class="eams-btn" data-eams="plant_layout">PLANT LAYOUT</button>
+                </div>
+
+                <!-- BREADCRUMBS -->
+                <div class="breadcrumbs">
+                    <span class="breadcrumb-item active" data-path="home">Home</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item" id="dynamicBreadcrumb" style="display: none;"></span>
+                </div>
+
+                <!-- DYNAMIC CONTENT CONTAINER -->
+                <div id="dynamicContent" class="dynamic-content">
+                    <div class="welcome-message">
+                        <i class="fas fa-chalkboard-user"></i>
+                        <h2>Welcome to ADKINTOR EAMS + INTELLIGENCE</h2>
+                        <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL FOR IFRAMES (INTELLIGENCE) -->
+    <div id="iframeModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">Intelligence Module</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="intelIframe" src="" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FOR DOCUMENTS (PDF) -->
+    <div id="docModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container modal-doc">
+            <div class="modal-header">
+                <h3 id="docModalTitle">Document</h3>
+                <button class="modal-close" id="closeDocModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="pdfPlaceholder" class="pdf-placeholder">
+                    <i class="fas fa-file-pdf"></i>
+                    <p>PDF document will be available soon</p>
+                    <div class="pdf-actions">
+                        <button class="btn-pdf" id="downloadPdfBtn" disabled>
+                            <i class="fas fa-download"></i> DOWNLOAD PDF
+                        </button>
+                        <button class="btn-pdf" id="printPdfBtn" disabled>
+                            <i class="fas fa-print"></i> PRINT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toastMessage" class="toast-message" style="display: none;"></div>
+
+    <script src="/app/js/layout.js"></script>
+</body>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
