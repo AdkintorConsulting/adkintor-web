@@ -11,19 +11,19 @@
     <!-- Styles -->
     <link rel="stylesheet" href="/app/css/layout.css">
     
-    <!-- Global Configuration -->
-    <script src="/app/js/config.js"></script>
-    <script src="/app/js/auth.js"></script>
-    
-    <!-- Session Verification -->
+    <!-- Session Verification - MUST be first -->
     <script>
-        // Verify session - redirect to login if not exists
+        // Verify session before loading any scripts
         const session = localStorage.getItem('adkintor_session');
 
         if (!session) {
             window.location.href = '/app/index.html';
         }
     </script>
+    
+    <!-- Global Configuration - Load once only -->
+    <script src="/app/js/config.js"></script>
+    <script src="/app/js/auth.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -157,6 +157,7 @@
     <!-- TOAST NOTIFICATIONS -->
     <div id="toastMessage" class="toast-message" style="display: none;"></div>
 
+    <!-- Layout JS - Loaded once at the end -->
     <script src="/app/js/layout.js"></script>
 </body>
 </html>
