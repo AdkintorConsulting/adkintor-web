@@ -10,17 +10,8 @@ const pdfConfig = {
 // Global variables
 let currentDocTitle = '';
 
-// Check authentication on load
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Verify session
-    const session = localStorage.getItem('adkintor_session');
-    const user = localStorage.getItem('adkintor_user');
-    
-    if (!session || !user) {
-        window.location.href = '/app/index.html';
-        return;
-    }
-    
     // Initialize events
     initEventListeners();
     
@@ -258,7 +249,7 @@ function handleEamsClick(module) {
 }
 
 function openAssetDispatcher() {
-    // Load AST dispatcher via fetch
+    // Load ASSET dispatcher via fetch
     const dynamicContent = document.getElementById('dynamicContent');
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
