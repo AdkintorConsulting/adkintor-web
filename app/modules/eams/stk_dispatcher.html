@@ -99,10 +99,16 @@
         </div>
         
         <div class="asset-buttons-grid">
+            <div class="asset-card" id="viewerBtn">
+                <i class="fas fa-eye"></i>
+                <h3>INVENTORY VIEWER</h3>
+                <p>Read-only catalog and stock viewer</p>
+            </div>
+            
             <div class="asset-card" id="inventoryBtn">
                 <i class="fas fa-boxes"></i>
                 <h3>INVENTORY HUB</h3>
-                <p>View stock levels, manage catalog, perform adjustments</p>
+                <p>Manage stock levels, catalog, adjustments</p>
             </div>
             
             <div class="asset-card" id="procurementBtn">
@@ -131,6 +137,14 @@
         }
         
         // Abrir modales
+        function openViewer() {
+            window.parent.postMessage({
+                type: 'openIframeModal',
+                title: 'Inventory Viewer',
+                url: '/app/modules/eams/stk_viewer.html'
+            }, '*');
+        }
+        
         function openInventory() {
             window.parent.postMessage({
                 type: 'openIframeModal',
@@ -148,6 +162,7 @@
         }
         
         // Configurar botones
+        document.getElementById('viewerBtn').onclick = openViewer;
         document.getElementById('inventoryBtn').onclick = openInventory;
         document.getElementById('procurementBtn').onclick = openProcurement;
         
