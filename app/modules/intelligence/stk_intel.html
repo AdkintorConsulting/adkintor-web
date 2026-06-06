@@ -1,22 +1,996 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>STK Intelligence</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
-            padding: 40px;
-            text-align: center;
-        }
-        h1 { color: #4a6cf7; margin-bottom: 20px; }
-        p { color: #8a8faa; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAMS INTELLIGENCE - Inventory Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    /* Core Styles de Adkintor INTELLIGENCE */
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --border-color: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-color: #38bdf8;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --info: #38bdf8;
+      --gray: #64748b;
+      --border-radius-sm: 8px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Web App Header */
+    .web-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .web-app-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
+    }
+    
+    .web-app-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .close-modal-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--danger);
+      transform: none;
+    }
+    
+    /* Breadcrumbs */
+    .web-breadcrumbs {
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .web-breadcrumbs span {
+      color: var(--text-secondary);
+    }
+    
+    .web-breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* Toast Notifications */
+    .toast-notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-success {
+      background: #10b981;
+      color: white;
+      border-left: 4px solid #059669;
+    }
+    
+    .toast-error {
+      background: #ef4444;
+      color: white;
+      border-left: 4px solid #b91c1c;
+    }
+    
+    .toast-info {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+      border-left: 4px solid #0284c7;
+    }
+    
+    .toast-warning {
+      background: var(--warning);
+      color: var(--bg-primary);
+      border-left: 4px solid #d97706;
+    }
+    
+    /* Loading Overlay */
+    .adk-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .adk-loading-content {
+      text-align: center;
+      background: var(--bg-secondary);
+      padding: 30px 40px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .adk-loading {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Alert */
+    .adk-alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px;
+    }
+    
+    .adk-alert-danger {
+      background: rgba(248, 113, 113, 0.2);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+    
+    .adk-alert-info {
+      background: rgba(56, 189, 248, 0.2);
+      border-left: 4px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .adk-alert-success {
+      background: rgba(74, 222, 128, 0.2);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+    
+    /* Dashboard Container */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 90px);
+      padding: 20px;
+      background: var(--bg-primary);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .logo-area h1 { 
+      font-size: 20px; 
+      color: var(--accent-color); 
+      margin-bottom: 4px; 
+    }
+    
+    .logo-area p { 
+      font-size: 11px; 
+      color: var(--text-secondary); 
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .last-updated {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+      padding: 10px 24px;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      background: transparent;
+      border: none;
+    }
+    
+    .tab-btn:hover { 
+      background: var(--bg-hover); 
+      color: white; 
+    }
+    
+    .tab-btn.active { 
+      background: var(--bg-hover); 
+      color: var(--accent-color); 
+      border-bottom: 2px solid var(--accent-color); 
+    }
+    
+    .content-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    
+    .tab-pane { 
+      display: none; 
+      animation: fadeIn 0.3s ease; 
+    }
+    
+    .tab-pane.active { 
+      display: block; 
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+    
+    /* Summary Cards */
+    .summary-grid {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .summary-card {
+      flex: 1;
+      min-width: 160px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .summary-card h3 {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    
+    .summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+    
+    .summary-card .sub {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    /* Cards */
+    .adk-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 16px;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    th {
+      text-align: left;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    
+    tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .adk-badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
+    .adk-badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+    .adk-badge-success { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; }
+    .adk-badge-primary { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+    
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .filter-bar label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .filter-bar select, .filter-bar input {
+      padding: 6px 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+    
+    .filter-bar select:focus, .filter-bar input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    
+    .adk-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .adk-btn-primary {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+    }
+    
+    .adk-btn-primary:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+    
+    .adk-btn-secondary {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: white;
+    }
+    
+    .adk-btn-secondary:hover {
+      background: var(--border-color);
+      transform: scale(1.02);
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+  </style>
 </head>
 <body>
-    <h1>📦 STK Intelligence</h1>
-    <p>Módulo en construcción. Próximamente disponible.</p>
+
+<!-- WEB APP HEADER -->
+<div class="web-app-header">
+  <h2><i class="fas fa-boxes"></i> EAMS INTELLIGENCE - Inventory Intelligence</h2>
+  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
+</div>
+
+<!-- BREADCRUMBS -->
+<div class="web-breadcrumbs">
+  <span>🏠 Home</span> > 
+  <span>📈 INTELLIGENCE</span> > 
+  <span>📦 Inventory Intelligence</span>
+</div>
+
+<div class="dashboard-container">
+  <div class="header">
+    <div class="logo-area">
+      <h1>📦 Inventory Intelligence</h1>
+      <p>Maintenance Supervisor View · Read Only Recommendations</p>
+    </div>
+    <div class="header-actions">
+      <span id="lastUpdatedText" class="last-updated"></span>
+      <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+      <button id="printBtn" class="adk-btn adk-btn-primary">🖨️ Print PDF</button>
+    </div>
+  </div>
+  
+  <!-- Summary Cards -->
+  <div id="summaryCards" class="summary-grid">
+    <div class="summary-card"><h3>Total SKUs</h3><div class="value">--</div></div>
+    <div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value">--</div><div class="sub">-- overdue | -- out of stock</div></div>
+    <div class="summary-card"><h3>📦 Pending POs</h3><div class="value">--</div></div>
+    <div class="summary-card"><h3>💡 Optimizations</h3><div class="value">--</div></div>
+  </div>
+  
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
+    <button class="tab-btn" data-tab="pending">📦 Pending POs</button>
+    <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
+    <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
+  </div>
+  
+  <div class="content-panel">
+    <div id="alerts-tab" class="tab-pane active">
+      <div class="adk-card">
+        <div class="card-header">⚠️ Critical Alerts</div>
+        <div class="card-body" id="alertsContent"></div>
+      </div>
+    </div>
+    
+    <div id="pending-tab" class="tab-pane">
+      <div class="adk-card">
+        <div class="card-header">📦 Pending Purchase Orders</div>
+        <div class="card-body" id="pendingPOsContent"></div>
+      </div>
+    </div>
+    
+    <div id="optimize-tab" class="tab-pane">
+      <div class="adk-card">
+        <div class="card-header">📊 Stock Optimization Suggestions</div>
+        <div class="card-body" id="optimizationContent"></div>
+      </div>
+    </div>
+    
+    <div id="obsolete-tab" class="tab-pane">
+      <div class="adk-card">
+        <div class="card-header">🗑️ Obsolete Parts</div>
+        <div class="card-body" id="obsoleteContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentData = null;
+  let pendingPOsData = [];
+  let obsoletePartsData = [];
+  
+  // ============================================
+  // TOAST NOTIFICATION SYSTEM
+  // ============================================
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideIn 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+  
+  // ============================================
+  // CLOSE MODAL FUNCTION
+  // ============================================
+  function closeModal() {
+    if (window.parent !== window) {
+      window.parent.postMessage({ action: 'closeModal' }, '*');
+    }
+    showToast('Closing module...', 'info');
+    setTimeout(() => {
+      window.close();
+    }, 100);
+  }
+  
+  // ============================================
+  // INTELLIGENCE API COMMUNICATION
+  // ============================================
+  async function callIntelligenceApi(action, args = []) {
+    try {
+      const sessionStr = localStorage.getItem('adkintor_session');
+      if (!sessionStr) {
+        throw new Error('No session found. Please login again.');
+      }
+      const session = JSON.parse(sessionStr);
+      const API_URL = session.intelligenceApiUrl;
+      if (!API_URL) {
+        throw new Error('Intelligence API URL not found in session.');
+      }
+      
+      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+      
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUrl: API_URL,
+          payload: { action: action, args: args }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'API call error');
+      }
+      return result.data;
+    } catch (error) {
+      console.error('Intelligence API call error:', error);
+      showToast(`Error: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+  
+  // ============================================
+  // LOADING OVERLAY FUNCTIONS
+  // ============================================
+  function showLoading() {
+    let overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+    
+    overlay = document.createElement('div');
+    overlay.id = 'adkLoadingOverlay';
+    overlay.className = 'adk-loading-overlay';
+    overlay.innerHTML = `
+      <div class="adk-loading-content">
+        <div class="adk-loading"></div>
+        <div style="color: var(--text-primary); font-size: 14px;">Loading data...</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  
+  function hideLoading() {
+    const overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+  }
+  
+  function showError(message) {
+    showToast(message, 'error');
+  }
+  
+  // ============================================
+  // TAB FUNCTION
+  // ============================================
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    
+    const clickedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (clickedBtn) clickedBtn.classList.add('active');
+    
+    const targetPane = document.getElementById(`${tabId}-tab`);
+    if (targetPane) targetPane.classList.add('active');
+  }
+  
+  // ============================================
+  // LOAD DATA
+  // ============================================
+  async function refreshAllData() {
+    showLoading();
+    
+    try {
+      const data = await callIntelligenceApi('STK_getIntelligenceData', []);
+      
+      if (!data || data.error) {
+        showError(data?.error || 'No data received');
+        hideLoading();
+        return;
+      }
+      
+      currentData = data;
+      const lastUpdatedSpan = document.getElementById('lastUpdatedText');
+      if (lastUpdatedSpan) {
+        lastUpdatedSpan.innerText = `Updated: ${new Date(data.lastUpdated).toLocaleString()}`;
+      }
+      
+      renderSummaryCards(data);
+      renderAlertsTab(data.alerts);
+      renderPendingPOSTab(data.pendingPOs);
+      renderOptimizationTab(data.stockOptimizations, data.config);
+      renderObsoleteTab(data.obsoleteParts, data.config);
+      
+      hideLoading();
+      showToast('Data loaded successfully', 'success');
+    } catch (error) {
+      hideLoading();
+      showError('Failed to load: ' + error.message);
+    }
+  }
+  
+  function renderSummaryCards(data) {
+    const overdueCount = data.alerts?.overduePOs?.length || 0;
+    const outOfStockCount = data.alerts?.outOfStockCritical?.length || 0;
+    const pendingCount = data.pendingPOs?.length || 0;
+    const optCount = data.stockOptimizations?.length || 0;
+    
+    const summaryHtml = `
+      <div class="summary-card"><h3>Total SKUs</h3><div class="value">${data.summary?.totalSKUs || 0}</div></div>
+      <div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value" style="color:#f97316;">${overdueCount + outOfStockCount}</div><div class="sub">${overdueCount} overdue | ${outOfStockCount} out of stock</div></div>
+      <div class="summary-card"><h3>📦 Pending POs</h3><div class="value">${pendingCount}</div></div>
+      <div class="summary-card"><h3>💡 Optimizations</h3><div class="value">${optCount}</div></div>
+    `;
+    document.getElementById('summaryCards').innerHTML = summaryHtml;
+  }
+  
+  function renderAlertsTab(alerts) {
+    const container = document.getElementById('alertsContent');
+    let html = '';
+    
+    html += `<h3 style="margin:0 0 12px 0; color:#f97316;">🔴 Critical Overdue Purchase Orders</h3>`;
+    if (alerts.overduePOs && alerts.overduePOs.length > 0) {
+      html += `<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Overdue</th><th>Items</th><th>Recommendation</th></tr></thead><tbody>`;
+      for (const po of alerts.overduePOs) {
+        html += `<tr>
+          <td><strong>${escapeHtml(po.poNumber)}</strong></td>
+          <td>${escapeHtml(po.vendor)}</td>
+          <td style="color:#f97316; font-weight:bold;">${po.daysOverdue}</td>
+          <td>${escapeHtml(po.items)}</td>
+          <td>${escapeHtml(po.recommendation)}</td>
+        </tr>`;
+      }
+      html += `</tbody></table></div>`;
+    } else {
+      html += `<div class="adk-alert adk-alert-success">✅ No critical overdue purchase orders.</div>`;
+    }
+    
+    html += `<h3 style="margin:24px 0 12px 0; color:#ef4444;">🔴 Out of Stock - Critical Parts</h3>`;
+    if (alerts.outOfStockCritical && alerts.outOfStockCritical.length > 0) {
+      html += `<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>`;
+      for (const item of alerts.outOfStockCritical) {
+        html += `<tr>
+          <td><strong>${escapeHtml(item.sku)}</strong></td>
+          <td>${escapeHtml(item.description) || '-'}</td>
+          <td>${item.minStock}</td>
+          <td>${escapeHtml(item.recommendation)}</td>
+        </tr>`;
+      }
+      html += `</tbody></table></div>`;
+    } else {
+      html += `<div class="adk-alert adk-alert-success">✅ No critical parts out of stock.</div>`;
+    }
+    
+    container.innerHTML = html;
+  }
+  
+  function renderPendingPOSTab(pendingPOs) {
+    const container = document.getElementById('pendingPOsContent');
+    pendingPOsData = pendingPOs || [];
+    
+    if (pendingPOsData.length === 0) {
+      container.innerHTML = `<div class="adk-alert adk-alert-info">📭 No pending purchase orders.</div>`;
+      return;
+    }
+    
+    let html = `
+      <div class="filter-bar">
+        <label>🔍 Filter:</label>
+        <select id="poFilter">
+          <option value="all">All POs</option>
+          <option value="critical">Critical Only</option>
+          <option value="overdue">Overdue Only</option>
+        </select>
+      </div>
+      <div id="pendingPOsTable"></div>
+    `;
+    container.innerHTML = html;
+    
+    const poFilter = document.getElementById('poFilter');
+    if (poFilter) {
+      poFilter.addEventListener('change', () => filterPendingPOs());
+    }
+    filterPendingPOs();
+  }
+  
+  function filterPendingPOs() {
+    const filter = document.getElementById('poFilter')?.value || 'all';
+    let filtered = pendingPOsData;
+    
+    if (filter === 'critical') filtered = filtered.filter(po => po.hasCritical);
+    if (filter === 'overdue') filtered = filtered.filter(po => po.isOverdue);
+    
+    if (filtered.length === 0) {
+      document.getElementById('pendingPOsTable').innerHTML = `<div class="adk-alert adk-alert-info">No POs match filter.</div>`;
+      return;
+    }
+    
+    let html = `<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Expected (days)</th><th>Status</th><th>Items</th></tr></thead><tbody>`;
+    
+    for (const po of filtered) {
+      const criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
+      html += `<tr>
+        <td><strong>${escapeHtml(po.poNumber)}</strong> ${criticalBadge}</td>
+        <td>${escapeHtml(po.vendor)}</td>
+        <td>${po.daysSinceIssue}</td>
+        <td>${po.expectedDays}</td>
+        <td><span class="${po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning'}">${escapeHtml(po.status)}</span></td>
+        <td>${escapeHtml(po.itemsSummary)}</td>
+      </tr>`;
+    }
+    
+    html += `</tbody></table></div>`;
+    document.getElementById('pendingPOsTable').innerHTML = html;
+  }
+  
+  function renderOptimizationTab(optimizations, config) {
+    const container = document.getElementById('optimizationContent');
+    
+    let html = `<div class="adk-card" style="margin-bottom:16px;">💡 Safety Factor: <strong>${config?.safetyFactor || 1.5}</strong> (50% buffer). Update in SETUP_STK to change.</div>`;
+    
+    if (!optimizations || optimizations.length === 0) {
+      html += `<div class="adk-alert adk-alert-success">✅ All min stock levels appear optimal.</div>`;
+      container.innerHTML = html;
+      return;
+    }
+    
+    html += `<div class="table-wrapper"><table><thead><tr>
+      <th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th>
+    </tr></thead><tbody>`;
+    
+    for (const opt of optimizations) {
+      const actionColor = opt.action === 'increase' ? '#f97316' : '#4ade80';
+      const actionIcon = opt.action === 'increase' ? '⬆️' : '⬇️';
+      const critClass = opt.criticality === 'A' ? 'badge adk-badge-danger' : (opt.criticality === 'B' ? 'badge adk-badge-warning' : 'badge adk-badge-success');
+      
+      html += `<tr>
+        <td><strong>${escapeHtml(opt.sku)}</strong></td>
+        <td>${escapeHtml(opt.description) || '-'}</td>
+        <td>${opt.consumptionPerWeek}</td>
+        <td>${opt.leadTimeWeeks}</td>
+        <td>${opt.currentMinStock}</td>
+        <td><strong style="color:${actionColor}">${opt.suggestedMinStock}</strong></td>
+        <td>${actionIcon} ${opt.percentDiff}%</td>
+        <td><span class="${critClass}">${opt.criticality || 'C'}</span></td>
+      </tr>`;
+    }
+    
+    html += `</tbody></table></div>`;
+    html += `<div class="adk-card" style="margin-top:16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>`;
+    container.innerHTML = html;
+  }
+  
+  function renderObsoleteTab(obsoleteData, config) {
+    const container = document.getElementById('obsoleteContent');
+    obsoletePartsData = obsoleteData.parts || [];
+    const monthsDefault = config?.obsoleteMonths || 12;
+    
+    container.innerHTML = `
+      <div class="filter-bar">
+        <label>⏱️ Months without consumption:</label>
+        <input type="number" id="obsoleteMonths" value="${monthsDefault}" min="3" max="36" step="3" style="width:80px;">
+        <button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button>
+      </div>
+      <div id="obsoleteTable"></div>
+    `;
+    
+    const applyBtn = document.getElementById('applyObsoleteFilterBtn');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => applyObsoleteFilter());
+    }
+    renderObsoleteTable();
+  }
+  
+  function applyObsoleteFilter() {
+    const monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
+    let filtered = obsoletePartsData.filter(p => p.monthsInactive >= monthsFilter);
+    const totalValue = obsoletePartsData.reduce((sum, p) => sum + p.stockValue, 0);
+    
+    let html = `<div class="adk-card" style="margin-bottom:16px;">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
+    
+    if (filtered.length === 0) {
+      html += `<div class="adk-alert adk-alert-success">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
+      document.getElementById('obsoleteTable').innerHTML = html;
+      return;
+    }
+    
+    html += `<div class="table-wrapper"><table><thead><tr>
+      <th>SKU</th><th>Description</th><th>Stock</th><th>Value ($)</th><th>Last Consumption</th><th>Months Inactive</th>
+    </tr></thead><tbody>`;
+    
+    for (const part of filtered) {
+      html += `<tr>
+        <td><strong>${escapeHtml(part.sku)}</strong></td>
+        <td>${escapeHtml(part.description) || '-'}</td>
+        <td>${part.currentStock}</td>
+        <td>$${part.stockValue.toLocaleString()}</td>
+        <td>${part.lastConsumptionDate || 'Never'}</td>
+        <td style="color:#f97316;">${part.monthsInactive}</td>
+      </tr>`;
+    }
+    
+    html += `</tbody></table></div>`;
+    html += `<div class="adk-card" style="margin-top:16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
+    
+    document.getElementById('obsoleteTable').innerHTML = html;
+  }
+  
+  function renderObsoleteTable() {
+    const monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
+    let filtered = obsoletePartsData.filter(p => p.monthsInactive >= monthsFilter);
+    const totalValue = obsoletePartsData.reduce((sum, p) => sum + p.stockValue, 0);
+    
+    let html = `<div class="adk-card" style="margin-bottom:16px;">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
+    
+    if (filtered.length === 0) {
+      html += `<div class="adk-alert adk-alert-success">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
+      document.getElementById('obsoleteTable').innerHTML = html;
+      return;
+    }
+    
+    html += `<div class="table-wrapper"><table><thead><tr>
+      <th>SKU</th><th>Description</th><th>Stock</th><th>Value ($)</th><th>Last Consumption</th><th>Months Inactive</th>
+    </tr></thead><tbody>`;
+    
+    for (const part of filtered) {
+      html += `<tr>
+        <td><strong>${escapeHtml(part.sku)}</strong></td>
+        <td>${escapeHtml(part.description) || '-'}</td>
+        <td>${part.currentStock}</td>
+        <td>$${part.stockValue.toLocaleString()}</td>
+        <td>${part.lastConsumptionDate || 'Never'}</td>
+        <td style="color:#f97316;">${part.monthsInactive}</td>
+      </tr>`;
+    }
+    
+    html += `</tbody></table></div>`;
+    html += `<div class="adk-card" style="margin-top:16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
+    
+    document.getElementById('obsoleteTable').innerHTML = html;
+  }
+  
+  async function printToPDF() {
+    showLoading();
+    try {
+      const html = await callIntelligenceApi('STK_getPrintView', []);
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        showToast('Popup blocked. Please allow popups.', 'error');
+        hideLoading();
+        return;
+      }
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      hideLoading();
+      showToast('Report generated successfully', 'success');
+    } catch (error) {
+      hideLoading();
+      showError('Print failed: ' + error.message);
+    }
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const printBtn = document.getElementById('printBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => refreshAllData());
+    }
+    
+    if (printBtn) {
+      printBtn.addEventListener('click', () => printToPDF());
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+    
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        showTab(tabId);
+      });
+    });
+    
+    // Initial load
+    refreshAllData();
+  });
+</script>
 </body>
 </html>
