@@ -1,14 +1,21 @@
 // ============================================
-// ADKINTOR - Configuración Central
+// ADKINTOR CONFIGURATION
 // ============================================
 
-const ADKINTOR_CONFIG = {
-    // URL del proxy (único punto de entrada)
-    proxyUrl: 'https://adkintor-proxy.empty-bonus-1852.workers.dev/',
+(function() {
+    window.ADKINTOR_CONFIG = {
+        // Proxy URL (Cloudflare Worker)
+        PROXY_URL: 'https://adkintor-proxy.empty-bonus-1852.workers.dev/',
+        
+        // Master API URL (directorio de clientes)
+        MASTER_API_URL: 'https://script.google.com/macros/s/AKfycbw5oRdyioPqaVzyNfAM8Qq9YKEMzU8GChGrEZEVCzFVeyS3hxmJTwK8_chzfAKcJ2ksRw/exec',
+        
+        // Session duration in milliseconds (7 days)
+        SESSION_DURATION: 7 * 24 * 60 * 60 * 1000,
+        
+        // App version
+        VERSION: '1.0.0'
+    };
     
-    // URL de la MASTER API (directorio de usuarios)
-    masterApiUrl: 'https://script.google.com/macros/s/AKfycbxOqoPUwX39imttm0rvBQQsIhlplZW4myOPjeady_nWl6Xlzo7kwuzuLOMpSeuz3LgxaA/exec',
-    
-    // Duración de sesión (7 días en milisegundos)
-    sessionDuration: 7 * 24 * 60 * 60 * 1000
-};
+    console.log('ADKINTOR_CONFIG loaded');
+})();
