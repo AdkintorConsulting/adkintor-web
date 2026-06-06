@@ -8,7 +8,7 @@
         PROXY_URL: 'https://adkintor-proxy.empty-bonus-1852.workers.dev/',
         
         // Master API URL (directorio de clientes)
-        MASTER_API_URL: 'https://script.google.com/macros/s/AKfycbw5oRdyioPqaVzyNfAM8Qq9YKEMzU8GChGrEZEVCzFVeyS3hxmJTwK8_chzfAKcJ2ksRw/exec',
+        MASTER_API_URL: 'https://script.google.com/macros/s/AKfycbxBHdKMRJQT3SvnVS8oAwNdBqSIqA-p08rC4kstsErn61CN-BRLNMosAGPd8Xg4ER4-pQ/exec',
         
         // Session duration in milliseconds (7 days)
         SESSION_DURATION: 7 * 24 * 60 * 60 * 1000,
