@@ -560,7 +560,7 @@
         if (session) {
             try {
                 const sessionData = JSON.parse(session);
-                EAMS_API_URL = sessionData.intelligenceApiUrl;
+                EAMS_API_URL = sessionData.eamsApiUrl;
             } catch(e) {
                 console.error('Error parsing session:', e);
             }
