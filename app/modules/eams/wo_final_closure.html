@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Final Closure Audit - EAMS</title>
+  <style>
+    /* Reset and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Modal Container */
+    .modal-container {
+      min-height: 100%;
+      background: white;
+    }
+
+    /* Header */
+    .modal-header {
+      background: #004a99;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+      padding: 12px 24px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 13px;
+    }
+
+    .breadcrumbs a {
+      color: #004a99;
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumbs span {
+      color: #6c757d;
+    }
+
+    /* Content */
+    .card-audit {
+      padding: 32px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .audit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e9ecef;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .audit-header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: #004a99;
+    }
+
+    .user-badge {
+      background: #e9ecef;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .stage {
+      display: none;
+      margin-top: 24px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stage-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #004a99;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    label .required {
+      color: #b52b27;
+      margin-left: 3px;
+    }
+
+    select, textarea, input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    select:focus, textarea:focus, input:focus {
+      border-color: #004a99;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 74, 153, 0.1);
+    }
+
+    select.error, textarea.error, input.error {
+      border-color: #b52b27;
+      background-color: #fff5f5;
+    }
+
+    .audit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+
+    .audit-item {
+      font-size: 12px;
+      border-bottom: 1px solid #e9ecef;
+      padding: 6px 0;
+    }
+
+    .audit-item b {
+      display: block;
+      color: #004a99;
+      font-size: 10px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .audit-desc {
+      margin-top: 4px;
+      color: #1e293b;
+      word-break: break-word;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .pm-protocol-alert {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+      padding: 16px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+
+    .pm-protocol-alert.follow-up {
+      background: #e8f0fe;
+      border-left-color: #004a99;
+    }
+
+    .pm-title {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #856404;
+    }
+
+    .pm-title.follow-up {
+      color: #004a99;
+    }
+
+    .pm-input-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pm-input-group input {
+      width: 100px;
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .btn-closure {
+      background: #2e7d32;
+      color: white;
+      flex: 2;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-closure:hover:not(:disabled) {
+      background: #1b5e20;
+    }
+
+    .btn-closure:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-cancel {
+      background: #64748b;
+      color: white;
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background: #475569;
+    }
+
+    hr {
+      margin: 20px 0;
+      border: none;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* Footer */
+    .eams-status-bar {
+      background: #f1f2f6;
+      color: #7f8c8d;
+      padding: 12px 24px;
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #dcdde1;
+      font-weight: 600;
+      margin-top: 24px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      max-width: 400px;
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid;
+    }
+
+    .toast.success { border-left-color: #2e7d32; }
+    .toast.error { border-left-color: #b52b27; }
+    .toast.info { border-left-color: #004a99; }
+    .toast.warning { border-left-color: #e67e22; }
+
+    .toast-icon { font-size: 20px; }
+    .toast-message { flex: 1; font-size: 14px; color: #2c3e50; }
+    .toast-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #94a3b8;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1500;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-content {
+      background: white;
+      border-radius: 12px;
+      padding: 24px 32px;
+      text-align: center;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e9ecef;
+      border-top-color: #004a99;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Confirm Modal */
+    .confirm-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confirm-modal {
+      background: white;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 90%;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .confirm-modal h3 {
+      color: #004a99;
+      margin: 0 0 12px 0;
+      font-size: 18px;
+    }
+
+    .confirm-modal p {
+      color: #2c3e50;
+      margin: 0 0 24px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .confirm-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .confirm-buttons button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm-yes {
+      background: #2e7d32;
+      color: white;
+    }
+    .btn-confirm-yes:hover {
+      background: #1b5e20;
+    }
+    .btn-confirm-no {
+      background: #64748b;
+      color: white;
+    }
+    .btn-confirm-no:hover {
+      background: #475569;
+    }
+
+    @media (max-width: 650px) {
+      .card-audit {
+        padding: 24px 20px;
+      }
+      .audit-grid {
+        grid-template-columns: 1fr;
+      }
+      .full-width {
+        grid-column: span 1;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="modal-container">
+  <!-- Header -->
+  <div class="modal-header">
+    <h2>🔒 FINAL CLOSURE AUDIT</h2>
+    <button class="close-btn" onclick="closeModal()">✕</button>
+  </div>
+
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs">
+    <a href="#" onclick="window.parent.postMessage('navigateTo', '*')">Inicio</a> &gt;
+    <span>WORK ORDERS</span> &gt;
+    <span>Final Closure</span>
+  </div>
+
+  <!-- Main Content -->
+  <div class="card-audit">
+    <div class="audit-header">
+      <h3>Work Order Closure Audit</h3>
+      <div class="user-badge" id="userDisplay">Loading...</div>
+    </div>
+
+    <!-- STAGE 1: Selection -->
+    <div id="stage1">
+      <div class="form-group">
+        <label>Select Work Order for Final Review <span class="required">*</span></label>
+        <select id="folioSel" data-required="true">
+          <option value="">-- Loading work orders... --</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- STAGE 2: Technical Data Review -->
+    <div id="stage2" class="stage">
+      <div class="stage-title">
+        <span>📋 Technical Data Review</span>
+        <span style="font-size: 10px; background: #004a99; color: white; padding: 2px 8px; border-radius: 12px;">COMPLETED BY TECH</span>
+      </div>
+      <div id="detailsBody" class="audit-grid"></div>
+      
+      <div id="pmBox" class="pm-protocol-alert" style="display:none;">
+        <span class="pm-title">🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE</span>
+        <p>Verify the number of tasks successfully executed from the checklist:</p>
+        <div class="pm-input-group">
+          <input type="number" id="tasksExecuted" min="0" placeholder="0">
+          <span> / <strong id="maxTLabel">0</strong> Tasks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 3: Audit and Closure -->
+    <div id="stage3" class="stage">
+      <hr>
+      <div class="form-group">
+        <label>Approving Supervisor <span class="required">*</span></label>
+        <select id="apprSel" data-required="true">
+          <option value="">-- Select Supervisor --</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Final Audit Remarks / Observations</label>
+        <textarea id="note" rows="3" placeholder="Enter final quality observations for archive..."></textarea>
+      </div>
+      
+      <div class="button-group">
+        <button id="cancelBtn" class="btn-cancel">CANCEL</button>
+        <button id="closeBtn" class="btn-closure" disabled>
+          AUTHORIZE FINAL CLOSURE & ARCHIVE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS v2.0</span>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <p id="loadingMessage">Processing...</p>
+  </div>
+</div>
+
+<!-- Confirm Modal for PM Verification -->
+<div id="pmConfirmModal" class="confirm-modal-overlay">
+  <div class="confirm-modal">
+    <h3>🛡️ Preventive Maintenance Verification</h3>
+    <p id="pmConfirmMessage">Tasks reported by technician: X/Y</p>
+    <div class="confirm-buttons">
+      <button id="pmConfirmYes" class="btn-confirm-yes">✓ Confirm</button>
+      <button id="pmConfirmNo" class="btn-confirm-no">✗ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================
+  // API CONFIGURATION
+  // ============================================
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  let EAMS_API_URL = null;
+
+  function loadApiUrl() {
+    const session = localStorage.getItem('adkintor_session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        EAMS_API_URL = sessionData.eamsApiUrl;
+        if (!EAMS_API_URL) {
+          throw new Error('eamsApiUrl not found in session');
+        }
+      } catch(e) {
+        console.error('Error parsing session:', e);
+        showToast('Session error: Please login again', 'error');
+      }
+    } else {
+      showToast('No session found. Please login.', 'error');
+    }
+  }
+
+  async function callApi(action, args = []) {
+    if (!EAMS_API_URL) {
+      throw new Error('API URL not configured. Please login again.');
+    }
+    
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetUrl: EAMS_API_URL,
+        payload: { action: action, args: args }
+      })
+    });
+    
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+    return result.data;
+  }
+
+  // ============================================
+  // GLOBAL VARIABLES
+  // ============================================
+  let woData = null;
+  let isSubmitting = false;
+  let supervisorEmails = [];
+  let pendingPmValidation = false;
+  let pendingTasksCompleted = 0;
+  let pendingMaxTasks = 0;
+
+  // ============================================
+  // UTILITY FUNCTIONS
+  // ============================================
+
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+      <span class="toast-message">${message}</span>
+      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+  }
+
+  function showLoading(message = 'Processing...') {
+    const overlay = document.getElementById('loadingOverlay');
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = message;
+    if (overlay) overlay.style.display = 'flex';
+  }
+
+  function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  function closeModal() {
+    window.parent.postMessage('closeIframe', '*');
+  }
+
+  function sanitizeInput(str) {
+    if (!str) return '';
+    return str.replace(/[<>{}[\]\\]/g, '').trim();
+  }
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function removeErrorHighlights() {
+    document.querySelectorAll('[data-required="true"]').forEach(field => {
+      field.classList.remove('error');
+    });
+    const tasksInput = document.getElementById('tasksExecuted');
+    if (tasksInput) tasksInput.classList.remove('error');
+  }
+
+  function validateAndHighlight() {
+    let allValid = true;
+    
+    document.querySelectorAll('[data-required="true"]').forEach(field => {
+      let value = field.tagName === 'SELECT' ? field.value : field.value.trim();
+      const isValid = value !== '' && value !== null;
+      if (!isValid) {
+        field.classList.add('error');
+        allValid = false;
+      } else {
+        field.classList.remove('error');
+      }
+    });
+    
+    const pmBox = document.getElementById('pmBox');
+    const tasksInput = document.getElementById('tasksExecuted');
+    if (pmBox && pmBox.style.display !== 'none' && tasksInput) {
+      const val = parseInt(tasksInput.value);
+      const max = parseInt(document.getElementById('maxTLabel')?.innerText || '0');
+      if (isNaN(val) || val < 0 || val > max) {
+        tasksInput.classList.add('error');
+        allValid = false;
+      } else {
+        tasksInput.classList.remove('error');
+      }
+    }
+    
+    return allValid;
+  }
+
+  function updateSubmitButton() {
+    const closeBtn = document.getElementById('closeBtn');
+    if (!closeBtn) return;
+    
+    const approver = document.getElementById('apprSel') ? document.getElementById('apprSel').value : '';
+    const isValid = validateAndHighlight();
+    
+    closeBtn.disabled = !(approver && isValid) || isSubmitting;
+    
+    if (isSubmitting) {
+      closeBtn.textContent = 'PROCESSING...';
+    } else {
+      closeBtn.textContent = 'AUTHORIZE FINAL CLOSURE & ARCHIVE';
+    }
+  }
+
+  function fillSelect(id, list, placeholder) {
+    const select = document.getElementById(id);
+    if (!select) return;
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    if (list && list.length) {
+      list.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+  }
+
+  function resetClosureForm() {
+    const folioSel = document.getElementById('folioSel');
+    const apprSel = document.getElementById('apprSel');
+    const note = document.getElementById('note');
+    const tasksInput = document.getElementById('tasksExecuted');
+    
+    if (folioSel) folioSel.value = '';
+    if (apprSel) apprSel.value = '';
+    if (note) note.value = '';
+    if (tasksInput) tasksInput.value = '';
+    
+    const stage2 = document.getElementById('stage2');
+    const stage3 = document.getElementById('stage3');
+    if (stage2) stage2.style.display = 'none';
+    if (stage3) stage3.style.display = 'none';
+    
+    removeErrorHighlights();
+    updateSubmitButton();
+  }
+
+  // ============================================
+  // DATA LOADING
+  // ============================================
+
+  async function loadInitialData() {
+    showLoading('Loading work orders...');
+    
+    try {
+      const response = await callApi('WO_getClosureInitialData', []);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load data');
+      }
+      
+      supervisorEmails = response.supervisorEmails || [];
+      
+      const folioOptions = response.orders || [];
+      const folioSelect = document.getElementById('folioSel');
+      if (folioSelect) {
+        folioSelect.innerHTML = '<option value="">-- Select Folio --</option>';
+        folioOptions.forEach(o => {
+          const opt = document.createElement('option');
+          opt.value = o.folio;
+          opt.textContent = o.displayText;
+          folioSelect.appendChild(opt);
+        });
+      }
+      
+      fillSelect('apprSel', response.approvers || [], '-- Select Supervisor --');
+      
+      const userBadge = document.getElementById('userDisplay');
+      if (userBadge) userBadge.innerText = 'Session: Auditor';
+      
+      if (folioOptions.length === 0) {
+        showToast('No COMPLETED work orders pending audit', 'warning');
+      } else {
+        showToast('Loaded ' + folioOptions.length + ' completed work orders', 'success');
+      }
+      
+      document.getElementById('footer-status').innerText = 'Data Loaded';
+      updateSubmitButton();
+      hideLoading();
+      
+    } catch (error) {
+      hideLoading();
+      showToast('Error loading data: ' + error.message, 'error');
+      console.error('Load error:', error);
+    }
+  }
+
+  // ============================================
+  // FETCH WO DETAILS
+  // ============================================
+
+  async function fetchDetails() {
+    const folio = document.getElementById('folioSel') ? document.getElementById('folioSel').value : '';
+    
+    if (!folio) {
+      const stage2 = document.getElementById('stage2');
+      const stage3 = document.getElementById('stage3');
+      if (stage2) stage2.style.display = 'none';
+      if (stage3) stage3.style.display = 'none';
+      return;
+    }
+    
+    const stage2 = document.getElementById('stage2');
+    const stage3 = document.getElementById('stage3');
+    if (stage2) stage2.style.display = 'none';
+    if (stage3) stage3.style.display = 'none';
+    
+    showLoading('Loading work order details...');
+    
+    try {
+      const response = await callApi('WO_getWODetails', [folio]);
+      
+      hideLoading();
+      
+      if (!response.success) {
+        showToast('Error loading details: ' + (response.error || 'Unknown error'), 'error');
+        return;
+      }
+      
+      if (!response.wo) {
+        showToast('No data found for this work order', 'error');
+        return;
+      }
+      
+      woData = response;
+      const wo = response.wo;
+      
+      // Update stage title based on WO type
+      const stageTitle = document.querySelector('#stage2 .stage-title span:first-child');
+      if (stageTitle) {
+        const isPM = response.pm && response.pm.isPM;
+        const isOnHold = response.isOnHold === true;
+        if (isPM) {
+          stageTitle.innerHTML = '📋 Preventive Maintenance Data Review';
+        } else if (isOnHold) {
+          stageTitle.innerHTML = '⏸️ Follow Up Work Order Review';
+        } else {
+          stageTitle.innerHTML = '🔧 Corrective Maintenance Data Review';
+        }
+      }
+      
+      function safe(val, defaultVal = 'N/A') {
+        if (val === undefined || val === null || val === '') return defaultVal;
+        return val;
+      }
+      
+      const grid = document.getElementById('detailsBody');
+      if (grid) {
+        grid.innerHTML = `
+          <div class="audit-item"><b>Requester</b><div class="audit-desc">${escapeHtml(safe(wo.requester))}</div></div>
+          <div class="audit-item"><b>Maint. Type</b><div class="audit-desc">${escapeHtml(safe(wo.maintType))}</div></div>
+          <div class="audit-item"><b>Technician</b><div class="audit-desc">${escapeHtml(safe(wo.tech))}</div></div>
+          <div class="audit-item"><b>Equipment</b><div class="audit-desc">${escapeHtml(safe(wo.equipment))}</div></div>
+          <div class="audit-item"><b>Start Time</b><div class="audit-desc">${escapeHtml(safe(wo.start, '---'))}</div></div>
+          <div class="audit-item"><b>End Time</b><div class="audit-desc">${escapeHtml(safe(wo.end, '---'))}</div></div>
+          <div class="audit-item"><b>Labour Hours</b><div class="audit-desc">${escapeHtml(safe(wo.hours, '0'))} hrs</div></div>
+          <div class="audit-item"><b>Total Downtime</b><div class="audit-desc">${escapeHtml(safe(wo.downtime, '0'))} hrs</div></div>
+          <div class="audit-item full-width"><b>Work Performed</b><div class="audit-desc">${escapeHtml(safe(wo.performed, 'No description provided.'))}</div></div>
+        `;
+      }
+      
+      // Show stages 2 and 3
+      if (stage2) stage2.style.display = 'block';
+      if (stage3) stage3.style.display = 'block';
+      
+      // Configure UI based on WO type
+      const pmBox = document.getElementById('pmBox');
+      const isPM = response.pm && response.pm.isPM;
+      const isOnHold = response.isOnHold === true;
+      
+      if (pmBox) {
+        if (isPM) {
+          pmBox.style.display = 'block';
+          pmBox.classList.remove('follow-up');
+          const completedTasks = response.pm.completedTasks || 0;
+          const maxTasks = response.pm.maxTasks || 0;
+          document.getElementById('maxTLabel').innerText = maxTasks;
+          const tasksInput = document.getElementById('tasksExecuted');
+          if (tasksInput) {
+            tasksInput.max = maxTasks;
+            tasksInput.value = completedTasks;
+          }
+          const pmTitle = pmBox.querySelector('.pm-title');
+          if (pmTitle) {
+            pmTitle.innerHTML = `🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE - Tasks Completed: ${completedTasks}/${maxTasks}`;
+          }
+        } else if (isOnHold) {
+          pmBox.style.display = 'block';
+          pmBox.classList.add('follow-up');
+          pmBox.innerHTML = `
+            <span class="pm-title follow-up">⏸️ FOLLOW UP WORK ORDER</span>
+            <p>This is a Follow Up work order created from a previous WO.</p>
+            <p style="font-size:12px; margin-top:8px;">Standard closure procedure applies. No PM checklist required.</p>
+          `;
+        } else {
+          pmBox.style.display = 'none';
+        }
+      }
+      
+      updateSubmitButton();
+      
+    } catch (error) {
+      hideLoading();
+      showToast('Error loading details: ' + error.message, 'error');
+      console.error('Details error:', error);
+    }
+  }
+
+  // ============================================
+  // EXECUTE CLOSURE
+  // ============================================
+
+  function executeClosure() {
+    if (isSubmitting) return;
+    
+    const folio = document.getElementById('folioSel') ? document.getElementById('folioSel').value : '';
+    const approver = document.getElementById('apprSel') ? document.getElementById('apprSel').value : '';
+    const note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
+    const tasksInput = document.getElementById('tasksExecuted');
+    
+    if (!folio) {
+      showToast('Please select a work order', 'error');
+      return;
+    }
+    
+    if (!approver) {
+      showToast('Approving Supervisor is required for legal audit', 'error');
+      const apprSel = document.getElementById('apprSel');
+      if (apprSel) apprSel.classList.add('error');
+      return;
+    }
+    
+    if (woData && woData.pm && woData.pm.isPM) {
+      const val = parseInt(tasksInput ? tasksInput.value : '0');
+      const max = woData.pm.maxTasks || 0;
+      
+      if (val > max) {
+        showToast(`❌ ERROR: Cannot close with ${val} tasks executed. Maximum is ${max}. Verify with technician.`, 'error');
+        if (tasksInput) tasksInput.classList.add('error');
+        return;
+      }
+      
+      if (isNaN(val) || val < 0) {
+        showToast('PM PROTOCOL ERROR: Executed activities must be a valid number', 'error');
+        if (tasksInput) tasksInput.classList.add('error');
+        return;
+      }
+      
+      const reportedByTech = woData.pm.completedTasks || 0;
+      if (val < reportedByTech) {
+        showToast(`⚠️ Warning: Technician reported ${reportedByTech} tasks completed. You are confirming ${val}.`, 'warning');
+      }
+      
+      pendingTasksCompleted = val;
+      pendingMaxTasks = max;
+      
+      const modal = document.getElementById('pmConfirmModal');
+      const msg = document.getElementById('pmConfirmMessage');
+      if (msg) {
+        msg.innerHTML = 'Tasks reported by technician: <strong>' + val + '/' + max + '</strong><br><br>Do you confirm that all preventive tasks were executed correctly according to standards?';
+      }
+      if (modal) {
+        modal.style.display = 'flex';
+        pendingPmValidation = true;
+        return;
+      }
+    }
+    
+    continueClosure();
+  }
+
+  async function continueClosure() {
+    if (pendingPmValidation) return;
+    if (isSubmitting) return;
+    
+    const folio = document.getElementById('folioSel') ? document.getElementById('folioSel').value : '';
+    const approver = document.getElementById('apprSel') ? document.getElementById('apprSel').value : '';
+    const note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
+    const tasksInput = document.getElementById('tasksExecuted');
+    
+    if (!folio) {
+      showToast('Please select a work order', 'error');
+      return;
+    }
+    
+    if (!approver) {
+      showToast('Approving Supervisor is required for legal audit', 'error');
+      return;
+    }
+    
+    isSubmitting = true;
+    updateSubmitButton();
+    showLoading('Finalizing archive...');
+    
+    const payload = {
+      folio: folio,
+      approver: approver,
+      note: note,
+      isPM: woData && woData.pm ? woData.pm.isPM : false,
+      tasksExecuted: tasksInput ? (parseInt(tasksInput.value) || 0) : 0,
+      supervisorEmails: supervisorEmails
+    };
+    
+    try {
+      const response = await callApi('WO_processFinalClosure', [payload]);
+      
+      hideLoading();
+      
+      if (response.success) {
+        showToast('Work Order closed successfully!', 'success');
+        document.getElementById('footer-status').innerText = 'WO Closed';
+        resetClosureForm();
+        await loadInitialData();
+      } else {
+        throw new Error(response.error || 'Unknown error');
+      }
+      
+    } catch (error) {
+      hideLoading();
+      showToast('Error: ' + error.message, 'error');
+      console.error('Closure error:', error);
+    } finally {
+      isSubmitting = false;
+      updateSubmitButton();
+    }
+  }
+
+  function validateFields() {
+    updateSubmitButton();
+  }
+
+  // ============================================
+  // EVENT HANDLERS & INITIALIZATION
+  // ============================================
+
+  function setupEventListeners() {
+    const folioSel = document.getElementById('folioSel');
+    const apprSel = document.getElementById('apprSel');
+    const note = document.getElementById('note');
+    const closeBtn = document.getElementById('closeBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const tasksInput = document.getElementById('tasksExecuted');
+    
+    if (folioSel) folioSel.addEventListener('change', fetchDetails);
+    if (apprSel) apprSel.addEventListener('change', validateFields);
+    if (note) note.addEventListener('input', validateFields);
+    if (closeBtn) closeBtn.addEventListener('click', executeClosure);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (tasksInput) tasksInput.addEventListener('input', validateFields);
+    
+    // PM Confirm Modal
+    const confirmYes = document.getElementById('pmConfirmYes');
+    const confirmNo = document.getElementById('pmConfirmNo');
+    const confirmModal = document.getElementById('pmConfirmModal');
+    
+    if (confirmYes) {
+      confirmYes.addEventListener('click', function() {
+        if (confirmModal) confirmModal.style.display = 'none';
+        pendingPmValidation = false;
+        continueClosure();
+      });
+    }
+    
+    if (confirmNo) {
+      confirmNo.addEventListener('click', function() {
+        if (confirmModal) confirmModal.style.display = 'none';
+        pendingPmValidation = false;
+        showToast('PM verification required. Please review the tasks before closing.', 'error');
+      });
+    }
+    
+    if (confirmModal) {
+      confirmModal.addEventListener('click', function(e) {
+        if (e.target === confirmModal) {
+          confirmModal.style.display = 'none';
+          pendingPmValidation = false;
+        }
+      });
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadApiUrl();
+    if (EAMS_API_URL) {
+      setupEventListeners();
+      loadInitialData();
+    } else {
+      showToast('Please login to access EAMS', 'error');
+    }
+  });
+</script>
+</body>
+</html>
