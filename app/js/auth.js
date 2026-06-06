@@ -1,9 +1,8 @@
 // ============================================
-// ADKINTOR AUTH MODULE
+// ADKINTOR AUTH MODULE - CORREGIDO
 // ============================================
 
 (function() {
-    // Prevent double execution
     if (window.__ADKINTOR_AUTH_LOADED__) {
         console.log('Auth already loaded, skipping');
         return;
@@ -23,7 +22,6 @@
             if (sessionData) {
                 try {
                     this.session = JSON.parse(sessionData);
-                    // Check if session is expired
                     if (this.session.timestamp && (Date.now() - this.session.timestamp) > window.ADKINTOR_CONFIG.SESSION_DURATION) {
                         console.log('Session expired');
                         this.logout();
@@ -51,31 +49,41 @@
             window.location.href = '/app/index.html';
         },
         
-        // Login function - 2 steps
         login: async function(email, password) {
             try {
-                // Step 1: Call Master API to get client info
+                console.log('1. Calling Master API...');
                 const masterResponse = await this.callMasterAPI(email, password);
+                console.log('Master response:', masterResponse);
                 
-                if (masterResponse.status !== 'success') {
-                    return { success: false, error: masterResponse.message || 'Master authentication failed' };
+                // Validar respuesta del Master API
+                if (!masterResponse || masterResponse.status !== 'success') {
+                    const errorMsg = masterResponse?.message || 'Master authentication failed';
+                    return { success: false, error: errorMsg };
                 }
                 
-                const { client_name, api_url: intelligenceApiUrl, eams_api_url: eamsApiUrl } = masterResponse.data;
+                const intelligenceApiUrl = masterResponse.data.api_url;
+                const eamsApiUrl = masterResponse.data.eams_api_url;
+                const clientName = masterResponse.data.client_name;
                 
-                // Step 2: Call Client API to validate credentials
+                if (!intelligenceApiUrl) {
+                    return { success: false, error: 'No API URL found for this client' };
+                }
+                
+                console.log('2. Calling Intelligence API...');
                 const clientResponse = await this.callClientAPI(intelligenceApiUrl, email, password);
+                console.log('Intelligence response:', clientResponse);
                 
-                if (clientResponse.status !== 'success') {
-                    return { success: false, error: clientResponse.message || 'Client authentication failed' };
+                if (!clientResponse || clientResponse.status !== 'success') {
+                    const errorMsg = clientResponse?.message || 'Client authentication failed';
+                    return { success: false, error: errorMsg };
                 }
                 
-                // Step 3: Save session
+                // Guardar sesión
                 const sessionData = {
                     email: email,
                     role: clientResponse.data.role || 'client',
-                    clientId: clientResponse.data.client_id || client_name.replace(/\s/g, '_').toUpperCase(),
-                    clientName: client_name,
+                    clientId: clientResponse.data.client_id || clientName.replace(/\s/g, '_').toUpperCase(),
+                    clientName: clientName,
                     name: clientResponse.data.name || email.split('@')[0],
                     language: clientResponse.data.language || 'en',
                     intelligenceApiUrl: intelligenceApiUrl,
@@ -85,7 +93,7 @@
                 
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
                 this.session = sessionData;
-                
+                console.log('3. Login successful, session saved');
                 return { success: true };
                 
             } catch (error) {
@@ -103,9 +111,7 @@
                     payload: { action: 'web_login_master', email: email, password: password }
                 })
             });
-            
-            const result = await response.json();
-            return result;
+            return await response.json();
         },
         
         callClientAPI: async function(apiUrl, email, password) {
@@ -117,9 +123,7 @@
                     payload: { action: 'web_login', email: email, password: password }
                 })
             });
-            
-            const result = await response.json();
-            return result;
+            return await response.json();
         }
     };
     
