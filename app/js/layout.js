@@ -239,19 +239,19 @@ function handleEamsClick(module) {
             openAssetDispatcher();
             break;
         case 'work_order':
-            showTemporaryMessage('Coming soon - WORK ORDER module under construction');
+            openWorkOrderDispatcher();
             break;
         case 'preventive':
-            showTemporaryMessage('Coming soon - PREVENTIVE module under construction');
+            openPreventiveDispatcher();
             break;
         case 'calibrations':
-            showTemporaryMessage('Coming soon - CALIBRATIONS module under construction');
+            openCalibrationDispatcher();
             break;
         case 'inventory':
-            showTemporaryMessage('Coming soon - INVENTORY module under construction');
+            openInventoryDispatcher();
             break;
         case 'plant_layout':
-            showTemporaryMessage('Coming soon - PLANT LAYOUT module under construction');
+            openPlantLayout();
             break;
         default:
             console.log('Unknown EAMS module:', module);
@@ -293,6 +293,376 @@ function openAssetDispatcher() {
                     </div>
                 `;
             });
+    }
+}
+
+// ============================================
+// WORK ORDER DISPATCHER
+// ============================================
+
+function openWorkOrderDispatcher() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    
+    if (dynamicContent) {
+        fetch('/app/modules/eams/wo_dispatcher.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Dispatcher not found');
+                return response.text();
+            })
+            .then(html => {
+                dynamicContent.innerHTML = html;
+                if (breadcrumbDynamic) {
+                    breadcrumbDynamic.textContent = 'WORK ORDERS';
+                    breadcrumbDynamic.style.display = 'inline';
+                }
+                initWoDispatcherButtons();
+            })
+            .catch(error => {
+                console.error('Error loading WO dispatcher:', error);
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Work Order Dispatcher</h3><p>Please try again later</p></div>`;
+            });
+    }
+}
+
+function initWoDispatcherButtons() {
+    const createBtn = document.getElementById('createBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const executeBtn = document.getElementById('executeBtn');
+    const approveBtn = document.getElementById('approveBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    
+    if (createBtn) {
+        const newBtn = createBtn.cloneNode(true);
+        createBtn.parentNode.replaceChild(newBtn, createBtn);
+        newBtn.addEventListener('click', () => openWOModal('create'));
+    }
+    if (searchBtn) {
+        const newBtn = searchBtn.cloneNode(true);
+        searchBtn.parentNode.replaceChild(newBtn, searchBtn);
+        newBtn.addEventListener('click', () => openWOModal('search'));
+    }
+    if (executeBtn) {
+        const newBtn = executeBtn.cloneNode(true);
+        executeBtn.parentNode.replaceChild(newBtn, executeBtn);
+        newBtn.addEventListener('click', () => openWOModal('execute'));
+    }
+    if (approveBtn) {
+        const newBtn = approveBtn.cloneNode(true);
+        approveBtn.parentNode.replaceChild(newBtn, approveBtn);
+        newBtn.addEventListener('click', () => openWOModal('approve'));
+    }
+    if (closeBtn) {
+        const newBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newBtn, closeBtn);
+        newBtn.addEventListener('click', () => openWOModal('close'));
+    }
+}
+
+function openWOModal(type) {
+    let title = '';
+    let url = '';
+    
+    switch(type) {
+        case 'create':
+            title = 'Create Work Order';
+            url = '/app/modules/eams/wo_create.html';
+            break;
+        case 'search':
+            title = 'Search & Report';
+            url = '/app/modules/eams/wo_search.html';
+            break;
+        case 'execute':
+            title = 'Technical Report';
+            url = '/app/modules/eams/wo_execute.html';
+            break;
+        case 'approve':
+            title = 'Approval Manager';
+            url = '/app/modules/eams/wo_approve.html';
+            break;
+        case 'close':
+            title = 'Final Closure';
+            url = '/app/modules/eams/wo_close.html';
+            break;
+    }
+    
+    openIframeModalWithTitle(title, url);
+}
+
+// ============================================
+// PREVENTIVE DISPATCHER
+// ============================================
+
+function openPreventiveDispatcher() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    
+    if (dynamicContent) {
+        fetch('/app/modules/eams/pvt_dispatcher.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Dispatcher not found');
+                return response.text();
+            })
+            .then(html => {
+                dynamicContent.innerHTML = html;
+                if (breadcrumbDynamic) {
+                    breadcrumbDynamic.textContent = 'PREVENTIVE';
+                    breadcrumbDynamic.style.display = 'inline';
+                }
+                initPvtDispatcherButtons();
+            })
+            .catch(error => {
+                console.error('Error loading PVT dispatcher:', error);
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Preventive Dispatcher</h3><p>Please try again later</p></div>`;
+            });
+    }
+}
+
+function initPvtDispatcherButtons() {
+    const releaseBtn = document.getElementById('releaseBtn');
+    const manualBtn = document.getElementById('manualBtn');
+    const activityBtn = document.getElementById('activityBtn');
+    const plannerBtn = document.getElementById('plannerBtn');
+    const sweeperBtn = document.getElementById('sweeperBtn');
+    
+    if (releaseBtn) {
+        const newBtn = releaseBtn.cloneNode(true);
+        releaseBtn.parentNode.replaceChild(newBtn, releaseBtn);
+        newBtn.addEventListener('click', () => openPvtModal('release'));
+    }
+    if (manualBtn) {
+        const newBtn = manualBtn.cloneNode(true);
+        manualBtn.parentNode.replaceChild(newBtn, manualBtn);
+        newBtn.addEventListener('click', () => openPvtModal('manual'));
+    }
+    if (activityBtn) {
+        const newBtn = activityBtn.cloneNode(true);
+        activityBtn.parentNode.replaceChild(newBtn, activityBtn);
+        newBtn.addEventListener('click', () => openPvtModal('activity'));
+    }
+    if (plannerBtn) {
+        const newBtn = plannerBtn.cloneNode(true);
+        plannerBtn.parentNode.replaceChild(newBtn, plannerBtn);
+        newBtn.addEventListener('click', () => openPvtModal('planner'));
+    }
+    if (sweeperBtn) {
+        const newBtn = sweeperBtn.cloneNode(true);
+        sweeperBtn.parentNode.replaceChild(newBtn, sweeperBtn);
+        newBtn.addEventListener('click', () => openPvtModal('sweeper'));
+    }
+}
+
+function openPvtModal(type) {
+    let title = '';
+    let url = '';
+    
+    switch(type) {
+        case 'release':
+            title = 'Weekly Release';
+            url = '/app/modules/eams/pvt_release.html';
+            break;
+        case 'manual':
+            title = 'Manual PM';
+            url = '/app/modules/eams/pvt_manual.html';
+            break;
+        case 'activity':
+            title = 'Activity Builder';
+            url = '/app/modules/eams/pvt_activity.html';
+            break;
+        case 'planner':
+            title = 'Strategic Planner';
+            url = '/app/modules/eams/pvt_planner.html';
+            break;
+        case 'sweeper':
+            title = 'System Sweeper';
+            url = '/app/modules/eams/pvt_sweeper.html';
+            break;
+    }
+    
+    openIframeModalWithTitle(title, url);
+}
+
+// ============================================
+// INVENTORY DISPATCHER
+// ============================================
+
+function openInventoryDispatcher() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    
+    if (dynamicContent) {
+        fetch('/app/modules/eams/stk_dispatcher.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Dispatcher not found');
+                return response.text();
+            })
+            .then(html => {
+                dynamicContent.innerHTML = html;
+                if (breadcrumbDynamic) {
+                    breadcrumbDynamic.textContent = 'INVENTORY';
+                    breadcrumbDynamic.style.display = 'inline';
+                }
+                initStkDispatcherButtons();
+            })
+            .catch(error => {
+                console.error('Error loading STK dispatcher:', error);
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Inventory Dispatcher</h3><p>Please try again later</p></div>`;
+            });
+    }
+}
+
+function initStkDispatcherButtons() {
+    const viewerBtn = document.getElementById('viewerBtn');
+    const inventoryBtn = document.getElementById('inventoryBtn');
+    const procurementBtn = document.getElementById('procurementBtn');
+    
+    if (viewerBtn) {
+        const newBtn = viewerBtn.cloneNode(true);
+        viewerBtn.parentNode.replaceChild(newBtn, viewerBtn);
+        newBtn.addEventListener('click', () => openStkModal('viewer'));
+    }
+    if (inventoryBtn) {
+        const newBtn = inventoryBtn.cloneNode(true);
+        inventoryBtn.parentNode.replaceChild(newBtn, inventoryBtn);
+        newBtn.addEventListener('click', () => openStkModal('inventory'));
+    }
+    if (procurementBtn) {
+        const newBtn = procurementBtn.cloneNode(true);
+        procurementBtn.parentNode.replaceChild(newBtn, procurementBtn);
+        newBtn.addEventListener('click', () => openStkModal('procurement'));
+    }
+}
+
+function openStkModal(type) {
+    let title = '';
+    let url = '';
+    
+    switch(type) {
+        case 'viewer':
+            title = 'Inventory Viewer';
+            url = '/app/modules/eams/stk_viewer.html';
+            break;
+        case 'inventory':
+            title = 'Inventory Hub';
+            url = '/app/modules/eams/stk_inventory.html';
+            break;
+        case 'procurement':
+            title = 'Procurement Hub';
+            url = '/app/modules/eams/stk_procurement.html';
+            break;
+    }
+    
+    openIframeModalWithTitle(title, url);
+}
+
+// ============================================
+// CALIBRATION DISPATCHER
+// ============================================
+
+function openCalibrationDispatcher() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    
+    if (dynamicContent) {
+        fetch('/app/modules/eams/cal_dispatcher.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Dispatcher not found');
+                return response.text();
+            })
+            .then(html => {
+                dynamicContent.innerHTML = html;
+                if (breadcrumbDynamic) {
+                    breadcrumbDynamic.textContent = 'CALIBRATION';
+                    breadcrumbDynamic.style.display = 'inline';
+                }
+                initCalDispatcherButtons();
+            })
+            .catch(error => {
+                console.error('Error loading CAL dispatcher:', error);
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Calibration Dispatcher</h3><p>Please try again later</p></div>`;
+            });
+    }
+}
+
+function initCalDispatcherButtons() {
+    const viewerBtn = document.getElementById('viewerBtn');
+    const managerBtn = document.getElementById('managerBtn');
+    const reportsBtn = document.getElementById('reportsBtn');
+    
+    if (viewerBtn) {
+        const newBtn = viewerBtn.cloneNode(true);
+        viewerBtn.parentNode.replaceChild(newBtn, viewerBtn);
+        newBtn.addEventListener('click', () => openCalModal('viewer'));
+    }
+    if (managerBtn) {
+        const newBtn = managerBtn.cloneNode(true);
+        managerBtn.parentNode.replaceChild(newBtn, managerBtn);
+        newBtn.addEventListener('click', () => openCalModal('manager'));
+    }
+    if (reportsBtn) {
+        const newBtn = reportsBtn.cloneNode(true);
+        reportsBtn.parentNode.replaceChild(newBtn, reportsBtn);
+        newBtn.addEventListener('click', () => openCalModal('reports'));
+    }
+}
+
+function openCalModal(type) {
+    let title = '';
+    let url = '';
+    
+    switch(type) {
+        case 'viewer':
+            title = 'Calibration Viewer';
+            url = '/app/modules/eams/cal_viewer.html';
+            break;
+        case 'manager':
+            title = 'Calibration Manager';
+            url = '/app/modules/eams/cal_manager.html';
+            break;
+        case 'reports':
+            title = 'Reports & Audits';
+            url = '/app/modules/eams/cal_reports.html';
+            break;
+    }
+    
+    openIframeModalWithTitle(title, url);
+}
+
+// ============================================
+// PLANT LAYOUT (visor único)
+// ============================================
+
+function openPlantLayout() {
+    const modal = document.getElementById('iframeModal');
+    const iframe = document.getElementById('intelIframe');
+    const titleElem = document.getElementById('modalTitle');
+    
+    if (modal && iframe && titleElem) {
+        titleElem.textContent = 'Plant Layout';
+        iframe.src = '/app/modules/eams/plant_layout.html';
+        modal.style.display = 'flex';
+        
+        const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+        if (breadcrumbDynamic) {
+            breadcrumbDynamic.textContent = 'PLANT LAYOUT';
+            breadcrumbDynamic.style.display = 'inline';
+        }
+    }
+}
+
+// ============================================
+// FUNCIÓN AUXILIAR PARA ABRIR MODALES
+// ============================================
+
+function openIframeModalWithTitle(title, url) {
+    const modal = document.getElementById('iframeModal');
+    const iframe = document.getElementById('intelIframe');
+    const titleElem = document.getElementById('modalTitle');
+    
+    if (modal && iframe && titleElem) {
+        titleElem.textContent = title;
+        iframe.src = url;
+        modal.style.display = 'flex';
     }
 }
 
