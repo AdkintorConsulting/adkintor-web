@@ -519,7 +519,7 @@
   }
   
 // ============================================
-// INTELLIGENCE API COMMUNICATION (FORMATO QUE FUNCIONA CON EL PROXY)
+// INTELLIGENCE API COMMUNICATION - VERSIÓN DEBUG
 // ============================================
 async function callIntelligenceApi(action, args = []) {
   try {
@@ -535,25 +535,25 @@ async function callIntelligenceApi(action, args = []) {
     
     const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     
-    // ✅ FORMATO CORRECTO PARA EL PROXY: payload con action y args
+    // 🔍 DEBUG: Ver qué estamos enviando
+    console.log('📤 Enviando al proxy:', {
+      targetUrl: API_URL,
+      action: action,
+      args: args
+    });
+    
     const response = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetUrl: API_URL,
-        payload: {
-          action: action,
-          args: args
-        }
+        action: action,
+        args: args
       })
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
     const result = await response.json();
-    console.log('API Response:', result);
+    console.log('📥 Respuesta del proxy:', result);
     
     if (!result.success) {
       throw new Error(result.error || 'Error en la llamada a la API');
