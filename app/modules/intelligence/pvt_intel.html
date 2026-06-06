@@ -308,7 +308,7 @@
       padding: 20px;
     }
     
-    /* Tablas */
+    /* Tables */
     .table-wrapper {
       overflow-x: auto;
       margin-top: 16px;
@@ -373,12 +373,12 @@
     .progress-yellow { background: #f59e0b; }
     .progress-red { background: #ef4444; }
     
-    /* Columnas */
+    /* Columns */
     .col-code { font-family: monospace; font-size: 12px; }
     .col-task { max-width: 300px; white-space: normal; word-wrap: break-word; }
     .col-suggestion { max-width: 250px; white-space: normal; word-wrap: break-word; }
     
-    /* Modal de duplicados */
+    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -416,13 +416,6 @@
       text-decoration: underline;
     }
     
-    .refresh-bar {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    
     .adk-btn {
       padding: 8px 16px;
       border-radius: 8px;
@@ -458,7 +451,7 @@
 
 <!-- BREADCRUMBS -->
 <div class="web-breadcrumbs">
-  <span>🏠 Inicio</span> > 
+  <span>🏠 Home</span> > 
   <span>📈 INTELLIGENCE</span> > 
   <span>🔧 PVT Intelligence</span>
 </div>
@@ -544,7 +537,7 @@
     if (window.parent !== window) {
       window.parent.postMessage({ action: 'closeModal' }, '*');
     }
-    showToast('Cerrando módulo...', 'info');
+    showToast('Closing module...', 'info');
     setTimeout(() => {
       window.close();
     }, 100);
@@ -557,12 +550,12 @@
     try {
       const sessionStr = localStorage.getItem('adkintor_session');
       if (!sessionStr) {
-        throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
+        throw new Error('No session found. Please login again.');
       }
       const session = JSON.parse(sessionStr);
       const API_URL = session.intelligenceApiUrl;
       if (!API_URL) {
-        throw new Error('Intelligence API URL no encontrada en la sesión.');
+        throw new Error('Intelligence API URL not found in session.');
       }
       
       const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
@@ -583,7 +576,7 @@
       const result = await response.json();
       
       if (!result.success) {
-        throw new Error(result.error || 'Error en la llamada a la API');
+        throw new Error(result.error || 'API call error');
       }
       return result.data;
     } catch (error) {
@@ -606,7 +599,7 @@
     overlay.innerHTML = `
       <div class="adk-loading-content">
         <div class="adk-loading"></div>
-        <div style="color: var(--text-primary); font-size: 14px;">Cargando datos...</div>
+        <div style="color: var(--text-primary); font-size: 14px;">Loading data...</div>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -702,7 +695,7 @@
       loadFailing()
     ]);
     hideLoading();
-    showToast('Datos actualizados correctamente', 'success');
+    showToast('Data updated successfully', 'success');
   }
   
   // ============================================
@@ -848,7 +841,7 @@
       const html = await callIntelligenceApi('pvtGetPrintHTML', []);
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
-        showToast('Popup bloqueado. Permita ventanas emergentes.', 'error');
+        showToast('Popup blocked. Please allow popups.', 'error');
         hideLoading();
         return;
       }
@@ -856,7 +849,7 @@
       printWindow.document.close();
       printWindow.print();
       hideLoading();
-      showToast('Reporte generado correctamente', 'success');
+      showToast('Report generated successfully', 'success');
     } catch (error) {
       hideLoading();
       showError('Error generating report: ' + error.message);
@@ -949,7 +942,7 @@
       });
     });
     
-    // Iniciar carga
+    // Initial load
     refreshAll();
   });
 </script>
