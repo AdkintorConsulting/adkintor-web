@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALIBRATION Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+        }
+        
+        .asset-dispatcher {
+            padding: 1rem;
+        }
+        
+        .dispatcher-header {
+            margin-bottom: 2rem;
+        }
+        
+        .dispatcher-header h2 {
+            color: #1a1a2e;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .date-info {
+            color: #666;
+            font-size: 0.9rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .asset-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .asset-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-color: #1a1a2e;
+        }
+        
+        .asset-card i {
+            font-size: 2.5rem;
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+        }
+        
+        .asset-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .asset-card p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .asset-buttons-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .dispatcher-header h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="asset-dispatcher">
+        <div class="dispatcher-header">
+            <h2>
+                <i class="fas fa-ruler-combined"></i> CALIBRATION HUB
+            </h2>
+            <div class="date-info" id="dateInfo"></div>
+        </div>
+        
+        <div class="asset-buttons-grid">
+            <div class="asset-card" id="viewerBtn">
+                <i class="fas fa-eye"></i>
+                <h3>CALIBRATION VIEWER</h3>
+                <p>Read-only instrument and certificate viewer</p>
+            </div>
+            
+            <div class="asset-card" id="managerBtn">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>CALIBRATION MANAGER</h3>
+                <p>Register instruments, record calibrations, manage certificates</p>
+            </div>
+            
+            <div class="asset-card" id="reportsBtn">
+                <i class="fas fa-chart-line"></i>
+                <h3>REPORTS & AUDITS</h3>
+                <p>Compliance reports and audit trails</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Display current date and week number
+        function displayDateInfo() {
+            const dateInfo = document.getElementById('dateInfo');
+            if (dateInfo) {
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = now.toLocaleDateString('en-US', options);
+                
+                const startDate = new Date(now.getFullYear(), 0, 1);
+                const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
+                const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+                
+                dateInfo.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
+            }
+        }
+        
+        // Abrir modales
+        function openViewer() {
+            window.parent.postMessage({
+                type: 'openIframeModal',
+                title: 'Calibration Viewer',
+                url: '/app/modules/eams/cal_viewer.html'
+            }, '*');
+        }
+        
+        function openManager() {
+            window.parent.postMessage({
+                type: 'openIframeModal',
+                title: 'Calibration Manager',
+                url: '/app/modules/eams/cal_manager.html'
+            }, '*');
+        }
+        
+        function openReports() {
+            window.parent.postMessage({
+                type: 'openIframeModal',
+                title: 'Reports & Audits',
+                url: '/app/modules/eams/cal_reports.html'
+            }, '*');
+        }
+        
+        // Configurar botones
+        document.getElementById('viewerBtn').onclick = openViewer;
+        document.getElementById('managerBtn').onclick = openManager;
+        document.getElementById('reportsBtn').onclick = openReports;
+        
+        // Inicializar
+        displayDateInfo();
+    </script>
+</body>
+</html>
