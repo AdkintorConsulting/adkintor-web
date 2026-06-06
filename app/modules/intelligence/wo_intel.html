@@ -315,7 +315,7 @@
       gap: 12px;
     }
     
-    /* Tablas */
+    /* Tables */
     .table-wrapper {
       overflow-x: auto;
       margin-top: 16px;
@@ -469,7 +469,7 @@
 
 <!-- BREADCRUMBS -->
 <div class="web-breadcrumbs">
-  <span>🏠 Inicio</span> > 
+  <span>🏠 Home</span> > 
   <span>📈 INTELLIGENCE</span> > 
   <span>🔧 WO Intelligence</span>
 </div>
@@ -567,7 +567,7 @@
     if (window.parent !== window) {
       window.parent.postMessage({ action: 'closeModal' }, '*');
     }
-    showToast('Cerrando módulo...', 'info');
+    showToast('Closing module...', 'info');
     setTimeout(() => {
       window.close();
     }, 100);
@@ -580,12 +580,12 @@
     try {
       const sessionStr = localStorage.getItem('adkintor_session');
       if (!sessionStr) {
-        throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
+        throw new Error('No session found. Please login again.');
       }
       const session = JSON.parse(sessionStr);
       const API_URL = session.intelligenceApiUrl;
       if (!API_URL) {
-        throw new Error('Intelligence API URL no encontrada en la sesión.');
+        throw new Error('Intelligence API URL not found in session.');
       }
       
       const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
@@ -606,7 +606,7 @@
       const result = await response.json();
       
       if (!result.success) {
-        throw new Error(result.error || 'Error en la llamada a la API');
+        throw new Error(result.error || 'API call error');
       }
       return result.data;
     } catch (error) {
@@ -629,7 +629,7 @@
     overlay.innerHTML = `
       <div class="adk-loading-content">
         <div class="adk-loading"></div>
-        <div style="color: var(--text-primary); font-size: 14px;">Cargando datos...</div>
+        <div style="color: var(--text-primary); font-size: 14px;">Loading data...</div>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -772,7 +772,7 @@
       const data = await callIntelligenceApi('getPrioritizedWOsFull', []);
       renderPriorities(data);
       hideLoading();
-      showToast('Todos los WOs cargados', 'success');
+      showToast('All WOs loaded', 'success');
     } catch (error) {
       hideLoading();
       showError('Error loading all WOs: ' + error.message);
@@ -838,7 +838,7 @@
         <td><strong>${wo.score || 0}</strong></td>
       </tr>`;
     });
-    html += '</tbody></table></div>';
+    html += '</tbody>}</div>';
     document.getElementById('prioritiesList').innerHTML = html;
   }
   
@@ -867,7 +867,7 @@
         <td>${actionBadge}</td>
       </tr>`;
     });
-    html += '</tbody></table></div>';
+    html += '</tbody>}</div>';
     document.getElementById('tasksList').innerHTML = html;
   }
   
@@ -898,7 +898,7 @@
         </td>
       </tr>`;
     });
-    html += '</tbody></table></div>';
+    html += '</tbody>}</div>';
     document.getElementById('workloadList').innerHTML = html;
   }
   
@@ -940,7 +940,7 @@
     
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      showToast('Popup bloqueado. Permita ventanas emergentes.', 'error');
+      showToast('Popup blocked. Please allow popups.', 'error');
       return;
     }
     
@@ -1037,7 +1037,7 @@
       });
     });
     
-    // Iniciar carga de datos
+    // Initial load
     showLoading();
     allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
     
