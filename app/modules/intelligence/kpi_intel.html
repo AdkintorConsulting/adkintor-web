@@ -519,17 +519,15 @@
   }
   
 // ============================================
-// INTELLIGENCE API COMMUNICATION (CORREGIDO)
+// INTELLIGENCE API COMMUNICATION (CORREGIDO - FORMATO PROXY)
 // ============================================
 async function callIntelligenceApi(action, args = []) {
-  // Obtener Intelligence API URL del localStorage
   try {
     const sessionStr = localStorage.getItem('adkintor_session');
     if (!sessionStr) {
       throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
     }
     const session = JSON.parse(sessionStr);
-    // 🔧 CORREGIDO: usar intelligenceApiUrl en lugar de eamsApiUrl
     const API_URL = session.intelligenceApiUrl;
     if (!API_URL) {
       throw new Error('Intelligence API URL no encontrada en la sesión.');
@@ -537,12 +535,14 @@ async function callIntelligenceApi(action, args = []) {
     
     const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     
+    // ✅ FORMATO CORRECTO: action y args al mismo nivel que targetUrl
     const response = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetUrl: API_URL,
-        payload: { action: action, args: args }
+        action: action,
+        args: args
       })
     });
     
@@ -551,6 +551,8 @@ async function callIntelligenceApi(action, args = []) {
     }
     
     const result = await response.json();
+    console.log('API Response:', result); // Para debugging
+    
     if (!result.success) {
       throw new Error(result.error || 'Error en la llamada a la API');
     }
