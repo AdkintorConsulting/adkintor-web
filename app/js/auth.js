@@ -57,17 +57,17 @@
                 // Step 1: Call Master API to get client info
                 const masterResponse = await this.callMasterAPI(email, password);
                 
-                if (!masterResponse.success) {
-                    return { success: false, error: masterResponse.error };
+                if (masterResponse.status !== 'success') {
+                    return { success: false, error: masterResponse.message || 'Master authentication failed' };
                 }
                 
                 const { client_name, api_url: intelligenceApiUrl, eams_api_url: eamsApiUrl } = masterResponse.data;
                 
                 // Step 2: Call Client API to validate credentials
-                const clientResponse = await this.callClientAPI(api_url, email, password);
+                const clientResponse = await this.callClientAPI(intelligenceApiUrl, email, password);
                 
-                if (!clientResponse.success) {
-                    return { success: false, error: clientResponse.error };
+                if (clientResponse.status !== 'success') {
+                    return { success: false, error: clientResponse.message || 'Client authentication failed' };
                 }
                 
                 // Step 3: Save session
@@ -78,7 +78,7 @@
                     clientName: client_name,
                     name: clientResponse.data.name || email.split('@')[0],
                     language: clientResponse.data.language || 'en',
-                    intelligenceApiUrl: api_url,
+                    intelligenceApiUrl: intelligenceApiUrl,
                     eamsApiUrl: eamsApiUrl || null,
                     timestamp: Date.now()
                 };
@@ -100,10 +100,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     targetUrl: window.ADKINTOR_CONFIG.MASTER_API_URL,
-                    payload: {
-                        action: 'web_login_master',
-                        args: [email, password]
-                    }
+                    payload: { action: 'web_login_master', email: email, password: password }
                 })
             });
             
@@ -117,10 +114,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     targetUrl: apiUrl,
-                    payload: {
-                        action: 'web_login',
-                        args: [email, password]
-                    }
+                    payload: { action: 'web_login', email: email, password: password }
                 })
             });
             
