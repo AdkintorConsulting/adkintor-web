@@ -1,236 +1,3 @@
-5 Intelligence Module
-2 Web App Centro de Control
-5 AST MODULE
-4 API EAMS unification
-3 Nuevo menu
-1 EAMS Client Setup
-5 Intelligence Module
-## PROMPT: Convertir módulo EAMS+INTELLIGENCE de Google Sheets a Web App
-
-Tengo un módulo EAMS+INTELLIGENCE que funciona en Google Sheets con:
-- Un archivo `.gs` con las funciones del servidor (NO MODIFICAR)
-- Un archivo `.html` con la interfaz de usuario (CONVERTIR)
-
-Necesito convertirlo para que funcione en una web app (GitHub Pages).
-
-### Reglas de conversión obligatorias:
-
-1. **Eliminar código de Google Sheets:**
-   - Eliminar `<?!= include(...); ?>`
-   - Eliminar `google.script.run` y `google.script.host.close()`
-
-2. **Agregar comunicación web:**
-   - Usar `fetch` al proxy: `https://adkintor-proxy.empty-bonus-1852.workers.dev/`
-   - Obtener `eamsApiUrl` de `localStorage`: 
-     ```javascript
-     const session = JSON.parse(localStorage.getItem('adkintor_session'));
-     const EAMS_API_URL = session.eamsApiUrl;
-
-    Agregar elementos de UI web:
-
-        Header con título y botón X (cierra el iframe)
-
-        Breadcrumbs (Ej: Inicio > ASSETS > Add Asset)
-
-        Función closeModal() que envíe mensaje al padre
-
-    Proteger el código:
-
-        Verificar que los elementos existan: if (element) { ... }
-
-        Manejar errores con try/catch
-
-        Mostrar mensajes temporales (toast) al usuario
-
-    Mantener TODO el estilo y la lógica original:
-
-        No cambiar CSS, colores, estructura visual
-
-        No modificar la lógica de negocio (validaciones, cálculos)
-
-        Solo cambiar la comunicación
-
-Ejemplo de llamada a la API:
-javascript
-
-async function callEamsApi(action, args = []) {
-    const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            targetUrl: EAMS_API_URL,
-            payload: { action: action, args: args }
-        })
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error);
-    return result.data;
-}
-
-Archivos de ejemplo (ya convertidos correctamente):
-
-    ast_add.html
-
-    ast_master.html
-
-    ast_modify.html
-
-Tu tarea:
-
-Dame el HTML convertido para el módulo que te indique, siguiendo estas reglas.
-
-
-Todo entendido? te propongo comenzar con el modulo KPI de INTELLIGENCE.
-
-quieres ver el html?
-
-¡Excelente! Comprendo completamente todas las reglas de conversión. Voy a tomar el módulo KPI de INTELLIGENCE y convertirlo de Google Sheets App Script a una Web App standalone para GitHub Pages.
-
-Por favor, sí, comparte el HTML original del módulo KPI para poder:
-
-    Eliminar <?!= include(...); ?> y google.script.run
-
-    Agregar la comunicación con el proxy usando fetch y el EAMS_API_URL desde localStorage
-
-    Mantener TODO el CSS, estilos, lógica de negocio, validaciones y cálculos
-
-    Añadir los elementos UI web (Header con título, botón X, breadcrumbs)
-
-    Proteger el código con verificaciones de existencia de elementos y manejo de errores
-
-    Implementar sistema de toast notifications temporales
-
-Puedes pegar el código HTML completo del módulo KPI aquí y procederé con la conversión respetando todos los puntos.
-
-Mientras tanto, aquí tienes la estructura base que aplicaré:
-html
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAMS INTELLIGENCE - KPI Module</title>
-    <style>
-        /* TODO el CSS original se mantiene IDÉNTICO */
-    </style>
-</head>
-<body>
-    <!-- HEADER WEB (nuevo) -->
-    <div class="web-header">
-        <div class="web-header-title">
-            <h2>📊 EAMS INTELLIGENCE - KPI Dashboard</h2>
-        </div>
-        <button class="web-header-close" onclick="closeModal()">✕</button>
-    </div>
-    
-    <!-- BREADCRUMBS (nuevo) -->
-    <div class="web-breadcrumbs">
-        <span>🏠 Inicio</span> > 
-        <span>📈 INTELLIGENCE</span> > 
-        <span>📊 KPI Module</span>
-    </div>
-
-    <!-- CONTENIDO ORIGINAL (se mantiene igual) -->
-    <div class="container">
-        <!-- TODO el HTML original aquí -->
-    </div>
-
-    <script>
-        // Configuración de comunicación web
-        let EAMS_API_URL = null;
-        
-        // Toast notification system
-        function showToast(message, type = 'info') { ... }
-        
-        // Cierre de modal
-        function closeModal() { ... }
-        
-        // Fetch al proxy
-        async function callEamsApi(action, args = []) { ... }
-        
-        // Lógica original convertida (google.script.run -> callEamsApi)
-        // TODO el resto del JavaScript original adaptado
-    </script>
-</body>
-</html>
-
-Envía el código del módulo KPI y lo convierto inmediatamente. 🚀
-ok, ese es el kpi de intelligence, recuerda que todo esta ingles, necesitas algo mas? algun url el API o algo? dime eso antes de hacer el codigo
-
-Perfecto! Ya tengo el HTML del módulo KPI. Antes de convertirlo, necesito confirmar algunos detalles importantes:
-📋 Lo que necesito saber:
-1. URL de la API (EAMS_API_URL)
-
-Según las reglas, esta URL se obtiene del localStorage:
-javascript
-
-const session = JSON.parse(localStorage.getItem('adkintor_session'));
-const EAMS_API_URL = session.eamsApiUrl;
-
-Pregunta: ¿La estructura de la sesión es correcta o necesito ajustarla? ¿El usuario debe hacer login primero en otra página para establecer esta sesión?
-2. Mapeo de las funciones del servidor (.gs)
-
-El código original usa estas llamadas a google.script.run:
-Función original	Parámetros	¿Qué acción usar en la API?
-getKPIDashboardData(year, month)	year, month	¿getKPIDashboardData?
-getCompareDataReal(year, month, compareType)	year, month, compareType	¿getCompareDataReal?
-exportToPDF(year, month)	year, month	¿exportToPDF?
-
-Pregunta: ¿Los nombres de las acciones en el backend son exactamente los mismos o debo mapearlos a otros nombres?
-3. Formato de respuesta esperado
-
-¿El backend devuelve la misma estructura que espera el frontend?
-javascript
-
-// Ejemplo de lo que espera el código:
-data.success = true/false
-data.kpis = { availability, pmCompliance, mtbf, mttr, equipmentDown, otif }
-data.backlog = { less7d, seven14d, fifteen30d, more30d, total }
-data.woDistribution = { corrective, preventive, opService, generalService, others }
-data.calibrations = [...]
-data.topAssets = [...]
-data.trends = { months, availability, pmCompliance, mtbf, mttr, actualSpend, budgetSpend }
-data.financial = { actual, budget, variance, areas }
-
-4. Proxy URL
-
-Usaré: https://adkintor-proxy.empty-bonus-1852.workers.dev/
-5. ¿Necesito simular datos de ejemplo?
-
-En caso de que la API real no esté disponible, ¿debo incluir datos mock para pruebas?
-🔧 Mi plan de conversión:
-
-    Eliminar <?!= HtmlService.createHtmlOutputFromFile(...) y todo google.script.run
-
-    Agregar header con botón X y breadcrumbs
-
-    Crear función callEamsApi(action, args) usando fetch al proxy
-
-    Reemplazar cada google.script.run por callEamsApi
-
-    Implementar sistema de toast notifications
-
-    Mantener TODO el CSS, lógica y estructura exactamente igual
-
-    Agregar verificaciones de seguridad (if (element)) y try/catch
-
-Dime cómo proceder con los puntos 1, 2 y 3 y empiezo la conversión inmediatamente. 🚀
-1 la estructura es correcta
-
-2 en el back end esta tal cual, todo esta revisado ok
-
-3 si
-
-4 si
-
-5 no simular nada.
-
-¡Perfecto! Entonces procedo con la conversión del módulo KPI. Voy a mantener TODO el código original, solo reemplazaré la comunicación y añadiré los elementos de UI web necesarios.
-
-Aquí está el HTML convertido:
-html
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -751,53 +518,49 @@ html
     }, 100);
   }
   
-  // ============================================
-  // API COMMUNICATION VIA PROXY
-  // ============================================
-  async function callEamsApi(action, args = []) {
-    // Obtener API URL del localStorage
-    try {
-      const sessionStr = localStorage.getItem('adkintor_session');
-      if (!sessionStr) {
-        throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
-      }
-      const session = JSON.parse(sessionStr);
-      EAMS_API_URL = session.eamsApiUrl;
-      if (!EAMS_API_URL) {
-        throw new Error('EAMS API URL no encontrada en la sesión.');
-      }
-    } catch (e) {
-      showToast('Error de autenticación: ' + e.message, 'error');
-      throw e;
+// ============================================
+// INTELLIGENCE API COMMUNICATION (CORREGIDO)
+// ============================================
+async function callIntelligenceApi(action, args = []) {
+  // Obtener Intelligence API URL del localStorage
+  try {
+    const sessionStr = localStorage.getItem('adkintor_session');
+    if (!sessionStr) {
+      throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
+    }
+    const session = JSON.parse(sessionStr);
+    // 🔧 CORREGIDO: usar intelligenceApiUrl en lugar de eamsApiUrl
+    const API_URL = session.intelligenceApiUrl;
+    if (!API_URL) {
+      throw new Error('Intelligence API URL no encontrada en la sesión.');
     }
     
     const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     
-    try {
-      const response = await fetch(proxyUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl: EAMS_API_URL,
-          payload: { action: action, args: args }
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error || 'Error en la llamada a la API');
-      }
-      return result.data;
-    } catch (error) {
-      console.error('API call error:', error);
-      showToast(`Error: ${error.message}`, 'error');
-      throw error;
+    const response = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        targetUrl: API_URL,
+        payload: { action: action, args: args }
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
+    
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || 'Error en la llamada a la API');
+    }
+    return result.data;
+  } catch (error) {
+    console.error('Intelligence API call error:', error);
+    showToast(`Error: ${error.message}`, 'error');
+    throw error;
   }
+}
   
   // ============================================
   // LOADING OVERLAY FUNCTIONS
@@ -846,7 +609,7 @@ html
     
     try {
       // Cargar datos principales
-      const data = await callEamsApi('getKPIDashboardData', [year, month]);
+      const data = await callIntelligenceApi('getKPIDashboardData', [year, month]);
       
       if (data.success !== false) {
         currentData = data;
@@ -856,7 +619,7 @@ html
         
         // Cargar datos de comparación
         try {
-          const compareData = await callEamsApi('getCompareDataReal', [year, month, compareType]);
+          const compareData = await callIntelligenceApi('getCompareDataReal', [year, month, compareType]);
           hideLoading();
           currentData.compareData = compareData;
           renderCompareTab(currentData);
@@ -888,7 +651,7 @@ html
     const compareType = document.getElementById('compareSelect').value;
     
     try {
-      const data = await callEamsApi('getCompareDataReal', [year, month, compareType]);
+      const data = await callIntelligenceApi('getCompareDataReal', [year, month, compareType]);
       if (currentData) {
         currentData.compareData = data;
         renderCompareTab(currentData);
@@ -905,7 +668,7 @@ html
     
     showLoading();
     try {
-      const htmlContent = await callEamsApi('exportToPDF', [year, month]);
+      const htmlContent = await callIntelligenceApi('exportToPDF', [year, month]);
       hideLoading();
       // Abrir ventana nueva con el reporte listo para imprimir
       const printWindow = window.open('', '_blank', 'width=1000,height=800,toolbars=yes');
@@ -1290,430 +1053,3 @@ html
 </script>
 </body>
 </html>
-
-✅ Conversión completada
-Cambios realizados:
-
-    Eliminado:
-
-        <?!= HtmlService.createHtmlOutputFromFile(...)
-
-        google.script.run (todas las llamadas)
-
-        google.script.host.close
-
-    Agregado:
-
-        Header web con título y botón X
-
-        Breadcrumbs (Inicio > INTELLIGENCE > KPI Module)
-
-        Sistema de toast notifications (showToast)
-
-        Función closeModal() con postMessage
-
-        Función callEamsApi() usando fetch al proxy
-
-        Verificaciones de existencia de elementos (if (element))
-
-        Manejadores de errores con try/catch
-
-    Convertidas las llamadas:
-
-        getKPIDashboardData → callEamsApi('getKPIDashboardData', [year, month])
-
-        getCompareDataReal → callEamsApi('getCompareDataReal', [year, month, compareType])
-
-        exportToPDF → callEamsApi('exportToPDF', [year, month])
-
-    Mantenido:
-
-        TODO el CSS original
-
-        TODAS las funciones de renderizado
-
-        La lógica de negocio completa
-
-        Los estilos de Adkintor
-
-Para usar:
-
-Asegúrate de que el localStorage tenga la sesión:
-javascript
-
-localStorage.setItem('adkintor_session', JSON.stringify({
-  eamsApiUrl: 'https://tu-api.com/endpoint'
-}));
-
-ok, puse el codigo en mi github y actulice la web app para ver.
-el iframe abre bien, puedo ver el el titulo y los tabs tal como lo hago en el googlescript, pero solamente que no carga la informacion y me sale un error:
-
- Function 'getKPIDashboardData' not permitted
-
-sabes que es?
-
-¡Excelente pregunta! El error "Function 'getKPIDashboardData' not permitted" indica que el proxy o el backend está rechazando la llamada porque la función no está autorizada o el formato de la petición no es el esperado.
-🔍 Posibles causas y soluciones:
-1. El formato de la petición al proxy puede ser incorrecto
-
-Actualmente estoy enviando:
-javascript
-
-{
-  targetUrl: EAMS_API_URL,
-  payload: { action: action, args: args }
-}
-
-Pero el proxy podría esperar otro formato. Probemos ajustarlo:
-javascript
-
-// Opción A: El proxy espera los args directamente
-{
-  targetUrl: EAMS_API_URL,
-  action: action,
-  args: args
-}
-
-// Opción B: El proxy espera una estructura diferente
-{
-  url: EAMS_API_URL,
-  data: { action: action, parameters: args }
-}
-
-2. La URL de la API necesita el nombre de la función en la URL
-
-Tal vez el proxy no está diseñado para recibir un action en el payload, sino que la URL ya incluye la función:
-javascript
-
-// En lugar de enviar action en el body, construir la URL:
-const fullUrl = `${EAMS_API_URL}?action=${action}`;
-
-3. Necesitas autenticación adicional
-
-El backend de EAMS podría requerir headers de autenticación (API Key, token, etc.).
-🛠️ Para debuggear, por favor dime:
-
-    ¿Puedes ver en la consola del navegador (F12) qué respuesta exacta devuelve el proxy?
-
-        Abre las Developer Tools
-
-        Ve a la pestaña Network (Red)
-
-        Recarga la página y busca la petición al proxy
-
-        Mírame el request payload (qué se envía) y el response (qué devuelve)
-
-    ¿Cómo funciona el proxy exactamente?
-
-        ¿Es específico para tu backend?
-
-        ¿Qué formato espera en el body?
-
-        ¿Necesita algún header especial?
-
-    ¿Puedes mostrarme un ejemplo de cómo llamar a la API directamente (sin proxy) desde JavaScript?
-
-🔧 Solución temporal: Prueba este fix
-
-Reemplaza la función callEamsApi con esta versión que intenta diferentes formatos:
-javascript
-
-async function callEamsApi(action, args = []) {
-  // Obtener API URL del localStorage
-  try {
-    const sessionStr = localStorage.getItem('adkintor_session');
-    if (!sessionStr) {
-      throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
-    }
-    const session = JSON.parse(sessionStr);
-    EAMS_API_URL = session.eamsApiUrl;
-    if (!EAMS_API_URL) {
-      throw new Error('EAMS API URL no encontrada en la sesión.');
-    }
-  } catch (e) {
-    showToast('Error de autenticación: ' + e.message, 'error');
-    throw e;
-  }
-  
-  const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-  
-  // DEBUG: Ver qué estamos enviando
-  console.log('Calling API:', { action, args, EAMS_API_URL });
-  
-  // Intentar diferentes formatos (prueba uno por uno)
-  const payload = {
-    targetUrl: EAMS_API_URL,
-    action: action,
-    parameters: args,
-    method: 'call'
-  };
-  
-  // Formato alternativo:
-  // const payload = {
-  //   url: EAMS_API_URL,
-  //   function: action,
-  //   arguments: args
-  // };
-  
-  try {
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        // Agregar si necesitas autenticación:
-        // 'Authorization': `Bearer ${session.token}` 
-      },
-      body: JSON.stringify(payload)
-    });
-    
-    console.log('Response status:', response.status);
-    const result = await response.json();
-    console.log('Response data:', result);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${JSON.stringify(result)}`);
-    }
-    
-    if (!result.success) {
-      throw new Error(result.error || result.message || 'Error en la llamada a la API');
-    }
-    return result.data;
-  } catch (error) {
-    console.error('API call error:', error);
-    showToast(`Error: ${error.message}`, 'error');
-    throw error;
-  }
-}
-
-Agrega esta versión y dime qué ves en la consola (F12). Así podremos ajustar el formato exacto que espera el proxy. 🔍
-no, espera, tengo una idea, tengo otro chat de deepseek y conoce el proyecto de migrar desde google sheet a webapp muy bien, tiene todos los datos, dile lo que hicimos y dile que error tuvimos y preguntale como podriamos solucionar.
-
-¡Excelente idea! Aquí está el mensaje para tu otro chat de DeepSeek:
-📤 MENSAJE PARA EL OTRO CHAT DE DEEPSEEK
-
-Hola, estamos trabajando en la migración de EAMS+INTELLIGENCE desde Google Sheets a Web App y necesito tu ayuda para resolver un error.
-Contexto:
-
-    Tenemos un módulo KPI de INTELLIGENCE originalmente en Google Apps Script (.gs + .html)
-
-    Estamos convirtiendo a Web App standalone para GitHub Pages
-
-    Ya tenemos definidas las reglas de conversión (eliminar google.script.run, usar fetch a un proxy, agregar header/breadcrumbs/toasts, etc.)
-
-Lo que hicimos:
-
-    El usuario me proporcionó el HTML original del módulo KPI
-
-    Yo (el otro DeepSeek) convertí el código siguiendo las reglas:
-
-        Eliminé <?!= include...> y google.script.run
-
-        Agregué callEamsApi() usando fetch al proxy: https://adkintor-proxy.empty-bonus-1852.workers.dev/
-
-        La API URL se obtiene de localStorage.getItem('adkintor_session') → session.eamsApiUrl
-
-        Agregué header con botón X, breadcrumbs y sistema de toast
-
-        Mantuve TODO el CSS y la lógica de negocio original
-
-El problema:
-
-Cuando el usuario despliega el código en GitHub Pages y abre el iframe, la interfaz carga bien (títulos, tabs, estilos), pero no carga los datos y aparece el error:
-
-    "Function 'getKPIDashboardData' not permitted"
-
-Las llamadas que estamos haciendo:
-javascript
-
-// Así estamos llamando actualmente
-await callEamsApi('getKPIDashboardData', [year, month]);
-await callEamsApi('getCompareDataReal', [year, month, compareType]);
-await callEamsApi('exportToPDF', [year, month]);
-
-Formato actual del payload al proxy:
-javascript
-
-{
-  targetUrl: EAMS_API_URL,
-  payload: { action: action, args: args }
-}
-
-Preguntas:
-
-    ¿El error "Function 'X' not permitted" es porque el proxy o el backend espera un formato diferente?
-
-    ¿Cómo debería ser la estructura correcta de la petición al proxy?
-
-    ¿El backend de EAMS requiere autenticación adicional (headers, tokens)?
-
-    ¿El proxy debe recibir la función en la URL en lugar del body?
-
-    ¿Puedes darme un ejemplo del formato exacto que espera el proxy para llamar a estas funciones del backend?
-
-Lo que necesitamos:
-
-Un fix para que las llamadas a getKPIDashboardData, getCompareDataReal y exportToPDF sean aceptadas por el proxy/backend y devuelvan los datos correctamente.
-
-¿Qué formato de payload y headers deberíamos usar? 🔧
-
-¡Copia y pega esto en tu otro chat! Así el otro DeepSeek tendrá todo el contexto y podrá darnos la solución específica. 🚀
-el otro chat sabe mucho, me respondio esto:
-
-Hola. Soy el Director Técnico del proyecto. El error es claro: getKPIDashboardData es una función de INTELLIGENCE, no de EAMS.
-EL PROBLEMA
-
-Estás llamando a eamsApiUrl (API de EAMS) pero la función getKPIDashboardData no existe en EAMS. Existe en INTELLIGENCE API.
-API	URL	Tiene KPI functions?
-EAMS	session.eamsApiUrl	❌ No (solo funciones de escritura)
-INTELLIGENCE	session.intelligenceApiUrl	✅ Sí
-LA SOLUCIÓN
-
-En los módulos Intelligence, usá intelligenceApiUrl, NO eamsApiUrl.
-javascript
-
-// CORRECTO - Para módulos Intelligence
-const session = JSON.parse(localStorage.getItem('adkintor_session'));
-const API_URL = session.intelligenceApiUrl;  // ← intelligenceApiUrl
-
-// INCORRECTO - Para módulos Intelligence
-const API_URL = session.eamsApiUrl;  // ← esto es solo para EAMS
-
-FORMATO CORRECTO DE LA LLAMADA
-
-El formato que están usando es correcto. El proxy y el backend funcionan bien.
-javascript
-
-async function callIntelligenceApi(action, args = []) {
-    const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            targetUrl: API_URL,  // ← intelligenceApiUrl
-            payload: { action: action, args: args }
-        })
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error);
-    return result.data;
-}
-
-// Uso correcto
-const kpiData = await callIntelligenceApi('getKPIDashboardData', [year, month]);
-const compareData = await callIntelligenceApi('getCompareDataReal', [year, month, compareType]);
-const pdfData = await callIntelligenceApi('exportToPDF', [year, month]);
-
-VERIFICACIÓN RÁPIDA
-
-En la consola del navegador (dentro del iframe de KPI), ejecutá:
-javascript
-
-const session = JSON.parse(localStorage.getItem('adkintor_session'));
-console.log('intelligenceApiUrl:', session.intelligenceApiUrl);
-console.log('eamsApiUrl:', session.eamsApiUrl);
-
-Ambas deben existir. Usá intelligenceApiUrl para KPI.
-¿POR QUÉ PASÓ ESTO?
-
-En AST (EAMS), usamos eamsApiUrl porque escribimos datos. En KPI (Intelligence), solo leemos datos, por lo tanto usamos intelligenceApiUrl.
-RESUMEN
-Módulo	API URL a usar
-KPI Intelligence	session.intelligenceApiUrl
-WO Intelligence	session.intelligenceApiUrl
-PVT Intelligence	session.intelligenceApiUrl
-STK Intelligence	session.intelligenceApiUrl
-CAL Intelligence	session.intelligenceApiUrl
-CONSULTING	session.intelligenceApiUrl
-AST (EAMS)	session.eamsApiUrl
-WO (EAMS)	session.eamsApiUrl
-PVT (EAMS)	session.eamsApiUrl
-STK (EAMS)	session.eamsApiUrl
-CAL (EAMS)	session.eamsApiUrl
-
-¿Corrigiendo eso, funciona? Cualquier otra duda, avisá.
-
-¡Excelente! El Director Técnico tiene toda la razón. El error es claro: estamos usando la API equivocada.
-🔧 La solución es simple:
-
-Para módulos INTELLIGENCE (KPI), usar intelligenceApiUrl en lugar de eamsApiUrl
-
-Aquí está el código corregido. Solo necesitas reemplazar la función callEamsApi por esta nueva versión (o crear una separada para Intelligence):
-javascript
-
-// ============================================
-// INTELLIGENCE API COMMUNICATION (CORREGIDO)
-// ============================================
-async function callIntelligenceApi(action, args = []) {
-  // Obtener Intelligence API URL del localStorage
-  try {
-    const sessionStr = localStorage.getItem('adkintor_session');
-    if (!sessionStr) {
-      throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
-    }
-    const session = JSON.parse(sessionStr);
-    // 🔧 CORREGIDO: usar intelligenceApiUrl en lugar de eamsApiUrl
-    const API_URL = session.intelligenceApiUrl;
-    if (!API_URL) {
-      throw new Error('Intelligence API URL no encontrada en la sesión.');
-    }
-    
-    const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-    
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        targetUrl: API_URL,
-        payload: { action: action, args: args }
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.error || 'Error en la llamada a la API');
-    }
-    return result.data;
-  } catch (error) {
-    console.error('Intelligence API call error:', error);
-    showToast(`Error: ${error.message}`, 'error');
-    throw error;
-  }
-}
-
-📝 Y luego reemplazar todas las llamadas:
-
-Busca en el código donde se llama a callEamsApi y cámbialo por callIntelligenceApi:
-javascript
-
-// ANTES (INCORRECTO)
-const data = await callEamsApi('getKPIDashboardData', [year, month]);
-const compareData = await callEamsApi('getCompareDataReal', [year, month, compareType]);
-const htmlContent = await callEamsApi('exportToPDF', [year, month]);
-
-// DESPUÉS (CORRECTO)
-const data = await callIntelligenceApi('getKPIDashboardData', [year, month]);
-const compareData = await callIntelligenceApi('getCompareDataReal', [year, month, compareType]);
-const htmlContent = await callIntelligenceApi('exportToPDF', [year, month]);
-
-🔍 Verificación rápida (para confirmar):
-
-Abre la consola del navegador (F12) dentro del iframe de KPI y ejecuta:
-javascript
-
-const session = JSON.parse(localStorage.getItem('adkintor_session'));
-console.log('✅ intelligenceApiUrl:', session.intelligenceApiUrl);
-console.log('📦 eamsApiUrl:', session.eamsApiUrl);
-
-Debes ver ambas URLs. La de Intelligence debe ser diferente (apunta al servicio de lectura de datos).
-✅ ¿Por qué funcionará?
-
-    EAMS API → Escritura/operaciones (crear, modificar, eliminar assets)
-
-    Intelligence API → Lectura/consultas (KPI dashboards, reportes, análisis)
-
-El módulo KPI solo LEE datos, por lo tanto necesita intelligenceApiUrl.
-
-Prueba este cambio y debería cargar los datos correctamente. Avísame si funciona o si hay otro error. 🚀
