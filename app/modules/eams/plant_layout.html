@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Layout - ADKINTOR EAMS</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1e293b;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Modal Header */
+        .modal-header {
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+        
+        .btn-close:hover {
+            opacity: 0.8;
+        }
+        
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        
+        .breadcrumbs a {
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Layout Viewer */
+        .layout-header {
+            background: #004a99;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        
+        .zoom-controls button {
+            background: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #004a99;
+        }
+        
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+        
+        .zoom-controls span {
+            min-width: 60px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: white;
+        }
+        
+        .viewport {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #0f172a;
+            cursor: grab;
+        }
+        
+        .viewport:active {
+            cursor: grabbing;
+        }
+        
+        .image-container {
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+        
+        .status-bar {
+            background: #f1f2f6;
+            color: #5f6368;
+            padding: 6px 20px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #dcdde1;
+            flex-shrink: 0;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .toast.error {
+            background: #dc3545;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .loading-spinner i {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="modal-header">
+    <h2><i class="fas fa-draw-polygon"></i> Plant Layout</h2>
+    <button class="btn-close" onclick="closeModal()">&times;</button>
+</div>
+<div class="breadcrumbs">
+    <a href="#" onclick="closeModal()">Inicio</a> &gt; 
+    <a href="#" onclick="closeModal()">PLANT LAYOUT</a>
+</div>
+
+<div class="layout-header">
+    <h2><i class="fas fa-draw-polygon"></i> PLANT LAYOUT</h2>
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <div class="zoom-controls">
+            <button id="zoomOutBtn">−</button>
+            <span id="zoomLevel">100%</span>
+            <button id="zoomInBtn">+</button>
+            <button id="zoomResetBtn">⟳</button>
+        </div>
+    </div>
+</div>
+
+<div class="viewport" id="viewport">
+    <div class="image-container" id="imageContainer">
+        <div style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 400px;">
+            <img id="plantImage" src="" alt="Plant Layout" style="opacity: 0; transition: opacity 0.3s;">
+        </div>
+    </div>
+</div>
+
+<div class="status-bar">
+    <span>🟢 SYSTEM: READY</span>
+    <span>🖱️ Scroll wheel zoom | Drag to pan</span>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+        <p id="loadingMessage">Loading plant layout...</p>
+    </div>
+</div>
+
+<script>
+    // Configuración
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
+    
+    // Zoom y pan
+    let currentZoom = 1;
+    let minZoom = 0.5;
+    let maxZoom = 3;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+    
+    const container = document.getElementById('imageContainer');
+    const viewport = document.getElementById('viewport');
+    const zoomSpan = document.getElementById('zoomLevel');
+    
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+            } catch(e) {
+                console.error('Error parsing session:', e);
+            }
+        }
+    }
+    
+    function showLoading(message) {
+        const overlay = document.getElementById('loadingOverlay');
+        const msgEl = document.getElementById('loadingMessage');
+        if (msgEl) msgEl.innerText = message || 'Loading...';
+        if (overlay) overlay.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+    
+    function showMessage(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast' + (isError ? ' error' : '');
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+    
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+    
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        
+        return result.data;
+    }
+    
+    function update() {
+        container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+        zoomSpan.innerText = Math.round(currentZoom * 100) + '%';
+    }
+    
+    function zoomAt(delta, clientX, clientY) {
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = clientX - rect.left;
+        const mouseY = clientY - rect.top;
+        
+        let newZoom = currentZoom + delta;
+        newZoom = Math.min(maxZoom, Math.max(minZoom, newZoom));
+        if (newZoom === currentZoom) return;
+        
+        const scale = newZoom / currentZoom;
+        translateX = mouseX - (mouseX - translateX) * scale;
+        translateY = mouseY - (mouseY - translateY) * scale;
+        currentZoom = newZoom;
+        update();
+    }
+    
+    function zoom(delta) {
+        const rect = viewport.getBoundingClientRect();
+        zoomAt(delta, rect.width / 2, rect.height / 2);
+    }
+    
+    function resetZoom() {
+        currentZoom = 1;
+        translateX = 0;
+        translateY = 0;
+        update();
+    }
+    
+    async function loadImage() {
+        showLoading('Loading plant layout...');
+        
+        try {
+            // Intentar obtener URL desde la API
+            const url = await callApi('getPlantLayoutImageUrlForFrontend', []);
+            const img = document.getElementById('plantImage');
+            
+            img.onload = function() {
+                hideLoading();
+                img.style.opacity = '1';
+            };
+            
+            img.onerror = function() {
+                hideLoading();
+                showMessage('Could not load plant layout image', true);
+                img.src = 'https://i.imgur.com/epL0UKm.png';
+                img.style.opacity = '1';
+            };
+            
+            img.src = url;
+        } catch (error) {
+            hideLoading();
+            showMessage('Error loading image: ' + error.message, true);
+            const img = document.getElementById('plantImage');
+            img.src = 'https://i.imgur.com/epL0UKm.png';
+            img.style.opacity = '1';
+        }
+    }
+    
+    // Eventos de zoom y pan
+    viewport.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        zoomAt(delta, e.clientX, e.clientY);
+    }, { passive: false });
+    
+    viewport.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        isPanning = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        viewport.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+    
+    window.addEventListener('mousemove', function(e) {
+        if (!isPanning) return;
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        update();
+    });
+    
+    window.addEventListener('mouseup', function(e) {
+        if (e.button !== 0) return;
+        isPanning = false;
+        viewport.style.cursor = 'grab';
+    });
+    
+    // Botones
+    document.getElementById('zoomInBtn').onclick = () => zoom(0.2);
+    document.getElementById('zoomOutBtn').onclick = () => zoom(-0.2);
+    document.getElementById('zoomResetBtn').onclick = resetZoom;
+    
+    // Inicializar
+    loadApiUrl();
+    loadImage();
+</script>
+</body>
+</html>
