@@ -127,7 +127,7 @@ function setupModalClose() {
 // INTELLIGENCE MODAL FUNCTIONS
 function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
     // Check if module exists (for placeholders)
-    const existingModules = ['wo_intel', 'kpi'];
+    const existingModules = ['wo_intel', 'kpi_intel'];
     
     if (!existingModules.includes(moduleName)) {
         // Show placeholder in iframe
