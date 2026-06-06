@@ -1,22 +1,1053 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Consulting Intelligence</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
-            padding: 40px;
-            text-align: center;
-        }
-        h1 { color: #4a6cf7; margin-bottom: 20px; }
-        p { color: #8a8faa; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAMS INTELLIGENCE - Consulting Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    /* Core Styles de Adkintor INTELLIGENCE */
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --border-color: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-color: #38bdf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #38bdf8;
+      --gray: #64748b;
+      --border-radius-sm: 8px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Web App Header */
+    .web-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .web-app-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
+    }
+    
+    .web-app-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .close-modal-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--danger);
+      transform: none;
+    }
+    
+    /* Breadcrumbs */
+    .web-breadcrumbs {
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .web-breadcrumbs span {
+      color: var(--text-secondary);
+    }
+    
+    .web-breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* Toast Notifications */
+    .toast-notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-success {
+      background: #10b981;
+      color: white;
+      border-left: 4px solid #059669;
+    }
+    
+    .toast-error {
+      background: #ef4444;
+      color: white;
+      border-left: 4px solid #b91c1c;
+    }
+    
+    .toast-info {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+      border-left: 4px solid #0284c7;
+    }
+    
+    .toast-warning {
+      background: var(--warning);
+      color: var(--bg-primary);
+      border-left: 4px solid #d97706;
+    }
+    
+    /* Loading Overlay */
+    .adk-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .adk-loading-content {
+      text-align: center;
+      background: var(--bg-secondary);
+      padding: 30px 40px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .adk-loading {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Alert */
+    .adk-alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px;
+    }
+    
+    .adk-alert-danger {
+      background: rgba(248, 113, 113, 0.2);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+    
+    .adk-alert-info {
+      background: rgba(56, 189, 248, 0.2);
+      border-left: 4px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .adk-alert-success {
+      background: rgba(74, 222, 128, 0.2);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+    
+    /* Consulting Container */
+    .consulting-container {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      height: calc(100vh - 90px);
+      overflow-y: auto;
+    }
+    
+    /* Header */
+    .consulting-header {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #0d47a1 100%);
+      color: white;
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .consulting-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    
+    /* Controls */
+    .controls {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      border: 1px solid var(--border-color);
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .control-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+    
+    select, .adk-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    select {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      min-width: 150px;
+      cursor: pointer;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    
+    .adk-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .adk-btn-primary {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+    }
+    
+    .adk-btn-primary:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+    
+    .adk-btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .adk-btn-success:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+    
+    .adk-btn-success:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 8px 16px 0 16px;
+      border-radius: 12px 12px 0 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    
+    .tab:hover {
+      background: var(--bg-hover);
+    }
+    
+    .tab.active {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+    }
+    
+    .tab-content {
+      background: var(--bg-card);
+      padding: 24px;
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+      border-top: none;
+    }
+    
+    .tab-pane {
+      display: none;
+    }
+    
+    .tab-pane.active {
+      display: block;
+    }
+    
+    /* Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .kpi-card {
+      background: var(--bg-primary);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+    
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+    
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    .kpi-status {
+      font-size: 11px;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+    
+    .status-critical { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .status-warning { background: rgba(245,158,11,0.2); color: var(--warning); }
+    .status-good { background: rgba(16,185,129,0.2); color: var(--success); }
+    
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .data-table th {
+      background: var(--bg-primary);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .data-table tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+    
+    /* Alerts */
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .alert-critical {
+      background: rgba(239,68,68,0.15);
+      border-left: 4px solid var(--danger);
+    }
+    
+    .alert-warning {
+      background: rgba(245,158,11,0.15);
+      border-left: 4px solid var(--warning);
+    }
+    
+    .alert-good {
+      background: rgba(16,185,129,0.15);
+      border-left: 4px solid var(--success);
+    }
+    
+    h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--accent-color);
+    }
+    
+    h4 {
+      font-size: 14px;
+      margin: 20px 0 12px 0;
+      color: var(--text-secondary);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--text-secondary);
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+  </style>
 </head>
 <body>
-    <h1>💡 Consulting Intelligence</h1>
-    <p>Módulo en construcción. Próximamente disponible.</p>
+
+<!-- WEB APP HEADER -->
+<div class="web-app-header">
+  <h2><i class="fas fa-chalkboard-user"></i> EAMS INTELLIGENCE - Consulting Intelligence</h2>
+  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
+</div>
+
+<!-- BREADCRUMBS -->
+<div class="web-breadcrumbs">
+  <span>🏠 Home</span> > 
+  <span>📈 INTELLIGENCE</span> > 
+  <span>📊 Consulting Intelligence</span>
+</div>
+
+<div class="consulting-container">
+  <div class="consulting-header">
+    <h1>📊 Adkintor Consulting Intelligence</h1>
+    <div class="header-badge">For Mauricio (Adkintor Owner)</div>
+  </div>
+  
+  <div class="controls">
+    <div class="control-group">
+      <label>Year</label>
+      <select id="yearSelect">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Month</label>
+      <select id="monthSelect">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12" selected>December</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <button id="generateBtn" class="adk-btn adk-btn-primary">📊 Generate Report</button>
+    </div>
+    <div class="control-group">
+      <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled>📄 Export PDF</button>
+    </div>
+  </div>
+  
+  <div id="reportContent">
+    <div class="loading">
+      <div class="adk-loading" style="margin: 0 auto 15px;"></div>
+      <p>Select a year and month, then click Generate Report</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentReportData = null;
+  let currentYear = 2026;
+  let currentMonth = 12;
+  
+  // ============================================
+  // TOAST NOTIFICATION SYSTEM
+  // ============================================
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideIn 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+  
+  // ============================================
+  // CLOSE MODAL FUNCTION
+  // ============================================
+  function closeModal() {
+    if (window.parent !== window) {
+      window.parent.postMessage({ action: 'closeModal' }, '*');
+    }
+    showToast('Closing module...', 'info');
+    setTimeout(() => {
+      window.close();
+    }, 100);
+  }
+  
+  // ============================================
+  // INTELLIGENCE API COMMUNICATION
+  // ============================================
+  async function callIntelligenceApi(action, args = []) {
+    try {
+      const sessionStr = localStorage.getItem('adkintor_session');
+      if (!sessionStr) {
+        throw new Error('No session found. Please login again.');
+      }
+      const session = JSON.parse(sessionStr);
+      const API_URL = session.intelligenceApiUrl;
+      if (!API_URL) {
+        throw new Error('Intelligence API URL not found in session.');
+      }
+      
+      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+      
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUrl: API_URL,
+          payload: { action: action, args: args }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'API call error');
+      }
+      return result.data;
+    } catch (error) {
+      console.error('Intelligence API call error:', error);
+      showToast(`Error: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+  
+  // ============================================
+  // LOADING OVERLAY FUNCTIONS
+  // ============================================
+  function showLoading() {
+    let overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+    
+    overlay = document.createElement('div');
+    overlay.id = 'adkLoadingOverlay';
+    overlay.className = 'adk-loading-overlay';
+    overlay.innerHTML = `
+      <div class="adk-loading-content">
+        <div class="adk-loading"></div>
+        <div style="color: var(--text-primary); font-size: 14px;">Loading report data...</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  
+  function hideLoading() {
+    const overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+  }
+  
+  function showError(message) {
+    showToast(message, 'error');
+  }
+  
+  // ============================================
+  // REPORT GENERATION
+  // ============================================
+  async function generateReport() {
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
+    
+    showLoading();
+    const reportContainer = document.getElementById('reportContent');
+    reportContainer.innerHTML = '<div class="loading"><div class="adk-loading" style="margin: 0 auto 15px;"></div><p>Loading report data...</p></div>';
+    
+    try {
+      const data = await callIntelligenceApi('getConsultingReportData', [year, month]);
+      currentReportData = data;
+      renderReport(data);
+      const exportBtn = document.getElementById('exportPdfBtn');
+      if (exportBtn) exportBtn.disabled = false;
+      hideLoading();
+      showToast('Report generated successfully', 'success');
+    } catch (error) {
+      hideLoading();
+      showError('Error: ' + error.message);
+      reportContainer.innerHTML = `<div class="alert alert-critical">❌ Error: ${error.message}</div>`;
+    }
+  }
+  
+  // ============================================
+  // EXPORT PDF
+  // ============================================
+  async function exportPDF() {
+    if (!currentReportData) {
+      showToast('Please generate a report first', 'warning');
+      return;
+    }
+    
+    showLoading();
+    try {
+      const result = await callIntelligenceApi('exportConsultingReportToPDF', [currentReportData]);
+      hideLoading();
+      if (result && result.url) {
+        window.open(result.url, '_blank');
+        showToast('PDF generated successfully', 'success');
+      } else {
+        showToast('PDF generation started. Check your Google Drive.', 'info');
+      }
+    } catch (error) {
+      hideLoading();
+      showError('Error generating PDF: ' + error.message);
+    }
+  }
+  
+  // ============================================
+  // RENDER FUNCTIONS
+  // ============================================
+  function renderReport(data) {
+    const html = `
+      ${renderExecutiveSummary(data.executiveSummary, data.period)}
+      ${renderTabs(data)}
+    `;
+    document.getElementById('reportContent').innerHTML = html;
+    attachTabListeners();
+  }
+  
+  function renderExecutiveSummary(summary, period) {
+    return `
+      <div style="margin-bottom: 24px;">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-value">${summary.availability.value}%</div>
+            <div class="kpi-label">Availability</div>
+            <div class="kpi-status ${summary.availability.status === '✅ GOOD' ? 'status-good' : (summary.availability.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.availability.status}</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value">${summary.pmCompliance.value}%</div>
+            <div class="kpi-label">PM Compliance</div>
+            <div class="kpi-status ${summary.pmCompliance.status === '✅ GOOD' ? 'status-good' : (summary.pmCompliance.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.pmCompliance.status}</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value">${summary.mtbf.value} days</div>
+            <div class="kpi-label">MTBF (Class A)</div>
+            <div class="kpi-status ${summary.mtbf.status === '✅ GOOD' ? 'status-good' : (summary.mtbf.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.mtbf.status}</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value">${summary.totalWOs}</div>
+            <div class="kpi-label">Total Work Orders</div>
+            <div class="kpi-status">${summary.correctiveWOs} Corrective</div>
+          </div>
+        </div>
+        
+        <div class="alert ${summary.topIssues.length > 0 ? 'alert-critical' : 'alert-warning'}">
+          <strong>⚠️ Top Issues</strong><br>
+          ${summary.topIssues.map(issue => `• ${issue.assetId}: ${issue.failures} failures (${issue.criticality})`).join('<br>') || 'No major issues detected'}
+        </div>
+        
+        <div class="alert alert-good">
+          <strong>✅ Achievements</strong><br>
+          ${summary.topAchievements.map(ach => `• ${ach}`).join('<br>') || 'No achievements recorded'}
+        </div>
+      </div>
+    `;
+  }
+  
+  function renderTabs(data) {
+    return `
+      <div class="tabs">
+        <div class="tab active" data-tab="financial">💰 Financial</div>
+        <div class="tab" data-tab="staff">👥 Staff</div>
+        <div class="tab" data-tab="reliability">⚙️ Reliability</div>
+        <div class="tab" data-tab="capex">🏗️ CAPEX</div>
+        <div class="tab" data-tab="recommendations">💡 Recommendations</div>
+      </div>
+      <div class="tab-content">
+        <div id="tab-financial" class="tab-pane active">
+          ${renderFinancialTab(data.financialAnalysis)}
+        </div>
+        <div id="tab-staff" class="tab-pane">
+          ${renderStaffTab(data.staffAnalysis)}
+        </div>
+        <div id="tab-reliability" class="tab-pane">
+          ${renderReliabilityTab(data.reliabilityAnalysis)}
+        </div>
+        <div id="tab-capex" class="tab-pane">
+          ${renderCapexTab(data.capexProposal)}
+        </div>
+        <div id="tab-recommendations" class="tab-pane">
+          ${renderRecommendationsTab(data.recommendations)}
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button id="exportPdfBottomBtn" class="adk-btn adk-btn-success">📄 Export PDF</button>
+      </div>
+    `;
+  }
+  
+  function renderFinancialTab(financial) {
+    return `
+      <h3>💰 Financial Analysis</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">$${financial.totalSpend.toLocaleString()}</div>
+          <div class="kpi-label">Total Spend</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">$${financial.budgetAmount.toLocaleString()}</div>
+          <div class="kpi-label">Budget</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${financial.variance.toFixed(1)}%</div>
+          <div class="kpi-label">Variance</div>
+          <div class="kpi-status ${financial.varianceStatus.includes('GOOD') ? 'status-good' : 'status-critical'}">${financial.varianceStatus}</div>
+        </div>
+      </div>
+      
+      <h4>Top Cost Assets</h4>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead>
+        <tbody>
+          ${financial.topCostAssets.map(asset => `
+            <tr><td><strong>${escapeHtml(asset.name)}</strong></td><td>$${asset.cost.toLocaleString()}</td><td>${asset.criticality}</td></tr>
+          `).join('') || '<tr><td colspan="3">No data available</td></tr>'}
+        </tbody>
+      </table>
+      
+      <h4>Spend by Category</h4>
+      <table class="data-table">
+        <thead><tr><th>Category</th><th>Amount</th></tr></thead>
+        <tbody>
+          ${Object.entries(financial.spendByCategory).map(([cat, amt]) => `
+            <tr><td>${escapeHtml(cat)}</td><td>$${amt.toLocaleString()}</td></tr>
+          `).join('') || '<tr><td colspan="2">No data available</td></tr>'}
+        </tbody>
+      </table>
+    `;
+  }
+  
+  function renderStaffTab(staff) {
+    return `
+      <h3>👥 Staff & Organization</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">${staff.staffCount}</div>
+          <div class="kpi-label">Technicians</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${staff.backlogWeeks} weeks</div>
+          <div class="kpi-label">Backlog</div>
+          <div class="kpi-status ${staff.backlogStatus === '✅ GOOD' ? 'status-good' : 'status-warning'}">${staff.backlogStatus}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${staff.totalOpenWOs}</div>
+          <div class="kpi-label">Open WOs</div>
+        </div>
+      </div>
+      
+      <h4>Technician Performance</h4>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>WOs</th><th>Completed</th><th>Hours</th><th>Productivity</th><th>Status</th></tr></thead>
+        <tbody>
+          ${staff.staffList.map(tech => `
+            <tr>
+              <td><strong>${escapeHtml(tech.name)}</strong></td>
+              <td>${tech.totalWOs}</td>
+              <td>${tech.completedWOs}</td>
+              <td>${tech.totalHours}</td>
+              <td>${tech.productivity}%</td>
+              <td>${tech.status}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="6">No data available</td></tr>'}
+        </tbody>
+      </table>
+      
+      <h4>Backlog by Age</h4>
+      <table class="data-table">
+        <thead><tr><th>Age</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;7 days</td><td>${staff.backlogByAge['<7d'] || 0}</td></tr>
+          <tr><td>7-14 days</td><td>${staff.backlogByAge['7-14d'] || 0}</td></tr>
+          <tr><td>15-30 days</td><td>${staff.backlogByAge['15-30d'] || 0}</td></tr>
+          <tr><td>&gt;30 days</td><td>${staff.backlogByAge['>30d'] || 0}</td></tr>
+        </tbody>
+      </table>
+    `;
+  }
+  
+  function renderReliabilityTab(reliability) {
+    return `
+      <h3>⚙️ Reliability Analysis</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">${reliability.mtbf.A} days</div>
+          <div class="kpi-label">MTBF Class A</div>
+          <div class="kpi-status ${reliability.mtbf.status === '✅ MEETS TARGET' ? 'status-good' : 'status-critical'}">${reliability.mtbf.status}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${reliability.mtbf.B} days</div>
+          <div class="kpi-label">MTBF Class B</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${reliability.mtbf.C} days</div>
+          <div class="kpi-label">MTBF Class C</div>
+        </div>
+      </div>
+      
+      <h4>PM Compliance</h4>
+      <div class="kpi-card" style="display:inline-block; width:auto;">
+        <div class="kpi-value">${reliability.pmCompliance.percentage}%</div>
+        <div class="kpi-label">(${reliability.pmCompliance.completed}/${reliability.pmCompliance.scheduled} completed)</div>
+      </div>
+      
+      <h4>MTTR by Technician</h4>
+      <table class="data-table">
+        <thead><tr><th>Technician</th><th>MTTR (hours)</th><th>Status</th></tr></thead>
+        <tbody>
+          ${reliability.mttr.map(m => `
+            <tr>
+              <td>${escapeHtml(m.technician)}</td>
+              <td>${m.mttr}</td>
+              <td class="${m.status === '✅ GOOD' ? 'status-good' : 'status-critical'}">${m.status}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="3">No data available</td></tr>'}
+        </tbody>
+      </table>
+      
+      <h4>Top Failing Assets</h4>
+      <table class="data-table">
+        <thead><tr><th>Asset</th><th>Failures</th><th>Criticality</th></tr></thead>
+        <tbody>
+          ${reliability.topFailures.map(asset => `
+            <tr>
+              <td><strong>${escapeHtml(asset.name)}</strong></td>
+              <td>${asset.failures}</td>
+              <td>${asset.criticality}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="3">No failures recorded</td></tr>'}
+        </tbody>
+      </table>
+    `;
+  }
+  
+  function renderCapexTab(capex) {
+    return `
+      <h3>🏗️ CAPEX Proposal for Next Year</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">$${capex.totalProposedCapex.toLocaleString()}</div>
+          <div class="kpi-label">Total Proposed CAPEX</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">$${capex.totalExpectedSavings.toLocaleString()}</div>
+          <div class="kpi-label">Expected Annual Savings</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">${capex.roiThreshold} years</div>
+          <div class="kpi-label">ROI Threshold</div>
+        </div>
+      </div>
+      
+      <h4>Proposed Projects</h4>
+      <table class="data-table">
+        <thead><tr><th>Project</th><th>Priority</th><th>Estimated Cost</th><th>Expected Savings</th><th>ROI (years)</th></tr></thead>
+        <tbody>
+          ${capex.proposals.map(proj => `
+            <tr>
+              <td><strong>${escapeHtml(proj.name)}</strong></td>
+              <td class="${proj.priority === 'HIGH' ? 'status-critical' : 'status-warning'}">${proj.priority}</td>
+              <td>$${proj.estimatedCost.toLocaleString()}</td>
+              <td>$${proj.estimatedSavings.toLocaleString()}</td>
+              <td>${proj.roiYears}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="5">No CAPEX proposals generated</td></tr>'}
+        </tbody>
+      </table>
+      
+      <div class="alert alert-warning">
+        <strong>📌 Note:</strong> These are preliminary proposals based on current data. Adjust numbers in CONSULTING_CAPEX_PLANNER sheet.
+      </div>
+    `;
+  }
+  
+  function renderRecommendationsTab(recommendations) {
+    if (!recommendations || recommendations.length === 0) {
+      return `<div class="alert alert-good">✅ No recommendations at this time. All metrics are healthy.</div>`;
+    }
+    
+    return `
+      <h3>💡 Strategic Recommendations</h3>
+      ${recommendations.map(rec => `
+        <div class="alert ${rec.priority === 'CRITICAL' ? 'alert-critical' : 'alert-warning'}" style="margin-bottom:16px;">
+          <strong>${rec.priority === 'CRITICAL' ? '🔴' : '🟡'} ${escapeHtml(rec.title)}</strong><br>
+          ${escapeHtml(rec.description)}<br>
+          <strong>Estimated Cost:</strong> $${rec.estimatedCost.toLocaleString()} &nbsp;|&nbsp;
+          <strong>Expected Savings:</strong> $${rec.expectedSavings.toLocaleString()}<br>
+          <strong>Action:</strong> ${escapeHtml(rec.action)}
+        </div>
+      `).join('')}
+      
+      <div class="alert alert-good">
+        <strong>📋 Next Steps:</strong><br>
+        1. Review critical recommendations with management<br>
+        2. Schedule implementation for approved items<br>
+        3. Track progress in CONSULTING_RECOMMENDATIONS_TRACKER sheet
+      </div>
+    `;
+  }
+  
+  // ============================================
+  // UTILITIES
+  // ============================================
+  function attachTabListeners() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const activePane = document.getElementById(`tab-${tabId}`);
+        if (activePane) activePane.classList.add('active');
+      });
+    });
+    
+    const exportBottomBtn = document.getElementById('exportPdfBottomBtn');
+    if (exportBottomBtn) {
+      exportBottomBtn.addEventListener('click', () => exportPDF());
+    }
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const yearSelectElem = document.getElementById('yearSelect');
+    const monthSelectElem = document.getElementById('monthSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    // Set current date
+    const today = new Date();
+    if (yearSelectElem) yearSelectElem.value = today.getFullYear();
+    if (monthSelectElem) monthSelectElem.value = today.getMonth() + 1;
+    
+    if (generateBtn) {
+      generateBtn.addEventListener('click', () => generateReport());
+    }
+    
+    if (exportPdfBtn) {
+      exportPdfBtn.addEventListener('click', () => exportPDF());
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+  });
+</script>
 </body>
 </html>
