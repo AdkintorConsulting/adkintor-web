@@ -1,264 +1,1051 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WO Intelligence - Adkintor</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
-            padding: 20px;
-        }
-
-        .header {
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            font-size: 24px;
-            color: #4a6cf7;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: #8a8faa;
-            font-size: 14px;
-        }
-
-        /* Tabla */
-        .wo-table {
-            width: 100%;
-            background: #0f1222;
-            border-radius: 12px;
-            overflow: hidden;
-            border-collapse: collapse;
-        }
-
-        .wo-table th, .wo-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #1e2337;
-        }
-
-        .wo-table th {
-            background: #1a1f3a;
-            color: #4a6cf7;
-            font-weight: 600;
-        }
-
-        .priority-high {
-            background: rgba(255, 68, 68, 0.2);
-            color: #ff6b6b;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .priority-medium {
-            background: rgba(255, 165, 0, 0.2);
-            color: #ffa500;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .priority-low {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .status-open {
-            color: #4a6cf7;
-        }
-
-        .status-progress {
-            color: #ffa500;
-        }
-
-        .loading, .error, .empty {
-            text-align: center;
-            padding: 60px;
-            color: #8a8faa;
-        }
-
-        .error {
-            color: #ff6b6b;
-        }
-
-        /* Tarjetas de resumen */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: #0f1222;
-            border: 1px solid #1e2337;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #4a6cf7;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #8a8faa;
-            margin-top: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAMS INTELLIGENCE - WO Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    /* Core Styles de Adkintor INTELLIGENCE */
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --border-color: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-color: #38bdf8;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --info: #38bdf8;
+      --gray: #64748b;
+      --border-radius-sm: 8px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Web App Header */
+    .web-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .web-app-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
+    }
+    
+    .web-app-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .close-modal-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--danger);
+      transform: none;
+    }
+    
+    /* Breadcrumbs */
+    .web-breadcrumbs {
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .web-breadcrumbs span {
+      color: var(--text-secondary);
+    }
+    
+    .web-breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* Toast Notifications */
+    .toast-notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-success {
+      background: #10b981;
+      color: white;
+      border-left: 4px solid #059669;
+    }
+    
+    .toast-error {
+      background: #ef4444;
+      color: white;
+      border-left: 4px solid #b91c1c;
+    }
+    
+    .toast-info {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+      border-left: 4px solid #0284c7;
+    }
+    
+    .toast-warning {
+      background: var(--warning);
+      color: var(--bg-primary);
+      border-left: 4px solid #d97706;
+    }
+    
+    /* Loading Overlay */
+    .adk-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .adk-loading-content {
+      text-align: center;
+      background: var(--bg-secondary);
+      padding: 30px 40px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .adk-loading {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Alert */
+    .adk-alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px;
+    }
+    
+    .adk-alert-danger {
+      background: rgba(248, 113, 113, 0.2);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+    
+    .adk-alert-info {
+      background: rgba(56, 189, 248, 0.2);
+      border-left: 4px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    /* Dashboard Container */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 90px);
+      padding: 20px;
+      background: var(--bg-primary);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    
+    .logo-area h1 { 
+      font-size: 20px; 
+      color: var(--accent-color); 
+      margin-bottom: 4px; 
+    }
+    
+    .logo-area p { 
+      font-size: 11px; 
+      color: var(--text-secondary); 
+    }
+    
+    .last-updated {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: right;
+      margin-bottom: 16px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+      padding: 10px 24px;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      background: transparent;
+      border: none;
+    }
+    
+    .tab-btn:hover { 
+      background: var(--bg-hover); 
+      color: white; 
+    }
+    
+    .tab-btn.active { 
+      background: var(--bg-hover); 
+      color: var(--accent-color); 
+      border-bottom: 2px solid var(--accent-color); 
+    }
+    
+    .content-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    
+    .tab-pane { 
+      display: none; 
+      animation: fadeIn 0.3s ease; 
+    }
+    
+    .tab-pane.active { 
+      display: block; 
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+    
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    /* Alert cards */
+    .alert-card {
+      background: var(--bg-card);
+      border-left: 4px solid;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: var(--border-radius-sm);
+    }
+    
+    .alert-critical { border-left-color: var(--danger); }
+    .alert-warning { border-left-color: var(--warning); }
+    .alert-info { border-left-color: #eab308; }
+    .alert-gray { border-left-color: var(--gray); }
+    
+    /* Flex utility */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    /* Tablas */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    th {
+      text-align: left;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    
+    tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .adk-badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
+    .adk-badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+    .adk-badge-success { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; }
+    .adk-badge-primary { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+    .adk-badge-gray { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid #64748b; }
+    
+    /* Cards */
+    .adk-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .adk-card .label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .adk-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+    
+    /* Progress bar */
+    .progress-bar-container {
+      background: var(--bg-hover);
+      border-radius: 10px;
+      height: 20px;
+      width: 100px;
+      overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      text-align: center;
+      color: #0f172a;
+      font-size: 11px;
+      line-height: 20px;
+    }
+    
+    .adk-form-control {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    
+    .adk-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .adk-btn-primary {
+      background: var(--accent-color);
+      color: var(--bg-primary);
+    }
+    
+    .adk-btn-primary:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+    
+    .adk-btn-secondary {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: white;
+    }
+    
+    .adk-btn-secondary:hover {
+      background: var(--border-color);
+      transform: scale(1.02);
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    
+    select, input {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    
+    select:hover, input:hover {
+      border-color: var(--accent-color);
+    }
+  </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>📋 WO Intelligence</h1>
-    <p class="subtitle">Órdenes de Trabajo priorizadas por criticidad</p>
+<!-- WEB APP HEADER -->
+<div class="web-app-header">
+  <h2><i class="fas fa-tasks"></i> EAMS INTELLIGENCE - WO Intelligence</h2>
+  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
 </div>
 
-<div id="woContent">
-    <div class="loading">Cargando órdenes de trabajo prioritarias...</div>
+<!-- BREADCRUMBS -->
+<div class="web-breadcrumbs">
+  <span>🏠 Inicio</span> > 
+  <span>📈 INTELLIGENCE</span> > 
+  <span>🔧 WO Intelligence</span>
+</div>
+
+<div class="dashboard-container">
+  <div class="header">
+    <div class="logo-area">
+      <h1>🔧 WO Intelligence</h1>
+      <p>Prioritization · Workload · Smart Alerts</p>
+    </div>
+    <div><button id="exportBtn" class="adk-btn adk-btn-primary">📑 EXPORT PDF</button></div>
+  </div>
+  
+  <div class="last-updated" id="lastUpdated">--</div>
+  
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="priorities">🎯 Priorities</button>
+    <button class="tab-btn" data-tab="mytasks">📋 My Tasks</button>
+    <button class="tab-btn" data-tab="workload">📊 Workload</button>
+    <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>
+  </div>
+  
+  <div class="content-panel">
+    <!-- TAB 1: PRIORITIES -->
+    <div id="priorities-tab" class="tab-pane active">
+      <div class="flex-between">
+        <div class="stats-grid" style="width: 60%;">
+          <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
+          <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
+          <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
+        </div>
+        <div>
+          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+          <button id="showAllBtn" class="adk-btn adk-btn-primary">📋 Show All (Slow)</button>
+        </div>
+      </div>
+      <div id="prioritiesList"></div>
+    </div>
+    
+    <!-- TAB 2: MY TASKS -->
+    <div id="mytasks-tab" class="tab-pane">
+      <div class="flex-between">
+        <div>
+          <label style="margin-right: 12px; font-size: 13px; color: var(--text-secondary);">👤 View:</label>
+          <select id="userSelect" class="adk-form-control" style="display: inline-block; width: auto;">
+            <option value="">-- Select user --</option>
+          </select>
+        </div>
+        <button id="printTasksBtn" class="adk-btn adk-btn-secondary">🖨️ Print Tasks</button>
+      </div>
+      <div id="tasksList"></div>
+    </div>
+    
+    <!-- TAB 3: WORKLOAD -->
+    <div id="workload-tab" class="tab-pane">
+      <div id="workloadList"></div>
+    </div>
+    
+    <!-- TAB 4: ALERTS -->
+    <div id="alerts-tab" class="tab-pane">
+      <div id="alertsList"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-    // La sesión ya tiene la API_URL del cliente (guardada por auth.js)
-    function getClientApiUrl() {
-        const session = localStorage.getItem('adkintor_session');
-        if (!session) return null;
-        try {
-            const sessionData = JSON.parse(session);
-            return sessionData.intelligenceApiUrl;
-        } catch(e) {
-            return null;
-        }
+  let cachedData = {
+    priorities: null,
+    users: null,
+    workload: null,
+    alerts: null
+  };
+  
+  let allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+  
+  // ============================================
+  // TOAST NOTIFICATION SYSTEM
+  // ============================================
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideIn 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+  
+  // ============================================
+  // CLOSE MODAL FUNCTION
+  // ============================================
+  function closeModal() {
+    if (window.parent !== window) {
+      window.parent.postMessage({ action: 'closeModal' }, '*');
     }
-
-    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-    const API_URL = getClientApiUrl();
-
-    async function callAPI(funcion, argumentos = []) {
-        if (!API_URL) {
-            throw new Error('No hay sesión activa. Por favor recargue la página.');
+    showToast('Cerrando módulo...', 'info');
+    setTimeout(() => {
+      window.close();
+    }, 100);
+  }
+  
+  // ============================================
+  // INTELLIGENCE API COMMUNICATION
+  // ============================================
+  async function callIntelligenceApi(action, args = []) {
+    try {
+      const sessionStr = localStorage.getItem('adkintor_session');
+      if (!sessionStr) {
+        throw new Error('No se encontró sesión. Por favor, inicie sesión nuevamente.');
+      }
+      const session = JSON.parse(sessionStr);
+      const API_URL = session.intelligenceApiUrl;
+      if (!API_URL) {
+        throw new Error('Intelligence API URL no encontrada en la sesión.');
+      }
+      
+      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+      
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUrl: API_URL,
+          payload: { action: action, args: args }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Error en la llamada a la API');
+      }
+      return result.data;
+    } catch (error) {
+      console.error('Intelligence API call error:', error);
+      showToast(`Error: ${error.message}`, 'error');
+      throw error;
+    }
+  }
+  
+  // ============================================
+  // LOADING OVERLAY FUNCTIONS
+  // ============================================
+  function showLoading() {
+    let overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+    
+    overlay = document.createElement('div');
+    overlay.id = 'adkLoadingOverlay';
+    overlay.className = 'adk-loading-overlay';
+    overlay.innerHTML = `
+      <div class="adk-loading-content">
+        <div class="adk-loading"></div>
+        <div style="color: var(--text-primary); font-size: 14px;">Cargando datos...</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  
+  function hideLoading() {
+    const overlay = document.getElementById('adkLoadingOverlay');
+    if (overlay) overlay.remove();
+  }
+  
+  function showError(message) {
+    showToast(message, 'error');
+  }
+  
+  function checkAllDataLoaded() {
+    if (allDataLoaded.priorities && allDataLoaded.users && allDataLoaded.workload && allDataLoaded.alerts) {
+      hideLoading();
+    } else {
+      setTimeout(function() {
+        if (allDataLoaded.priorities && allDataLoaded.users && allDataLoaded.workload && allDataLoaded.alerts) {
+          hideLoading();
+        } else {
+          hideLoading();
         }
-        
-        const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                targetUrl: API_URL,
-                payload: { funcion: funcion, argumentos: argumentos }
-            })
+      }, 10000);
+    }
+  }
+  
+  // ============================================
+  // TAB FUNCTION
+  // ============================================
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    
+    const clickedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (clickedBtn) clickedBtn.classList.add('active');
+    
+    const targetPane = document.getElementById(`${tabId}-tab`);
+    if (targetPane) targetPane.classList.add('active');
+    
+    if (tabId === 'workload' && !cachedData.workload) {
+      loadWorkload();
+    } else if (tabId === 'alerts' && !cachedData.alerts) {
+      loadAlerts();
+    }
+  }
+  
+  // ============================================
+  // LOAD DATA FUNCTIONS
+  // ============================================
+  async function loadPriorities() {
+    try {
+      const data = await callIntelligenceApi('getSimplePriorities', []);
+      renderPriorities(data);
+      allDataLoaded.priorities = true;
+      checkAllDataLoaded();
+    } catch (error) {
+      document.getElementById('prioritiesList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
+      allDataLoaded.priorities = true;
+      checkAllDataLoaded();
+    }
+  }
+  
+  async function loadUsers() {
+    try {
+      const users = await callIntelligenceApi('getTechniciansAndSupervisor', []);
+      cachedData.users = users;
+      const userSelect = document.getElementById('userSelect');
+      if (userSelect && users) {
+        userSelect.innerHTML = '<option value="">-- Select user --</option>';
+        users.forEach(user => {
+          userSelect.innerHTML += `<option value="${user.email}">👤 ${user.name} (${user.role})</option>`;
         });
-        const data = await response.json();
-        return data;
+      }
+      allDataLoaded.users = true;
+      checkAllDataLoaded();
+    } catch (error) {
+      console.error('Error loading users:', error);
+      allDataLoaded.users = true;
+      checkAllDataLoaded();
     }
-
-    function getPriorityClass(priority) {
-        const p = (priority || '').toUpperCase();
-        if (p === 'EMERGENCY' || p === 'URGENT' || p === 'HIGH') return 'priority-high';
-        if (p === 'MEDIUM') return 'priority-medium';
-        return 'priority-low';
+  }
+  
+  async function loadTasks() {
+    const select = document.getElementById('userSelect');
+    const selectedEmail = select.value;
+    
+    if (!selectedEmail) {
+      document.getElementById('tasksList').innerHTML = '<div class="adk-alert adk-alert-info">Select a user to see tasks</div>';
+      return;
     }
-
-    function getStatusClass(status) {
-        const s = (status || '').toUpperCase();
-        if (s === 'OPEN' || s === 'CREATED') return 'status-open';
-        if (s === 'IN PROGRESS') return 'status-progress';
-        return '';
+    
+    showLoading();
+    try {
+      const tasks = await callIntelligenceApi('getUserTasks', [selectedEmail]);
+      renderTasksList(tasks);
+      hideLoading();
+    } catch (error) {
+      hideLoading();
+      document.getElementById('tasksList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
     }
-
-    function renderWOs(data) {
-        const wos = Array.isArray(data) ? data : (data.data || data.wos || []);
-        
-        if (!wos || wos.length === 0) {
-            document.getElementById('woContent').innerHTML = '<div class="empty">📭 No hay órdenes de trabajo prioritarias en este momento</div>';
-            return;
-        }
-
-        // Calcular estadísticas
-        const total = wos.length;
-        const highPriority = wos.filter(wo => {
-            const p = (wo.Priority || wo.priority || '').toUpperCase();
-            return p === 'EMERGENCY' || p === 'URGENT' || p === 'HIGH';
-        }).length;
-
-        const html = `
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">${total}</div>
-                    <div class="stat-label">Total Priorizadas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${highPriority}</div>
-                    <div class="stat-label">Alta Prioridad</div>
-                </div>
-            </div>
-            <table class="wo-table">
-                <thead>
-                    <tr>
-                        <th>WO Number</th>
-                        <th>Equipo</th>
-                        <th>Prioridad</th>
-                        <th>Estado</th>
-                        <th>Técnico</th>
-                        <th>Fecha Creación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${wos.map(wo => `
-                        <tr>
-                            <td><strong>${wo['WO Number'] || wo.woNumber || wo.folio || '-'}</strong></td>
-                            <td>${wo['Equipment Name'] || wo.equipment || wo['Asset Name'] || '-'}</td>
-                            <td><span class="${getPriorityClass(wo.Priority || wo.priority)}">${wo.Priority || wo.priority || 'Normal'}</span></td>
-                            <td class="${getStatusClass(wo.Status || wo.status)}">${wo.Status || wo.status || '-'}</td>
-                            <td>${wo['Assigned Technician'] || wo.technician || '-'}</td>
-                            <td>${wo['Creation Date/Time'] || wo.creationDate || '-'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-        
-        document.getElementById('woContent').innerHTML = html;
+  }
+  
+  async function loadWorkload() {
+    document.getElementById('workloadList').innerHTML = '<div class="adk-alert adk-alert-info">Loading workload data...</div>';
+    try {
+      const workload = await callIntelligenceApi('getPreventiveWorkload', []);
+      cachedData.workload = workload;
+      renderWorkload(workload);
+      allDataLoaded.workload = true;
+      checkAllDataLoaded();
+    } catch (error) {
+      document.getElementById('workloadList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
+      allDataLoaded.workload = true;
+      checkAllDataLoaded();
     }
-
-    async function loadWOs() {
-        try {
-            const result = await callAPI('getPrioritizedWOs');
-            
-            if (result.success) {
-                renderWOs(result.data);
-            } else {
-                document.getElementById('woContent').innerHTML = `<div class="error">❌ Error: ${result.error || 'No se pudieron cargar las WO'}</div>`;
-            }
-        } catch (error) {
-            document.getElementById('woContent').innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
-        }
+  }
+  
+  async function loadAlerts() {
+    showLoading();
+    try {
+      const alerts = await callIntelligenceApi('getAlerts', []);
+      cachedData.alerts = alerts;
+      renderAlerts(alerts);
+      allDataLoaded.alerts = true;
+      checkAllDataLoaded();
+      hideLoading();
+    } catch (error) {
+      hideLoading();
+      document.getElementById('alertsList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
+      allDataLoaded.alerts = true;
+      checkAllDataLoaded();
     }
-
-    loadWOs();
+  }
+  
+  async function loadAllWOs() {
+    showLoading();
+    try {
+      const data = await callIntelligenceApi('getPrioritizedWOsFull', []);
+      renderPriorities(data);
+      hideLoading();
+      showToast('Todos los WOs cargados', 'success');
+    } catch (error) {
+      hideLoading();
+      showError('Error loading all WOs: ' + error.message);
+    }
+  }
+  
+  async function refreshAllData() {
+    showLoading();
+    allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+    
+    await loadPriorities();
+    await loadUsers();
+    await loadWorkload();
+    await loadAlerts();
+  }
+  
+  // ============================================
+  // RENDER FUNCTIONS
+  // ============================================
+  function renderPriorities(data) {
+    const wos = Array.isArray(data) ? data : (data?.wos || []);
+    const lastUpdated = data?.lastUpdated;
+    
+    if (lastUpdated) {
+      const lastUpdatedElem = document.getElementById('lastUpdated');
+      if (lastUpdatedElem) {
+        lastUpdatedElem.innerText = 'Updated: ' + new Date(lastUpdated).toLocaleString();
+      }
+    }
+    
+    const activeCountElem = document.getElementById('activeCount');
+    const highCountElem = document.getElementById('highCount');
+    const holdCountElem = document.getElementById('holdCount');
+    
+    if (activeCountElem) activeCountElem.innerText = wos.length;
+    if (highCountElem) highCountElem.innerText = wos.filter(w => w.score >= 80).length;
+    if (holdCountElem) holdCountElem.innerText = wos.filter(w => w.status === 'ON HOLD' || w.missingParts).length;
+    
+    if (!wos.length) {
+      document.getElementById('prioritiesList').innerHTML = '<div class="adk-alert adk-alert-info">No active work orders</div>';
+      return;
+    }
+    
+    let html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>#</th><th>WO #</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
+    html += '</thead><tbody>';
+    
+    wos.forEach((wo, i) => {
+      let statusBadge = '';
+      if (wo.missingParts) statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+      else if (wo.status === 'OPEN') statusBadge = '<span class="badge adk-badge-primary">🟡 OPEN</span>';
+      else if (wo.status === 'IN PROGRESS') statusBadge = '<span class="badge adk-badge-success">🔵 IN PROGRESS</span>';
+      else if (wo.status === 'ON HOLD') statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+      else statusBadge = `<span class="badge adk-badge-gray">${wo.status || '-'}</span>`;
+      
+      html += `<tr>
+        <td>${i+1}</td>
+        <td><strong>${escapeHtml(wo.woNumber)}</strong></td>
+        <td>${statusBadge}</td>
+        <td>${escapeHtml(wo.assetName)}</td>
+        <td>${wo.priorityLabel || wo.priority || '-'}</td>
+        <td>${escapeHtml(wo.assignedTechnician || '-')}</td>
+        <td><strong>${wo.score || 0}</strong></td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('prioritiesList').innerHTML = html;
+  }
+  
+  function renderTasksList(tasks) {
+    if (!tasks || !tasks.length) {
+      document.getElementById('tasksList').innerHTML = '<div class="adk-alert adk-alert-info">No tasks found for this user</div>';
+      return;
+    }
+    
+    let html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>#</th><th>WO #</th><th>Asset</th><th>Priority</th><th>Status</th><th>Action</th></tr>';
+    html += '</thead><tbody>';
+    
+    tasks.forEach((task, i) => {
+      let actionBadge = '';
+      if (task.status === 'OPEN') actionBadge = '<span class="badge adk-badge-primary">⏳ Approve</span>';
+      else if (task.status === 'COMPLETED') actionBadge = '<span class="badge adk-badge-success">🔒 Close</span>';
+      else actionBadge = '<span class="badge adk-badge-gray">In Progress</span>';
+      
+      html += `<tr>
+        <td>${i+1}</td>
+        <td><strong>${escapeHtml(task.woNumber)}</strong></td>
+        <td>${escapeHtml(task.assetName)}</td>
+        <td>${escapeHtml(task.priority)}</td>
+        <td>${escapeHtml(task.status)}</td>
+        <td>${actionBadge}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('tasksList').innerHTML = html;
+  }
+  
+  function renderWorkload(workload) {
+    if (!workload || !workload.length) {
+      document.getElementById('workloadList').innerHTML = '<div class="adk-alert adk-alert-info">No workload data available</div>';
+      return;
+    }
+    
+    let html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Technician</th><th>Shift</th><th>Scope</th><th>Preventive Hours</th><th>Available Hours</th><th>Utilization</th></tr>';
+    html += '</thead><tbody>';
+    
+    workload.forEach(tech => {
+      const pct = Math.min(tech.utilization || 0, 100);
+      const barColor = pct > 80 ? '#ef4444' : (pct > 50 ? '#f97316' : '#4ade80');
+      
+      html += `<tr>
+        <td><strong>${escapeHtml(tech.name)}</strong></td>
+        <td>${escapeHtml(tech.shift || 'DAY')}</td>
+        <td>${escapeHtml(tech.scope || 'FULL')}</td>
+        <td>${tech.preventiveHours || 0}h</td>
+        <td>${tech.availableHours || 0}h</td>
+        <td>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="background:${barColor}; width:${pct}%;">${pct}%</div>
+          </div>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('workloadList').innerHTML = html;
+  }
+  
+  function renderAlerts(alerts) {
+    if (!alerts || !alerts.length) {
+      document.getElementById('alertsList').innerHTML = '<div class="adk-alert adk-alert-info">No active alerts</div>';
+      return;
+    }
+    
+    let html = '';
+    alerts.forEach(alert => {
+      let alertClass = '';
+      if (alert.type === 'CRITICAL') alertClass = 'alert-critical';
+      else if (alert.type === 'WAITING_PARTS') alertClass = 'alert-warning';
+      else if (alert.type === 'WAITING_SERVICE') alertClass = 'alert-info';
+      else alertClass = 'alert-gray';
+      
+      html += `
+        <div class="alert-card ${alertClass}">
+          <strong>${alert.icon || '⚠️'} ${escapeHtml(alert.title)}</strong><br>
+          <span style="font-size: 13px;">${escapeHtml(alert.message)}</span>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">${escapeHtml(alert.details || '')}</div>
+        </div>
+      `;
+    });
+    document.getElementById('alertsList').innerHTML = html;
+  }
+  
+  // ============================================
+  // UTILITIES
+  // ============================================
+  
+  function printTasks() {
+    const tasksContent = document.getElementById('tasksList').innerHTML;
+    if (!tasksContent || tasksContent.includes('Select a user')) {
+      showToast('Please select a user first', 'error');
+      return;
+    }
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      showToast('Popup bloqueado. Permita ventanas emergentes.', 'error');
+      return;
+    }
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Tasks Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; background: white; }
+            table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background: #1a56db; color: white; }
+            h1 { color: #1a56db; }
+          </style>
+        </head>
+        <body>
+          <h1>📋 Tasks Report</h1>
+          <p>Generated: ${new Date().toLocaleString()}</p>
+          ${tasksContent}
+          <p style="margin-top: 20px; font-size: 12px; color: #666;">WO Intelligence - Adkintor INTELLIGENCE</p>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+  
+  async function exportToPDF() {
+    showLoading();
+    try {
+      const result = await callIntelligenceApi('exportWOPDF', []);
+      hideLoading();
+      if (result && result.url) {
+        window.open(result.url, '_blank');
+      } else {
+        showToast('PDF export not yet implemented for WO', 'info');
+      }
+    } catch (error) {
+      hideLoading();
+      showError('PDF export failed: ' + error.message);
+    }
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const exportBtnElem = document.getElementById('exportBtn');
+    const printTasksBtn = document.getElementById('printTasksBtn');
+    const userSelect = document.getElementById('userSelect');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => refreshAllData());
+    }
+    
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', () => loadAllWOs());
+    }
+    
+    if (exportBtnElem) {
+      exportBtnElem.addEventListener('click', () => exportToPDF());
+    }
+    
+    if (printTasksBtn) {
+      printTasksBtn.addEventListener('click', () => printTasks());
+    }
+    
+    if (userSelect) {
+      userSelect.addEventListener('change', () => loadTasks());
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+    
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        showTab(tabId);
+      });
+    });
+    
+    // Iniciar carga de datos
+    showLoading();
+    allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+    
+    loadPriorities();
+    loadUsers();
+    loadWorkload();
+    loadAlerts();
+  });
 </script>
 </body>
 </html>
