@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Manual PM Scheduler | Strategy Override</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            overflow: hidden;
+            color: #1e293b;
+        }
+
+        /* EAMS Design System */
+        :root {
+            --eams-primary: #0f3b5c;
+            --eams-primary-dark: #0a2a42;
+            --eams-success: #10b981;
+            --eams-danger: #ef4444;
+            --eams-warning: #f59e0b;
+            --eams-info: #3b82f6;
+            --eams-border: #e2e8f0;
+            --eams-bg: #f8fafc;
+            --eams-text: #1e293b;
+            --eams-text-light: #64748b;
+            --eams-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Main Container */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--eams-bg);
+        }
+
+        /* Header */
+        .eams-header {
+            background: white;
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--eams-border);
+            box-shadow: var(--eams-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .eams-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--eams-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-badge {
+            font-size: 0.8rem;
+            color: var(--eams-text-light);
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* Body */
+        .eams-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+        }
+
+        .manual-layout {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--eams-text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-main {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--eams-border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-main:focus {
+            outline: none;
+            border-color: var(--eams-primary);
+            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+        }
+
+        .input-main:disabled {
+            background: #f8fafc;
+            color: var(--eams-text-light);
+        }
+
+        /* Search Container */
+        .search-container {
+            position: relative;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--eams-border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #search-input:focus {
+            border-color: var(--eams-primary);
+            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+        }
+
+        .btn-search {
+            background: var(--eams-primary);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-search:hover {
+            background: var(--eams-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        #suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--eams-border);
+            border-radius: 0 0 10px 10px;
+            display: none;
+            z-index: 100;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: var(--eams-shadow-lg);
+        }
+
+        .suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--eams-border);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Preview Box */
+        .preview-box {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            border-left: 4px solid var(--eams-success);
+        }
+
+        .preview-box strong {
+            font-size: 0.85rem;
+            color: var(--eams-success);
+        }
+
+        .week-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .week-tag {
+            background: white;
+            border: 1px solid var(--eams-success);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--eams-success);
+            font-weight: 600;
+        }
+
+        .helper-text {
+            font-size: 0.7rem;
+            color: var(--eams-text-light);
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        .eams-status-bar {
+            background: white;
+            border-top: 1px solid var(--eams-border);
+            padding: 12px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 0.75rem;
+            color: var(--eams-text-light);
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: var(--eams-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--eams-primary-dark);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--eams-border);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: var(--eams-primary);
+        }
+
+        .btn-save {
+            background: var(--eams-danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-save:disabled {
+            background: var(--eams-border);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90%;
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--eams-shadow-lg);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-container h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.1rem;
+            color: var(--eams-primary);
+        }
+
+        .modal-container p {
+            margin-bottom: 20px;
+            color: var(--eams-text-light);
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: var(--eams-shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10001;
+            animation: slideIn 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .toast-success { border-left: 4px solid var(--eams-success); }
+        .toast-error { border-left: 4px solid var(--eams-danger); }
+        .toast-warning { border-left: 4px solid var(--eams-warning); }
+        .toast-info { border-left: 4px solid var(--eams-info); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--eams-border);
+            border-top-color: var(--eams-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <div class="eams-header">
+        <h2><i class="fas fa-hand-paper"></i> MANUAL PM SCHEDULER | Strategy Override</h2>
+        <div class="user-badge" id="user-display">Loading...</div>
+    </div>
+
+    <!-- Body -->
+    <div class="eams-body">
+        <div class="manual-layout">
+            <!-- Search Container -->
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
+                <button class="btn-search" onclick="searchTL()"><i class="fas fa-check-circle"></i> SELECT TL</button>
+                <div id="suggestions" class="custom-scroll"></div>
+            </div>
+
+            <!-- Frequency and Year -->
+            <div class="grid-2">
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-week"></i> Frequency</label>
+                    <select id="freqSelect" class="input-main" onchange="calculateWeeks()" disabled>
+                        <option value="">-- Select Frequency --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Target Year</label>
+                    <select id="yearSelect" class="input-main" onchange="calculateWeeks()" disabled></select>
+                </div>
+            </div>
+
+            <!-- Start Week -->
+            <div class="form-group">
+                <label><i class="fas fa-flag-checkered"></i> Start Week (1-52)</label>
+                <input type="number" id="startWeek" class="input-main" min="1" max="52" value="1" oninput="calculateWeeks()" disabled>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" class="preview-box" style="display:none;">
+                <strong><i class="fas fa-chart-line"></i> Schedule Forecast</strong>
+                <div id="weeksPreview" class="week-preview"></div>
+                <p class="helper-text">
+                    <i class="fas fa-info-circle"></i> Tasks will be tagged as <strong>MANUAL</strong> in MAINT_PLANNER
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="eams-status-bar">
+        <span><i class="fas fa-circle" style="color: var(--eams-success); font-size: 0.5rem;"></i> System Status: <strong id="footer-status">Ready</strong></span>
+        <span>EAMS v2.0</span>
+        <div class="footer-buttons">
+            <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
+            <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
+            <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
+
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                console.log('API URL loaded:', EAMS_API_URL);
+            } catch(e) {
+                console.error('Error parsing session:', e);
+                showToast('Session error. Please log in again.', 'error');
+            }
+        } else {
+            console.error('No session found');
+            showToast('Please log in to continue.', 'error');
+        }
+    }
+
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured. Please log in.');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        return result.data;
+    }
+
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+
+    // ============================================
+    // UTILITIES
+    // ============================================
+    function showToast(message, type = 'info') {
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'));
+        toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast) toast.remove();
+        }, 4000);
+    }
+
+    let loadingOverlay = null;
+    function showLoading(message = 'Loading...') {
+        if (loadingOverlay) hideLoading();
+        loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'loading-overlay';
+        loadingOverlay.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div>${message}</div>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+    }
+
+    function hideLoading() {
+        if (loadingOverlay) {
+            loadingOverlay.remove();
+            loadingOverlay = null;
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ============================================
+    // GLOBAL STATE
+    // ============================================
+    let configData = { frequencies: [], assets: [], availableYears: [] };
+    let selectedAsset = null;
+    let generatedWeeks = [];
+    let pendingSavePayload = null;
+
+    // ============================================
+    // AUTOCOMPLETE
+    // ============================================
+    let suggestionTimeout;
+
+    async function getSuggestions(val) {
+        const suggestionsDiv = document.getElementById('suggestions');
+        if (val.length < 3) {
+            suggestionsDiv.style.display = 'none';
+            return;
+        }
+        
+        if (suggestionTimeout) clearTimeout(suggestionTimeout);
+        suggestionTimeout = setTimeout(async () => {
+            try {
+                const list = await callApi('PVT_getTLAutocompletar', [val]);
+                if (list && list.length > 0) {
+                    suggestionsDiv.innerHTML = list.map(item => 
+                        `<div class="suggestion-item" onclick="selectTL('${escapeHtml(item)}')">${escapeHtml(item)}</div>`
+                    ).join('');
+                    suggestionsDiv.style.display = 'block';
+                } else {
+                    suggestionsDiv.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error getting suggestions:', e);
+                suggestionsDiv.style.display = 'none';
+            }
+        }, 300);
+    }
+
+    window.getSuggestions = getSuggestions;
+
+    function selectTL(val) {
+        document.getElementById('search-input').value = val;
+        document.getElementById('suggestions').style.display = 'none';
+    }
+
+    window.selectTL = selectTL;
+
+    // ============================================
+    // SEARCH TL
+    // ============================================
+    async function searchTL() {
+        const searchValue = document.getElementById('search-input').value;
+        if (!searchValue) {
+            showToast('Please enter a Technical Location ID or Name', 'error');
+            return;
+        }
+        
+        showLoading('Loading TL configuration...');
+        
+        try {
+            const rawResponse = await callApi('PVT_getManualPMConfig');
+            const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
+            
+            if (response.status === 'success' && response.data) {
+                configData = response.data;
+                
+                if (!configData.assets || !Array.isArray(configData.assets)) {
+                    showToast('Error: No assets loaded. Please refresh and try again.', 'error');
+                    return;
+                }
+
+                const selected = configData.assets.find(a => {
+                    if (!a || !a.id) return false;
+                    const displayMatch = a.display && a.display.toLowerCase().includes(searchValue.toLowerCase());
+                    const idMatch = a.id.toLowerCase() === searchValue.toLowerCase();
+                    return displayMatch || idMatch;
+                });
+                
+                if (selected) {
+                    selectedAsset = { id: selected.id, name: selected.name };
+                    showToast(`Selected: ${selected.display}`, 'success');
+                    
+                    renderFreqDropdown();
+                    renderYearDropdown();
+                    document.getElementById('freqSelect').disabled = false;
+                    document.getElementById('yearSelect').disabled = false;
+                    document.getElementById('startWeek').disabled = false;
+                    
+                    document.getElementById('previewSection').style.display = 'none';
+                    generatedWeeks = [];
+                    validateForm();
+                } else {
+                    showToast('Technical Location not found. Please try another.', 'error');
+                }
+            } else {
+                showToast('Error loading configuration', 'error');
+            }
+        } catch (e) {
+            console.error('Error in searchTL:', e);
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    window.searchTL = searchTL;
+
+    // ============================================
+    // LOAD CONFIGURATION
+    // ============================================
+    async function loadConfig() {
+        showLoading('Loading configuration...');
+        
+        try {
+            const rawResponse = await callApi('PVT_getManualPMConfig');
+            const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
+            
+            if (response.status === 'success' && response.data) {
+                configData = response.data;
+                renderFreqDropdown();
+                renderYearDropdown();
+                document.getElementById('freqSelect').disabled = true;
+                document.getElementById('yearSelect').disabled = true;
+                document.getElementById('startWeek').disabled = true;
+                showToast('Configuration loaded. Search for a Technical Location.', 'success');
+                document.getElementById('footer-status').innerText = 'Ready';
+            } else {
+                showToast('Error: ' + (response.message || 'Unknown error'), 'error');
+            }
+        } catch (e) {
+            console.error('Error loading config:', e);
+            showToast('Error loading configuration: ' + e.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function renderFreqDropdown() {
+        const select = document.getElementById('freqSelect');
+        if (!configData.frequencies || configData.frequencies.length === 0) {
+            select.innerHTML = '<option value="">No manual frequencies in SETUP_PVT Col F</option>';
+            return;
+        }
+        
+        select.innerHTML = '<option value="">-- Select Frequency --</option>' + 
+            configData.frequencies.map(f => `<option value="${escapeHtml(f.value)}" data-days="${f.days}">${escapeHtml(f.label)}</option>`).join('');
+    }
+
+    function renderYearDropdown() {
+        const select = document.getElementById('yearSelect');
+        select.innerHTML = '';
+        
+        let years = configData.availableYears;
+        if (!years || years.length === 0) {
+            const currentYear = new Date().getFullYear();
+            years = [currentYear, currentYear + 1, currentYear + 2];
+        }
+        
+        years.forEach(y => {
+            select.innerHTML += `<option value="${y}">${y}</option>`;
+        });
+    }
+
+    // ============================================
+    // CALCULATE WEEKS
+    // ============================================
+    function calculateWeeks() {
+        const freqSelect = document.getElementById('freqSelect');
+        const startWeek = parseInt(document.getElementById('startWeek').value);
+        const year = parseInt(document.getElementById('yearSelect').value);
+        const selectedOption = freqSelect.options[freqSelect.selectedIndex];
+        
+        if (!selectedOption || !selectedOption.value) {
+            document.getElementById('previewSection').style.display = 'none';
+            generatedWeeks = [];
+            validateForm();
+            return;
+        }
+        
+        if (isNaN(startWeek) || startWeek < 1 || startWeek > 52) {
+            showToast('Please enter a valid start week (1-52)', 'error');
+            return;
+        }
+
+        const days = parseInt(selectedOption.dataset.days);
+        const weeksInterval = Math.max(1, Math.round(days / 7));
+        
+        generatedWeeks = [];
+        let currentWeek = startWeek;
+        
+        while (currentWeek <= 52) {
+            generatedWeeks.push({ week: currentWeek, year: year });
+            currentWeek += weeksInterval;
+        }
+
+        const preview = document.getElementById('weeksPreview');
+        preview.innerHTML = generatedWeeks.map(w => `
+            <div class="week-tag">
+                <i class="fas fa-calendar-check"></i> W${w.week}
+            </div>
+        `).join('');
+
+        document.getElementById('previewSection').style.display = 'block';
+        validateForm();
+    }
+
+    window.calculateWeeks = calculateWeeks;
+
+    function validateForm() {
+        const btn = document.getElementById('saveBtn');
+        const hasAsset = selectedAsset !== null;
+        const hasFrequency = document.getElementById('freqSelect').value !== '';
+        const hasWeeks = generatedWeeks.length > 0;
+        
+        if (btn) btn.disabled = !(hasAsset && hasFrequency && hasWeeks);
+    }
+
+    // ============================================
+    // REFRESH FORM
+    // ============================================
+    function refreshForm() {
+        const hasChanges = selectedAsset !== null || generatedWeeks.length > 0 || document.getElementById('freqSelect').value !== '';
+        if (hasChanges) {
+            if (confirm('Unsaved changes will be lost. Continue?')) {
+                resetFormAndRefresh();
+            }
+        } else {
+            resetFormAndRefresh();
+        }
+    }
+
+    window.refreshForm = refreshForm;
+
+    function resetFormAndRefresh() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('freqSelect').value = '';
+        document.getElementById('yearSelect').value = '';
+        document.getElementById('startWeek').value = '1';
+        document.getElementById('previewSection').style.display = 'none';
+        document.getElementById('suggestions').style.display = 'none';
+        
+        document.getElementById('freqSelect').disabled = true;
+        document.getElementById('yearSelect').disabled = true;
+        document.getElementById('startWeek').disabled = true;
+        
+        selectedAsset = null;
+        generatedWeeks = [];
+        pendingSavePayload = null;
+        
+        validateForm();
+        showToast('Form reset. Search for a Technical Location.', 'success');
+    }
+
+    // ============================================
+    // SAVE MANUAL PLAN
+    // ============================================
+    async function saveManualPlan() {
+        if (!selectedAsset || generatedWeeks.length === 0) {
+            showToast('Please select an asset and generate weeks first', 'error');
+            return;
+        }
+        
+        const payload = {
+            assetId: selectedAsset.id,
+            assetName: selectedAsset.name,
+            frequency: document.getElementById('freqSelect').value,
+            weeks: generatedWeeks,
+            year: parseInt(document.getElementById('yearSelect').value)
+        };
+        
+        pendingSavePayload = payload;
+        
+        showLoading('Checking annual plan status...');
+        
+        try {
+            const hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, parseInt(document.getElementById('yearSelect').value)]);
+            hideLoading();
+            
+            if (hasPlan === true) {
+                showConfirmModal();
+            } else {
+                showWarningModal();
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error checking plan status: ' + e.message, 'error');
+        }
+    }
+
+    window.saveManualPlan = saveManualPlan;
+
+    // ============================================
+    // MODALS
+    // ============================================
+    function showConfirmModal() {
+        const modalHtml = `
+            <div class="modal-overlay" id="confirmModal">
+                <div class="modal-container">
+                    <div class="modal-icon" style="color: var(--eams-warning);">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3>Confirm Action</h3>
+                    <p>Save ${generatedWeeks.length} manual task(s) for ${escapeHtml(selectedAsset.name)}?</p>
+                    <div class="modal-buttons">
+                        <button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                        <button class="btn-primary" style="background: var(--eams-danger);" id="confirmActionBtn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        document.getElementById('confirmActionBtn').onclick = () => {
+            closeConfirmModal();
+            executeSave();
+        };
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById('confirmModal');
+        if (modal) modal.remove();
+    }
+
+    window.closeConfirmModal = closeConfirmModal;
+
+    function showWarningModal() {
+        const modalHtml = `
+            <div class="modal-overlay" id="warningModal">
+                <div class="modal-container">
+                    <div class="modal-icon" style="color: var(--eams-warning);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>⚠️ No Annual Plan Found</h3>
+                    <p>No annual strategy plan found for ${escapeHtml(selectedAsset.name)} (${escapeHtml(selectedAsset.id)}) in ${document.getElementById('yearSelect').value}.<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>
+                    <div class="modal-buttons">
+                        <button class="btn-secondary" onclick="closeWarningModal()">Cancel</button>
+                        <button class="btn-primary" id="warningConfirmBtn">Continue Anyway</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        document.getElementById('warningConfirmBtn').onclick = () => {
+            closeWarningModal();
+            executeSave();
+        };
+    }
+
+    function closeWarningModal() {
+        const modal = document.getElementById('warningModal');
+        if (modal) modal.remove();
+    }
+
+    window.closeWarningModal = closeWarningModal;
+
+    async function executeSave() {
+        if (!pendingSavePayload) return;
+        
+        showLoading('Saving manual tasks...');
+        
+        try {
+            const response = await callApi('PVT_saveManualPMPlan', [pendingSavePayload]);
+            hideLoading();
+            
+            if (response.status === 'success') {
+                showToast(response.message, 'success');
+                if (response.warning) {
+                    setTimeout(() => {
+                        showToast(response.warning, 'warning');
+                    }, 2000);
+                }
+                resetFormAndRefresh();
+            } else {
+                showToast('Error: ' + response.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', async function() {
+        loadApiUrl();
+        
+        if (EAMS_API_URL) {
+            await loadConfig();
+        } else {
+            showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
+        }
+    });
+</script>
+</body>
+</html>
