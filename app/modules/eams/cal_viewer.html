@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAMS - Calibration Viewer (Read Only)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --eams-main: #1a56db;
+      --eams-accent: #3b82f6;
+      --eams-bg: #f8fafc;
+      --cal-red: #d32f2f;
+      --cal-orange: #ed6c02;
+      --cal-green: #2e7d32;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--eams-bg);
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumb {
+      background: white;
+      padding: 12px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.8rem;
+    }
+
+    .breadcrumb a {
+      color: var(--eams-main);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb span {
+      color: #64748b;
+    }
+
+    .hub-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid;
+    }
+
+    .toast.success { border-left-color: #10b981; }
+    .toast.error { border-left-color: #ef4444; }
+    .toast.info { border-left-color: #3b82f6; }
+    .toast.warning { border-left-color: #f59e0b; }
+
+    .toast i { font-size: 1.2rem; }
+    .toast.success i { color: #10b981; }
+    .toast.error i { color: #ef4444; }
+    .toast .toast-message { flex: 1; font-size: 0.85rem; }
+    .toast .toast-close { cursor: pointer; color: #94a3b8; font-size: 1rem; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 62, 80, 0.9);
+      z-index: 1500;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-spinner {
+      background: white;
+      padding: 24px 32px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--eams-main);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Heatmap */
+    .heatmap-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .heatmap-card {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border-top: 4px solid #ccc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .heatmap-card.critical { border-top-color: var(--cal-red); }
+    .heatmap-card.warning { border-top-color: var(--cal-orange); }
+    .heatmap-card.compliant { border-top-color: var(--cal-green); }
+
+    .heatmap-number {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .heatmap-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #6c757d;
+      margin: 0;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-red { background: #ffebee; color: var(--cal-red); }
+    .badge-orange { background: #fff3e0; color: var(--cal-orange); }
+    .badge-green { background: #e8f5e9; color: var(--cal-green); }
+
+    .table-container {
+      max-height: 500px;
+      overflow-y: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #e9ecef;
+      padding: 12px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .filter-bar {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+
+    .btn-history {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-history:hover {
+      background: #475569;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 62, 80, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-container {
+      background: white;
+      border-radius: 16px;
+      width: 700px;
+      max-width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-top: 5px solid var(--eams-main);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .modal-header h4 {
+      margin: 0;
+      color: var(--eams-main);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #dee2e6;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .instrument-details {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--eams-main);
+    }
+
+    .instrument-details h4 {
+      margin: 0 0 10px 0;
+      font-size: 0.9rem;
+      color: var(--eams-main);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: #6c757d;
+    }
+
+    .detail-value {
+      color: #1e293b;
+    }
+
+    .history-item {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-date {
+      font-weight: 700;
+      color: var(--eams-main);
+    }
+
+    .history-cert {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .deviation-value {
+      font-family: monospace;
+      font-weight: 600;
+      color: #f59e0b;
+    }
+
+    .text-muted { color: #6c757d; }
+    .text-center { text-align: center; }
+    .mt-1 { margin-top: 4px; }
+    .small { font-size: 0.75rem; }
+    .py-5 { padding: 40px 0; }
+
+    @media (max-width: 768px) {
+      .filter-bar {
+        grid-template-columns: 1fr;
+      }
+      .heatmap-container {
+        flex-direction: column;
+      }
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="breadcrumb">
+  <a href="#" onclick="window.parent.location.href='/app/modules/eams/cal_dispatcher.html'">Inicio</a> / 
+  <span>CALIBRATION VIEWER</span>
+  <span style="margin-left: 12px; font-size: 0.7rem; color: #94a3b8;">
+    <i class="bi bi-eye"></i> Read Only Mode
+  </span>
+</div>
+
+<div class="hub-container">
+  
+  <!-- HEATMAP -->
+  <div class="heatmap-container">
+    <div class="heatmap-card critical">
+      <p class="heatmap-label">CRITICAL (&lt; 30 DAYS)</p>
+      <h2 class="heatmap-number" id="criticalCount" style="color: var(--cal-red);">0</h2>
+    </div>
+    <div class="heatmap-card warning">
+      <p class="heatmap-label">UPCOMING (30-90 DAYS)</p>
+      <h2 class="heatmap-number" id="warningCount" style="color: var(--cal-orange);">0</h2>
+    </div>
+    <div class="heatmap-card compliant">
+      <p class="heatmap-label">COMPLIANT (&gt; 90 DAYS)</p>
+      <h2 class="heatmap-number" id="compliantCount" style="color: var(--cal-green);">0</h2>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label><i class="bi bi-search"></i> SEARCH</label>
+      <input type="text" id="searchInput" placeholder="Tag ID or Name...">
+    </div>
+    <div class="filter-group">
+      <label>TYPE</label>
+      <select id="filterType">
+        <option value="">All Types</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>AREA</label>
+      <select id="filterArea">
+        <option value="">All Areas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>STATUS</label>
+      <select id="filterStatus">
+        <option value="">All Status</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- INSTRUMENT TABLE -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>TAG ID</th>
+          <th>INSTRUMENT</th>
+          <th>TYPE</th>
+          <th>AREA</th>
+          <th>LAST CAL</th>
+          <th>NEXT DUE</th>
+          <th>DAYS LEFT</th>
+          <th>STATUS</th>
+          <th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody id="instrumentTableBody">
+        <tr>
+          <td colspan="9" class="text-center py-5 text-muted">
+            <i class="bi bi-hourglass-split"></i><br>
+            Loading instruments...
+           </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL: HISTORY VIEW WITH INSTRUMENT DETAILS -->
+<div id="historyModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h4 id="historyModalTitle">Calibration History</h4>
+      <button class="btn-close" id="closeHistoryBtn">&times;</button>
+    </div>
+    <div class="modal-body" id="historyContent">
+      <p class="text-muted text-center">Loading...</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="closeHistoryFooterBtn">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <span id="loadingMessage">Processing...</span>
+  </div>
+</div>
+
+<script>
+// ============================================
+// WEB APP ADAPTATION - API via Proxy
+// ============================================
+
+const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+let EAMS_API_URL = null;
+
+function loadApiUrl() {
+  try {
+    const sessionRaw = localStorage.getItem('adkintor_session');
+    if (sessionRaw) {
+      const sessionData = JSON.parse(sessionRaw);
+      EAMS_API_URL = sessionData.eamsApiUrl;
+      console.log('API URL loaded:', EAMS_API_URL);
+    } else {
+      console.warn('No session found in localStorage');
+    }
+  } catch (e) {
+    console.error('Error loading API URL:', e);
+  }
+}
+
+async function callApi(action, args = []) {
+  if (!EAMS_API_URL) {
+    throw new Error('API URL not configured. Please login first.');
+  }
+  
+  const response = await fetch(PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      targetUrl: EAMS_API_URL,
+      payload: { action: action, args: args }
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  const result = await response.json();
+  
+  if (!result.success) {
+    throw new Error(result.error || 'Unknown error from server');
+  }
+  
+  return result.data;
+}
+
+function closeModal() {
+  window.parent.postMessage('closeIframe', '*');
+}
+
+// ============================================
+// UI Helpers
+// ============================================
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  let icon = '';
+  if (type === 'success') icon = '<i class="bi bi-check-circle-fill"></i>';
+  else if (type === 'error') icon = '<i class="bi bi-exclamation-triangle-fill"></i>';
+  else icon = '<i class="bi bi-info-circle-fill"></i>';
+  
+  toast.innerHTML = `
+    ${icon}
+    <span class="toast-message">${message}</span>
+    <i class="bi bi-x-lg toast-close"></i>
+  `;
+  
+  container.appendChild(toast);
+  
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', () => toast.remove());
+  
+  setTimeout(() => {
+    if (toast.parentNode) toast.remove();
+  }, 5000);
+}
+
+function showLoading(message = 'Processing...') {
+  const overlay = document.getElementById('loadingOverlay');
+  const msgSpan = document.getElementById('loadingMessage');
+  if (msgSpan) msgSpan.textContent = message;
+  overlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = 'none';
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+function calculateDaysLeft(nextCalStr) {
+  if (!nextCalStr) return 999;
+  const today = new Date();
+  const nextCal = new Date(nextCalStr);
+  const diffTime = nextCal - today;
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+// ============================================
+// VIEWER Module (Read Only)
+// ============================================
+
+const VIEWER = (function() {
+  let instruments = [];
+  let config = {
+    areas: [],
+    types: [],
+    statuses: []
+  };
+
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+  
+  async function init() {
+    loadApiUrl();
+    
+    if (!EAMS_API_URL) {
+      showToast('Session not found. Please login from the main application.', 'error');
+      return;
+    }
+    
+    showLoading('Loading calibration data...');
+    await loadConfig();
+    await loadInstruments();
+    setupEventListeners();
+    hideLoading();
+  }
+
+  async function loadConfig() {
+    try {
+      const response = await callApi('CAL_VIEWER_getConfig', []);
+      if (response.status === "success") {
+        config = response.data;
+        populateDropdowns();
+      } else {
+        showToast(response.message || 'Config load failed', 'error');
+      }
+    } catch (error) {
+      showToast('Config load failed: ' + error.message, 'error');
+    }
+  }
+
+  function populateDropdowns() {
+    const typeFilter = document.getElementById('filterType');
+    typeFilter.innerHTML = '<option value="">All Types</option>' + 
+      config.types.map(t => `<option value="${t}">${t}</option>`).join('');
+
+    const areaFilter = document.getElementById('filterArea');
+    areaFilter.innerHTML = '<option value="">All Areas</option>' + 
+      config.areas.map(a => `<option value="${a}">${a}</option>`).join('');
+
+    const statusFilter = document.getElementById('filterStatus');
+    statusFilter.innerHTML = '<option value="">All Status</option>' + 
+      config.statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+  }
+
+  async function loadInstruments() {
+    try {
+      instruments = await callApi('CAL_VIEWER_getAllInstruments', []);
+      renderTable(instruments);
+      updateHeatmap(instruments);
+    } catch (error) {
+      showToast('Failed to load instruments: ' + error.message, 'error');
+      const tbody = document.getElementById('instrumentTableBody');
+      tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">❌ Error loading instruments: ${error.message}</td></tr>`;
+    }
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('instrumentTableBody');
+    
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1"></i><br>No instruments found</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(inst => {
+      const daysLeft = calculateDaysLeft(inst.nextCal);
+      let daysClass = '', badgeClass = '';
+      
+      if (daysLeft < 30) {
+        daysClass = 'badge-red';
+        badgeClass = 'badge-red';
+      } else if (daysLeft < 90) {
+        daysClass = 'badge-orange';
+        badgeClass = 'badge-orange';
+      } else {
+        daysClass = 'badge-green';
+        badgeClass = 'badge-green';
+      }
+
+      return `
+        <tr>
+          <td><strong style="color: var(--eams-main);">${escapeHtml(inst.tagId)}</strong></td>
+          <td>${escapeHtml(inst.name)}</td>
+          <td>${escapeHtml(inst.type) || '-'}</td>
+          <td>${escapeHtml(inst.area) || '-'}</td>
+          <td>${inst.lastCal || '-'}</td>
+          <td>${inst.nextCal || '-'}</td>
+          <td><span class="status-badge ${daysClass}">${daysLeft} days</span></td>
+          <td><span class="status-badge ${badgeClass}">${escapeHtml(inst.status) || 'Active'}</span></td>
+          <td><button class="btn-history" data-tag="${inst.tagId}">📜 HISTORY</button></td>
+        </tr>
+      `;
+    }).join('');
+    
+    // Attach event listeners to history buttons
+    document.querySelectorAll('.btn-history').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showHistory(btn.dataset.tag);
+      });
+    });
+  }
+
+  function updateHeatmap(data) {
+    let critical = 0, warning = 0, compliant = 0;
+    
+    data.forEach(inst => {
+      const days = calculateDaysLeft(inst.nextCal);
+      if (days < 30) critical++;
+      else if (days < 90) warning++;
+      else compliant++;
+    });
+    
+    document.getElementById('criticalCount').innerText = critical;
+    document.getElementById('warningCount').innerText = warning;
+    document.getElementById('compliantCount').innerText = compliant;
+  }
+
+  function filter() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const typeFilter = document.getElementById('filterType').value;
+    const areaFilter = document.getElementById('filterArea').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    const filtered = instruments.filter(inst => {
+      if (searchTerm && !inst.tagId.toLowerCase().includes(searchTerm) && 
+          !inst.name.toLowerCase().includes(searchTerm)) return false;
+      if (typeFilter && inst.type !== typeFilter) return false;
+      if (areaFilter && inst.area !== areaFilter) return false;
+      if (statusFilter && inst.status !== statusFilter) return false;
+      return true;
+    });
+
+    renderTable(filtered);
+    updateHeatmap(filtered);
+  }
+
+  // ============================================
+  // HISTORY MODAL
+  // ============================================
+
+  async function showHistory(tagId) {
+    showLoading("Loading history...");
+    
+    try {
+      const history = await callApi('CAL_VIEWER_getInstrumentHistory', [tagId]);
+      hideLoading();
+      
+      const container = document.getElementById('historyContent');
+      const title = document.getElementById('historyModalTitle');
+      title.innerText = `Calibration History: ${tagId}`;
+      
+      if (history.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">No calibration records found</p>';
+      } else {
+        // Get instrument details from the first record (all have the same)
+        const inst = history[0]?.instrument;
+        
+        let instrumentDetailsHtml = '';
+        if (inst) {
+          instrumentDetailsHtml = `
+            <div class="instrument-details">
+              <h4><i class="bi bi-info-circle"></i> Instrument Details</h4>
+              <div class="detail-grid">
+                <div><span class="detail-label">Name:</span> <span class="detail-value">${escapeHtml(inst.name || 'N/A')}</span></div>
+                <div><span class="detail-label">Type:</span> <span class="detail-value">${escapeHtml(inst.type || 'N/A')}</span></div>
+                <div><span class="detail-label">Model:</span> <span class="detail-value">${escapeHtml(inst.model || 'N/A')}</span></div>
+                <div><span class="detail-label">Serial:</span> <span class="detail-value">${escapeHtml(inst.serial || 'N/A')}</span></div>
+                <div><span class="detail-label">Area:</span> <span class="detail-value">${escapeHtml(inst.area || 'N/A')}</span></div>
+                <div><span class="detail-label">Frequency:</span> <span class="detail-value">${inst.frequency || 'N/A'} months</span></div>
+                <div><span class="detail-label">Tolerance:</span> <span class="detail-value">${escapeHtml(inst.tolerance || 'N/A')}</span></div>
+                <div><span class="detail-label">Responsible:</span> <span class="detail-value">${escapeHtml(inst.responsible || 'N/A')}</span></div>
+                <div><span class="detail-label">Associated Asset:</span> <span class="detail-value">${escapeHtml(inst.associatedAssetId || 'None')}</span></div>
+              </div>
+            </div>
+          `;
+        }
+        
+        const historyHtml = history.map(h => `
+          <div class="history-item">
+            <div class="history-date">📅 ${h.date}</div>
+            <div>👤 ${escapeHtml(h.performedBy)} | ${h.result}</div>
+            <div class="history-cert">📄 Certificate: ${escapeHtml(h.certificate) || 'N/A'}</div>
+            ${h.deviation ? `<div class="deviation-value">📊 Deviation: ${h.deviation} ${escapeHtml(h.deviationUnit || '')}</div>` : ''}
+            <div class="small text-muted mt-1">💬 ${escapeHtml(h.comments) || 'No comments'}</div>
+          </div>
+        `).join('');
+        
+        container.innerHTML = instrumentDetailsHtml + '<h4 style="margin: 15px 0 10px 0;">Calibration Records</h4>' + historyHtml;
+      }
+      
+      document.getElementById('historyModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+    } catch (error) {
+      hideLoading();
+      showToast("Failed to load history: " + error.message, "error");
+    }
+  }
+
+  function closeHistoryModal() {
+    document.getElementById('historyModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function setupEventListeners() {
+    // Filter inputs
+    document.getElementById('searchInput').addEventListener('input', () => filter());
+    document.getElementById('filterType').addEventListener('change', () => filter());
+    document.getElementById('filterArea').addEventListener('change', () => filter());
+    document.getElementById('filterStatus').addEventListener('change', () => filter());
+    
+    // Modal close buttons
+    document.getElementById('closeHistoryBtn').addEventListener('click', () => closeHistoryModal());
+    document.getElementById('closeHistoryFooterBtn').addEventListener('click', () => closeHistoryModal());
+    
+    // Close modal on overlay click
+    const modal = document.getElementById('historyModal');
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeHistoryModal();
+      }
+    });
+  }
+
+  return {
+    init: init
+  };
+})();
+
+window.addEventListener('DOMContentLoaded', () => {
+  VIEWER.init();
+});
+</script>
+</body>
+</html>
