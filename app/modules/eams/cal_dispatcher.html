@@ -39,9 +39,12 @@
         
         .asset-buttons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .asset-card {
@@ -80,6 +83,7 @@
             .asset-buttons-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
+                max-width: 100%;
             }
             
             .dispatcher-header h2 {
@@ -110,12 +114,6 @@
                 <h3>CALIBRATION MANAGER</h3>
                 <p>Register instruments, record calibrations, manage certificates</p>
             </div>
-            
-            <div class="asset-card" id="reportsBtn">
-                <i class="fas fa-chart-line"></i>
-                <h3>REPORTS & AUDITS</h3>
-                <p>Compliance reports and audit trails</p>
-            </div>
         </div>
     </div>
     
@@ -136,7 +134,7 @@
             }
         }
         
-        // Abrir modales
+        // Open modals
         function openViewer() {
             window.parent.postMessage({
                 type: 'openIframeModal',
@@ -153,18 +151,9 @@
             }, '*');
         }
         
-        function openReports() {
-            window.parent.postMessage({
-                type: 'openIframeModal',
-                title: 'Reports & Audits',
-                url: '/app/modules/eams/cal_reports.html'
-            }, '*');
-        }
-        
         // Configurar botones
         document.getElementById('viewerBtn').onclick = openViewer;
         document.getElementById('managerBtn').onclick = openManager;
-        document.getElementById('reportsBtn').onclick = openReports;
         
         // Inicializar
         displayDateInfo();
