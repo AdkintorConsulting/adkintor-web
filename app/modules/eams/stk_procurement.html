@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>EAMS - PROCUREMENT HUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
+        .eams-modal {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .eams-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #8b5cf6;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .eams-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #ffffff;
+            font-size: 0.7rem;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        .breadcrumbs span {
+            color: #8b5cf6;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-success { background: #059669; border-left: 4px solid #34d399; }
+        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
+        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
+        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(3px);
+        }
+
+        .loading-content {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #8b5cf6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .eams-body {
+            padding: 24px;
+        }
+
+        /* Split Layout */
+        .split-container {
+            display: flex;
+            gap: 20px;
+            min-height: 600px;
+        }
+
+        .tracker-panel {
+            width: 340px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tracker-header {
+            padding: 16px;
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .tracker-header h3 {
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .tracker-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            max-height: 70vh;
+        }
+
+        .tracker-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .tracker-card:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .tracker-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .tracker-po-number {
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #1e293b;
+        }
+
+        .tracker-date {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        .tracker-vendor {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .tracker-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .tracker-status.EMITTED { background: #f1f5f9; color: #475569; }
+        .tracker-status.PARTIAL { background: #fef3c7; color: #d97706; }
+        .tracker-status.RECEIVED { background: #dcfce7; color: #166534; }
+        .tracker-status.CLOSED { background: #e2e8f0; color: #475569; }
+        .tracker-status.CANCELLED { background: #fee2e2; color: #dc2626; }
+
+        .tracker-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 6px;
+            border-radius: 6px;
+        }
+
+        .action-panel {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .action-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .action-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .action-tab.active {
+            border-bottom-color: #8b5cf6;
+            color: #8b5cf6;
+            background: white;
+        }
+
+        .action-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #8b5cf6;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-primary:hover { background: #7c3aed; transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.7rem;
+        }
+
+        .items-table th, .items-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .items-table th {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        .btn-add {
+            background: none;
+            border: 1px dashed #8b5cf6;
+            color: #8b5cf6;
+            padding: 6px 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.7rem;
+        }
+
+        .po-search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .po-search-container input {
+            flex: 2;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            min-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .custom-suggestions div {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .custom-suggestions div:hover {
+            background: #f3e8ff;
+        }
+
+        .invalid-sku {
+            border-color: #dc2626 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        .status-bar {
+            background: #f1f5f9;
+            padding: 10px 24px;
+            font-size: 0.7rem;
+            color: #475569;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 10050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 20px;
+            width: 650px;
+            max-width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-top: 4px solid #8b5cf6;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="eams-modal">
+    <div class="eams-header">
+        <h2><i class="bi bi-cart-plus"></i> PROCUREMENT HUB</h2>
+        <div class="user-badge" id="user-display">Loading...</div>
+    </div>
+    <div class="breadcrumbs">
+        <i class="bi bi-house-door-fill"></i> Inicio > <span>INVENTORY</span> > Procurement Hub
+    </div>
+
+    <div class="eams-body">
+        <div class="split-container">
+            <!-- LEFT PANEL: TRACKER -->
+            <div class="tracker-panel">
+                <div class="tracker-header">
+                    <h3><i class="bi bi-list-ul"></i> Procurement Tracker</h3>
+                    <div class="filter-bar">
+                        <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." onkeyup="handleSearchInput()">
+                        <div style="display: flex; gap: 8px;">
+                            <select id="monthsFilter" onchange="refreshTracker()">
+                                <option value="1">Last Month</option>
+                                <option value="6">Last 6 Months</option>
+                                <option value="12">Last 12 Months</option>
+                                <option value="24">Last 24 Months</option>
+                                <option value="0">All Time</option>
+                            </select>
+                            <select id="statusFilter" onchange="refreshTracker()">
+                                <option value="ALL">All Status</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="tracker-list" id="trackerList"><div style="text-align:center;padding:40px;">Loading...</div></div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="action-panel">
+                <div class="action-tabs">
+                    <div class="action-tab active" data-tab="new" onclick="activateTab('new')">📝 New Request</div>
+                    <div class="action-tab" data-tab="receive" onclick="activateTab('receive')">📥 Process Receipt</div>
+                </div>
+                <div class="action-content">
+                    <div id="empty-state" class="empty-state" style="display:none;"><i class="bi bi-hand-index-thumb"></i><p>Select a tab above to start</p></div>
+                    
+                    <!-- TAB: NEW REQUEST -->
+                    <div id="tab-new">
+                        <h4>Create Requisition / PO</h4>
+                        <form id="reqForm">
+                            <div class="row"><div class="form-group"><label>Reference number</label><input type="text" id="reqId" placeholder="Optional internal reference"></div>
+                            <div class="form-group"><label>PO Number</label><input type="text" id="poNumber" placeholder="PO number"></div></div>
+                            <div class="row"><div class="form-group"><label>Vendor / Supplier *</label><div style="position:relative"><input type="text" id="vendor" required autocomplete="off"><div id="vendorSuggestions" class="custom-suggestions" style="display:none;"></div></div></div>
+                            <div class="form-group"><label>Payment Method *</label><select id="paymentMethod" required><option value="">-- Select one --</option></select></div></div>
+                            <div class="row"><div class="form-group"><label>Issue Date</label><input type="date" id="issueDate"></div>
+                            <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
+                            <div class="row"><div class="form-group"><label>Budget Area *</label><select id="budgetArea"><option value="">-- Select area --</option></select></div>
+                            <div class="form-group"><label>General Ledger</label><input type="text" id="budgetCode" readonly placeholder="Auto-filled"></div></div>
+                            <div class="form-group"><label>Items</label>
+                                <table class="items-table" id="reqItemsTable"><thead><tr><th style="width:100px">Type</th><th style="width:140px">SKU/Code</th><th style="width:220px">Description</th><th style="width:70px">Qty</th><th style="width:150px">Unit Price</th><th style="width:30px"></th></tr></thead><tbody id="reqItemsBody"></tbody></table>
+                                <button type="button" class="btn-add" onclick="addReqItem()">+ Add Item</button>
+                            </div>
+                            <div class="form-group"><label>Notes / Justification</label><textarea id="reqNotes" rows="2"></textarea></div>
+                            <div class="btn-container"><button type="button" class="btn-secondary" onclick="clearReqForm()">Clear</button>
+                            <button type="button" class="btn-primary" onclick="submitRequisition()">Save Requisition</button></div>
+                        </form>
+                    </div>
+                    
+                    <!-- TAB: PROCESS RECEIPT -->
+                    <div id="tab-receive" style="display:none;">
+                        <h4>Process Material Receipt</h4>
+                        <div class="po-search-container"><input type="text" id="poSearchInput" placeholder="Search by PO Number..."><button class="btn-primary" onclick="searchPOForReceipt()">🔍 SEARCH</button></div>
+                        <div id="receiveSelectionMsg" style="margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:10px">Enter a PO number above.</div>
+                        <form id="receiptForm" style="display:none">
+                            <div class="row"><div class="form-group"><label>PO Number</label><input type="text" id="receiptPONumber" readonly></div>
+                            <div class="form-group"><label>Vendor</label><input type="text" id="receiptVendor" readonly></div></div>
+                            <div class="row"><div class="form-group"><label>Payment Method</label><input type="text" id="receiptPaymentMethod" readonly></div>
+                            <div class="form-group"><label>Status</label><input type="text" id="receiptStatus" readonly></div></div>
+                            <div class="row"><div class="form-group"><label>Receipt Date</label><input type="date" id="receiptDate"></div>
+                            <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
+                            <div class="form-group"><label>Items Received</label><div id="receiptItemsContainer"></div></div>
+                            <div class="form-group"><label>Delivery Note / Comments</label><textarea id="receiptNotes" rows="2"></textarea></div>
+                            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px;">
+                                <button type="button" class="btn-secondary" onclick="cancelCurrentPO()" style="background:#f87171;">❌ Cancel PO</button>
+                                <button type="button" class="btn-secondary" onclick="forceCloseCurrentPO()" style="background:#fbbf24;">🔒 Force Close</button>
+                                <button type="button" class="btn-primary" onclick="submitReceipt()">Confirm Receipt</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="status-bar"><span>Status: <strong id="footer-status">Ready</strong></span><span>EAMS v26 · Procurement Hub</span></div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="loadingOverlay" class="loading-overlay" style="display:none;"><div class="loading-content"><div class="spinner"></div><div>Processing...</div></div></div>
+
+<!-- Modales -->
+<div id="detailModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>PO Details</h3><button class="btn-close" onclick="closeModal('detailModal')">&times;</button></div><div class="modal-body" id="detailModalContent"></div></div></div>
+<div id="modalHasProduct" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>⚠️ DIRECT PURCHASE DETECTED</h3><button class="btn-close" onclick="closeModal('modalHasProduct')">&times;</button></div><div class="modal-body"><p id="modalHasProductMsg"></p><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalHasProduct', 'NO')">NO</button><button class="btn-primary" onclick="resolveModal('modalHasProduct', 'YES')">YES</button></div></div></div></div>
+<div id="modalUsageType" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>📦 ITEM USAGE TYPE</h3><button class="btn-close" onclick="closeModal('modalUsageType')">&times;</button></div><div class="modal-body"><p>How will this item be used?</p><div style="background:#f0f4f8;padding:12px;border-radius:8px;margin:12px 0;"><p><strong>STOCK</strong> → Warehouse (inventory increases)</p><p><strong>CONSUME</strong> → Used immediately (no inventory change)</p></div><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalUsageType', 'CONSUME')">CONSUME</button><button class="btn-primary" onclick="resolveModal('modalUsageType', 'STOCK')">STOCK</button></div></div></div></div>
+<div id="modalHasWO" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>🔧 WORK ORDER ASSOCIATION</h3><button class="btn-close" onclick="closeModal('modalHasWO')">&times;</button></div><div class="modal-body"><p>Is this consumption associated with a Work Order?</p><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalHasWO', 'NO')">NO</button><button class="btn-primary" onclick="resolveModal('modalHasWO', 'YES')">YES</button></div></div></div></div>
+<div id="modalWONumber" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>📝 SELECT WORK ORDER</h3><button class="btn-close" onclick="closeModal('modalWONumber')">&times;</button></div><div class="modal-body"><select id="woNumberSelect" style="width:100%;padding:10px;margin-bottom:20px;"><option value="">-- Loading --</option></select><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalWONumber', null)">Cancel</button><button class="btn-primary" onclick="resolveModalWO()">Confirm</button></div></div></div></div>
+<div id="modalCancelPO" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>❌ CANCEL PO</h3><button class="btn-close" onclick="closeModal('modalCancelPO')">&times;</button></div><div class="modal-body"><p id="modalCancelPOMsg"></p><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalCancelPO', false)">No, Keep it</button><button class="btn-primary" onclick="resolveModal('modalCancelPO', true)">Yes, Cancel PO</button></div></div></div></div>
+<div id="modalForceClosePO" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>🔒 FORCE CLOSE PO</h3><button class="btn-close" onclick="closeModal('modalForceClosePO')">&times;</button></div><div class="modal-body"><p id="modalForceClosePOMsg"></p><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalForceClosePO', false)">Cancel</button><button class="btn-primary" onclick="resolveModal('modalForceClosePO', true)">Confirm</button></div></div></div></div>
+
+<script>
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
+
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+            } catch(e) { console.error(e); }
+        }
+    }
+
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) throw new Error('API URL not configured');
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targetUrl: EAMS_API_URL, payload: { action: action, args: args } })
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error || 'API call failed');
+        return result.data;
+    }
+
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+    function showToast(msg, type='info') { const t=document.getElementById('toast'); t.className=`toast toast-${type}`; t.innerHTML=`<i class="bi bi-${type==='success'?'check-circle':(type==='error'?'x-circle':'info-circle')}"></i> ${msg}`; t.style.display='flex'; setTimeout(()=>t.style.display='none',4000); }
+    function showLoading(msg) { const ov=document.getElementById('loadingOverlay'); ov.querySelector('.loading-content').innerHTML=`<div class="spinner"></div><div>${msg}</div>`; ov.style.display='flex'; }
+    function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    let modalResolve = null;
+    function showModalPromise(modalId) { return new Promise((resolve) => { modalResolve = resolve; document.getElementById(modalId).style.display = 'flex'; }); }
+    function resolveModal(modalId, value) { document.getElementById(modalId).style.display = 'none'; if(modalResolve) { modalResolve(value); modalResolve = null; } }
+    function resolveModalWO() { const val = document.getElementById('woNumberSelect').value; resolveModal('modalWONumber', val || null); }
+
+    let currentTrackerData = [], selectedPO = null, selectedPOFull = null, catalog = [], budgetAreas = [], allVendors = [];
+
+    function activateTab(tab) {
+        document.querySelectorAll('.action-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelector(`.action-tab[data-tab="${tab}"]`).classList.add('active');
+        document.getElementById('tab-new').style.display = tab==='new'?'block':'none';
+        document.getElementById('tab-receive').style.display = tab==='receive'?'block':'none';
+        if(tab==='new' && document.getElementById('reqItemsBody').children.length===0) addReqItem();
+    }
+
+    async function refreshTracker() {
+        const searchTerm = document.getElementById('searchInput').value.trim();
+        const status = document.getElementById('statusFilter').value;
+        const months = document.getElementById('monthsFilter').value;
+        showLoading('Loading tracker...');
+        try {
+            const data = await callApi('STK_getProcurementTracker', [{ status: status, months: parseInt(months), ignoreDateFilter: searchTerm !== '' }]);
+            currentTrackerData = data || [];
+            renderTracker(currentTrackerData, searchTerm);
+            hideLoading();
+        } catch(err) { hideLoading(); showToast('Failed: '+err.message,'error'); }
+    }
+
+    function renderTracker(data, searchTerm) {
+        const container = document.getElementById('trackerList');
+        let filtered = data;
+        if(searchTerm) filtered = filtered.filter(i=>(i.poNumber||'').toLowerCase().includes(searchTerm.toLowerCase())||(i.vendor||'').toLowerCase().includes(searchTerm.toLowerCase()));
+        if(!filtered.length) { container.innerHTML='<div style="text-align:center;padding:40px;">No records found.</div>'; return; }
+        container.innerHTML = filtered.map(item => `<div class="tracker-card"><div class="tracker-row"><div><span class="tracker-po-number">${escapeHtml(item.poNumber||'NOT ISSUED')}</span><span class="tracker-date"> | ${escapeHtml(item.date||'N/A')}</span></div><div class="tracker-actions"><button onclick="copyToClipboard('${escapeHtml(item.poNumber)}')">📋</button>${item.poNumber && item.poNumber!=='N/A'?`<button onclick="viewPODetails('${escapeHtml(item.poNumber)}')">👁️</button>`:''}</div></div><div class="tracker-vendor">${escapeHtml(item.vendor||'N/A')}</div><div class="tracker-row" style="margin-top:8px;"><span>Req: ${escapeHtml(item.reqNumber||item.id||'N/A')}</span><span>$${(item.total||0).toLocaleString()}</span></div><div class="tracker-row"><span>📦 Rec: ${item.totalQtyReceived||0}/${item.totalQtyOrdered||0}</span><span class="tracker-status ${item.status||''}">${escapeHtml(item.status||'N/A')}</span></div></div>`).join('');
+    }
+
+    async function viewPODetails(poNumber) {
+        showLoading('Loading PO details...');
+        try {
+            const result = await callApi('STK_getPOFullDetails_V2', [poNumber]);
+            if(result && result.success) {
+                const header = result.header;
+                const items = result.items || [];
+                let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;"><div><strong>PO:</strong> ${escapeHtml(header.poNumber)}</div><div><strong>Vendor:</strong> ${escapeHtml(header.vendor)}</div><div><strong>Status:</strong> ${escapeHtml(header.status)}</div><div><strong>Date:</strong> ${escapeHtml(header.issueDate)}</div></div><h4>Items</h4><table style="width:100%;border-collapse:collapse;"><tr style="background:#f8fafc;"><th>SKU</th><th>Description</th><th>Ordered</th><th>Received</th><th>Unit Price</th></tr>`;
+                items.forEach(i => { html += `<tr><td>${escapeHtml(i.sku)}</td><td>${escapeHtml(i.description)}</td><td>${i.qtyOrdered||0}</td><td>${i.qtyReceived||0}</td><td>$${(i.unitPrice||0).toFixed(2)}</td></tr>`; });
+                html += `</table>`;
+                document.getElementById('detailModalContent').innerHTML = html;
+                document.getElementById('detailModal').style.display = 'flex';
+            } else showToast('PO not found','error');
+            hideLoading();
+        } catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    function copyToClipboard(text) { if(text && text!=='N/A') { navigator.clipboard.writeText(text); showToast(`Copied: ${text}`,'success'); } }
+
+    function handleSearchInput() { refreshTracker(); }
+
+    function addReqItem() {
+        const tbody = document.getElementById('reqItemsBody');
+        const rowId = 'row_'+Date.now();
+        const tr = document.createElement('tr'); tr.id=rowId;
+        tr.innerHTML = `<td><select class="type-select" onchange="toggleItemType(this,'${rowId}')"><option value="inventory">Inventory</option><option value="service">Service</option></select></td>
+                        <td style="position:relative"><input type="text" placeholder="SKU" class="sku-input" style="width:130px"></td>
+                        <td style="position:relative"><input type="text" placeholder="Description" class="desc-input" style="width:210px"></td>
+                        <td><input type="number" value="1" min="1" class="qty-input" style="width:65px"></td>
+                        <td><input type="number" step="0.01" placeholder="0.00" class="price-input" style="width:140px"></td>
+                        <td><button type="button" onclick="this.closest('tr').remove()">✖</button></td>`;
+        tbody.appendChild(tr);
+        const skuInp = tr.querySelector('.sku-input');
+        const descInp = tr.querySelector('.desc-input');
+        skuInp.oninput = () => showSkuSuggestions(skuInp, skuInp.value);
+        descInp.oninput = () => showDescSuggestions(descInp, descInp.value);
+    }
+
+    function showSkuSuggestions(input, val) {
+        if(val.length<3) return;
+        const filtered = catalog.filter(i=>i.sku.toLowerCase().includes(val.toLowerCase())).slice(0,8);
+        if(!filtered.length) { input.classList.add('invalid-sku'); return; }
+        input.classList.remove('invalid-sku');
+        let div = input.parentNode.querySelector('.custom-suggestions');
+        if(div) div.remove();
+        div = document.createElement('div'); div.className='custom-suggestions';
+        filtered.forEach(item => { const opt=document.createElement('div'); opt.innerHTML=`<strong>${escapeHtml(item.sku)}</strong><br><small>${escapeHtml(item.description.substring(0,50))}</small>`; opt.onclick=()=>{ input.value=item.sku; input.closest('tr').querySelector('.desc-input').value=item.description; const priceInp=input.closest('tr').querySelector('.price-input'); if(!priceInp.value) priceInp.value=item.price; div.remove(); }; div.appendChild(opt); });
+        input.parentNode.style.position='relative'; input.parentNode.appendChild(div);
+    }
+
+    function showDescSuggestions(input, val) {
+        if(val.length<3) return;
+        const filtered = catalog.filter(i=>i.description.toLowerCase().includes(val.toLowerCase())).slice(0,8);
+        if(!filtered.length) return;
+        let div = input.parentNode.querySelector('.custom-suggestions');
+        if(div) div.remove();
+        div = document.createElement('div'); div.className='custom-suggestions';
+        filtered.forEach(item => { const opt=document.createElement('div'); opt.innerHTML=`<strong>${escapeHtml(item.description.substring(0,50))}</strong><br><small>SKU: ${escapeHtml(item.sku)}</small>`; opt.onclick=()=>{ input.value=item.description; input.closest('tr').querySelector('.sku-input').value=item.sku; const priceInp=input.closest('tr').querySelector('.price-input'); if(!priceInp.value) priceInp.value=item.price; div.remove(); }; div.appendChild(opt); });
+        input.parentNode.style.position='relative'; input.parentNode.appendChild(div);
+    }
+
+    function toggleItemType(select, rowId) {
+        const row = document.getElementById(rowId);
+        const skuInp = row.querySelector('.sku-input');
+        const qtyInp = row.querySelector('.qty-input');
+        if(select.value==='service') {
+            skuInp.readOnly=true; skuInp.placeholder='Auto-generated'; qtyInp.disabled=true; qtyInp.value=1;
+            callApi('STK_generateServiceCode').then(code => { if(document.getElementById(rowId)) skuInp.value=code; }).catch(e=>console.error);
+        } else { skuInp.readOnly=false; skuInp.placeholder='SKU'; skuInp.value=''; qtyInp.disabled=false; qtyInp.value=1; }
+    }
+
+    function clearReqForm() {
+        document.getElementById('reqId').value=''; document.getElementById('poNumber').value=''; document.getElementById('vendor').value='';
+        document.getElementById('paymentMethod').value=''; document.getElementById('budgetArea').value=''; document.getElementById('budgetCode').value='';
+        document.getElementById('reqNotes').value=''; document.getElementById('reqItemsBody').innerHTML=''; addReqItem();
+    }
+
+    function generateTempPONumber() { const d=new Date(); return `TEMP-${d.getFullYear().toString().slice(-2)}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}${d.getHours().toString().padStart(2,'0')}${d.getMinutes().toString().padStart(2,'0')}`; }
+
+    async function submitRequisition() {
+        const vendor = document.getElementById('vendor').value.trim();
+        const paymentType = document.getElementById('paymentMethod').value;
+        const reqId = document.getElementById('reqId').value.trim();
+        let poNumber = document.getElementById('poNumber').value.trim();
+        const budgetAreaSelect = document.getElementById('budgetArea');
+        const budgetAreaName = budgetAreaSelect.options[budgetAreaSelect.selectedIndex]?.value || '';
+        const notes = document.getElementById('reqNotes').value;
+        const issueDate = document.getElementById('issueDate').value;
+        if(!vendor) { showToast('Vendor required','error'); return; }
+        if(!budgetAreaName) { showToast('Budget Area required','error'); return; }
+        if(!paymentType) { showToast('Payment Method required','error'); return; }
+        const items = []; const rows = document.querySelectorAll('#reqItemsBody tr');
+        for(const row of rows) {
+            const type = row.querySelector('.type-select').value;
+            let sku = row.querySelector('.sku-input').value.trim();
+            const desc = row.querySelector('.desc-input').value.trim();
+            const qty = parseFloat(row.querySelector('.qty-input').value)||0;
+            const price = parseFloat(row.querySelector('.price-input').value)||0;
+            if(type==='inventory' && sku && !catalog.some(c=>c.sku.toUpperCase()===sku.toUpperCase())) { showToast(`SKU ${sku} not found in catalog`,'error'); return; }
+            if(!desc) { showToast('Description required','error'); return; }
+            if(qty<=0) { showToast('Qty >0 required','error'); return; }
+            if(price<=0) { showToast('Unit price >0 required','error'); return; }
+            items.push({ type, sku: type==='inventory'?sku.toUpperCase():'SERVICE', description: desc, qty, unitPrice: price });
+        }
+        if(!items.length) { showToast('Add at least one item','error'); return; }
+
+        const isDirectPurchase = (paymentType !== 'Purchase Order') && (poNumber === '');
+        if(isDirectPurchase) {
+            const hasProduct = await showModalPromise('modalHasProduct');
+            if(hasProduct === 'YES') {
+                const usageType = await showModalPromise('modalUsageType');
+                if(usageType === 'STOCK') await saveDirectPurchase({vendor,paymentType,reqId,budgetAreaName,notes,items}, 'GOES_TO_STOCK', '');
+                else if(usageType === 'CONSUME') {
+                    const hasWO = await showModalPromise('modalHasWO');
+                    if(hasWO === 'YES') {
+                        await loadWOsForModal();
+                        const woNumber = await showModalPromise('modalWONumber');
+                        if(woNumber) await saveDirectPurchase({vendor,paymentType,reqId,budgetAreaName,notes,items}, 'CONSUMED_WO', woNumber);
+                    } else await saveDirectPurchase({vendor,paymentType,reqId,budgetAreaName,notes,items}, 'CONSUMED_ADMIN', '');
+                }
+            } else { await createTemporaryPO({vendor,paymentType,reqId,budgetAreaName,notes,items}); }
+            return;
+        }
+
+        if(paymentType === 'Purchase Order' && !reqId && !poNumber) { showToast('Requisition ID or PO Number required','error'); return; }
+        const payload = { reqId, poNumber, vendor, paymentType, budgetAreaName, budgetAreas, notes, items, issueDate };
+        showLoading('Saving...');
+        try {
+            const res = await callApi('STK_saveProcurementRequisition', [payload]);
+            showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading();
+        } catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    async function saveDirectPurchase(ctx, consumptionType, woNumber) {
+        const payload = { reqId: ctx.reqId, poNumber: '', vendor: ctx.vendor, paymentMethod: ctx.paymentType, budgetAreaName: ctx.budgetAreaName, budgetAreas, notes: ctx.notes, items: ctx.items, consumptionType, woNumber };
+        showLoading('Processing...');
+        try { const res = await callApi('STK_saveDirectPurchase', [payload]); showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading(); } 
+        catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    async function createTemporaryPO(ctx) {
+        const tempPONumber = generateTempPONumber();
+        const payload = { reqId: ctx.reqId, poNumber: tempPONumber, vendor: ctx.vendor, paymentType: ctx.paymentType, budgetAreaName: ctx.budgetAreaName, budgetAreas, notes: ctx.notes, items: ctx.items, createPO: true };
+        showLoading('Creating temp PO...');
+        try { const res = await callApi('STK_saveProcurementRequisition', [payload]); showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading(); } 
+        catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    async function loadWOsForModal() {
+        try { const wos = await callApi('STK_getActiveWorkOrders'); const sel=document.getElementById('woNumberSelect'); if(wos.length) sel.innerHTML='<option value="">-- Select WO --</option>'+wos.map(w=>`<option value="${escapeHtml(w.number)}">${escapeHtml(w.display)}</option>`).join(''); else sel.innerHTML='<option value="">-- No active WOs --</option>'; } 
+        catch(e) { console.error(e); }
+    }
+
+    async function searchPOForReceipt() {
+        const term = document.getElementById('poSearchInput').value.trim();
+        if(!term) { showToast('Enter PO number','error'); return; }
+        showLoading('Searching...');
+        try {
+            const result = await callApi('STK_getPOFullDetails_V2', [term]);
+            if(result && result.success) {
+                selectedPO = result.header; selectedPOFull = result;
+                document.getElementById('receiveSelectionMsg').innerHTML = `Ready to receive: <strong>${escapeHtml(result.header.poNumber)}</strong> from ${escapeHtml(result.header.vendor)}`;
+                document.getElementById('receiptForm').style.display = 'block';
+                document.getElementById('receiptPONumber').value = result.header.poNumber;
+                document.getElementById('receiptVendor').value = result.header.vendor;
+                document.getElementById('receiptPaymentMethod').value = result.header.paymentMethod||'';
+                document.getElementById('receiptStatus').value = result.header.status||'';
+                const items = result.items||[];
+                let itemsHtml = '<table style="width:100%;border-collapse:collapse;"><thead><tr><th>SKU</th><th>Description</th><th>Ordered</th><th>Received</th><th>Pending</th><th>Receive Now</th><th>Unit Price</th></tr></thead><tbody>';
+                items.forEach((item,idx) => {
+                    const ordered = item.qtyOrdered||0, received = item.qtyReceived||0, pending = ordered-received, price = item.unitPrice||0;
+                    itemsHtml += `<tr><td>${escapeHtml(item.sku)}</td><td>${escapeHtml(item.description)}</td><td style="text-align:center">${ordered}</td><td style="text-align:center">${received}</td><td style="text-align:center">${pending}</td><td style="text-align:center"><input type="number" id="recQty_${idx}" value="0" min="0" max="${pending}" style="width:70px" onchange="updateReceiptTotal()"></td><td style="text-align:right">$${price.toFixed(2)}</td></tr>`;
+                });
+                itemsHtml += '</tbody></table><div style="text-align:right;margin-top:10px"><strong>Total: $<span id="receiptTotal">0.00</span></strong></div>';
+                document.getElementById('receiptItemsContainer').innerHTML = itemsHtml;
+                window.updateReceiptTotal = function() { let total=0; document.querySelectorAll('[id^="recQty_"]').forEach((inp,idx)=>{ const qty=parseFloat(inp.value)||0; const price=parseFloat(items[idx]?.unitPrice)||0; total+=qty*price; }); document.getElementById('receiptTotal').innerText=total.toFixed(2); };
+                hideLoading();
+            } else { hideLoading(); showToast('PO not found','error'); }
+        } catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    async function submitReceipt() {
+        if(!selectedPO) { showToast('Search for a PO first','error'); return; }
+        const items = []; const rows = document.querySelectorAll('#receiptItemsContainer tbody tr');
+        for(let i=0;i<rows.length;i++) {
+            const qtyInput = document.getElementById(`recQty_${i}`);
+            if(qtyInput) { const qty = parseFloat(qtyInput.value)||0; if(qty>0) items.push({ sku: selectedPOFull.items?.[i]?.sku||'SERVICE', description: selectedPOFull.items?.[i]?.description||'', qtyOrdered: selectedPOFull.items?.[i]?.qtyOrdered||0, qtyReceived: qty, unitPrice: selectedPOFull.items?.[i]?.unitPrice||0 }); }
+        }
+        if(!items.length) { showToast('Enter at least one quantity','error'); return; }
+        const payload = { reqNumber: selectedPO.reqNumber, poNumber: selectedPO.poNumber, vendor: selectedPO.vendor, paymentMethod: selectedPO.paymentMethod, receiptDate: document.getElementById('receiptDate').value, notes: document.getElementById('receiptNotes').value||'No notes', items };
+        showLoading('Processing receipt...');
+        try {
+            const res = await callApi('STK_saveProcurementReceipt', [payload]);
+            showToast(res.message,'success');
+            document.getElementById('receiptForm').style.display='none';
+            document.getElementById('poSearchInput').value='';
+            document.getElementById('receiveSelectionMsg').innerHTML='Enter a PO number above.';
+            selectedPO=null; selectedPOFull=null;
+            refreshTracker(); hideLoading();
+        } catch(err) { hideLoading(); showToast(err.message,'error'); }
+    }
+
+    async function cancelCurrentPO() {
+        if(!selectedPO) { showToast('No PO selected','error'); return; }
+        const confirmed = await showModalPromise('modalCancelPO');
+        if(confirmed) {
+            showLoading('Cancelling...');
+            try { const res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber]); showToast(res.message,'success'); refreshTracker(); hideLoading(); } 
+            catch(err) { hideLoading(); showToast(err.message,'error'); }
+        }
+    }
+
+    async function forceCloseCurrentPO() {
+        if(!selectedPO) { showToast('No PO selected','error'); return; }
+        const confirmed = await showModalPromise('modalForceClosePO');
+        if(confirmed) {
+            showLoading('Closing...');
+            try { const res = await callApi('STK_forceClosePurchaseOrder', [selectedPO.poNumber]); showToast(res.message,'success'); refreshTracker(); hideLoading(); } 
+            catch(err) { hideLoading(); showToast(err.message,'error'); }
+        }
+    }
+
+    async function init() {
+        loadApiUrl();
+        if(!EAMS_API_URL) { showToast('API URL not configured. Please login.','error'); return; }
+        showLoading('Loading Procurement Hub...');
+        try {
+            const email = await callApi('STK_getCurrentUserEmail');
+            document.getElementById('user-display').innerText = email || 'User';
+            const configRaw = await callApi('STK_getProcurementHubConfig');
+            const config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
+            budgetAreas = config.budgetAreas || [];
+            const paymentSelect = document.getElementById('paymentMethod');
+            if(config.paymentMethods) config.paymentMethods.forEach(m=>paymentSelect.innerHTML+=`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`);
+            const budgetSelect = document.getElementById('budgetArea');
+            budgetAreas.forEach(area=>budgetSelect.innerHTML+=`<option value="${escapeHtml(area.name)}" data-code="${escapeHtml(area.code)}">${escapeHtml(area.name)}</option>`);
+            budgetSelect.onchange = () => { const opt=budgetSelect.options[budgetSelect.selectedIndex]; document.getElementById('budgetCode').value=opt?.getAttribute('data-code')||''; };
+            const statusFilter = document.getElementById('statusFilter');
+            if(config.statuses) config.statuses.forEach(s=>statusFilter.innerHTML+=`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`);
+            catalog = await callApi('STK_getFullCatalog');
+            allVendors = await callApi('STK_getExistingVendors');
+            const vendorInput = document.getElementById('vendor');
+            const vendorDiv = document.getElementById('vendorSuggestions');
+            vendorInput.addEventListener('input',()=>{ const term=vendorInput.value.trim().toLowerCase(); if(term.length<2){vendorDiv.style.display='none';return;} const matches=allVendors.filter(v=>v.toLowerCase().includes(term)); if(matches.length){ vendorDiv.innerHTML=matches.map(v=>`<div onclick="document.getElementById('vendor').value='${escapeHtml(v)}'; this.parentElement.style.display='none';">${escapeHtml(v)}</div>`).join(''); vendorDiv.style.display='block';} else vendorDiv.style.display='none'; });
+            document.addEventListener('click',e=>{ if(vendorInput && !vendorInput.contains(e.target) && !vendorDiv.contains(e.target)) vendorDiv.style.display='none'; });
+            addReqItem();
+            await refreshTracker();
+            hideLoading();
+        } catch(err) { hideLoading(); showToast('Init error: '+err.message,'error'); }
+    }
+    init();
+</script>
+</body>
+</html>
