@@ -21,29 +21,18 @@
         const session = localStorage.getItem('adkintor_session');
         
         if (!session) {
-            window.location.href = '/app/index.html';
-        }
-            <!-- Session Verification -->
-    <script>
-        // Verify session - redirect to login if not exists
-        const session = localStorage.getItem('adkintor_session');
-        
-        if (!session) {
-            window.location.href = '/app/index.html';
+            window.location.replace('/app/index.html');
         }
         
         // Prevenir que el navegador cachee la página después del logout
         window.addEventListener('pageshow', function(event) {
-            // Si la página viene de la caché (back/forward)
             if (event.persisted) {
                 const session = localStorage.getItem('adkintor_session');
                 if (!session) {
-                    window.location.href = '/app/index.html';
+                    window.location.replace('/app/index.html');
                 }
             }
         });
-    </script>
-</head>
     </script>
 </head>
 <body>
