@@ -46,11 +46,11 @@
             return this.session || this.loadSession();
         },
         
-        logout: function() {
-            localStorage.removeItem('adkintor_session');
-            this.session = null;
-            window.location.href = '/app/index.html';
-        },
+	logout: function() {
+	    localStorage.removeItem('adkintor_session');
+	    this.session = null;
+	    window.location.replace('/app/index.html');
+	},
         
         login: async function(email, password) {
             try {
