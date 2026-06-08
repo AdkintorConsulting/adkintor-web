@@ -1,6 +1,8 @@
 // ============================================
-// ADKINTOR AUTH MODULE - CORREGIDO (versión 2)
+// ADKINTOR AUTH MODULE - VERSIÓN 2 (OPCIÓN B)
 // ============================================
+// Cambios: Usa dominio del email para buscar cliente en Master
+// Fecha: 2026-06-08
 
 (function() {
     if (window.__ADKINTOR_AUTH_LOADED__) {
@@ -22,6 +24,7 @@
             if (sessionData) {
                 try {
                     this.session = JSON.parse(sessionData);
+                    // Check session expiration
                     if (this.session.timestamp && (Date.now() - this.session.timestamp) > window.ADKINTOR_CONFIG.SESSION_DURATION) {
                         console.log('Session expired');
                         this.logout();
@@ -51,13 +54,21 @@
         
         login: async function(email, password) {
             try {
-                console.log('1. Calling Master API...');
-                const masterResponse = await this.callMasterAPI(email, password);
+                // Extract domain from email (Opción B)
+                const emailDomain = email.split('@')[1];
+                if (!emailDomain) {
+                    return { success: false, error: 'Invalid email format' };
+                }
+                
+                console.log('1. Looking for client with domain:', emailDomain);
+                
+                // Call Master API with domain as client_id
+                const masterResponse = await this.callMasterAPI(emailDomain);
                 console.log('Master response:', masterResponse);
                 
-                // Validar respuesta del Master API
+                // Validate Master API response
                 if (!masterResponse || masterResponse.status !== 'success') {
-                    const errorMsg = masterResponse?.message || 'Master authentication failed';
+                    const errorMsg = masterResponse?.message || 'Client not found. Please contact your administrator.';
                     return { success: false, error: errorMsg };
                 }
                 
@@ -69,48 +80,51 @@
                     return { success: false, error: 'No API URL found for this client' };
                 }
                 
-                console.log('2. Calling Intelligence API...');
+                console.log('2. Calling Intelligence API for:', clientName);
+                
+                // Call Intelligence API to validate credentials
                 const clientResponse = await this.callClientAPI(intelligenceApiUrl, email, password);
                 console.log('Intelligence response:', clientResponse);
                 
-                // CORREGIDO: Intelligence API devuelve { success: true, data: {...} }
-                // No usa 'status', usa 'success' directamente
+                // Intelligence API returns { success: true, data: {...} }
                 if (!clientResponse || !clientResponse.success) {
-                    const errorMsg = clientResponse?.error || 'Client authentication failed';
+                    const errorMsg = clientResponse?.error || 'Invalid email or password';
                     return { success: false, error: errorMsg };
                 }
                 
-                // Guardar sesión
+                // Build session data
                 const sessionData = {
                     email: email,
-                    role: clientResponse.data?.role || 'client',
-                    clientId: clientResponse.data?.client_id || clientName.replace(/\s/g, '_').toUpperCase(),
+                    role: clientResponse.data?.role || 'VIEWER',
+                    clientId: clientResponse.data?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
                     clientName: clientName,
-                    name: clientResponse.data?.name || email.split('@')[0],
+                    userName: clientResponse.data?.user_name || clientResponse.data?.name || email.split('@')[0],
                     language: clientResponse.data?.language || 'en',
                     intelligenceApiUrl: intelligenceApiUrl,
                     eamsApiUrl: eamsApiUrl || null,
                     timestamp: Date.now()
                 };
                 
+                // Save to localStorage
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
                 this.session = sessionData;
-                console.log('3. Login successful, session saved');
+                console.log('3. Login successful, session saved for:', sessionData.userName);
                 return { success: true };
                 
             } catch (error) {
                 console.error('Login error:', error);
-                return { success: false, error: error.message || 'Connection error' };
+                return { success: false, error: error.message || 'Connection error. Please try again.' };
             }
         },
         
-        callMasterAPI: async function(email, password) {
+        callMasterAPI: async function(clientId) {
+            // Master API now receives client_id (domain) instead of email/password
             const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     targetUrl: window.ADKINTOR_CONFIG.MASTER_API_URL,
-                    payload: { action: 'web_login_master', email: email, password: password }
+                    payload: { action: 'web_login_master', client_id: clientId }
                 })
             });
             return await response.json();
