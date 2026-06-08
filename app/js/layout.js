@@ -816,4 +816,89 @@ function resetBreadcrumbs() {
         breadcrumbDynamic.style.display = 'none';
         breadcrumbDynamic.textContent = '';
     }
+
+// ============================================
+// LOAD USER PERMISSIONS FROM LOCALSTORAGE
+// ============================================
+
+async function loadUserRoleAndPermissions() {
+    const loadingDiv = document.getElementById('dynamicContent');
+    
+    try {
+        // Obtener el rol directamente desde localStorage (viene de WEB_USERS)
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        const userRole = session.role || 'VIEWER';
+        const userName = session.userName || session.name || session.email.split('@')[0];
+        
+        console.log('User role from localStorage:', userRole);
+        console.log('User name from localStorage:', userName);
+        
+        currentUserRole = userRole;
+        
+        // Aplicar permisos según el rol
+        applyPermissionsByRole();
+        
+        // Mostrar mensaje de bienvenida
+        if (loadingDiv) {
+            loadingDiv.innerHTML = `
+                <div class="welcome-message">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <h2>Welcome back, ${userName}!</h2>
+                    <p>Role: ${userRole}</p>
+                    <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('Error loading user permissions:', error);
+        if (loadingDiv) {
+            loadingDiv.innerHTML = `
+                <div class="welcome-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>Welcome</h2>
+                    <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                </div>
+            `;
+        }
+    }
+}
+
+function applyPermissionsByRole() {
+    // Define permission mapping based on role
+    const rolePermissions = {
+        'ADMIN': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'CALIBRATION', 'KPI', 'CONSULTING', 'ASSETS', 'PLANT_LAYOUT'],
+        'MANAGER': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'CALIBRATION', 'KPI', 'ASSETS'],
+        'SUPERVISOR': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'ASSETS'],
+        'TECHNICIAN': ['WORK_ORDERS', 'ASSETS'],
+        'PLANNER': ['PREVENTIVE', 'WORK_ORDERS'],
+        'VIEWER': ['WORK_ORDERS'],
+        'FINANCE': ['INVENTORY', 'KPI']
+    };
+    
+    const permissions = rolePermissions[currentUserRole] || rolePermissions['VIEWER'];
+    
+    // Hide/Show sidebar buttons
+    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    sidebarBtns.forEach(btn => {
+        const permission = btn.getAttribute('data-permission');
+        if (permission && permissions.includes(permission)) {
+            btn.style.display = 'flex';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+    
+    // Hide/Show EAMS buttons
+    const eamsBtns = document.querySelectorAll('.eams-btn');
+    eamsBtns.forEach(btn => {
+        const permission = btn.getAttribute('data-permission');
+        if (permission && permissions.includes(permission)) {
+            btn.style.display = 'inline-block';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+}    
+    
 }
