@@ -1,5 +1,5 @@
 // ============================================
-// ADKINTOR AUTH MODULE - CORREGIDO
+// ADKINTOR AUTH MODULE - CORREGIDO (versión 2)
 // ============================================
 
 (function() {
@@ -73,19 +73,21 @@
                 const clientResponse = await this.callClientAPI(intelligenceApiUrl, email, password);
                 console.log('Intelligence response:', clientResponse);
                 
-                if (!clientResponse || clientResponse.status !== 'success') {
-                    const errorMsg = clientResponse?.message || 'Client authentication failed';
+                // CORREGIDO: Intelligence API devuelve { success: true, data: {...} }
+                // No usa 'status', usa 'success' directamente
+                if (!clientResponse || !clientResponse.success) {
+                    const errorMsg = clientResponse?.error || 'Client authentication failed';
                     return { success: false, error: errorMsg };
                 }
                 
                 // Guardar sesión
                 const sessionData = {
                     email: email,
-                    role: clientResponse.data.role || 'client',
-                    clientId: clientResponse.data.client_id || clientName.replace(/\s/g, '_').toUpperCase(),
+                    role: clientResponse.data?.role || 'client',
+                    clientId: clientResponse.data?.client_id || clientName.replace(/\s/g, '_').toUpperCase(),
                     clientName: clientName,
-                    name: clientResponse.data.name || email.split('@')[0],
-                    language: clientResponse.data.language || 'en',
+                    name: clientResponse.data?.name || email.split('@')[0],
+                    language: clientResponse.data?.language || 'en',
                     intelligenceApiUrl: intelligenceApiUrl,
                     eamsApiUrl: eamsApiUrl || null,
                     timestamp: Date.now()
