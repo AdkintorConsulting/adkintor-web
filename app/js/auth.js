@@ -87,8 +87,15 @@
                 console.log('Intelligence response:', clientResponse);
                 
                 // Intelligence API returns { success: true, data: {...} }
+                // Verificar si data tiene status 'error'
                 if (!clientResponse || !clientResponse.success) {
                     const errorMsg = clientResponse?.error || 'Invalid email or password';
+                    return { success: false, error: errorMsg };
+                }
+                
+                // IMPORTANTE: Verificar si la API devolvió un error en data.status
+                if (clientResponse.data && clientResponse.data.status === 'error') {
+                    const errorMsg = clientResponse.data.message || 'Invalid email or password';
                     return { success: false, error: errorMsg };
                 }
                 
