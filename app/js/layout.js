@@ -1,7 +1,3 @@
-este te di yo no?
-
-dale, este es el actual:
-
 // PDF Documents Configuration (for future implementation)
 const pdfConfig = {
     'SOP Maintenance': { url: '', filename: 'SOP_Maintenance.pdf' },
