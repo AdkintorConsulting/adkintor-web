@@ -58,38 +58,45 @@ async function loadUserRoleAndPermissions() {
     }
     
     try {
-        // Call EAMS API to get user role
-        const roleResponse = await callEamsApi('getUserRoleFromHub', [currentUserEmail]);
-        console.log('EAMS Role response:', roleResponse);
+        // Primero, obtener el rol desde localStorage (viene de WEB_USERS)
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        let userRole = session.role || 'VIEWER';
         
-        if (roleResponse && roleResponse.success && roleResponse.data) {
-            // roleResponse.data could be a string or an array
-            if (Array.isArray(roleResponse.data) && roleResponse.data.length > 0) {
-                currentUserRole = roleResponse.data[0]; // Use first role
-            } else if (typeof roleResponse.data === 'string') {
-                currentUserRole = roleResponse.data;
-            } else {
-                currentUserRole = 'VIEWER';
+        console.log('Role from localStorage (WEB_USERS):', userRole);
+        
+        // Intentar obtener rol desde EAMS para confirmar
+        if (currentEamsApiUrl) {
+            try {
+                const roleResponse = await callEamsApi('getUserRoleFromHub', [currentUserEmail]);
+                console.log('EAMS Role response:', roleResponse);
+                
+                if (roleResponse && roleResponse.success && roleResponse.data) {
+                    if (Array.isArray(roleResponse.data) && roleResponse.data.length > 0) {
+                        userRole = roleResponse.data[0];
+                    } else if (typeof roleResponse.data === 'string') {
+                        userRole = roleResponse.data;
+                    }
+                    console.log('Role from EAMS (SETUP_HUB):', userRole);
+                }
+            } catch (eamsError) {
+                console.warn('Could not get role from EAMS, using localStorage role:', eamsError);
             }
-        } else {
-            // Fallback to role from session
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            currentUserRole = session.role || 'VIEWER';
         }
         
-        console.log('User role detected:', currentUserRole);
+        currentUserRole = userRole;
+        console.log('Final user role:', currentUserRole);
         
         // Apply permissions based on role
         applyPermissionsByRole();
         
-        // Show welcome message
-        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        // Show welcome message with correct name
+        const userName = session.userName || session.name || session.email.split('@')[0];
         const dynamicContent = document.getElementById('dynamicContent');
         if (dynamicContent) {
             dynamicContent.innerHTML = `
                 <div class="welcome-message">
                     <i class="fas fa-chalkboard-user"></i>
-                    <h2>Welcome back, ${session.userName || session.email}!</h2>
+                    <h2>Welcome back, ${userName}!</h2>
                     <p>Role: ${currentUserRole}</p>
                     <p>Select a module from the sidebar or EAMS buttons to get started</p>
                 </div>
@@ -99,17 +106,16 @@ async function loadUserRoleAndPermissions() {
     } catch (error) {
         console.error('Error loading user role:', error);
         showTemporaryMessage('Could not load permissions. Using default view.');
-        
-        // Fallback: show all buttons
         showAllButtons();
         
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        const userName = session.userName || session.name || session.email.split('@')[0];
         const dynamicContent = document.getElementById('dynamicContent');
         if (dynamicContent) {
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
             dynamicContent.innerHTML = `
                 <div class="welcome-message">
                     <i class="fas fa-chalkboard-user"></i>
-                    <h2>Welcome back, ${session.userName || session.email}!</h2>
+                    <h2>Welcome back, ${userName}!</h2>
                     <p>Select a module from the sidebar or EAMS buttons to get started</p>
                 </div>
             `;
