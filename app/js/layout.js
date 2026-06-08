@@ -12,6 +12,9 @@ let currentDocTitle = '';
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Load user permissions first
+    loadUserRoleAndPermissions();
+    
     // Initialize events
     initEventListeners();
     
@@ -816,6 +819,7 @@ function resetBreadcrumbs() {
         breadcrumbDynamic.style.display = 'none';
         breadcrumbDynamic.textContent = '';
     }
+}
 
 // ============================================
 // LOAD USER PERMISSIONS FROM LOCALSTORAGE
@@ -899,6 +903,4 @@ function applyPermissionsByRole() {
             btn.style.display = 'none';
         }
     });
-}    
-    
 }
