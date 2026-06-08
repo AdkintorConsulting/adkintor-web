@@ -357,12 +357,9 @@
             try {
                 const result = await Auth.login(email, password);
                 
-		if (result.success) {
-		    // Temporal: esperar 10 segundos para ver logs
-		    setTimeout(() => {
-		        window.location.href = 'main.html';
-		    }, 10000);
-		} else {
+                if (result.success) {
+                    window.location.href = 'main.html';
+                } else {
                     let errorMsg = 'Authentication failed';
                     if (result.error) {
                         if (result.error.includes('timeout') || result.error.includes('network')) {
