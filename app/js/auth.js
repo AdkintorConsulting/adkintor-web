@@ -99,22 +99,22 @@
                     return { success: false, error: errorMsg };
                 }
                 
-		console.log('🔴 DATOS COMPLETOS DE clientResponse:', JSON.stringify(clientResponse, null, 2));
-		console.log('🔴 VALOR DE clientResponse.data.role:', clientResponse.data?.role);
-		console.log('🔴 clientResponse.data existe?', clientResponse.data);
+		// Intelligence API devuelve { success: true, data: { status: 'success', data: { ... } } }
+		// Extraer los datos reales
+		const responseData = clientResponse.data?.data || clientResponse.data;
 
-                // Build session data
-                const sessionData = {
-                    email: email,
-                    role: clientResponse.data?.role || 'VIEWER',
-                    clientId: clientResponse.data?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
-                    clientName: clientName,
-                    userName: clientResponse.data?.user_name || clientResponse.data?.name || email.split('@')[0],
-                    language: clientResponse.data?.language || 'en',
-                    intelligenceApiUrl: intelligenceApiUrl,
-                    eamsApiUrl: eamsApiUrl || null,
-                    timestamp: Date.now()
-                };
+		// Build session data
+		const sessionData = {
+		    email: email,
+		    role: responseData?.role || 'VIEWER',
+		    clientId: responseData?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
+		    clientName: clientName,
+		    userName: responseData?.name || email.split('@')[0],
+		    language: responseData?.language || 'en',
+		    intelligenceApiUrl: intelligenceApiUrl,
+		    eamsApiUrl: eamsApiUrl || null,
+		    timestamp: Date.now()
+		};
                 
                 // Save to localStorage
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
