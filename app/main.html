@@ -11,19 +11,19 @@
     <!-- Styles -->
     <link rel="stylesheet" href="/app/css/layout.css">
     
-    <!-- Session Verification - MUST be first -->
+    <!-- Global Configuration -->
+    <script src="/app/js/config.js"></script>
+    <script src="/app/js/auth.js"></script>
+    
+    <!-- Session Verification -->
     <script>
-        // Verify session before loading any scripts
+        // Verify session - redirect to login if not exists
         const session = localStorage.getItem('adkintor_session');
-
+        
         if (!session) {
             window.location.href = '/app/index.html';
         }
     </script>
-    
-    <!-- Global Configuration - Load once only -->
-    <script src="/app/js/config.js"></script>
-    <script src="/app/js/auth.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -62,25 +62,25 @@
         </header>
 
         <div class="main-layout">
-            <!-- SIDEBAR -->
+            <!-- SIDEBAR (Intelligence Modules) -->
             <aside class="sidebar">
                 <nav class="sidebar-nav">
-                    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html">
+                    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html" data-permission="WORK_ORDERS">
                         <i class="fas fa-tasks"></i> WORK ORDERS
                     </button>
-                    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html">
+                    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html" data-permission="PREVENTIVE">
                         <i class="fas fa-calendar-alt"></i> PREVENTIVE
                     </button>
-                    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html">
+                    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html" data-permission="INVENTORY">
                         <i class="fas fa-boxes"></i> INVENTORY
                     </button>
-                    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html">
+                    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html" data-permission="CALIBRATION">
                         <i class="fas fa-microscope"></i> CALIBRATION
                     </button>
-                    <button class="sidebar-btn" data-module="kpi_intel" data-url="/app/modules/intelligence/kpi_intel.html">
+                    <button class="sidebar-btn" data-module="kpi" data-url="/app/modules/intelligence/kpi.html" data-permission="KPI">
                         <i class="fas fa-chart-line"></i> KPI
                     </button>
-                    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html">
+                    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html" data-permission="CONSULTING">
                         <i class="fas fa-chalkboard-user"></i> CONSULTING
                     </button>
                 </nav>
@@ -90,12 +90,12 @@
             <main class="content-area">
                 <!-- EAMS BUTTONS (6 buttons) -->
                 <div class="eams-buttons">
-                    <button class="eams-btn" data-eams="asset">ASSET</button>
-                    <button class="eams-btn" data-eams="work_order">WORK ORDER</button>
-                    <button class="eams-btn" data-eams="preventive">PREVENTIVE</button>
-                    <button class="eams-btn" data-eams="calibrations">CALIBRATIONS</button>
-                    <button class="eams-btn" data-eams="inventory">INVENTORY</button>
-                    <button class="eams-btn" data-eams="plant_layout">PLANT LAYOUT</button>
+                    <button class="eams-btn" data-eams="asset" data-permission="ASSETS">ASSET</button>
+                    <button class="eams-btn" data-eams="work_order" data-permission="WORK_ORDERS">WORK ORDER</button>
+                    <button class="eams-btn" data-eams="preventive" data-permission="PREVENTIVE">PREVENTIVE</button>
+                    <button class="eams-btn" data-eams="calibrations" data-permission="CALIBRATION">CALIBRATIONS</button>
+                    <button class="eams-btn" data-eams="inventory" data-permission="INVENTORY">INVENTORY</button>
+                    <button class="eams-btn" data-eams="plant_layout" data-permission="PLANT_LAYOUT">PLANT LAYOUT</button>
                 </div>
 
                 <!-- BREADCRUMBS -->
@@ -107,10 +107,10 @@
 
                 <!-- DYNAMIC CONTENT CONTAINER -->
                 <div id="dynamicContent" class="dynamic-content">
-                    <div class="welcome-message">
-                        <i class="fas fa-chalkboard-user"></i>
-                        <h2>Welcome to ADKINTOR EAMS + INTELLIGENCE</h2>
-                        <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                    <div id="loadingMessage" class="welcome-message">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <h2>Loading user permissions...</h2>
+                        <p>Please wait</p>
                     </div>
                 </div>
             </main>
@@ -157,7 +157,6 @@
     <!-- TOAST NOTIFICATIONS -->
     <div id="toastMessage" class="toast-message" style="display: none;"></div>
 
-    <!-- Layout JS - Loaded once at the end -->
     <script src="/app/js/layout.js"></script>
 </body>
 </html>
