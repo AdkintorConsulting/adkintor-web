@@ -306,6 +306,17 @@
     
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Prevenir volver atrás después de logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                const session = localStorage.getItem('adkintor_session');
+                if (!session) {
+                    window.location.replace('/app/index.html');
+                }
+            }
+        });
+    </script>
     
     <script>
         // DOM Elements
