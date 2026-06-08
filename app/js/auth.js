@@ -99,6 +99,10 @@
                     return { success: false, error: errorMsg };
                 }
                 
+		console.log('🔴 DATOS COMPLETOS DE clientResponse:', JSON.stringify(clientResponse, null, 2));
+		console.log('🔴 VALOR DE clientResponse.data.role:', clientResponse.data?.role);
+		console.log('🔴 clientResponse.data existe?', clientResponse.data);
+
                 // Build session data
                 const sessionData = {
                     email: email,
