@@ -978,11 +978,11 @@
         
         try {
             const configRes = await callApi('AST_getAssetConfig', []);
-            DBconfig = configRes;
+            DBconfig = configRes.data;
             
             showLoading('Loading asset details...');
             const assetRes = await callApi('AST_getAssetFullDetails', [assetId.trim()]);
-            renderEditor(assetRes);
+            renderEditor(assetRes.data);
             hideLoading();
         } catch (error) {
             hideLoading();
