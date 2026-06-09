@@ -701,7 +701,7 @@
     async function loadConfig() {
         try {
             const response = await callApi('AST_getAssetConfig', []);
-            DB = response;
+            DB = response.data;
             
             const areaNames = DB.areas ? DB.areas.map(a => a.name) : [];
             fillSelect('area', areaNames);
@@ -721,7 +721,7 @@
     
     // Guardar activo
     async function saveAsset(assetData) {
-        return await callApi('AST_createAsset', [assetData]);
+        return await callApi('AST_saveNewAsset', [assetData]);
     }
     
     // Inicializar
@@ -756,29 +756,35 @@
             return;
         }
         
-        payload.name = sanitizeInput(payload.name);
-        payload.weightedScore = crit.score;
-        payload.criticality = crit.level;
+	payload.name = sanitizeInput(payload.name);
         
-        // Mapear campos
+        // Obtener prefijos para generar ID
+        const areaObj = DB.areas.find(a => a.name === payload.area);
+        const catObj = DB.categories.find(c => c.name === payload.category);
+        const topLevelTypes = DB.assetTypes || [];
+        const isTopLevel = topLevelTypes.includes(payload.type);
+        
+        // Mapear campos para la API original
         const assetData = {
             area: payload.area,
+            areaPrefix: areaObj ? areaObj.prefix : "GEN",
             name: payload.name,
-            parentId: payload.parentID || 'N/A',
+            parentID: payload.parentID || 'N/A',
             type: payload.type,
-            category: payload.category,
+            category: isTopLevel ? "" : payload.category,
+            catPrefix: isTopLevel ? (areaObj ? areaObj.prefix : "GEN") : (catObj ? catObj.prefix : "GEN"),
             status: payload.status,
-            manufacturer: payload.mfr || '',
+            mfr: payload.mfr || '',
             model: payload.model || '',
             serial: payload.serial || '',
             year: payload.year || '',
-            hse: payload.hse || 1,
-            prod: payload.prod || 1,
-            usage: payload.usage || 1,
-            oper: payload.oper || 1,
-            redun: payload.redun || 1,
-            weightedScore: crit.score,
-            criticality: crit.level
+            hse: parseInt(payload.hse) || 1,
+            prod: parseInt(payload.prod) || 1,
+            usage: parseInt(payload.usage) || 1,
+            oper: parseInt(payload.oper) || 1,
+            redun: parseInt(payload.redun) || 1,
+            score: crit.score,
+            level: crit.level
         };
         
         try {
