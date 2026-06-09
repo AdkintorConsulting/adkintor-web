@@ -327,12 +327,14 @@ body {
 .modal-container {
     background: white;
     border-radius: 12px;
-    width: 90%;
-    height: 90%;
-    max-width: 1200px;
+    width: 95%;
+    height: 95%;
+    max-width: 1400px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    resize: both;
+    overflow: auto;
 }
 
 .modal-container.modal-doc {
