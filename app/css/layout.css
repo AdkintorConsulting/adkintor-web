@@ -368,6 +368,63 @@ body {
     color: #e94560;
 }
 
+/* Modal controls (minimize, maximize) */
+.modal-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-btn:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+/* Maximized state */
+.modal-container.maximized {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0;
+}
+
+/* Minimized state */
+.modal-container.minimized {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px !important;
+    height: 45px !important;
+    min-height: 45px !important;
+    overflow: hidden;
+    border-radius: 8px;
+    resize: none;
+}
+
+.modal-container.minimized .modal-body,
+.modal-container.minimized #intelIframe {
+    display: none;
+}
+
+.modal-container.minimized .modal-header {
+    cursor: pointer;
+}
+
 .modal-body {
     flex: 1;
     padding: 1rem;
