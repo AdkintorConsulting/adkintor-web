@@ -9,6 +9,9 @@ const pdfConfig = {
 
 // Global variables
 let currentDocTitle = '';
+let isMaximized = false;
+let isMinimized = false;
+let modalContainer = null;
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,6 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup modal close on outside click
     setupModalClose();
+    
+    // Initialize modal controls (minimize, maximize)
+    initModalControls();
 });
 
 function initEventListeners() {
@@ -104,6 +110,65 @@ function initEventListeners() {
     if (closeDocModalBtn) {
         closeDocModalBtn.addEventListener('click', closeDocumentModal);
     }
+}
+
+// Initialize modal controls
+function initModalControls() {
+    modalContainer = document.querySelector('#iframeModal .modal-container');
+    const minimizeBtn = document.getElementById('minimizeModalBtn');
+    const maximizeBtn = document.getElementById('maximizeModalBtn');
+    
+    if (minimizeBtn) {
+        minimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isMaximized) {
+                modalContainer.classList.remove('maximized');
+                isMaximized = false;
+                if (maximizeBtn) maximizeBtn.innerHTML = '□';
+            }
+            modalContainer.classList.add('minimized');
+            isMinimized = true;
+        });
+    }
+    
+    if (maximizeBtn) {
+        maximizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isMinimized) {
+                modalContainer.classList.remove('minimized');
+                isMinimized = false;
+            }
+            if (isMaximized) {
+                modalContainer.classList.remove('maximized');
+                isMaximized = false;
+                maximizeBtn.innerHTML = '□';
+            } else {
+                modalContainer.classList.add('maximized');
+                isMaximized = true;
+                maximizeBtn.innerHTML = '❐';
+            }
+        });
+    }
+    
+    // Restore from minimized when clicking header
+    const modalHeader = document.querySelector('#iframeModal .modal-header');
+    if (modalHeader) {
+        modalHeader.addEventListener('click', (e) => {
+            if (isMinimized && e.target.tagName !== 'BUTTON') {
+                modalContainer.classList.remove('minimized');
+                isMinimized = false;
+            }
+        });
+    }
+}
+
+function resetModalState() {
+    if (!modalContainer) return;
+    modalContainer.classList.remove('maximized', 'minimized');
+    isMaximized = false;
+    isMinimized = false;
+    const maximizeBtn = document.getElementById('maximizeModalBtn');
+    if (maximizeBtn) maximizeBtn.innerHTML = '□';
 }
 
 function setupModalClose() {
@@ -222,6 +287,7 @@ function closeIframeModal() {
         if (iframe) {
             iframe.src = ''; // Clear src
         }
+        resetModalState();
     }
     
     // Restaurar breadcrumbs cuando se cierra el modal
