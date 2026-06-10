@@ -429,6 +429,12 @@ function initWoDispatcherButtons() {
 }
 
 function openWOModal(type) {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     let title = '';
     let url = '';
     
@@ -522,6 +528,12 @@ function initPvtDispatcherButtons() {
 }
 
 function openPvtModal(type) {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     let title = '';
     let url = '';
     
@@ -603,6 +615,12 @@ function initStkDispatcherButtons() {
 }
 
 function openStkModal(type) {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     let title = '';
     let url = '';
     
@@ -676,6 +694,12 @@ function initCalDispatcherButtons() {
 }
 
 function openCalModal(type) {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     let title = '';
     let url = '';
     
@@ -702,6 +726,12 @@ function openCalModal(type) {
 // ============================================
 
 function openPlantLayout() {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
     const titleElem = document.getElementById('modalTitle');
@@ -768,6 +798,12 @@ function initAstDispatcherButtons() {
 
 // Abrir modales de assets (reutiliza el modal de Intelligence)
 function openAssetModal(type) {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
     let title = '';
     let url = '';
     
