@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adkintor - Asset Management & Maintenance Intelligence</title>
     <style>
-        /* Base Styles & Estandarización */
         * {
             margin: 0;
             padding: 0;
@@ -19,12 +18,11 @@
             overflow-x: hidden;
         }
 
-        /* Header Estándar */
         .header {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -38,10 +36,22 @@
             flex-wrap: wrap;
             gap: 1.5rem;
         }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
         .logo-img {
-            max-height: 50px;
+            max-height: 42px;
             width: auto;
             object-fit: contain;
+        }
+        .logo-text {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            border-left: 1px solid rgba(51, 65, 85, 0.5);
+            padding-left: 1rem;
+            letter-spacing: 0.3px;
         }
         .nav-actions {
             display: flex;
@@ -63,27 +73,23 @@
         .nav-menu a:hover, .nav-menu a.active {
             color: #38bdf8;
         }
-        .lang-buttons {
-            display: flex;
-            gap: 0.75rem;
-        }
-        .lang-btn {
-            background: rgba(51, 65, 85, 0.5);
-            padding: 0.35rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .user-access-btn {
+            background: rgba(56, 189, 248, 0.15);
+            padding: 0.45rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
             text-decoration: none;
-            color: #cbd5e1;
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
             transition: all 0.3s ease;
+            font-weight: 500;
         }
-        .lang-btn:hover {
-            background: rgba(51, 65, 85, 0.9);
+        .user-access-btn:hover {
+            background: rgba(56, 189, 248, 0.3);
             color: #fff;
             border-color: #38bdf8;
         }
 
-        /* Contenedores y Secciones */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -93,7 +99,7 @@
             text-align: center;
             padding: 3rem 0 5rem;
         }
-        .hero h1, .page-title h1 {
+        .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
             line-height: 1.2;
@@ -103,14 +109,55 @@
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
         }
-        .hero .tagline, .page-title p {
+        .hero .tagline {
             font-size: 1.35rem;
             color: #94a3b8;
             max-width: 750px;
             margin: 0 auto;
         }
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+            padding: 0.9rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(51, 65, 85, 0.6);
+            padding: 0.9rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
 
-        /* Tarjetas Estándar */
         .story-section {
             background: rgba(30, 41, 59, 0.4);
             border: 1px solid rgba(51, 65, 85, 0.5);
@@ -133,34 +180,20 @@
         }
         .story-section p:last-child { margin-bottom: 0; }
 
-        /* Banner Destacado */
-        .highlight-banner {
-            background: linear-gradient(135deg, #0eaeec 0%, #1d4ed8 100%);
-            border-radius: 24px;
-            padding: 3.5rem;
+        .modules-section {
             margin: 4rem 0;
+        }
+        .modules-section h2 {
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.25);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #f1f5f9;
         }
-        .highlight-banner h3, .highlight-banner h4 {
-            font-size: 2.2rem;
-            margin-bottom: 1rem;
-            color: #ffffff;
-            font-weight: 700;
-        }
-        .highlight-banner p {
-            font-size: 1.3rem;
-            color: #e0f2fe;
-            max-width: 850px;
-            margin: 0 auto;
-        }
-
-        /* Grillas y Módulos */
         .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin: 4rem 0;
+            margin: 2rem 0;
         }
         .card {
             background: rgba(30, 41, 59, 0.3);
@@ -175,70 +208,86 @@
             box-shadow: 0 15px 30px -10px rgba(56, 189, 248, 0.1);
         }
         .card h3 {
-            font-size: 1.6rem;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
             color: #38bdf8;
+        }
+        .card .module-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #818cf8;
+            margin-bottom: 1rem;
         }
         .card p {
             color: #94a3b8;
             font-size: 1.05rem;
-        }
-
-        /* Elementos específicos de Servicios */
-        .pdca-icon {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: #38bdf8;
-            background: rgba(14, 165, 233, 0.15);
-            padding: 0.3rem 1rem;
-            border-radius: 50px;
-            display: inline-block;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(14, 165, 233, 0.2);
         }
-        .card h4 {
-            font-size: 1.1rem;
-            margin: 1.5rem 0 1rem;
-            color: #818cf8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .card ul {
+            list-style: none;
         }
-        .card ul { list-style: none; }
         .card li {
-            padding: 0.75rem 0;
+            padding: 0.6rem 0;
             color: #cbd5e1;
-            font-size: 1.05rem;
-            border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+            font-size: 1rem;
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
         }
         .card li:last-child { border-bottom: none; }
-        .check-mark { color: #38bdf8; margin-right: 0.75rem; font-weight: bold; }
+        .check-mark {
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
 
-        /* Elementos específicos de Contacto */
-        .contact-card { text-align: center; padding: 4rem 2rem; }
-        .email-box { margin: 2rem 0; }
-        .email-box a {
+        .pricing-section {
+            margin: 4rem 0;
+            scroll-margin-top: 100px;
+        }
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            border-radius: 32px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+        }
+        .pricing-card h3 {
             font-size: 2rem;
             color: #38bdf8;
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+            margin-bottom: 0.5rem;
         }
-        .email-box a:hover {
-            color: #60a5fa;
-            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        .pricing-price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: white;
+            margin: 1.5rem 0 0.5rem;
         }
-        .info-text {
-            color: #64748b;
+        .pricing-price span {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #94a3b8;
+        }
+        .pricing-setup {
+            color: #94a3b8;
             font-size: 1rem;
-            border-top: 1px solid rgba(51, 65, 85, 0.4);
-            padding-top: 1.5rem;
-            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .pricing-guarantee {
+            color: #4ade80;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            padding: 0.5rem 1rem;
+            background: rgba(74, 222, 128, 0.1);
+            border-radius: 30px;
+            display: inline-block;
         }
 
-        /* Footer Estándar */
         .footer {
             background: #090d16;
             border-top: 1px solid rgba(51, 65, 85, 0.5);
@@ -249,13 +298,15 @@
             margin-top: 5rem;
         }
 
-        /* Responsivo */
         @media (max-width: 768px) {
             .header-container { flex-direction: column; text-align: center; }
             .nav-actions { flex-direction: column; gap: 1rem; }
-            .hero h1, .page-title h1 { font-size: 2.3rem; }
+            .hero h1 { font-size: 2.3rem; }
             .grid-2col { grid-template-columns: 1fr; }
-            .story-section, .highlight-banner, .card { padding: 2rem; }
+            .story-section, .pricing-card, .card { padding: 2rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .logo-area { flex-direction: column; text-align: center; }
+            .logo-text { border-left: none; padding-left: 0; border-top: 1px solid rgba(51, 65, 85, 0.5); padding-top: 0.5rem; }
         }
     </style>
 </head>
@@ -263,47 +314,94 @@
 
     <div class="header">
         <div class="header-container">
-            <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+            <div class="logo-area">
+                <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+                <div class="logo-text">Adkintor | Asset Management & Maintenance Consulting</div>
+            </div>
             <div class="nav-actions">
                 <div class="nav-menu">
                     <a href="index.html" class="active">Home</a>
-                    <a href="servicios.html">Services</a>
+                    <a href="platform.html">Platform</a>
                     <a href="contacto.html">Contact</a>
                 </div>
-                <div class="lang-buttons">
-                    <a href="index.html" class="lang-btn">🇺🇸 EN</a>
-                    <a href="index-es.html" class="lang-btn">🇪🇸 ES</a>
-                </div>
+                <a href="https://adkintor.com/app/" class="user-access-btn" target="_blank">🔐 User Access</a>
             </div>
         </div>
     </div>
     
     <div class="container">
         <div class="hero">
-            <h1>Operational Excellence<br>Through Intelligent Maintenance</h1>
-            <p class="tagline">Bridging the gap between reactive firefighting and predictive reliability.</p>
+            <h1>ADKINTOR FORESIGHT:<br>Predict failures before they stop your plant</h1>
+            <p class="tagline">The PDCA system combining downloadable SOPs, standardized checklists, real-time control, and predictive intelligence. A plant that produces more and stops less.</p>
+            <div class="hero-buttons">
+                <a href="mailto:info@adkintor.com" class="btn-primary">📅 Request live demo</a>
+                <a href="#pricing" class="btn-secondary">💰 See pricing</a>
+            </div>
         </div>
         
         <div class="story-section">
-            <h2>Why Adkintor?</h2>
-            <p>My name is Mauricio. I'm a Mechanical Engineer, and I spent years on the shop floor.</p>
-            <p>I saw the same problem everywhere: maintenance teams drowning in firefighting mode, zero visibility on critical assets, disconnected spreadsheets, and no time left for strategic improvement.</p>
-            <p>That's why I built Adkintor. Not as a consultant selling slide decks, but as an engineer who engineered the system he actually needed.</p>
+            <h2>Why ADKINTOR?</h2>
+            <p>I am a mechanical engineer specializing in industrial maintenance with 15 years of experience in manufacturing plants. I always saw the same problem everywhere: maintenance teams in firefighting mode, zero visibility of critical assets, disconnected spreadsheets, and no time for strategic improvements.</p>
+            <p>That's why I created ADKINTOR. Not as a consultancy selling presentations, but as an engineer who designed the system I truly needed.</p>
         </div>
-        
-        <div class="highlight-banner">
-            <h3> More Than an EAMS</h3>
-            <p>Adkintor is an intelligence hub that empowers your team to make data-driven maintenance decisions—before catastrophic failures strike.</p>
+
+        <div class="modules-section">
+            <h2>Two modules, one integrated platform</h2>
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="module-badge">MODULE 1</div>
+                    <h3>EAMS</h3>
+                    <p>Complete asset management for your plant's day-to-day operations.</p>
+                    <ul>
+                        <li><span class="check-mark">✓</span> Work Orders management</li>
+                        <li><span class="check-mark">✓</span> Inventory & spare parts</li>
+                        <li><span class="check-mark">✓</span> Calibrations & compliance tracking</li>
+                        <li><span class="check-mark">✓</span> Executive KPI dashboard</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="module-badge">MODULE 2</div>
+                    <h3>FORESIGHT</h3>
+                    <p>Predictive intelligence that anticipates failures before they happen.</p>
+                    <ul>
+                        <li><span class="check-mark">✓</span> Failure prediction per asset</li>
+                        <li><span class="check-mark">✓</span> Monthly executive report</li>
+                        <li><span class="check-mark">✓</span> Actionable improvement recommendations</li>
+                        <li><span class="check-mark">✓</span> Automatic WO prioritization</li>
+                    </ul>
+                </div>
+            </div>
         </div>
         
         <div class="grid-2col">
             <div class="card">
-                <h3> Mission</h3>
-                <p>To empower industrial maintenance teams to transition from reactive chaos to precision prevention. We turn floor data into actionable insights, maximizing uptime while slashing operational costs.</p>
+                <h3>📄 Maintenance System</h3>
+                <p>Standardize your processes with downloadable documentation.</p>
+                <ul>
+                    <li><span class="check-mark">✓</span> Downloadable SOPs (PDF)</li>
+                    <li><span class="check-mark">✓</span> Preventive & corrective workflows</li>
+                    <li><span class="check-mark">✓</span> Standardized procedures</li>
+                </ul>
             </div>
             <div class="card">
-                <h3> Vision</h3>
-                <p>A manufacturing world where every asset operates at its peak potential, shifting maintenance from a dreaded cost center into a strategic partner for production and quality.</p>
+                <h3>✅ Standardized Checklists</h3>
+                <p>Perfect execution on every preventive task.</p>
+                <ul>
+                    <li><span class="check-mark">✓</span> Automatic checklists per preventive WO</li>
+                    <li><span class="check-mark">✓</span> Field validation</li>
+                    <li><span class="check-mark">✓</span> Compliance history</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="pricing" class="pricing-section">
+            <div class="pricing-card">
+                <h3>ADKINTOR FORESIGHT</h3>
+                <p style="color:#94a3b8;">Everything included — EAMS + Foresight</p>
+                <div class="pricing-price">$999 <span>CAD/month</span></div>
+                <div class="pricing-setup">+ $1,000 CAD one-time setup</div>
+                <div class="pricing-guarantee">✅ 30-day guarantee — cancel without paying the second month if it doesn't work for you</div>
+                <a href="mailto:info@adkintor.com" class="btn-primary" style="margin-top: 1.5rem; display: inline-block;">📅 Request demo</a>
             </div>
         </div>
     </div>
