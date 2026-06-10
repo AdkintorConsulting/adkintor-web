@@ -12,6 +12,47 @@ let currentDocTitle = '';
 let isMaximized = false;
 let isMinimized = false;
 let modalContainer = null;
+// Nuevas variables para sidebar colapsable
+let currentUserRole = 'VIEWER';
+let isSidebarCollapsed = false;
+
+// Función para mostrar fecha y semana
+function updateDateAndWeek() {
+    const dateWeekElement = document.getElementById('dateWeekDisplay');
+    if (!dateWeekElement) return;
+    
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const formattedDate = now.toLocaleDateString('en-US', options);
+    
+    // Calcular número de semana
+    const startDate = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+    
+    dateWeekElement.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
+}
+
+// Función para colapsar/expandir sidebar
+function initSidebarCollapse() {
+    const collapseBtn = document.getElementById('sidebarCollapseBtn');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (!collapseBtn || !sidebar) return;
+    
+    // Cargar estado guardado
+    const savedState = localStorage.getItem('sidebar_collapsed');
+    if (savedState === 'true') {
+        sidebar.classList.add('collapsed');
+        isSidebarCollapsed = true;
+    }
+    
+    collapseBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('collapsed');
+        isSidebarCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebar_collapsed', isSidebarCollapsed);
+    });
+}
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,6 +67,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize modal controls (minimize, maximize)
     initModalControls();
+
+    // Update date and week
+    updateDateAndWeek();
+    
+    // Initialize sidebar collapse
+    initSidebarCollapse();
 });
 
 function initEventListeners() {
