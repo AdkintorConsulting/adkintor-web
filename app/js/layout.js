@@ -978,17 +978,51 @@ async function loadUserRoleAndPermissions() {
     const loadingDiv = document.getElementById('dynamicContent');
     
     try {
-        // Obtener el rol directamente desde localStorage (viene de WEB_USERS)
+        // Obtener sesión
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
         const userRole = session.role || 'VIEWER';
         const userName = session.userName || session.name || session.email.split('@')[0];
+        const eamsApiUrl = session.eamsApiUrl;
         
         console.log('User role from localStorage:', userRole);
         console.log('User name from localStorage:', userName);
         
         currentUserRole = userRole;
         
-        // Aplicar permisos según el rol
+        // Obtener permisos desde la API (SETUP_HUB)
+        let permissions = [];
+        
+        if (eamsApiUrl) {
+            try {
+                const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        targetUrl: eamsApiUrl,
+                        payload: { action: 'getPermissionsByRole', args: [userRole] }
+                    })
+                });
+                const result = await response.json();
+                
+                if (result.success && Array.isArray(result.data)) {
+                    permissions = result.data;
+                    console.log('Permissions loaded from SETUP_HUB:', permissions);
+                } else {
+                    console.warn('Failed to load permissions from API, using fallback');
+                    permissions = getFallbackPermissions(userRole);
+                }
+            } catch (error) {
+                console.error('Error fetching permissions:', error);
+                permissions = getFallbackPermissions(userRole);
+            }
+        } else {
+            permissions = getFallbackPermissions(userRole);
+        }
+        
+        // Guardar permisos para usar en applyPermissionsByRole
+        window.currentPermissions = permissions;
+        
+        // Aplicar permisos
         applyPermissionsByRole();
         
         // Mostrar mensaje de bienvenida
@@ -1017,21 +1051,34 @@ async function loadUserRoleAndPermissions() {
     }
 }
 
-function applyPermissionsByRole() {
-    // Define permission mapping based on role
-    const rolePermissions = {
-        'ADMIN': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'CALIBRATION', 'KPI', 'CONSULTING', 'ASSETS', 'PLANT_LAYOUT'],
-        'MANAGER': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'CALIBRATION', 'KPI', 'ASSETS'],
-        'SUPERVISOR': ['WORK_ORDERS', 'PREVENTIVE', 'INVENTORY', 'ASSETS'],
-        'TECHNICIAN': ['WORK_ORDERS', 'ASSETS'],
-        'PLANNER': ['PREVENTIVE', 'WORK_ORDERS'],
-        'VIEWER': ['WORK_ORDERS'],
-        'FINANCE': ['INVENTORY', 'KPI']
+function getFallbackPermissions(role) {
+    // Fallback en caso de que no se pueda conectar a la API
+    const fallback = {
+        'ADMIN': ['WO_IntelligenceUI', 'PVT_IntelligenceUI', 'STK_IntelligenceUI', 'CAL_IntelligenceUI', 'KPI_IntelligenceUI', 'CONSULTING_IntelligenceUI', 'AST_MainDispatcherUI', 'WO_MainDispatcherUI', 'PVT_MainDispatcherUI', 'CAL_MainDispatcherUI', 'STK_MainDispatcherUI', 'SYS_PlantLayoutUI'],
+        'MANAGER': ['WO_IntelligenceUI', 'PVT_IntelligenceUI', 'STK_IntelligenceUI', 'CAL_IntelligenceUI', 'KPI_IntelligenceUI', 'AST_MainDispatcherUI', 'WO_MainDispatcherUI'],
+        'SUPERVISOR': ['WO_IntelligenceUI', 'PVT_IntelligenceUI', 'STK_IntelligenceUI', 'AST_MainDispatcherUI', 'WO_MainDispatcherUI'],
+        'TECHNICIAN': ['WO_IntelligenceUI', 'AST_MainDispatcherUI', 'WO_MainDispatcherUI'],
+        'PLANNER': ['PVT_IntelligenceUI', 'WO_IntelligenceUI', 'PVT_MainDispatcherUI', 'WO_MainDispatcherUI'],
+        'VIEWER': ['WO_IntelligenceUI'],
+        'FINANCE': ['STK_IntelligenceUI', 'KPI_IntelligenceUI']
     };
+    return fallback[role] || fallback['VIEWER'];
+}
+
+function applyPermissionsByRole() {
+    // Usar permisos cargados desde SETUP_HUB (o fallback)
+    const permissions = window.currentPermissions || [];
     
-    const permissions = rolePermissions[currentUserRole] || rolePermissions['VIEWER'];
+    if (permissions.length === 0) {
+        console.warn('No permissions loaded, hiding all buttons');
+        // Ocultar todos los botones si no hay permisos
+        document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
+            btn.style.display = 'none';
+        });
+        return;
+    }
     
-    // Hide/Show sidebar buttons
+    // Hide/Show sidebar buttons (Intelligence)
     const sidebarBtns = document.querySelectorAll('.sidebar-btn');
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
