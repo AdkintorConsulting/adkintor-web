@@ -131,72 +131,95 @@
         </div>
     </div>
     
-    <script>
-	// Obtener permisos desde el padre (layout.js)
-	let permissions = [];
-	try {
-	    if (window.parent && window.parent.currentPermissions) {
-	        permissions = window.parent.currentPermissions;
-	    } else {
-	        // Fallback: intentar leer desde localStorage
-	        const session = JSON.parse(localStorage.getItem('adkintor_session'));
-	        if (session && session.eamsApiUrl) {
-	            const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
-	                method: 'POST',
-	                headers: { 'Content-Type': 'application/json' },
-	                body: JSON.stringify({
-	                    targetUrl: session.eamsApiUrl,
-	                    payload: { action: 'getPermissionsByRole', args: [session.role] }
-	                })
-	            });
-	            const data = await response.json();
-	            if (data.success) permissions = data.data;
-	        }
-	    }
-	} catch(e) {
-	    console.error('Error loading permissions:', e);
-	}
-
-	function hasPermission(permissionName) {
-	    return permissions.includes(permissionName);
-	}
-
-	// Ocultar botones según permisos
-	if (!hasPermission('PVT_ReleaseUI')) {
-	    const btn = document.getElementById('releaseBtn');
-	    if (btn) btn.style.display = 'none';
-	}
-	if (!hasPermission('PVT_ManualUI')) {
-	    const btn = document.getElementById('manualBtn');
-	    if (btn) btn.style.display = 'none';
-	}
-	if (!hasPermission('PVT_ActivityUI')) {
-	    const btn = document.getElementById('activityBtn');
-	    if (btn) btn.style.display = 'none';
-	}
-	if (!hasPermission('PVT_PlannerUI')) {
-	    const btn = document.getElementById('plannerBtn');
-	    if (btn) btn.style.display = 'none';
-	}
-	if (!hasPermission('PVT_SweeperUI')) {
-	    const btn = document.getElementById('sweeperBtn');
-	    if (btn) btn.style.display = 'none';
-	}
-        // Display current date and week number
-        function displayDateInfo() {
-            const dateInfo = document.getElementById('dateInfo');
-            if (dateInfo) {
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                const formattedDate = now.toLocaleDateString('en-US', options);
-                
-                const startDate = new Date(now.getFullYear(), 0, 1);
-                const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
-                const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
-                
-                dateInfo.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
+<script>
+    // Función hasPermission definida primero
+    function hasPermission(permissionName) {
+        return window.dispatcherPermissions && window.dispatcherPermissions.includes(permissionName);
+    }
+    
+    // Cargar permisos de forma async
+    (async function() {
+        let permissions = [];
+        
+        try {
+            if (window.parent && window.parent.currentPermissions) {
+                permissions = window.parent.currentPermissions;
+            } else {
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.eamsApiUrl) {
+                    const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            targetUrl: session.eamsApiUrl,
+                            payload: { action: 'getPermissionsByRole', args: [session.role] }
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.success) permissions = data.data;
+                }
             }
+        } catch(e) {
+            console.error('Error loading permissions:', e);
         }
+        
+        // Guardar en variable global para el dispatcher
+        window.dispatcherPermissions = permissions;
+        
+        // ========================================
+        // CADA DISPATCHER USA SUS PROPIOS BOTONES
+        // ========================================
+        // (USTED COMPLETARÁ ESTA PARTE SEGÚN CADA ARCHIVO)
+        // Ocultar botones de PREVENTIVE
+        if (!hasPermission('PVT_ReleaseUI')) {
+            const btn = document.getElementById('releaseBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('PVT_ManualUI')) {
+            const btn = document.getElementById('manualBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('PVT_ActivityUI')) {
+            const btn = document.getElementById('activityBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('PVT_PlannerUI')) {
+            const btn = document.getElementById('plannerBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('PVT_SweeperUI')) {
+            const btn = document.getElementById('sweeperBtn');
+            if (btn) btn.style.display = 'none';
+        }
+
+    // Display current date and week number
+    function displayDateInfo() {
+        const dateInfo = document.getElementById('dateInfo');
+        if (dateInfo) {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            
+            const startDate = new Date(now.getFullYear(), 0, 1);
+            const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
+            const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+            
+            dateInfo.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
+        }
+    }
+    
+    // Mostrar mensaje temporal (si existe la función)
+    function showMessage(message, isError = false) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.textContent = message;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    }
         
         // Abrir modales
         function openRelease() {
