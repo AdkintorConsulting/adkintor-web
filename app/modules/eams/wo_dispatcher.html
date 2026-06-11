@@ -133,64 +133,81 @@
     
     <div id="toast" class="toast" style="position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 1000;"></div>
     
-    <script>
-    alert('El script se está ejecutando');
-        // Función hasPermission
-        function hasPermission(permissionName) {
-            return window.dispatcherPermissions && window.dispatcherPermissions.includes(permissionName);
+<script>
+    // Función hasPermission
+    function hasPermission(permissionName) {
+        return window.dispatcherPermissions && window.dispatcherPermissions.includes(permissionName);
+    }
+    
+    // Esperar a que los permisos del padre estén listos
+    async function waitForPermissions() {
+        let attempts = 0;
+        while (!window.parent.currentPermissions && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        return window.parent.currentPermissions || [];
+    }
+    
+    // Cargar permisos y ocultar botones
+    (async function() {
+        let permissions = [];
+        
+        try {
+            // Intentar obtener permisos del padre
+            permissions = await waitForPermissions();
+            console.log('Permisos obtenidos del padre:', permissions);
+        } catch(e) {
+            console.error('Error loading permissions from parent:', e);
         }
         
-        // Cargar permisos y ocultar botones
-        (async function() {
-            let permissions = [];
-            
+        // Si no hay permisos del padre, ir a la API directamente
+        if (!permissions || permissions.length === 0) {
             try {
-                if (window.parent && window.parent.currentPermissions) {
-                    permissions = window.parent.currentPermissions;
-                } else {
-                    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                    if (session && session.eamsApiUrl) {
-                        const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                targetUrl: session.eamsApiUrl,
-                                payload: { action: 'getPermissionsByRole', args: [session.role] }
-                            })
-                        });
-                        const data = await response.json();
-                        if (data.success) permissions = data.data;
-                    }
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.eamsApiUrl) {
+                    const response = await fetch('https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            targetUrl: session.eamsApiUrl,
+                            payload: { action: 'getPermissionsByRole', args: [session.role] }
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.success) permissions = data.data;
+                    console.log('Permisos obtenidos de API directa:', permissions);
                 }
             } catch(e) {
-                console.error('Error loading permissions:', e);
+                console.error('Error loading permissions from API:', e);
             }
-            
-            window.dispatcherPermissions = permissions;
-            console.log('Permisos cargados:', window.dispatcherPermissions);
-            
-            // Ocultar botones según permisos
-            if (!hasPermission('WO_CreateUI')) {
-                const btn = document.getElementById('createBtn');
-                if (btn) btn.style.display = 'none';
-            }
-            if (!hasPermission('WO_SearchUI')) {
-                const btn = document.getElementById('searchBtn');
-                if (btn) btn.style.display = 'none';
-            }
-            if (!hasPermission('WO_ReportUI')) {
-                const btn = document.getElementById('executeBtn');
-                if (btn) btn.style.display = 'none';
-            }
-            if (!hasPermission('WO_ApproveUI')) {
-                const btn = document.getElementById('approveBtn');
-                if (btn) btn.style.display = 'none';
-            }
-            if (!hasPermission('WO_ClosureUI')) {
-                const btn = document.getElementById('closeBtn');
-                if (btn) btn.style.display = 'none';
-            }
-        })();
+        }
+        
+        window.dispatcherPermissions = permissions;
+        console.log('Permisos finales:', window.dispatcherPermissions);
+        
+        // Ocultar botones según permisos
+        if (!hasPermission('WO_CreateUI')) {
+            const btn = document.getElementById('createBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('WO_SearchUI')) {
+            const btn = document.getElementById('searchBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('WO_ReportUI')) {
+            const btn = document.getElementById('executeBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('WO_ApproveUI')) {
+            const btn = document.getElementById('approveBtn');
+            if (btn) btn.style.display = 'none';
+        }
+        if (!hasPermission('WO_ClosureUI')) {
+            const btn = document.getElementById('closeBtn');
+            if (btn) btn.style.display = 'none';
+        }
+    })();
         
         // Display current date and week number
         function displayDateInfo() {
