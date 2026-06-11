@@ -81,32 +81,32 @@
                         <i class="fas fa-chevron-left"></i>
                     </button>
                 </div>
-                <nav class="sidebar-nav">
-                    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html" data-permission="WORK_ORDERS" data-sidebar="foresight">
-                        <i class="fas fa-tasks"></i>
-                        <span>WORK ORDERS</span>
-                    </button>
-                    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html" data-permission="PREVENTIVE" data-sidebar="foresight">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>PREVENTIVE</span>
-                    </button>
-                    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html" data-permission="INVENTORY" data-sidebar="foresight">
-                        <i class="fas fa-boxes"></i>
-                        <span>INVENTORY</span>
-                    </button>
-                    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html" data-permission="CALIBRATION" data-sidebar="foresight">
-                        <i class="fas fa-microscope"></i>
-                        <span>CALIBRATION</span>
-                    </button>
-                    <button class="sidebar-btn" data-module="kpi_intel" data-url="/app/modules/intelligence/kpi_intel.html" data-permission="KPI" data-sidebar="foresight">
-                        <i class="fas fa-chart-line"></i>
-                        <span>KPI</span>
-                    </button>
-                    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html" data-permission="CONSULTING" data-sidebar="foresight">
-                        <i class="fas fa-chalkboard-user"></i>
-                        <span>CONSULTING</span>
-                    </button>
-                </nav>
+		<nav class="sidebar-nav">
+		    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html" data-permission="WO_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-tasks"></i>
+		        <span>WORK ORDERS</span>
+		    </button>
+		    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html" data-permission="PVT_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-calendar-alt"></i>
+		        <span>PREVENTIVE</span>
+		    </button>
+		    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html" data-permission="STK_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-boxes"></i>
+		        <span>INVENTORY</span>
+		    </button>
+		    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html" data-permission="CAL_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-microscope"></i>
+		        <span>CALIBRATION</span>
+		    </button>
+		    <button class="sidebar-btn" data-module="kpi_intel" data-url="/app/modules/intelligence/kpi_intel.html" data-permission="KPI_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-chart-line"></i>
+		        <span>KPI</span>
+		    </button>
+		    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html" data-permission="CONSULTING_IntelligenceUI" data-sidebar="foresight">
+		        <i class="fas fa-chalkboard-user"></i>
+		        <span>CONSULTING</span>
+		    </button>
+		</nav>
             </aside>
 
             <!-- MAIN CONTENT - EAMS Area -->
@@ -124,14 +124,14 @@
                 </div>
 
                 <!-- EAMS BUTTONS (6 buttons) -->
-                <div class="eams-buttons">
-                    <button class="eams-btn" data-eams="asset" data-permission="ASSETS">ASSET</button>
-                    <button class="eams-btn" data-eams="work_order" data-permission="WORK_ORDERS">WORK ORDER</button>
-                    <button class="eams-btn" data-eams="preventive" data-permission="PREVENTIVE">PREVENTIVE</button>
-                    <button class="eams-btn" data-eams="calibrations" data-permission="CALIBRATION">CALIBRATIONS</button>
-                    <button class="eams-btn" data-eams="inventory" data-permission="INVENTORY">INVENTORY</button>
-                    <button class="eams-btn" data-eams="plant_layout" data-permission="PLANT_LAYOUT">PLANT LAYOUT</button>
-                </div>
+		<div class="eams-buttons">
+		    <button class="eams-btn" data-eams="asset" data-permission="AST_MainDispatcherUI">ASSET</button>
+		    <button class="eams-btn" data-eams="work_order" data-permission="WO_MainDispatcherUI">WORK ORDER</button>
+		    <button class="eams-btn" data-eams="preventive" data-permission="PVT_MainDispatcherUI">PREVENTIVE</button>
+		    <button class="eams-btn" data-eams="calibrations" data-permission="CAL_MainDispatcherUI">CALIBRATIONS</button>
+		    <button class="eams-btn" data-eams="inventory" data-permission="STK_MainDispatcherUI">INVENTORY</button>
+		    <button class="eams-btn" data-eams="plant_layout" data-permission="SYS_PlantLayoutUI">PLANT LAYOUT</button>
+		</div>
 
                 <!-- DYNAMIC CONTENT CONTAINER -->
                 <div id="dynamicContent" class="dynamic-content">
