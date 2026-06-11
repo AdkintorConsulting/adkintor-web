@@ -380,7 +380,7 @@ function openAssetDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/ast_dispatcher.html')
+        fetch('/app/modules/eams/ast_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Dispatcher not found');
@@ -421,7 +421,7 @@ function openWorkOrderDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/wo_dispatcher.html')
+        fetch('/app/modules/eams/wo_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
@@ -520,7 +520,7 @@ function openPreventiveDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/pvt_dispatcher.html')
+        fetch('/app/modules/eams/pvt_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
@@ -619,7 +619,7 @@ function openInventoryDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/stk_dispatcher.html')
+        fetch('/app/modules/eams/stk_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
@@ -698,7 +698,7 @@ function openCalibrationDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/cal_dispatcher.html')
+        fetch('/app/modules/eams/cal_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
