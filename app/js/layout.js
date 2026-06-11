@@ -1164,25 +1164,23 @@ function applyPermissionsByRole() {
         return;
     }
     
-    // Aplicar permisos a sidebar buttons (Intelligence)
-    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    // Aplicar permisos a sidebar buttons
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'flex';  // Mostrar
+            btn.style.setProperty('display', 'flex', 'important');
         } else {
-            btn.style.display = 'none';
+            btn.style.setProperty('display', 'none', 'important');
         }
     });
-    
+
     // Aplicar permisos a EAMS buttons
-    const eamsBtns = document.querySelectorAll('.eams-btn');
     eamsBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'inline-block';  // Mostrar
+            btn.style.setProperty('display', 'inline-block', 'important');
         } else {
-            btn.style.display = 'none';
+            btn.style.setProperty('display', 'none', 'important');
         }
     });
 }
