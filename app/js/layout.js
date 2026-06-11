@@ -16,6 +16,24 @@ let modalContainer = null;
 let currentUserRole = 'VIEWER';
 let isSidebarCollapsed = false;
 
+// ============================================
+// INICIALIZAR LOGGER
+// ============================================
+
+// Asegurar que el Logger está disponible
+if (typeof Logger === 'undefined') {
+    console.warn('Logger not loaded, logging disabled');
+    window.Logger = {
+        error: (...args) => console.warn('Logger unavailable:', args),
+        audit: (...args) => console.warn('Logger unavailable:', args)
+    };
+}
+
+// Wrapper global para funciones con logging automático
+window.safeExecute = async (actionName, module, fn, logContext = {}) => {
+    return Logger.wrap(actionName, module, fn, logContext);
+};
+
 // Función para mostrar fecha y semana
 function updateDateAndWeek() {
     const dateWeekElement = document.getElementById('dateWeekDisplay');
@@ -375,44 +393,39 @@ function handleEamsClick(module) {
 }
 
 function openAssetDispatcher() {
+    // Load ASSET dispatcher via fetch
     const dynamicContent = document.getElementById('dynamicContent');
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/ast_dispatcher.html?t=' + Date.now())
+        fetch('/app/modules/eams/ast_dispatcher.html')
             .then(response => {
-                if (!response.ok) throw new Error('Dispatcher not found');
+                if (!response.ok) {
+                    throw new Error('Dispatcher not found');
+                }
                 return response.text();
             })
             .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => script.remove());
-                dynamicContent.innerHTML = tempDiv.innerHTML;
+                dynamicContent.innerHTML = html;
                 
+                // Update breadcrumbs
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'ASSETS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-                
-                setTimeout(() => {
-                    initAstDispatcherButtons();
-                }, 100);
+                // Initialize dispatcher buttons (sin "coming soon")
+                initAstDispatcherButtons();
             })
             .catch(error => {
                 console.error('Error loading ASSET dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Asset Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading Asset Dispatcher</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
             });
     }
 }
@@ -426,46 +439,18 @@ function openWorkOrderDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/wo_dispatcher.html?t=' + Date.now())
+        fetch('/app/modules/eams/wo_dispatcher.html')
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                // Extraer scripts del HTML
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                
-                // Obtener todos los scripts
-                const scripts = tempDiv.querySelectorAll('script');
-                
-                // Remover scripts del HTML para no duplicarlos
-                scripts.forEach(script => script.remove());
-                
-                // Insertar el HTML sin scripts
-                dynamicContent.innerHTML = tempDiv.innerHTML;
-                
-                // Actualizar breadcrumbs
+                dynamicContent.innerHTML = html;
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'WORK ORDERS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                
-                // Ejecutar los scripts manualmente
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-                
-                // Inicializar botones (después de que los scripts se ejecuten)
-                setTimeout(() => {
-                    initWoDispatcherButtons();
-                }, 100);
+                initWoDispatcherButtons();
             })
             .catch(error => {
                 console.error('Error loading WO dispatcher:', error);
@@ -553,36 +538,18 @@ function openPreventiveDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/pvt_dispatcher.html?t=' + Date.now())
+        fetch('/app/modules/eams/pvt_dispatcher.html')
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => script.remove());
-                dynamicContent.innerHTML = tempDiv.innerHTML;
-                
+                dynamicContent.innerHTML = html;
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'PREVENTIVE';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-                
-                setTimeout(() => {
-                    initPvtDispatcherButtons();
-                }, 100);
+                initPvtDispatcherButtons();
             })
             .catch(error => {
                 console.error('Error loading PVT dispatcher:', error);
@@ -670,36 +637,18 @@ function openInventoryDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/stk_dispatcher.html?t=' + Date.now())
+        fetch('/app/modules/eams/stk_dispatcher.html')
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => script.remove());
-                dynamicContent.innerHTML = tempDiv.innerHTML;
-                
+                dynamicContent.innerHTML = html;
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'INVENTORY';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-                
-                setTimeout(() => {
-                    initStkDispatcherButtons();
-                }, 100);
+                initStkDispatcherButtons();
             })
             .catch(error => {
                 console.error('Error loading STK dispatcher:', error);
@@ -767,36 +716,18 @@ function openCalibrationDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/cal_dispatcher.html?t=' + Date.now())
+        fetch('/app/modules/eams/cal_dispatcher.html')
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => script.remove());
-                dynamicContent.innerHTML = tempDiv.innerHTML;
-                
+                dynamicContent.innerHTML = html;
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'CALIBRATION';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-                
-                setTimeout(() => {
-                    initCalDispatcherButtons();
-                }, 100);
+                initCalDispatcherButtons();
             })
             .catch(error => {
                 console.error('Error loading CAL dispatcher:', error);
@@ -1158,33 +1089,32 @@ function applyPermissionsByRole() {
     
     if (permissions.length === 0) {
         console.warn('No permissions loaded, hiding all buttons');
+        // Ocultar todos los botones si no hay permisos
         document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
             btn.style.display = 'none';
         });
         return;
     }
     
-    // Obtener los botones dentro de la función
+    // Hide/Show sidebar buttons (Intelligence)
     const sidebarBtns = document.querySelectorAll('.sidebar-btn');
-    const eamsBtns = document.querySelectorAll('.eams-btn');
-    
-    // Aplicar permisos a sidebar buttons
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.setProperty('display', 'flex', 'important');
+            btn.style.display = 'flex';
         } else {
-            btn.style.setProperty('display', 'none', 'important');
+            btn.style.display = 'none';
         }
     });
-
-    // Aplicar permisos a EAMS buttons
+    
+    // Hide/Show EAMS buttons
+    const eamsBtns = document.querySelectorAll('.eams-btn');
     eamsBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.setProperty('display', 'inline-block', 'important');
+            btn.style.display = 'inline-block';
         } else {
-            btn.style.setProperty('display', 'none', 'important');
+            btn.style.display = 'none';
         }
     });
 }
