@@ -375,39 +375,44 @@ function handleEamsClick(module) {
 }
 
 function openAssetDispatcher() {
-    // Load ASSET dispatcher via fetch
     const dynamicContent = document.getElementById('dynamicContent');
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
         fetch('/app/modules/eams/ast_dispatcher.html?t=' + Date.now())
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Dispatcher not found');
-                }
+                if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
                 
-                // Update breadcrumbs
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'ASSETS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
-                // Initialize dispatcher buttons (sin "coming soon")
-                initAstDispatcherButtons();
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initAstDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading ASSET dispatcher:', error);
-                dynamicContent.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error loading Asset Dispatcher</h3>
-                        <p>Please try again later</p>
-                    </div>
-                `;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Asset Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
 }
@@ -554,12 +559,30 @@ function openPreventiveDispatcher() {
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'PREVENTIVE';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initPvtDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initPvtDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading PVT dispatcher:', error);
@@ -653,12 +676,30 @@ function openInventoryDispatcher() {
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'INVENTORY';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initStkDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initStkDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading STK dispatcher:', error);
@@ -732,12 +773,30 @@ function openCalibrationDispatcher() {
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'CALIBRATION';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initCalDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initCalDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading CAL dispatcher:', error);
