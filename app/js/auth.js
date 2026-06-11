@@ -3,6 +3,7 @@
 // ============================================
 // Cambios: Usa dominio del email para buscar cliente en Master
 // Fecha: 2026-06-08
+// MODIFICADO: 2026-06-11 - Añadido logging de login/logout
 
 (function() {
     if (window.__ADKINTOR_AUTH_LOADED__) {
@@ -46,11 +47,26 @@
             return this.session || this.loadSession();
         },
         
-	logout: function() {
-	    localStorage.removeItem('adkintor_session');
-	    this.session = null;
-	    window.location.replace('/app/index.html');
-	},
+        logout: async function() {
+            // ============================================
+            // NUEVO: REGISTRAR LOG DE LOGOUT
+            // ============================================
+            const email = this.session ? this.session.email : null;
+            
+            if (email && window.Logger && typeof window.Logger.logout === 'function') {
+                try {
+                    await window.Logger.logout(email);
+                    console.log('[Auth] Logout log recorded');
+                } catch(err) {
+                    console.warn('[Auth] Logout log failed (non-critical):', err);
+                }
+            }
+            // ============================================
+            
+            localStorage.removeItem('adkintor_session');
+            this.session = null;
+            window.location.replace('/app/index.html');
+        },
         
         login: async function(email, password) {
             try {
@@ -99,27 +115,40 @@
                     return { success: false, error: errorMsg };
                 }
                 
-		// Intelligence API devuelve { success: true, data: { status: 'success', data: { ... } } }
-		// Extraer los datos reales
-		const responseData = clientResponse.data?.data || clientResponse.data;
+                // Intelligence API devuelve { success: true, data: { status: 'success', data: { ... } } }
+                // Extraer los datos reales
+                const responseData = clientResponse.data?.data || clientResponse.data;
 
-		// Build session data
-		const sessionData = {
-		    email: email,
-		    role: responseData?.role || 'VIEWER',
-		    clientId: responseData?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
-		    clientName: clientName,
-		    userName: responseData?.name || email.split('@')[0],
-		    language: responseData?.language || 'en',
-		    intelligenceApiUrl: intelligenceApiUrl,
-		    eamsApiUrl: eamsApiUrl || null,
-		    timestamp: Date.now()
-		};
+                // Build session data
+                const sessionData = {
+                    email: email,
+                    role: responseData?.role || 'VIEWER',
+                    clientId: responseData?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
+                    clientName: clientName,
+                    userName: responseData?.name || email.split('@')[0],
+                    language: responseData?.language || 'en',
+                    intelligenceApiUrl: intelligenceApiUrl,
+                    eamsApiUrl: eamsApiUrl || null,
+                    timestamp: Date.now()
+                };
                 
                 // Save to localStorage
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
                 this.session = sessionData;
                 console.log('3. Login successful, session saved for:', sessionData.userName);
+
+                // ============================================
+                // NUEVO: REGISTRAR LOG DE LOGIN (no bloqueante)
+                // ============================================
+                if (window.Logger && typeof window.Logger.login === 'function') {
+                    window.Logger.login(email, sessionData.role).catch(err => {
+                        console.warn('[Auth] Login log failed (non-critical):', err);
+                    });
+                } else {
+                    console.warn('[Auth] Logger not available, skipping login log');
+                }
+                // ============================================
+                
                 return { success: true };
                 
             } catch (error) {
