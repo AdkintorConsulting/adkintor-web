@@ -1164,6 +1164,10 @@ function applyPermissionsByRole() {
         return;
     }
     
+    // Obtener los botones dentro de la función
+    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    const eamsBtns = document.querySelectorAll('.eams-btn');
+    
     // Aplicar permisos a sidebar buttons
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
