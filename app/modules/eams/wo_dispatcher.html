@@ -282,17 +282,12 @@
             }, '*');
         }
         
-        // Configurar botones (solo si existen)
-        const createBtn = document.getElementById('createBtn');
-        if (createBtn) createBtn.onclick = openCreate;
-        const searchBtn = document.getElementById('searchBtn');
-        if (searchBtn) searchBtn.onclick = openSearch;
-        const executeBtn = document.getElementById('executeBtn');
-        if (executeBtn) executeBtn.onclick = openExecute;
-        const approveBtn = document.getElementById('approveBtn');
-        if (approveBtn) approveBtn.onclick = openApprove;
-        const closeBtn = document.getElementById('closeBtn');
-        if (closeBtn) closeBtn.onclick = openClose;
+        // Configurar botones (asignación directa)
+        document.getElementById('createBtn').onclick = openCreate;
+        document.getElementById('searchBtn').onclick = openSearch;
+        document.getElementById('executeBtn').onclick = openExecute;
+        document.getElementById('approveBtn').onclick = openApprove;
+        document.getElementById('closeBtn').onclick = openClose;
         
         // Inicializar
         displayDateInfo();
