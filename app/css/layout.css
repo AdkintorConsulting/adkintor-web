@@ -1,7 +1,7 @@
 /* Ocultar todos los botones hasta que se carguen los permisos */
 .sidebar-btn,
 .eams-btn {
-    display: none !important;
+    display: none;
 }
 
 * {
