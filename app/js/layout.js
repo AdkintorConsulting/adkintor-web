@@ -1158,30 +1158,29 @@ function applyPermissionsByRole() {
     
     if (permissions.length === 0) {
         console.warn('No permissions loaded, hiding all buttons');
-        // Ocultar todos los botones si no hay permisos
         document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
             btn.style.display = 'none';
         });
         return;
     }
     
-    // Hide/Show sidebar buttons (Intelligence)
+    // Aplicar permisos a sidebar buttons (Intelligence)
     const sidebarBtns = document.querySelectorAll('.sidebar-btn');
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'flex';
+            btn.style.display = 'flex';  // Mostrar
         } else {
             btn.style.display = 'none';
         }
     });
     
-    // Hide/Show EAMS buttons
+    // Aplicar permisos a EAMS buttons
     const eamsBtns = document.querySelectorAll('.eams-btn');
     eamsBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'inline-block';
+            btn.style.display = 'inline-block';  // Mostrar
         } else {
             btn.style.display = 'none';
         }
