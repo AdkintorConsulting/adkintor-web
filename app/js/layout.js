@@ -427,12 +427,40 @@ function openWorkOrderDispatcher() {
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                // Extraer scripts del HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Obtener todos los scripts
+                const scripts = tempDiv.querySelectorAll('script');
+                
+                // Remover scripts del HTML para no duplicarlos
+                scripts.forEach(script => script.remove());
+                
+                // Insertar el HTML sin scripts
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
+                // Actualizar breadcrumbs
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'WORK ORDERS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initWoDispatcherButtons();
+                
+                // Ejecutar los scripts manualmente
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                // Inicializar botones (después de que los scripts se ejecuten)
+                setTimeout(() => {
+                    initWoDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading WO dispatcher:', error);
