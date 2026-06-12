@@ -517,6 +517,64 @@
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
+    // ============================================
+    // FUNCIONES DE LOGGING PARA INVENTARIO
+    // ============================================
+    async function logStockAdjustment(skuId, oldStock, newStock, qtyChange, reason, adjustedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit('RECEIVE_STOCK', 'STK', skuId, 'Stock', oldStock, newStock, 
+                `Ajuste: ${qtyChange} (${reason})`);
+            console.log('[STK] Stock adjustment logged:', skuId);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('STK', 'STOCK_ADJUSTED', 
+                    `SKU ${skuId}: ${oldStock} → ${newStock} (${qtyChange}) - ${reason}`);
+            }
+        } catch (err) {
+            console.warn('[STK] Failed to log stock adjustment:', err);
+        }
+    }
+
+    async function logSKUCreation(skuId, skuData, createdBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const details = `SKU creado: ${skuData.description} | Categoría: ${skuData.category} | Precio: ${skuData.price}`;
+            await window.Logger.audit('CREATE_SKU', 'STK', skuId, '', '', '', details);
+            console.log('[STK] SKU creation logged:', skuId);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('STK', 'SKU_CREATED', details);
+            }
+        } catch (err) {
+            console.warn('[STK] Failed to log SKU creation:', err);
+        }
+    }
+
+    async function logSKUModification(skuId, changes, modifiedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const changesSummary = changes.map(c => `${c.field}: ${c.oldValue} → ${c.newValue}`).join(', ');
+            await window.Logger.audit('MODIFY_SKU', 'STK', skuId, 'Multiple', '', '', changesSummary.substring(0, 200));
+            console.log('[STK] SKU modification logged:', skuId);
+        } catch (err) {
+            console.warn('[STK] Failed to log SKU modification:', err);
+        }
+    }
+    // ============================================
+
     // Global state
     let catalogData = [];
     let adjustmentReasons = [];
@@ -524,6 +582,7 @@
     let locationsList = [];
     let unitsList = [];
     let currenciesList = [];
+    let currentUser = '';
 
     function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
@@ -531,8 +590,12 @@
     async function loadUserEmail() {
         try {
             const email = await callApi('STK_getCurrentUserEmail');
-            document.getElementById('user-display').innerText = email || 'Active Session';
-        } catch(e) { document.getElementById('user-display').innerText = 'User'; }
+            currentUser = email || 'Active Session';
+            document.getElementById('user-display').innerText = currentUser;
+        } catch(e) { 
+            currentUser = 'User';
+            document.getElementById('user-display').innerText = currentUser; 
+        }
     }
 
     async function loadKPI() {
@@ -682,6 +745,19 @@
     function openEditSkuModal(sku) {
         const item = catalogData.find(i => i['Part ID / SKU'] === sku);
         if(!item) { showToast('SKU not found','error'); return; }
+        
+        // ============================================
+        // GUARDAR COPIA DEL ESTADO ORIGINAL PARA LOGGING
+        // ============================================
+        window._originalSkuData = JSON.parse(JSON.stringify({
+            description: item.Description,
+            category: item.Category,
+            location: item['Storage Location'],
+            minStock: item['Min Stock'],
+            unitPrice: item['Unit Price']
+        }));
+        // ============================================
+        
         document.getElementById('skuModalTitle').innerText = '✏️ EDIT SKU: ' + sku;
         document.getElementById('editSkuId').value = sku;
         document.getElementById('skuDisplay').value = sku;
@@ -722,11 +798,43 @@
         showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
         try {
             const res = await callApi('STK_updatePartMasterData', [payload]);
+            // ============================================
+            // REGISTRAR LOG SEGÚN SEA CREACIÓN O MODIFICACIÓN
+            // ============================================
+            const isEdit = sku && sku !== '';
+            const newSkuId = res.skuId || sku || payload.description.substring(0, 10);
+            
+            if (isEdit) {
+                // Calcular cambios
+                const changes = [];
+                const original = window._originalSkuData || {};
+                if (original.description !== payload.description) changes.push({field: 'description', oldValue: original.description || '', newValue: payload.description});
+                if (original.category !== payload.category) changes.push({field: 'category', oldValue: original.category || '', newValue: payload.category});
+                if (original.location !== payload.location) changes.push({field: 'location', oldValue: original.location || '', newValue: payload.location});
+                if (String(original.minStock) !== String(payload.minStock)) changes.push({field: 'minStock', oldValue: original.minStock || '0', newValue: payload.minStock});
+                if (String(original.unitPrice) !== String(payload.price)) changes.push({field: 'unitPrice', oldValue: original.unitPrice || '0', newValue: payload.price});
+                
+                if (changes.length > 0) {
+                    logSKUModification(newSkuId, changes, currentUser).catch(e => console.warn('[STK] Edit log failed:', e));
+                }
+            } else {
+                // Creación
+                logSKUCreation(newSkuId, payload, currentUser).catch(e => console.warn('[STK] Create log failed:', e));
+            }
+            // ============================================
+            
             showToast(res.message, 'success');
             closeSkuModal();
             refreshCatalog(false);
             loadKPI();
-        } catch(err) { showToast('Error: ' + err.message, 'error'); } finally { hideLoading(); }
+        } catch(err) { 
+            showToast('Error: ' + err.message, 'error');
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('STK', 'saveSku', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+            }
+        } finally { 
+            hideLoading(); 
+        }
     }
 
     // STOCK ADJUST
@@ -750,11 +858,26 @@
         showLoading('Adjusting stock...');
         try {
             const res = await callApi('STK_adjustStock', [sku, qtyChange, reason]);
+            // ============================================
+            // REGISTRAR LOG DE AJUSTE DE STOCK
+            // ============================================
+            const oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
+            const newStock = oldStock + qtyChange;
+            logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(e => console.warn('[STK] Adjustment log failed:', e));
+            // ============================================
+            
             showToast(res.message, 'success');
             closeAdjustModal();
             refreshCatalog(false);
             loadKPI();
-        } catch(err) { showToast('Error: ' + err.message, 'error'); } finally { hideLoading(); }
+        } catch(err) { 
+            showToast('Error: ' + err.message, 'error');
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('STK', 'saveSku', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+            }
+        } finally { 
+            hideLoading(); 
+        }
     }
 
     // HISTORY
