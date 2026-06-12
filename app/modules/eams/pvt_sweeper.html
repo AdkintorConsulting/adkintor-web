@@ -700,6 +700,29 @@
         }
     }
 
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA EJECUCIÓN DE SWEEPER
+    // ============================================
+    async function logSweeperExecution(result, executedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[PVT] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const details = `Sweeper ejecutado: ${result.expiredCount || 0} planes expirados, ${result.closedCount || 0} WO cerradas automáticamente`;
+            await window.Logger.audit('CHANGE_STATUS', 'PVT', 'SWEEPER', '', '', '', details);
+            console.log('[PVT] Sweeper execution logged');
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('PVT', 'SWEEPER_EXECUTED', details);
+            }
+        } catch (err) {
+            console.warn('[PVT] Failed to log sweeper execution:', err);
+        }
+    }
+    // ============================================
+
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -720,6 +743,7 @@
     // ============================================
     let currentWeek = null;
     let currentYear = null;
+    let currentUser = '';
 
     // ============================================
     // INITIALIZATION
@@ -736,6 +760,17 @@
                 document.getElementById('weekInput').value = currentWeek;
                 document.getElementById('yearInput').value = currentYear;
                 await searchLogs();
+                
+                // ============================================
+                // OBTENER USUARIO ACTUAL
+                // ============================================
+                try {
+                    const userEmail = await callApi('getCurrentUserEmail');
+                    currentUser = userEmail || 'system';
+                } catch (e) {
+                    currentUser = 'system';
+                }
+                // ============================================
             } else {
                 // Fallback
                 const now = new Date();
@@ -860,12 +895,30 @@
                 hideLoading();
                 
                 if (response.status === 'success') {
+                    // ============================================
+                    // REGISTRAR LOG DE EJECUCIÓN DEL SWEEPER
+                    // ============================================
+                    const sweeperResult = {
+                        expiredCount: response.expiredCount || 0,
+                        closedCount: response.closedCount || 0
+                    };
+                    logSweeperExecution(sweeperResult, currentUser || 'system').catch(e => console.warn('[PVT] Sweeper log failed:', e));
+                    // ============================================
+                    
                     showToast(response.message, 'success');
                     await searchLogs();
                 } else {
                     showToast('Error: ' + response.message, 'error');
                 }
             } catch (e) {
+                // ============================================
+                // REGISTRAR ERROR EN LOG
+                // ============================================
+                if (window.Logger && typeof window.Logger.error === 'function') {
+                    window.Logger.error('PVT', 'runSweeper', e.message).catch(err => console.warn('[PVT] Error log failed:', err));
+                }
+                // ============================================
+                
                 hideLoading();
                 showToast('Error: ' + e.message, 'error');
             }
