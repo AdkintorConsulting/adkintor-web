@@ -599,6 +599,33 @@
         }
     }
 
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA RELEASE DE WO PREVENTIVAS
+    // ============================================
+    async function logPVTRelease(tasksReleased, releasedBy, week, year) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[PVT] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            // Usar logRelease para liberación de WO preventivas
+            const taskIds = tasksReleased.map(t => t.pmCode || t.assetId).join(',');
+            const details = `Semana ${week}/${year} - ${tasksReleased.length} WO(s) liberadas: ${taskIds.substring(0, 200)}`;
+            
+            await window.Logger.audit('RELEASE_PLAN', 'PVT', `WEEK-${week}-${year}`, '', '', '', details);
+            console.log('[PVT] Release logged:', tasksReleased.length, 'tasks');
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('PVT', 'WEEKLY_RELEASE', 
+                    `Liberación semanal - Semana ${week}/${year}: ${tasksReleased.length} WO(s) liberadas`);
+            }
+        } catch (err) {
+            console.warn('[PVT] Failed to log release:', err);
+        }
+    }
+    // ============================================
+
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -616,6 +643,7 @@
     let currentYear = null;
     let localTasks = [];
     let currentWeek = null;
+    let currentUser = '';
 
     // ============================================
     // INITIALIZATION
@@ -638,9 +666,11 @@
             // Obtener email del usuario
             try {
                 const userEmail = await callApi('PVT_getCurrentUserEmail');
-                document.getElementById('user-display').innerText = userEmail || 'Guest User';
+                currentUser = userEmail || 'Guest User';
+                document.getElementById('user-display').innerText = currentUser;
             } catch (e) {
-                document.getElementById('user-display').innerText = 'Authenticated User';
+                currentUser = 'Authenticated User';
+                document.getElementById('user-display').innerText = currentUser;
             }
             
             initUI();
@@ -872,6 +902,14 @@
             closeReleaseModal();
             
             if (response.status === 'success') {
+                // ============================================
+                // REGISTRAR LOG DE RELEASE
+                // ============================================
+                const week = document.getElementById('weekSelector').value;
+                const year = document.getElementById('yearSelector').value;
+                logPVTRelease(selectedData, currentUser || 'system', week, year).catch(e => console.warn('[PVT] Release log failed:', e));
+                // ============================================
+                
                 showToast(response.message, 'success');
                 
                 // Actualizar localTasks inmediatamente
@@ -900,6 +938,14 @@
                 showToast('Error: ' + response.message, 'error');
             }
         } catch (e) {
+            // ============================================
+            // REGISTRAR ERROR EN LOG
+            // ============================================
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('PVT', 'releaseWorkOrders', e.message).catch(err => console.warn('[PVT] Error log failed:', err));
+            }
+            // ============================================
+            
             if (confirmBtn) {
                 if (btnText) btnText.style.display = 'inline';
                 if (btnSpinner) btnSpinner.style.display = 'none';
