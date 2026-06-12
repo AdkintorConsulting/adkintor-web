@@ -592,6 +592,62 @@
     function showToast(msg, type='info') { const t=document.getElementById('toast'); t.className=`toast toast-${type}`; t.innerHTML=`<i class="bi bi-${type==='success'?'check-circle':(type==='error'?'x-circle':'info-circle')}"></i> ${msg}`; t.style.display='flex'; setTimeout(()=>t.style.display='none',4000); }
     function showLoading(msg) { const ov=document.getElementById('loadingOverlay'); ov.querySelector('.loading-content').innerHTML=`<div class="spinner"></div><div>${msg}</div>`; ov.style.display='flex'; }
     function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+
+    // ============================================
+    // FUNCIONES DE LOGGING PARA PROCUREMENT
+    // ============================================
+    async function logPOCreation(poNumber, vendor, totalAmount, createdBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const details = `PO ${poNumber} creada | Proveedor: ${vendor} | Total: $${totalAmount}`;
+            await window.Logger.audit('CREATE_PO', 'STK', poNumber, '', '', '', details);
+            console.log('[STK] PO creation logged:', poNumber);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('STK', 'PO_CREATED', details);
+            }
+        } catch (err) {
+            console.warn('[STK] Failed to log PO creation:', err);
+        }
+    }
+
+    async function logPOReceipt(poNumber, itemsReceived, totalValue, receivedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const details = `Recepción PO ${poNumber} | ${itemsReceived} items | Total: $${totalValue}`;
+            await window.Logger.audit('RECEIVE_STOCK', 'STK', poNumber, '', '', '', details);
+            console.log('[STK] PO receipt logged:', poNumber);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('STK', 'PO_RECEIVED', details);
+            }
+        } catch (err) {
+            console.warn('[STK] Failed to log PO receipt:', err);
+        }
+    }
+
+    async function logPOCancellation(poNumber, reason, cancelledBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[STK] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit('DELETE', 'STK', poNumber, '', '', '', `PO cancelada: ${reason}`);
+            console.log('[STK] PO cancellation logged:', poNumber);
+        } catch (err) {
+            console.warn('[STK] Failed to log PO cancellation:', err);
+        }
+    }
+    // ============================================
     function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     let modalResolve = null;
@@ -600,6 +656,7 @@
     function resolveModalWO() { const val = document.getElementById('woNumberSelect').value; resolveModal('modalWONumber', val || null); }
 
     let currentTrackerData = [], selectedPO = null, selectedPOFull = null, catalog = [], budgetAreas = [], allVendors = [];
+    let currentUser = '';
 
     function activateTab(tab) {
         document.querySelectorAll('.action-tab').forEach(t=>t.classList.remove('active'));
@@ -759,8 +816,21 @@
         showLoading('Saving...');
         try {
             const res = await callApi('STK_saveProcurementRequisition', [payload]);
+            // ============================================
+            // REGISTRAR LOG DE CREACIÓN DE PO
+            // ============================================
+            const totalAmount = items.reduce((sum, item) => sum + (item.qty * item.unitPrice), 0);
+            const finalPoNumber = res.poNumber || poNumber || 'N/A';
+            if (finalPoNumber !== 'N/A') {
+                logPOCreation(finalPoNumber, vendor, totalAmount, currentUser).catch(e => console.warn('[STK] PO log failed:', e));
+            }
+            // ============================================
+            
             showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading();
         } catch(err) { hideLoading(); showToast(err.message,'error'); }
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('STK', 'submitRequisition', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+            }
     }
 
     async function saveDirectPurchase(ctx, consumptionType, woNumber) {
@@ -768,6 +838,9 @@
         showLoading('Processing...');
         try { const res = await callApi('STK_saveDirectPurchase', [payload]); showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading(); } 
         catch(err) { hideLoading(); showToast(err.message,'error'); }
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('STK', 'submitRequisition', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+            }
     }
 
     async function createTemporaryPO(ctx) {
@@ -823,6 +896,13 @@
         showLoading('Processing receipt...');
         try {
             const res = await callApi('STK_saveProcurementReceipt', [payload]);
+            // ============================================
+            // REGISTRAR LOG DE RECEPCIÓN DE PO
+            // ============================================
+            const totalReceived = items.reduce((sum, item) => sum + (item.qtyReceived * item.unitPrice), 0);
+            logPOReceipt(selectedPO.poNumber, items.length, totalReceived, currentUser).catch(e => console.warn('[STK] Receipt log failed:', e));
+            // ============================================
+            
             showToast(res.message,'success');
             document.getElementById('receiptForm').style.display='none';
             document.getElementById('poSearchInput').value='';
@@ -837,8 +917,31 @@
         const confirmed = await showModalPromise('modalCancelPO');
         if(confirmed) {
             showLoading('Cancelling...');
-            try { const res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber]); showToast(res.message,'success'); refreshTracker(); hideLoading(); } 
-            catch(err) { hideLoading(); showToast(err.message,'error'); }
+            try { 
+                const res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber]);
+                
+                // ============================================
+                // REGISTRAR LOG DE CANCELACIÓN DE PO
+                // ============================================
+                logPOCancellation(selectedPO.poNumber, 'Cancelada por usuario', currentUser).catch(e => console.warn('[STK] Cancel log failed:', e));
+                // ============================================
+                
+                showToast(res.message,'success'); 
+                refreshTracker(); 
+                hideLoading(); 
+            } 
+            catch(err) { 
+                // ============================================
+                if (window.Logger && typeof window.Logger.error === 'function') {
+                    window.Logger.error('STK', 'cancelPO', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+                }
+               if (window.Logger && typeof window.Logger.error === 'function') {
+                   window.Logger.error('STK', 'submitRequisition', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+               }
+                // ============================================
+                hideLoading(); 
+                showToast(err.message,'error'); 
+            }
         }
     }
 
@@ -858,7 +961,8 @@
         showLoading('Loading Procurement Hub...');
         try {
             const email = await callApi('STK_getCurrentUserEmail');
-            document.getElementById('user-display').innerText = email || 'User';
+            currentUser = email || 'User';
+            document.getElementById('user-display').innerText = currentUser;
             const configRaw = await callApi('STK_getProcurementHubConfig');
             const config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
             budgetAreas = config.budgetAreas || [];
