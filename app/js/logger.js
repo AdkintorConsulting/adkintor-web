@@ -118,7 +118,11 @@ const Logger = (function() {
         }
         
         try {
-            // FORESIGHT tiene una función logAction en sus helpers
+            // FORESIGHT: logAction(module, action, targetId, details)
+            // La función espera 4 argumentos
+            const targetId = `${action}_${Date.now()}`;
+            const fullDetails = `${details} | User: ${session.email} | Severity: ${severity}`;
+            
             const response = await fetch(window.PROXY_URL || 'https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -126,7 +130,7 @@ const Logger = (function() {
                     targetUrl: session.intelligenceApiUrl,
                     payload: { 
                         action: 'logAction', 
-                        args: [module, action, details, severity, session.email] 
+                        args: [module, action, targetId, fullDetails]
                     }
                 })
             });
