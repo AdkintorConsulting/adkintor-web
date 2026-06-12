@@ -613,6 +613,34 @@
     if (overlay) overlay.style.display = 'none';
   }
 
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA CREACIÓN DE WO
+  // ============================================
+  async function logWOCreation(woId, woData) {
+    if (!window.Logger || typeof window.Logger.woCreated !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woCreated(woId, {
+        assetId: woData.assetId || '',
+        priority: woData.priority || '',
+        type: woData.type || 'CORRECTIVE',
+        requester: woData.requester || ''
+      });
+      console.log('[WO] WO creation logged:', woId);
+      
+      // También registrar en FORESIGHT
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_CREATED', `WO ${woId} creada - Prioridad: ${woData.priority}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO creation:', err);
+    }
+  }
+  // ============================================
+
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
   }
@@ -874,6 +902,18 @@
           folioDisplay.classList.add('success');
         }
         
+        // ============================================
+        // REGISTRAR LOG DE CREACIÓN DE WO
+        // ============================================
+        const woDataForLog = {
+          assetId: currentAsset ? currentAsset.id : '',
+          priority: payload.priority,
+          type: 'CORRECTIVE',
+          requester: payload.requester
+        };
+        logWOCreation(response.generatedFolio, woDataForLog).catch(e => console.warn('[WO] Log failed:', e));
+        // ============================================
+        
         let emailStatusMsg = '';
         if (response.emailSent) {
           emailStatusMsg = ' 📧 Notification email sent.';
@@ -897,6 +937,14 @@
       }
       
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO', 'createWorkOrder', error.message).catch(e => console.warn('[WO] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showToast('Error: ' + error.message, 'error');
       console.error('Submit error:', error);
