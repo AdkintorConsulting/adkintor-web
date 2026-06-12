@@ -634,6 +634,24 @@
     const overlay = document.getElementById('adkLoadingOverlay');
     if (overlay) overlay.remove();
   }
+
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // ============================================
+  async function logIntelligenceAction(module, action, details) {
+    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
+      console.warn('[STK_INTEL] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.foresight(module, action, details);
+      console.log('[STK_INTEL] Intelligence log recorded:', module, action);
+    } catch (err) {
+      console.warn('[STK_INTEL] Failed to log intelligence action:', err);
+    }
+  }
+  // ============================================
   
   function showError(message) {
     showToast(message, 'error');
@@ -656,7 +674,13 @@
   // ============================================
   // LOAD DATA
   // ============================================
-  async function refreshAllData() {
+   async function refreshAllData() {
+    // ============================================
+    // REGISTRAR APERTURA/REFRESCO DEL DASHBOARD
+    // ============================================
+    logIntelligenceAction('STK', 'OPEN_DASHBOARD', 'Usuario accedió a Inventory Intelligence Dashboard').catch(e => console.warn('[STK_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     
     try {
@@ -683,6 +707,14 @@
       hideLoading();
       showToast('Data loaded successfully', 'success');
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('STK_INTEL', 'refreshAllData', error.message).catch(e => console.warn('[STK_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Failed to load: ' + error.message);
     }
@@ -774,6 +806,13 @@
   
   function filterPendingPOs() {
     const filter = document.getElementById('poFilter')?.value || 'all';
+    
+    // ============================================
+    // REGISTRAR CAMBIO DE FILTRO
+    // ============================================
+    logIntelligenceAction('STK', 'FILTER_PENDING_POS', `Filtro aplicado en POs pendientes: ${filter}`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
+    // ============================================
+    
     let filtered = pendingPOsData;
     
     if (filter === 'critical') filtered = filtered.filter(po => po.hasCritical);
@@ -783,6 +822,8 @@
       document.getElementById('pendingPOsTable').innerHTML = `<div class="adk-alert adk-alert-info">No POs match filter.</div>`;
       return;
     }
+    
+    // ... resto del código existente ...
     
     let html = `<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Expected (days)</th><th>Status</th><th>Items</th></tr></thead><tbody>`;
     
@@ -862,8 +903,17 @@
   
   function applyObsoleteFilter() {
     const monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
+    
+    // ============================================
+    // REGISTRAR CAMBIO DE FILTRO DE OBSOLETOS
+    // ============================================
+    logIntelligenceAction('STK', 'FILTER_OBSOLETE', `Filtro de partes obsoletas aplicado: ${monthsFilter}+ meses`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
+    // ============================================
+    
     let filtered = obsoletePartsData.filter(p => p.monthsInactive >= monthsFilter);
     const totalValue = obsoletePartsData.reduce((sum, p) => sum + p.stockValue, 0);
+    
+    // ... resto del código existente ...
     
     let html = `<div class="adk-card" style="margin-bottom:16px;">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
     
@@ -929,6 +979,12 @@
   }
   
   async function printToPDF() {
+    // ============================================
+    // REGISTRAR EXPORTACIÓN A PDF
+    // ============================================
+    logIntelligenceAction('STK', 'EXPORT_PDF', 'Exportación de reporte Inventory Intelligence a PDF').catch(e => console.warn('[STK_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
       const html = await callIntelligenceApi('STK_getPrintView', []);
@@ -945,10 +1001,18 @@
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('STK_INTEL', 'printToPDF', error.message).catch(e => console.warn('[STK_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Print failed: ' + error.message);
     }
-  }
+  }     
   
   function escapeHtml(str) {
     if (!str) return '';
@@ -984,6 +1048,18 @@
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const tabId = this.getAttribute('data-tab');
+        const tabNames = {
+          'alerts': 'Alerts & Urgent',
+          'pending': 'Pending POs',
+          'optimize': 'Optimize Stock',
+          'obsolete': 'Obsolete Parts'
+        };
+        // ============================================
+        // REGISTRAR CAMBIO DE PESTAÑA
+        // ============================================
+        logIntelligenceAction('STK', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
+        // ============================================
+        
         showTab(tabId);
       });
     });
