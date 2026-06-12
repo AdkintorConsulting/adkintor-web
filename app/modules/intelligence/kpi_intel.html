@@ -595,6 +595,24 @@ async function callIntelligenceApi(action, args = []) {
     adkHideLoading();
   }
   
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // ============================================
+  async function logIntelligenceAction(module, action, details) {
+    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
+      console.warn('[KPI] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.foresight(module, action, details);
+      console.log('[KPI] Intelligence log recorded:', module, action);
+    } catch (err) {
+      console.warn('[KPI] Failed to log intelligence action:', err);
+    }
+  }
+  // ============================================
+
   function showError(message) {
     showToast(message, 'error');
   }
@@ -602,10 +620,17 @@ async function callIntelligenceApi(action, args = []) {
   // ============================================
   // DATA LOADING FUNCTIONS (CONVERTIDAS)
   // ============================================
-  async function loadData() {
+   async function loadData() {
     showLoading();
+    
+    // ============================================
+    // REGISTRAR APERTURA DEL DASHBOARD
+    // ============================================
     const month = parseInt(document.getElementById('monthSelect').value);
     const year = parseInt(document.getElementById('yearSelect').value);
+    logIntelligenceAction('KPI', 'OPEN_DASHBOARD', `Dashboard KPI abierto - Período: ${month}/${year}`).catch(e => console.warn('[KPI] Log failed:', e));
+    // ============================================
+    
     const compareType = document.getElementById('compareSelect').value;
     
     try {
@@ -637,6 +662,14 @@ async function callIntelligenceApi(action, args = []) {
         showError(data.error || 'Error loading dashboard data');
       }
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('KPI', 'loadDashboard', error.message).catch(e => console.warn('[KPI] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Connection error: ' + error.message);
       const kpiContent = document.getElementById('kpiContent');
@@ -667,8 +700,15 @@ async function callIntelligenceApi(action, args = []) {
     const month = parseInt(document.getElementById('monthSelect').value);
     const year = parseInt(document.getElementById('yearSelect').value);
     
+    // ============================================
+    // REGISTRAR EXPORTACIÓN A PDF
+    // ============================================
+    logIntelligenceAction('KPI', 'EXPORT_PDF', `Exportación de dashboard KPI - Período: ${month}/${year}`).catch(e => console.warn('[KPI] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
+      // ... resto del código existente ...
       const htmlContent = await callIntelligenceApi('exportToPDF', [year, month]);
       hideLoading();
       // Abrir ventana nueva con el reporte listo para imprimir
@@ -681,6 +721,14 @@ async function callIntelligenceApi(action, args = []) {
         showError('Popup bloqueado. Por favor permita ventanas emergentes.');
       }
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('KPI', 'exportPDF', error.message).catch(e => console.warn('[KPI] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Error generating report: ' + error.message);
     }
@@ -1029,6 +1077,15 @@ async function callIntelligenceApi(action, args = []) {
   if (compareSelect) {
     compareSelect.addEventListener('change', function() {
       if (currentData) {
+        // ============================================
+        // REGISTRAR CAMBIO DE COMPARACIÓN
+        // ============================================
+        const compareType = this.value;
+        const month = parseInt(document.getElementById('monthSelect').value);
+        const year = parseInt(document.getElementById('yearSelect').value);
+        logIntelligenceAction('KPI', 'CHANGE_COMPARE', `Cambio a comparación: ${compareType} - Período: ${month}/${year}`).catch(e => console.warn('[KPI] Log failed:', e));
+        // ============================================
+        
         loadCompareData();
       }
     });
