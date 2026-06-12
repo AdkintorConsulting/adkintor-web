@@ -724,6 +724,31 @@
         return await callApi('AST_saveNewAsset', [assetData]);
     }
     
+    // ============================================
+    // NUEVO: FUNCIÓN DE LOGGING PARA CREACIÓN DE ACTIVO
+    // ============================================
+    async function logAssetCreation(assetId, assetData, assetName, assetType, location, criticality) {
+        // Verificar que Logger existe
+        if (!window.Logger || typeof window.Logger.assetCreated !== 'function') {
+            console.warn('[AST] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.assetCreated(assetId, {
+                name: assetName || assetData.name,
+                type: assetType || assetData.type,
+                location: location || assetData.area,
+                criticality: criticality || assetData.level
+            });
+            console.log('[AST] Asset creation logged:', assetId);
+        } catch (err) {
+            // No bloquea la acción principal
+            console.warn('[AST] Failed to log asset creation:', err);
+        }
+    }
+    // ============================================
+    
     // Inicializar
     async function init() {
         loadApiUrl();
@@ -756,7 +781,7 @@
             return;
         }
         
-	payload.name = sanitizeInput(payload.name);
+        payload.name = sanitizeInput(payload.name);
         
         // Obtener prefijos para generar ID
         const areaObj = DB.areas.find(a => a.name === payload.area);
@@ -789,11 +814,36 @@
         
         try {
             const result = await saveAsset(assetData);
+            
+            // ============================================
+            // REGISTRAR LOG DE CREACIÓN DE ACTIVO
+            // ============================================
+            const newAssetId = result.assetId || result.data?.assetId || result.id || 
+                               (result.data && result.data.assetId) || 'UNKNOWN';
+            
+            if (window.Logger && typeof window.Logger.assetCreated === 'function') {
+                window.Logger.assetCreated(newAssetId, {
+                    name: payload.name,
+                    type: payload.type,
+                    location: payload.area,
+                    criticality: crit.level
+                }).catch(e => console.warn('[AST] Log failed:', e));
+            }
+            // ============================================
+            
             hideLoading();
             enableButton('btnSubmit');
             showBanner(result.message || 'Asset saved successfully!', 'success');
             setTimeout(() => closeModal(), 2000);
         } catch (error) {
+            // ============================================
+            // REGISTRAR ERROR EN LOG
+            // ============================================
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('AST', 'saveAsset', error.message).catch(e => console.warn('[AST] Error log failed:', e));
+            }
+            // ============================================
+            
             hideLoading();
             enableButton('btnSubmit');
             showBanner('Error: ' + error.message, 'error');
