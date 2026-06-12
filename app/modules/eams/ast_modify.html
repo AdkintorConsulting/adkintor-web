@@ -910,6 +910,13 @@
     
     function renderEditor(assetData) {
         currentAssetData = assetData;
+        
+        // ============================================
+        // GUARDAR COPIA DEL ESTADO ORIGINAL PARA LOGGING
+        // ============================================
+        window._originalAssetData = JSON.parse(JSON.stringify(assetData));
+        // ============================================
+        
         document.getElementById('searchPane').style.display = 'none';
         document.getElementById('editorPane').style.display = 'block';
         document.getElementById('display-tag').innerText = assetData.id;
@@ -1079,20 +1086,92 @@
         formData.score = crit.score;
         formData.level = crit.level;
         
+        // ============================================
+        // CALCULAR CAMBIOS ANTES DE GUARDAR
+        // ============================================
+        const originalData = window._originalAssetData || {};
+        const changes = computeChanges(originalData, formData);
+        // ============================================
+        
         try {
             const res = await callApi('AST_updateAssetFull', [formData]);
+            
+            // ============================================
+            // REGISTRAR LOG DE MODIFICACIÓN
+            // ============================================
+            if (changes.length > 0) {
+                logAssetModification(formData.id, changes).catch(e => console.warn('[AST] Log failed:', e));
+            } else {
+                console.log('[AST] No changes detected, skipping log');
+            }
+            // ============================================
+            
             hideLoading();
             enableButton('updateBtn');
             showMessage(res.message || 'Asset updated successfully', false);
             markClean();
+            
             // Recargar los datos actualizados
             await loadAsset(formData.id);
+            
         } catch (error) {
+            // ============================================
+            // REGISTRAR ERROR EN LOG
+            // ============================================
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('AST', 'modifyAsset', error.message).catch(e => console.warn('[AST] Error log failed:', e));
+            }
+            // ============================================
+            
             hideLoading();
             enableButton('updateBtn');
             showMessage('Save failed: ' + error.message, true);
         }
     }
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA MODIFICACIÓN DE ACTIVO
+    // ============================================
+    async function logAssetModification(assetId, changes) {
+        if (!window.Logger || typeof window.Logger.assetModified !== 'function') {
+            console.warn('[AST] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.assetModified(assetId, changes);
+            console.log('[AST] Asset modification logged:', assetId, changes.length, 'changes');
+            
+            // También registrar en FORESIGHT
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('AST', 'ASSET_MODIFIED', 
+                    `Activo ${assetId} modificado - ${changes.length} cambios`);
+            }
+        } catch (err) {
+            console.warn('[AST] Failed to log asset modification:', err);
+        }
+    }
+    
+    // Función para calcular cambios entre objeto original y nuevo
+    function computeChanges(original, updated) {
+        const changes = [];
+        const fieldsToTrack = ['name', 'area', 'assetType', 'category', 'status', 
+                                'manufacturer', 'model', 'serial', 'year', 'parentId',
+                                'hse', 'prod', 'usage', 'oper', 'redun', 'level'];
+        
+        for (const field of fieldsToTrack) {
+            const oldVal = original[field] || '';
+            const newVal = updated[field] || '';
+            if (String(oldVal).trim() !== String(newVal).trim()) {
+                changes.push({
+                    field: field,
+                    oldValue: String(oldVal).substring(0, 100),
+                    newValue: String(newVal).substring(0, 100)
+                });
+            }
+        }
+        return changes;
+    }
+    // ============================================
     
     // ============================================
     // UI ACTIONS
