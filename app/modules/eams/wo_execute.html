@@ -876,6 +876,31 @@
     if (overlay) overlay.style.display = 'none';
   }
 
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA EJECUCIÓN/CAMBIO DE WO
+  // ============================================
+  async function logWOExecution(woId, action, details = {}) {
+    if (!window.Logger || typeof window.Logger.audit !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      // Usamos logChange para cambios de estado durante ejecución
+      await window.Logger.audit('CHANGE_WO', 'WO', woId, 'Status', '', '', 
+        `Acción: ${action} | ${JSON.stringify(details).substring(0, 200)}`);
+      console.log('[WO] WO execution logged:', woId, action);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_EXECUTED', 
+          `WO ${woId} - Acción: ${action} - Tareas: ${details.tasksCompleted || 0}/${details.totalTasks || 0}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO execution:', err);
+    }
+  }
+  // ============================================
+
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
   }
@@ -1851,6 +1876,20 @@
       const result = await callApi('WO_processFinalSubmit', [payload]);
       
       hideLoading();
+      
+      // ============================================
+      // REGISTRAR LOG DE EJECUCIÓN DE WO
+      // ============================================
+      const executionDetails = {
+        action: action,
+        tasksCompleted: pmTasksCompleted || 0,
+        totalTasks: pmTotalTasks || 0,
+        partsConsumed: DB.cart.length,
+        rootCause: rootCause || 'N/A'
+      };
+      logWOExecution(folio, action, executionDetails).catch(e => console.warn('[WO] Execution log failed:', e));
+      // ============================================
+      
       showToast('Report processed successfully!', 'success');
       document.getElementById('footer-status').innerText = 'Report Saved';
       
@@ -1896,6 +1935,14 @@
       DB.selectedWO = null;
       
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO', 'executeWorkOrder', error.message).catch(e => console.warn('[WO] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showToast('Error: ' + error.message, 'error');
       isSubmitting = false;
