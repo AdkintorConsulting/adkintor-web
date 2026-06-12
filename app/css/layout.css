@@ -551,6 +551,17 @@ body {
     white-space: nowrap;
 }
 
+/* Client info display in header */
+.client-info {
+    font-size: 0.85rem;
+    color: #4a6cf7;
+    background: rgba(74, 108, 247, 0.15);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
 /* SIDEBAR - FORESIGHT (nuevo estilo) */
 .sidebar {
     background: #1a1a2e;  /* Fondo oscuro para FORESIGHT */
