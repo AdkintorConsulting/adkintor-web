@@ -400,39 +400,40 @@ function handleEamsClick(module) {
 }
 
 function openAssetDispatcher() {
-    // Load ASSET dispatcher via fetch
     const dynamicContent = document.getElementById('dynamicContent');
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/ast_dispatcher.html')
+        fetch('/app/modules/eams/ast_dispatcher.html?t=' + Date.now())
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Dispatcher not found');
-                }
+                if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
                 
-                // Update breadcrumbs
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'ASSETS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
-                // Initialize dispatcher buttons (sin "coming soon")
-                initAstDispatcherButtons();
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initAstDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading ASSET dispatcher:', error);
-                dynamicContent.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error loading Asset Dispatcher</h3>
-                        <p>Please try again later</p>
-                    </div>
-                `;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Asset Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
 }
@@ -446,18 +447,32 @@ function openWorkOrderDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/wo_dispatcher.html')
+        fetch('/app/modules/eams/wo_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'WORK ORDERS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initWoDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initWoDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading WO dispatcher:', error);
@@ -545,18 +560,32 @@ function openPreventiveDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/pvt_dispatcher.html')
+        fetch('/app/modules/eams/pvt_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'PREVENTIVE';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initPvtDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initPvtDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading PVT dispatcher:', error);
@@ -644,18 +673,32 @@ function openInventoryDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/stk_dispatcher.html')
+        fetch('/app/modules/eams/stk_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'INVENTORY';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initStkDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initStkDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading STK dispatcher:', error);
@@ -723,18 +766,32 @@ function openCalibrationDispatcher() {
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     
     if (dynamicContent) {
-        fetch('/app/modules/eams/cal_dispatcher.html')
+        fetch('/app/modules/eams/cal_dispatcher.html?t=' + Date.now())
             .then(response => {
                 if (!response.ok) throw new Error('Dispatcher not found');
                 return response.text();
             })
             .then(html => {
-                dynamicContent.innerHTML = html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => script.remove());
+                dynamicContent.innerHTML = tempDiv.innerHTML;
+                
                 if (breadcrumbDynamic) {
                     breadcrumbDynamic.textContent = 'CALIBRATION';
                     breadcrumbDynamic.style.display = 'inline';
                 }
-                initCalDispatcherButtons();
+                
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                });
+                
+                setTimeout(() => {
+                    initCalDispatcherButtons();
+                }, 100);
             })
             .catch(error => {
                 console.error('Error loading CAL dispatcher:', error);
