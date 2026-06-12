@@ -58,6 +58,21 @@ function updateDateAndWeek() {
     dateWeekElement.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
 }
 
+// Función para mostrar nombre del cliente
+function updateClientInfo() {
+    const clientInfoElement = document.getElementById('clientInfoDisplay');
+    if (!clientInfoElement) return;
+    
+    try {
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        const clientName = session.clientName || 'DEMO_CLIENT';
+        clientInfoElement.innerHTML = `<i class="fas fa-building"></i> ${clientName}`;
+    } catch (error) {
+        console.error('Error loading client info:', error);
+        clientInfoElement.innerHTML = `<i class="fas fa-building"></i> CLIENT`;
+    }
+}
+
 // Función para colapsar/expandir sidebar
 function initSidebarCollapse() {
     const collapseBtn = document.getElementById('sidebarCollapseBtn');
@@ -95,6 +110,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update date and week
     updateDateAndWeek();
+
+    // Update client info
+    updateClientInfo();
     
     // Initialize sidebar collapse
     initSidebarCollapse();
