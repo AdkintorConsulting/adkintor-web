@@ -29,6 +29,13 @@ if (typeof Logger === 'undefined') {
     };
 }
 
+// Asegurar que los botones estén ocultos al inicio por si el CSS falla
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
+        btn.style.setProperty('display', 'none', 'important');
+    });
+});
+
 // Wrapper global para funciones con logging automático
 window.safeExecute = async (actionName, module, fn, logContext = {}) => {
     return Logger.wrap(actionName, module, fn, logContext);
@@ -1089,32 +1096,33 @@ function applyPermissionsByRole() {
     
     if (permissions.length === 0) {
         console.warn('No permissions loaded, hiding all buttons');
-        // Ocultar todos los botones si no hay permisos
         document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
-            btn.style.display = 'none';
+            btn.style.setProperty('display', 'none', 'important');
         });
         return;
     }
     
-    // Hide/Show sidebar buttons (Intelligence)
+    // Obtener los botones
     const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+    const eamsBtns = document.querySelectorAll('.eams-btn');
+    
+    // Aplicar permisos a sidebar buttons (FORESIGHT)
     sidebarBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'flex';
+            btn.style.setProperty('display', 'flex', 'important');
         } else {
-            btn.style.display = 'none';
+            btn.style.setProperty('display', 'none', 'important');
         }
     });
     
-    // Hide/Show EAMS buttons
-    const eamsBtns = document.querySelectorAll('.eams-btn');
+    // Aplicar permisos a EAMS buttons
     eamsBtns.forEach(btn => {
         const permission = btn.getAttribute('data-permission');
         if (permission && permissions.includes(permission)) {
-            btn.style.display = 'inline-block';
+            btn.style.setProperty('display', 'inline-block', 'important');
         } else {
-            btn.style.display = 'none';
+            btn.style.setProperty('display', 'none', 'important');
         }
     });
 }
