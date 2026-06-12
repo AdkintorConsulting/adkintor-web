@@ -639,6 +639,24 @@
     const overlay = document.getElementById('adkLoadingOverlay');
     if (overlay) overlay.remove();
   }
+
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // ============================================
+  async function logIntelligenceAction(module, action, details) {
+    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
+      console.warn('[CONSULTING] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.foresight(module, action, details);
+      console.log('[CONSULTING] Intelligence log recorded:', module, action);
+    } catch (err) {
+      console.warn('[CONSULTING] Failed to log intelligence action:', err);
+    }
+  }
+  // ============================================
   
   function showError(message) {
     showToast(message, 'error');
@@ -650,6 +668,12 @@
   async function generateReport() {
     const year = parseInt(yearSelect.value);
     const month = parseInt(monthSelect.value);
+    
+    // ============================================
+    // REGISTRAR GENERACIÓN DE REPORTE
+    // ============================================
+    logIntelligenceAction('CONSULTING', 'GENERATE_REPORT', `Reporte generado para ${month}/${year}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
+    // ============================================
     
     showLoading();
     const reportContainer = document.getElementById('reportContent');
@@ -664,6 +688,14 @@
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('CONSULTING', 'generateReport', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Error: ' + error.message);
       reportContainer.innerHTML = `<div class="alert alert-critical">❌ Error: ${error.message}</div>`;
@@ -679,6 +711,13 @@
       return;
     }
     
+    // ============================================
+    // REGISTRAR EXPORTACIÓN A PDF
+    // ============================================
+    const period = `${currentReportData.period?.month || ''}/${currentReportData.period?.year || ''}`;
+    logIntelligenceAction('CONSULTING', 'EXPORT_PDF', `Exportación de reporte de consultoría a PDF - Período: ${period}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
       const result = await callIntelligenceApi('exportConsultingReportToPDF', [currentReportData]);
@@ -690,6 +729,14 @@
         showToast('PDF generation started. Check your Google Drive.', 'info');
       }
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('CONSULTING', 'exportPDF', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Error generating PDF: ' + error.message);
     }
@@ -997,6 +1044,20 @@
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const tabId = tab.dataset.tab;
+        const tabNames = {
+          'financial': 'Financial',
+          'staff': 'Staff & Organization',
+          'reliability': 'Reliability',
+          'capex': 'CAPEX',
+          'recommendations': 'Recommendations'
+        };
+        
+        // ============================================
+        // REGISTRAR CAMBIO DE PESTAÑA
+        // ============================================
+        logIntelligenceAction('CONSULTING', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
+        // ============================================
+        
         tabs.forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
@@ -1024,12 +1085,18 @@
   // ============================================
   // INITIALIZATION
   // ============================================
-  document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('DOMContentLoaded', function() {
     const yearSelectElem = document.getElementById('yearSelect');
     const monthSelectElem = document.getElementById('monthSelect');
     const generateBtn = document.getElementById('generateBtn');
     const exportPdfBtn = document.getElementById('exportPdfBtn');
     const closeBtn = document.getElementById('closeModalBtn');
+    
+    // ============================================
+    // REGISTRAR APERTURA DEL MÓDULO
+    // ============================================
+    logIntelligenceAction('CONSULTING', 'OPEN_MODULE', 'Usuario accedió a Consulting Intelligence').catch(e => console.warn('[CONSULTING] Log failed:', e));
+    // ============================================
     
     // Set current date
     const today = new Date();
