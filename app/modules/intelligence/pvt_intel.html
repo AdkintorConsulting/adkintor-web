@@ -609,6 +609,24 @@
     const overlay = document.getElementById('adkLoadingOverlay');
     if (overlay) overlay.remove();
   }
+
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // ============================================
+  async function logIntelligenceAction(module, action, details) {
+    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
+      console.warn('[PVT_INTEL] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.foresight(module, action, details);
+      console.log('[PVT_INTEL] Intelligence log recorded:', module, action);
+    } catch (err) {
+      console.warn('[PVT_INTEL] Failed to log intelligence action:', err);
+    }
+  }
+  // ============================================
   
   function showError(message) {
     showToast(message, 'error');
@@ -637,6 +655,14 @@
       coverageData = Array.isArray(coverage) ? coverage : [];
       renderCoverage(coverageData);
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('PVT_INTEL', 'loadCoverage', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       document.getElementById('coverageContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading coverage data: ${error.message}</div>`;
       showError('Error loading coverage data');
     }
@@ -659,6 +685,13 @@
         }
       }
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('PVT_INTEL', 'loadOrphans', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+      }
+      // ============================================
       document.getElementById('orphansContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading orphan activities: ${error.message}</div>`;
       showError('Error loading orphan activities');
     }
@@ -681,12 +714,25 @@
       failingData = Array.isArray(failing) ? failing : [];
       renderFailing(failingData);
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('PVT_INTEL', 'loadFailing', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+      }
+      // ============================================
       document.getElementById('failingContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading failing components: ${error.message}</div>`;
       showError('Error loading failing components');
     }
   }
   
   async function refreshAll() {
+    // ============================================
+    // REGISTRAR APERTURA/REFRESCO DEL DASHBOARD
+    // ============================================
+    logIntelligenceAction('PVT', 'OPEN_DASHBOARD', 'Usuario accedió a PVT Intelligence Dashboard').catch(e => console.warn('[PVT_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     await Promise.all([
       loadCoverage(),
@@ -836,6 +882,12 @@
   // ============================================
   
   async function printReport() {
+    // ============================================
+    // REGISTRAR EXPORTACIÓN DE REPORTE
+    // ============================================
+    logIntelligenceAction('PVT', 'EXPORT_PDF', 'Exportación de reporte PVT Intelligence a PDF').catch(e => console.warn('[PVT_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
       const html = await callIntelligenceApi('pvtGetPrintHTML', []);
@@ -851,6 +903,14 @@
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('PVT_INTEL', 'printReport', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Error generating report: ' + error.message);
     }
@@ -858,6 +918,12 @@
   
   function showDuplicatesModal() {
     if (!duplicateData || duplicateData.length === 0) return;
+    
+    // ============================================
+    // REGISTRAR VISUALIZACIÓN DE DUPLICADOS
+    // ============================================
+    logIntelligenceAction('PVT', 'VIEW_DUPLICATES', `Usuario visualizó ${duplicateData.length} actividades duplicadas`).catch(e => console.warn('[PVT_INTEL] Log failed:', e));
+    // ============================================
     
     let modalHtml = `
       <div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)">
@@ -938,10 +1004,21 @@
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const tabId = this.getAttribute('data-tab');
+        const tabNames = {
+          'coverage': 'Strategy Coverage',
+          'orphans': 'Orphan Activities',
+          'effectiveness': 'PM Effectiveness',
+          'failing': 'Failing Components'
+        };
+        // ============================================
+        // REGISTRAR CAMBIO DE PESTAÑA
+        // ============================================
+        logIntelligenceAction('PVT', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[PVT_INTEL] Log failed:', e));
+        // ============================================
+        
         showTab(tabId);
       });
     });
-    
     // Initial load
     refreshAll();
   });
