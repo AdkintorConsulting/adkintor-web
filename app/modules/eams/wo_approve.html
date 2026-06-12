@@ -634,7 +634,7 @@
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
-      headers: { 'Content-Type': application/json },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         targetUrl: EAMS_API_URL,
         payload: { action: action, args: args }
@@ -686,6 +686,46 @@
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) overlay.style.display = 'none';
   }
+
+  // ============================================
+  // FUNCIONES DE LOGGING PARA APROBACIÓN/RECHAZO
+  // ============================================
+  async function logWOApproval(woId, approvedBy, comments) {
+    if (!window.Logger || typeof window.Logger.woApproved !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woApproved(woId, approvedBy);
+      console.log('[WO] WO approval logged:', woId);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_APPROVED', `WO ${woId} aprobada por ${approvedBy}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO approval:', err);
+    }
+  }
+
+  async function logWORejection(woId, rejectedBy, reason) {
+    if (!window.Logger || typeof window.Logger.woRejected !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woRejected(woId, reason);
+      console.log('[WO] WO rejection logged:', woId);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_REJECTED', `WO ${woId} rechazada por ${rejectedBy}: ${reason.substring(0, 100)}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO rejection:', err);
+    }
+  }
+  // ============================================
 
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
@@ -998,8 +1038,25 @@
       const response = await callApi('WO_processApproval', [payload]);
       
       hideLoading();
-      
-      if (response.success) {
+
+        if (response.success) {
+        // ============================================
+        // REGISTRAR LOGS DE APROBACIÓN/RECHAZO
+        // ============================================
+        const processedFolios = isPreventiveSelected ? folio : [folio];
+        const actorName = approver;
+        
+        for (const singleFolio of processedFolios) {
+          if (singleFolio && singleFolio !== '') {
+            if (action === 'APPROVED') {
+              logWOApproval(singleFolio, actorName, comments).catch(e => console.warn('[WO] Approval log failed:', e));
+            } else if (action === 'REJECTED') {
+              logWORejection(singleFolio, actorName, comments).catch(e => console.warn('[WO] Rejection log failed:', e));
+            }
+          }
+        }
+        // ============================================
+        
         let emailMsg = (response.emailSent === false) ? ' ⚠️ Email notification failed.' : (response.emailSent === true ? ' 📧 Email sent.' : '');
         showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
         document.getElementById('footer-status').innerText = 'Processed ' + (response.count || 0) + ' WO(s)';
@@ -1016,6 +1073,14 @@
       }
       
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO', 'processApproval', error.message).catch(e => console.warn('[WO] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showToast('Error: ' + error.message, 'error');
       console.error('Process error:', error);
