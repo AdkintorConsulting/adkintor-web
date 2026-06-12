@@ -639,6 +639,24 @@
     const overlay = document.getElementById('adkLoadingOverlay');
     if (overlay) overlay.remove();
   }
+
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // ============================================
+  async function logIntelligenceAction(module, action, details) {
+    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
+      console.warn('[WO_INTEL] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.foresight(module, action, details);
+      console.log('[WO_INTEL] Intelligence log recorded:', module, action);
+    } catch (err) {
+      console.warn('[WO_INTEL] Failed to log intelligence action:', err);
+    }
+  }
+  // ============================================
   
   function showError(message) {
     showToast(message, 'error');
@@ -688,6 +706,14 @@
       allDataLoaded.priorities = true;
       checkAllDataLoaded();
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(e => console.warn('[WO_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       document.getElementById('prioritiesList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
       allDataLoaded.priorities = true;
       checkAllDataLoaded();
@@ -708,6 +734,13 @@
       allDataLoaded.users = true;
       checkAllDataLoaded();
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO_INTEL', 'loadUsers', error.message).catch(e => console.warn('[WO_INTEL] Error log failed:', e));
+      }
+      // ============================================
       console.error('Error loading users:', error);
       allDataLoaded.users = true;
       checkAllDataLoaded();
@@ -759,6 +792,13 @@
       checkAllDataLoaded();
       hideLoading();
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO_INTEL', 'loadAlerts', error.message).catch(e => console.warn('[WO_INTEL] Error log failed:', e));
+      }
+      // ============================================
       hideLoading();
       document.getElementById('alertsList').innerHTML = `<div class="adk-alert adk-alert-danger">Error: ${error.message}</div>`;
       allDataLoaded.alerts = true;
@@ -767,6 +807,12 @@
   }
   
   async function loadAllWOs() {
+    // ============================================
+    // REGISTRAR CARGA COMPLETA DE WOS
+    // ============================================
+    logIntelligenceAction('WO', 'LOAD_ALL_WOS', 'Usuario solicitó ver todas las Work Orders (modo completo)').catch(e => console.warn('[WO_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
       const data = await callIntelligenceApi('getPrioritizedWOsFull', []);
@@ -774,12 +820,26 @@
       hideLoading();
       showToast('All WOs loaded', 'success');
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO_INTEL', 'loadAllWOs', error.message).catch(e => console.warn('[WO_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('Error loading all WOs: ' + error.message);
     }
   }
   
   async function refreshAllData() {
+    // ============================================
+    // REGISTRAR REFRESCO DE DATOS
+    // ============================================
+    logIntelligenceAction('WO', 'REFRESH_DATA', 'Usuario refrescó manualmente los datos del dashboard').catch(e => console.warn('[WO_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
     
@@ -932,11 +992,20 @@
   // ============================================
   
   function printTasks() {
+    // ============================================
+    // REGISTRAR IMPRESIÓN DE TAREAS
+    // ============================================
+    const selectedUser = document.getElementById('userSelect')?.value || 'unknown';
+    logIntelligenceAction('WO', 'PRINT_TASKS', `Impresión de tareas para usuario: ${selectedUser}`).catch(e => console.warn('[WO_INTEL] Log failed:', e));
+    // ============================================
+    
     const tasksContent = document.getElementById('tasksList').innerHTML;
     if (!tasksContent || tasksContent.includes('Select a user')) {
       showToast('Please select a user first', 'error');
       return;
     }
+    
+    // ... resto del código existente ...
     
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
@@ -969,6 +1038,12 @@
   }
   
   async function exportToPDF() {
+    // ============================================
+    // REGISTRAR EXPORTACIÓN A PDF
+    // ============================================
+    logIntelligenceAction('WO', 'EXPORT_PDF', 'Exportación de WO Intelligence a PDF').catch(e => console.warn('[WO_INTEL] Log failed:', e));
+    // ============================================
+    
     showLoading();
     try {
       const result = await callIntelligenceApi('exportWOPDF', []);
@@ -979,6 +1054,14 @@
         showToast('PDF export not yet implemented for WO', 'info');
       }
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO_INTEL', 'exportPDF', error.message).catch(e => console.warn('[WO_INTEL] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showError('PDF export failed: ' + error.message);
     }
@@ -1004,6 +1087,14 @@
     const userSelect = document.getElementById('userSelect');
     const showAllBtn = document.getElementById('showAllBtn');
     const closeBtn = document.getElementById('closeModalBtn');
+    
+    // ============================================
+    // REGISTRAR APERTURA DEL DASHBOARD
+    // ============================================
+    logIntelligenceAction('WO', 'OPEN_DASHBOARD', 'Usuario accedió a WO Intelligence Dashboard').catch(e => console.warn('[WO_INTEL] Log failed:', e));
+    // ============================================
+    
+    // ... resto del código existente ...
     
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => refreshAllData());
