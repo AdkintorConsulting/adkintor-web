@@ -690,6 +690,29 @@
     if (overlay) overlay.style.display = 'none';
   }
 
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA CIERRE DE WO
+  // ============================================
+  async function logWOClosure(woId, closedBy, resolution, tasksExecuted = 0) {
+    if (!window.Logger || typeof window.Logger.woClosed !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woClosed(woId, resolution);
+      console.log('[WO] WO closure logged:', woId);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_CLOSED', 
+          `WO ${woId} cerrada por ${closedBy} - Tareas ejecutadas: ${tasksExecuted} - Resolución: ${resolution.substring(0, 100)}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO closure:', err);
+    }
+  }
+  // ============================================
+
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
   }
@@ -1069,6 +1092,15 @@
       hideLoading();
       
       if (response.success) {
+        // ============================================
+        // REGISTRAR LOG DE CIERRE DE WO
+        // ============================================
+        const closedBy = approver;
+        const resolution = note || 'Cerrada sin observaciones';
+        const tasksExecuted = payload.tasksExecuted || 0;
+        logWOClosure(folio, closedBy, resolution, tasksExecuted).catch(e => console.warn('[WO] Closure log failed:', e));
+        // ============================================
+        
         showToast('Work Order closed successfully!', 'success');
         document.getElementById('footer-status').innerText = 'WO Closed';
         resetClosureForm();
@@ -1078,6 +1110,14 @@
       }
       
     } catch (error) {
+      // ============================================
+      // REGISTRAR ERROR EN LOG
+      // ============================================
+      if (window.Logger && typeof window.Logger.error === 'function') {
+        window.Logger.error('WO', 'closeWorkOrder', error.message).catch(e => console.warn('[WO] Error log failed:', e));
+      }
+      // ============================================
+      
       hideLoading();
       showToast('Error: ' + error.message, 'error');
       console.error('Closure error:', error);
