@@ -931,7 +931,7 @@ function openSysWizard() {
 // FUNCIÓN AUXILIAR PARA ABRIR MODALES
 // ============================================
 
-function openIframeModalWithTitle(title, url) {
+ffunction openIframeModalWithTitle(title, url) {
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
     const titleElem = document.getElementById('modalTitle');
@@ -940,7 +940,59 @@ function openIframeModalWithTitle(title, url) {
         titleElem.textContent = title;
         iframe.src = url;
         modal.style.display = 'flex';
+        
+        // Cargar logo y pasarlo al iframe
+        loadCompanyLogoForIframe(iframe);
+        
+        // Enviar versión al iframe
+        sendVersionToIframe(iframe);
     }
+}
+
+// Nueva función para cargar logo y pasarlo al iframe
+async function loadCompanyLogoForIframe(iframe) {
+    try {
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        if (!session || !session.eamsApiUrl) return;
+        
+        // Llamar a la API para obtener el logo
+        const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: session.eamsApiUrl,
+                payload: { action: 'getCompanyLogoUrl', args: [] }
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const logoUrl = result.data;
+            
+            // Esperar a que el iframe cargue y enviar el logo
+            iframe.onload = () => {
+                iframe.contentWindow.postMessage({
+                    type: 'SET_COMPANY_LOGO',
+                    logoUrl: logoUrl
+                }, '*');
+            };
+        }
+    } catch (error) {
+        console.warn('Could not load company logo:', error);
+    }
+}
+
+// Función para enviar versión al iframe
+function sendVersionToIframe(iframe) {
+    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+    
+    iframe.onload = () => {
+        iframe.contentWindow.postMessage({
+            type: 'SET_VERSION',
+            version: version
+        }, '*');
+    };
 }
 
 function initAstDispatcherButtons() {
