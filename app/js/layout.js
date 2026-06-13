@@ -970,13 +970,24 @@ async function loadCompanyLogoForIframe(iframe) {
         if (result.success && result.data) {
             const logoUrl = result.data;
             
-            // Esperar a que el iframe cargue y enviar el logo
-            iframe.onload = () => {
-                iframe.contentWindow.postMessage({
-                    type: 'SET_COMPANY_LOGO',
-                    logoUrl: logoUrl
-                }, '*');
+            // Función para enviar el logo
+            const sendLogo = () => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'SET_COMPANY_LOGO',
+                        logoUrl: logoUrl
+                    }, '*');
+                    console.log('[Layout] Logo sent to iframe:', logoUrl);
+                }
             };
+            
+            // Si el iframe ya está cargado, enviar ahora
+            if (iframe.contentWindow && iframe.contentWindow.document && 
+                iframe.contentWindow.document.readyState === 'complete') {
+                sendLogo();
+            } else {
+                iframe.onload = sendLogo;
+            }
         } else {
             console.warn('No logo URL returned from API');
         }
@@ -987,6 +998,17 @@ async function loadCompanyLogoForIframe(iframe) {
 
 // Función para enviar versión al iframe
 function sendVersionToIframe(iframe) {
+    // Función para enviar la versión
+    const sendVersion = (version) => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'SET_VERSION',
+                version: version
+            }, '*');
+            console.log('[Layout] Version sent to iframe:', version);
+        }
+    };
+    
     // Intentar obtener versión desde API
     const session = JSON.parse(localStorage.getItem('adkintor_session'));
     if (session && session.eamsApiUrl) {
@@ -1000,39 +1022,36 @@ function sendVersionToIframe(iframe) {
         })
         .then(res => res.json())
         .then(result => {
+            let version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
             if (result.success && result.data && result.data.fullVersion) {
-                const version = result.data.fullVersion;
-                iframe.onload = () => {
-                    iframe.contentWindow.postMessage({
-                        type: 'SET_VERSION',
-                        version: version
-                    }, '*');
-                };
+                version = result.data.fullVersion;
+            }
+            
+            // Si el iframe ya está cargado, enviar ahora
+            if (iframe.contentWindow && iframe.contentWindow.document && 
+                iframe.contentWindow.document.readyState === 'complete') {
+                sendVersion(version);
             } else {
-                // Fallback a versión de config
-                iframe.onload = () => {
-                    iframe.contentWindow.postMessage({
-                        type: 'SET_VERSION',
-                        version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
-                    }, '*');
-                };
+                iframe.onload = () => sendVersion(version);
             }
         })
         .catch(() => {
-            iframe.onload = () => {
-                iframe.contentWindow.postMessage({
-                    type: 'SET_VERSION',
-                    version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
-                }, '*');
-            };
+            const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+            if (iframe.contentWindow && iframe.contentWindow.document && 
+                iframe.contentWindow.document.readyState === 'complete') {
+                sendVersion(version);
+            } else {
+                iframe.onload = () => sendVersion(version);
+            }
         });
     } else {
-        iframe.onload = () => {
-            iframe.contentWindow.postMessage({
-                type: 'SET_VERSION',
-                version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
-            }, '*');
-        };
+        const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+        if (iframe.contentWindow && iframe.contentWindow.document && 
+            iframe.contentWindow.document.readyState === 'complete') {
+            sendVersion(version);
+        } else {
+            iframe.onload = () => sendVersion(version);
+        }
     }
 }
 
