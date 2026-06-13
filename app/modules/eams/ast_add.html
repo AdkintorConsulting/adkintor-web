@@ -448,29 +448,7 @@
         }
     }
 
-    // Cargar versión dinámica desde API
-    async function loadVersion() {
-        try {
-            const version = await callApi('getFullVersion', []);
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan && version) versionSpan.innerText = version;
-        } catch(e) {
-            console.warn('Could not load version:', e);
-            // Fallback: mantener v2.0 o intentar otra función
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) versionSpan.innerText = 'v2.0';
-        }
-    }
-
-    // Cargar logo de compañía desde el padre
-    function loadCompanyLogo() {
-        const logoImg = document.getElementById('companyLogo');
-        if (logoImg && window.parent.companyLogoUrl) {
-            logoImg.src = window.parent.companyLogoUrl;
-            logoImg.style.display = 'block';
-        }
-    }
-    
+   
     // Mostrar/ocultar loading
     function showLoading(message) {
         const overlay = document.getElementById('loadingOverlay');
@@ -804,8 +782,8 @@
         if (EAMS_API_URL) {
             showLoading('Loading configuration...');
             await loadConfig();
-            await loadVersion();
-            loadCompanyLogo();
+            // La versión y el logo vienen del padre via postMessage
+            // No sobrescribir
             hideLoading();
         } else {
             showMessage('API URL not configured. Please log in again.', true);
