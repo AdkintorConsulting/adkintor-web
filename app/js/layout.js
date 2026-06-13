@@ -955,37 +955,31 @@ async function loadCompanyLogoForIframe(iframe) {
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
         if (!session || !session.eamsApiUrl) return;
         
-        // Intentar obtener logo desde API
-        let logoUrl = null;
-        try {
-            const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    targetUrl: session.eamsApiUrl,
-                    payload: { action: 'getCompanyLogo', args: [] }
-                })
-            });
-            const result = await response.json();
-            if (result.success && result.data) {
-                logoUrl = result.data;
-            }
-        } catch(e) {
-            console.warn('Could not fetch company logo:', e);
-        }
+        // Llamar a la API para obtener el logo usando WO_getCompanyLogoUrl
+        const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: session.eamsApiUrl,
+                payload: { action: 'WO_getCompanyLogoUrl', args: [] }
+            })
+        });
         
-        // Si no hay logo de API, usar logo por defecto (opcional)
-        if (!logoUrl) {
-            logoUrl = '/app/assets/company-logo.png'; // Ajusta según tu estructura
-        }
+        const result = await response.json();
         
-        // Enviar el logo al iframe
-        iframe.onload = () => {
-            iframe.contentWindow.postMessage({
-                type: 'SET_COMPANY_LOGO',
-                logoUrl: logoUrl
-            }, '*');
-        };
+        if (result.success && result.data) {
+            const logoUrl = result.data;
+            
+            // Esperar a que el iframe cargue y enviar el logo
+            iframe.onload = () => {
+                iframe.contentWindow.postMessage({
+                    type: 'SET_COMPANY_LOGO',
+                    logoUrl: logoUrl
+                }, '*');
+            };
+        } else {
+            console.warn('No logo URL returned from API');
+        }
     } catch (error) {
         console.warn('Could not load company logo:', error);
     }
