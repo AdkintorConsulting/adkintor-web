@@ -289,13 +289,13 @@
 <body>
 
 <div class="modal-container">
-    <div class="modal-header">
+    <div class="eams-header">
         <h2><i class="fas fa-plus-circle"></i> Add Asset</h2>
-        <button class="btn-close" onclick="closeModal()">&times;</button>
+        <div class="user-badge" id="userDisplay">Loading...</div>
     </div>
     <div class="breadcrumbs">
-        <a href="#" onclick="closeModal()">Inicio</a> &gt; 
-        <a href="#" onclick="closeModal()">ASSETS</a> &gt; 
+        <span>🏠 Home</span> &gt; 
+        <span>ASSETS</span> &gt; 
         <span>Add Asset</span>
     </div>
     
@@ -388,7 +388,7 @@
     
     <div class="eams-status-bar">
         <span>System Status: <strong id="footer-status">Ready</strong></span>
-        <span>EAMS Asset Management</span>
+        <span>EAMS <span id="eamsVersion">v2.0</span></span>
     </div>
 </div>
 
@@ -414,11 +414,23 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
-                // currentUserEmail = sessionData.email || '';
-                // document.getElementById('user-display').innerText = currentUserEmail;
+                currentUserEmail = sessionData.email || '';
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = currentUserEmail;
             } catch(e) {
                 console.error('Error parsing session:', e);
             }
+        }
+    }
+
+    // Cargar versión dinámica desde API
+    async function loadVersion() {
+        try {
+            const version = await callApi('getFullVersion', []);
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) versionSpan.innerText = version;
+        } catch(e) {
+            console.warn('Could not load version:', e);
         }
     }
     
@@ -755,6 +767,7 @@
         if (EAMS_API_URL) {
             showLoading('Loading configuration...');
             await loadConfig();
+            await loadVersion();
             hideLoading();
         } else {
             showMessage('API URL not configured. Please log in again.', true);
