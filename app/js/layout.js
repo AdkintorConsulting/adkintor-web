@@ -412,6 +412,9 @@ function handleEamsClick(module) {
         case 'plant_layout':
             openPlantLayout();
             break;
+        case 'sys_wizard':
+            openSysWizard();
+            break;
         default:
             console.log('Unknown EAMS module:', module);
     }
@@ -891,6 +894,34 @@ function openPlantLayout() {
         const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
         if (breadcrumbDynamic) {
             breadcrumbDynamic.textContent = 'PLANT LAYOUT';
+            breadcrumbDynamic.style.display = 'inline';
+        }
+    }
+}
+
+// ============================================
+// SYS WIZARD (visor único)
+// ============================================
+
+function openSysWizard() {
+    // Guardar URL de EAMS antes de abrir
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
+    }
+    
+    const modal = document.getElementById('iframeModal');
+    const iframe = document.getElementById('intelIframe');
+    const titleElem = document.getElementById('modalTitle');
+    
+    if (modal && iframe && titleElem) {
+        titleElem.textContent = 'Universal Configurator';
+        iframe.src = '/app/modules/eams/sys_wizard.html';
+        modal.style.display = 'flex';
+        
+        const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+        if (breadcrumbDynamic) {
+            breadcrumbDynamic.textContent = 'SYSTEM > Configurator';
             breadcrumbDynamic.style.display = 'inline';
         }
     }
