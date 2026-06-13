@@ -955,29 +955,37 @@ async function loadCompanyLogoForIframe(iframe) {
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
         if (!session || !session.eamsApiUrl) return;
         
-        // Llamar a la API para obtener el logo
-        const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                targetUrl: session.eamsApiUrl,
-                payload: { action: 'getCompanyLogoUrl', args: [] }
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success && result.data) {
-            const logoUrl = result.data;
-            
-            // Esperar a que el iframe cargue y enviar el logo
-            iframe.onload = () => {
-                iframe.contentWindow.postMessage({
-                    type: 'SET_COMPANY_LOGO',
-                    logoUrl: logoUrl
-                }, '*');
-            };
+        // Intentar obtener logo desde API
+        let logoUrl = null;
+        try {
+            const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: session.eamsApiUrl,
+                    payload: { action: 'getCompanyLogo', args: [] }
+                })
+            });
+            const result = await response.json();
+            if (result.success && result.data) {
+                logoUrl = result.data;
+            }
+        } catch(e) {
+            console.warn('Could not fetch company logo:', e);
         }
+        
+        // Si no hay logo de API, usar logo por defecto (opcional)
+        if (!logoUrl) {
+            logoUrl = '/app/assets/company-logo.png'; // Ajusta según tu estructura
+        }
+        
+        // Enviar el logo al iframe
+        iframe.onload = () => {
+            iframe.contentWindow.postMessage({
+                type: 'SET_COMPANY_LOGO',
+                logoUrl: logoUrl
+            }, '*');
+        };
     } catch (error) {
         console.warn('Could not load company logo:', error);
     }
@@ -985,14 +993,53 @@ async function loadCompanyLogoForIframe(iframe) {
 
 // Función para enviar versión al iframe
 function sendVersionToIframe(iframe) {
-    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-    
-    iframe.onload = () => {
-        iframe.contentWindow.postMessage({
-            type: 'SET_VERSION',
-            version: version
-        }, '*');
-    };
+    // Intentar obtener versión desde API
+    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    if (session && session.eamsApiUrl) {
+        fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: session.eamsApiUrl,
+                payload: { action: 'getVersionInfo', args: [] }
+            })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success && result.data && result.data.fullVersion) {
+                const version = result.data.fullVersion;
+                iframe.onload = () => {
+                    iframe.contentWindow.postMessage({
+                        type: 'SET_VERSION',
+                        version: version
+                    }, '*');
+                };
+            } else {
+                // Fallback a versión de config
+                iframe.onload = () => {
+                    iframe.contentWindow.postMessage({
+                        type: 'SET_VERSION',
+                        version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
+                    }, '*');
+                };
+            }
+        })
+        .catch(() => {
+            iframe.onload = () => {
+                iframe.contentWindow.postMessage({
+                    type: 'SET_VERSION',
+                    version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
+                }, '*');
+            };
+        });
+    } else {
+        iframe.onload = () => {
+            iframe.contentWindow.postMessage({
+                type: 'SET_VERSION',
+                version: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
+            }, '*');
+        };
+    }
 }
 
 function initAstDispatcherButtons() {
