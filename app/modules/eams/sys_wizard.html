@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Configurator - ADKINTOR EAMS</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Modal Header - sin título, solo controles */
+        .modal-header {
+            background: #1a1a2e;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-shrink: 0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .modal-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .modal-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .modal-btn:hover {
+            background: #334155;
+            color: white;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .modal-close:hover {
+            background: #dc2626;
+            color: white;
+        }
+        
+        /* EAMS Header */
+        .eams-header {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        
+        .eams-header h2 {
+            font-size: 1.25rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-badge {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+        
+        /* Breadcrumbs */
+        .breadcrumbs {
+            padding: 10px 24px;
+            background: #f8fafc;
+            font-size: 0.75rem;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        
+        .breadcrumbs span {
+            color: #475569;
+        }
+        
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .step.active {
+            color: #1e293b;
+        }
+        
+        .step.completed {
+            color: #10b981;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .step.active .step-number {
+            background: #1e293b;
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+        
+        /* Step Content */
+        .step-content {
+            flex: 1;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .step-content.active {
+            display: flex;
+        }
+        
+        /* Module Grid */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .module-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .module-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        
+        .module-card.selected {
+            border-color: #1e293b;
+            background: #f8fafc;
+        }
+        
+        .module-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+        
+        .module-name {
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        
+        .module-desc {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+        
+        /* Entity Grid */
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .entity-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .entity-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .entity-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        
+        .entity-name {
+            font-weight: 800;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        
+        .entity-desc {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+        
+        .entity-preview {
+            font-size: 0.7rem;
+            color: #3b82f6;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        /* Editor Header */
+        .editor-header {
+            padding: 20px 30px 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .editor-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        
+        .editor-warning {
+            font-size: 0.7rem;
+            color: #eab308;
+            margin-top: 4px;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #334155;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        /* Table */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            padding: 20px 30px;
+        }
+        
+        .data-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .data-table thead tr th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #475569;
+            border-bottom: 2px solid #1e293b;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table tbody tr td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        
+        .data-table input, .data-table select {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+        
+        .data-table input:focus, .data-table select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        
+        /* Status Bar */
+        .eams-status-bar {
+            background: #f1f5f9;
+            padding: 6px 20px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            color: #64748b;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 24px 40px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .loading-spinner i {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+            color: #1e293b;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1100;
+            font-size: 0.8rem;
+        }
+        
+        .toast.error {
+            background: #ef4444;
+        }
+        
+        .toast.warning {
+            background: #eab308;
+        }
+        
+        /* Checkbox group for criticality */
+        .checkbox-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        
+        /* Budget Editor */
+        .budget-controls {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .budget-select {
+            flex: 1;
+        }
+        
+        .budget-select label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: #64748b;
+        }
+        
+        .budget-select select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Utility Classes */
+        .text-muted {
+            color: #64748b;
+        }
+        
+        .font-mono {
+            font-family: monospace;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Modal Header (solo controles, sin título) -->
+<div class="modal-header">
+    <div class="modal-controls">
+        <button class="modal-btn modal-minimize" id="minimizeModalBtn">−</button>
+        <button class="modal-btn modal-maximize" id="maximizeModalBtn">□</button>
+        <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+</div>
+
+<!-- EAMS Header -->
+<div class="eams-header">
+    <h2><i class="fas fa-cog"></i> UNIVERSAL CONFIGURATOR</h2>
+    <div class="user-badge" id="userDisplay">Loading...</div>
+</div>
+
+<!-- Breadcrumbs -->
+<div class="breadcrumbs" id="breadcrumbs">
+    <span>🏠 Home</span> > 
+    <span>⚙️ SYSTEM</span> > 
+    <span>Universal Configurator</span>
+</div>
+
+<!-- Wizard Container -->
+<div class="step-indicator">
+    <div class="step active" id="step1Indicator">
+        <div class="step-number">1</div>
+        <span>SELECT MODULE</span>
+    </div>
+    <div class="step" id="step2Indicator">
+        <div class="step-number">2</div>
+        <span>SELECT ENTITY</span>
+    </div>
+    <div class="step" id="step3Indicator">
+        <div class="step-number">3</div>
+        <span>EDIT ENTITY</span>
+    </div>
+</div>
+
+<!-- Step 1: Module Selection -->
+<div id="step1" class="step-content active">
+    <div class="module-grid" id="moduleGrid">
+        <div class="module-card" data-module="HUB">
+            <div class="module-icon">🔐</div>
+            <div class="module-name">ACCESS HUB</div>
+            <div class="module-desc">Roles, Permissions, Logo</div>
+        </div>
+        <div class="module-card" data-module="AST">
+            <div class="module-icon">🏭</div>
+            <div class="module-name">ASSETS</div>
+            <div class="module-desc">Areas, Types, Criticality</div>
+        </div>
+        <div class="module-card" data-module="WO">
+            <div class="module-icon">📋</div>
+            <div class="module-name">WORK ORDER</div>
+            <div class="module-desc">Workflow, Priorities, Technicians</div>
+        </div>
+        <div class="module-card" data-module="STK">
+            <div class="module-icon">📦</div>
+            <div class="module-name">INVENTORY</div>
+            <div class="module-desc">Categories, Locations, Currencies</div>
+        </div>
+        <div class="module-card" data-module="PVT">
+            <div class="module-icon">📅</div>
+            <div class="module-name">PREVENTIVE</div>
+            <div class="module-desc">PM Frequencies, Peak Season</div>
+        </div>
+        <div class="module-card" data-module="CAL">
+            <div class="module-icon">📏</div>
+            <div class="module-name">CALIBRATION</div>
+            <div class="module-desc">Instrument Types, Responsibles</div>
+        </div>
+        <div class="module-card" data-module="SYS">
+            <div class="module-icon">⚙️</div>
+            <div class="module-name">SYSTEM</div>
+            <div class="module-desc">Budget Configuration</div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 2: Entity Selection -->
+<div id="step2" class="step-content">
+    <div id="entityGrid" class="entity-grid"></div>
+</div>
+
+<!-- Step 3: Entity Editor -->
+<div id="step3" class="step-content">
+    <div class="editor-header">
+        <div>
+            <div class="editor-title" id="editorTitle">Edit Entity</div>
+            <div class="editor-warning" id="editorWarning"></div>
+        </div>
+        <div id="editorButtons">
+            <button class="btn-primary" id="modifyBtn" style="display:none;"><i class="fas fa-edit"></i> MODIFY</button>
+            <button class="btn-success" id="addRowBtn" style="display:none;"><i class="fas fa-plus"></i> ADD ROW</button>
+        </div>
+    </div>
+    <div class="table-container" id="tableContainer"></div>
+</div>
+
+<div class="nav-buttons">
+    <button class="btn-secondary" id="prevBtn" disabled>◀ BACK</button>
+    <button class="btn-primary" id="nextBtn">NEXT ▶</button>
+</div>
+
+<div class="eams-status-bar">
+    <span>🟢 SYSTEM: <strong id="sysStatus">READY</strong></span>
+    <span>UNIVERSAL CONFIGURATOR · EAMS v2.0</span>
+</div>
+
+<!-- Toast y Loading Overlay -->
+<div id="toast" class="toast"></div>
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+        <p id="loadingMessage">Loading...</p>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // CONFIGURACIÓN Y CONSTANTES
+    // ============================================
+    
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
+    let currentUser = null;
+    
+    // Estado del Wizard
+    let currentStep = 1;
+    let selectedModule = null;
+    let moduleData = null;
+    let selectedEntity = null;
+    let currentEntityRows = [];
+    let originalEntityRows = [];
+    let editMode = false;
+    let isEntityEditable = true;
+    
+    // Estado para Budget Editor
+    let currentBudgetYear = null;
+    let currentBudgetAmounts = Array(12).fill(0);
+    let availableYears = [];
+    
+    // Nombres de meses
+    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    // ============================================
+    // FUNCIONES DE UTILIDAD
+    // ============================================
+    
+    function loadApiUrlAndUser() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUser = sessionData.userEmail || 'Unknown User';
+                document.getElementById('userDisplay').innerText = currentUser;
+            } catch(e) {
+                console.error('Error parsing session:', e);
+                document.getElementById('userDisplay').innerText = 'User';
+            }
+        }
+    }
+    
+    function showLoading(message) {
+        const overlay = document.getElementById('loadingOverlay');
+        const msgEl = document.getElementById('loadingMessage');
+        if (msgEl) msgEl.innerText = message || 'Loading...';
+        if (overlay) overlay.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+    
+    function showToast(message, isError = false, isWarning = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast';
+        if (isError) toast.classList.add('error');
+        if (isWarning) toast.classList.add('warning');
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+    
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+    
+    function minimizeModal() {
+        window.parent.postMessage('minimizeIframe', '*');
+    }
+    
+    function maximizeModal() {
+        window.parent.postMessage('maximizeIframe', '*');
+    }
+    
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        
+        return result.data;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function updateBreadcrumbs(step) {
+        const bread = document.getElementById('breadcrumbs');
+        if (step === 1) {
+            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span>`;
+        } else if (step === 2 && selectedModule) {
+            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span>`;
+        } else if (step === 3 && selectedModule && selectedEntity) {
+            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span> > <span>${selectedEntity.name}</span>`;
+        }
+    }
+    
+    function showConfirmation(message, onConfirm) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center;';
+        
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background:white; border-radius:12px; padding:24px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.2);';
+        
+        modal.innerHTML = `
+            <i class="fas fa-question-circle" style="font-size:48px; color:#eab308; margin-bottom:16px;"></i>
+            <p style="margin-bottom:24px; font-size:16px;">${escapeHtml(message)}</p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button id="confirmYes" style="background:#10b981; color:white; border:none; padding:8px 24px; border-radius:6px; cursor:pointer;">Yes</button>
+                <button id="confirmNo" style="background:#94a3b8; color:white; border:none; padding:8px 24px; border-radius:6px; cursor:pointer;">No</button>
+            </div>
+        `;
+        
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        
+        document.getElementById('confirmYes').onclick = function() {
+            document.body.removeChild(overlay);
+            if (onConfirm) onConfirm();
+        };
+        document.getElementById('confirmNo').onclick = function() {
+            document.body.removeChild(overlay);
+        };
+    }
+    
+    // ============================================
+    // NAVEGACIÓN DEL WIZARD
+    // ============================================
+    
+    function goToStep(step) {
+        document.getElementById('step1').classList.toggle('active', step === 1);
+        document.getElementById('step2').classList.toggle('active', step === 2);
+        document.getElementById('step3').classList.toggle('active', step === 3);
+        
+        document.getElementById('step1Indicator').classList.toggle('active', step === 1);
+        document.getElementById('step2Indicator').classList.toggle('active', step === 2);
+        document.getElementById('step3Indicator').classList.toggle('active', step === 3);
+        
+        if (step === 1) {
+            document.getElementById('step1Indicator').classList.remove('completed');
+            document.getElementById('step2Indicator').classList.remove('completed');
+            document.getElementById('step3Indicator').classList.remove('completed');
+        } else if (step === 2) {
+            document.getElementById('step1Indicator').classList.add('completed');
+            document.getElementById('step2Indicator').classList.remove('completed');
+            document.getElementById('step3Indicator').classList.remove('completed');
+        } else if (step === 3) {
+            document.getElementById('step1Indicator').classList.add('completed');
+            document.getElementById('step2Indicator').classList.add('completed');
+            document.getElementById('step3Indicator').classList.remove('completed');
+        }
+        
+        document.getElementById('prevBtn').disabled = step === 1;
+        
+        const nextBtn = document.getElementById('nextBtn');
+        if (step === 3 && selectedEntity && selectedEntity.id !== 'budget_amounts') {
+            nextBtn.innerHTML = '💾 SAVE';
+            nextBtn.classList.remove('btn-primary');
+            nextBtn.classList.add('btn-success');
+        } else {
+            nextBtn.innerHTML = 'NEXT ▶';
+            nextBtn.classList.remove('btn-success');
+            nextBtn.classList.add('btn-primary');
+        }
+        
+        updateBreadcrumbs(step);
+        currentStep = step;
+    }
+    
+    // ============================================
+    // STEP 1: MÓDULOS
+    // ============================================
+    
+    async function loadModule(module) {
+        showLoading('Loading SETUP_' + module + '...');
+        selectedModule = module;
+        
+        // Log apertura
+        console.log('Logger.foresight: SYS, OPEN_WIZARD, User opened Configurator - Module: ' + module);
+        
+        try {
+            const response = await callApi('SYS_loadModuleSetup', [module]);
+            
+            if (response.success) {
+                moduleData = response;
+                renderEntities();
+                hideLoading();
+                goToStep(2);
+            } else {
+                hideLoading();
+                showToast('Error: ' + response.error, true);
+            }
+        } catch (error) {
+            hideLoading();
+            showToast('Server error: ' + error.message, true);
+        }
+    }
+    
+    // ============================================
+    // STEP 2: ENTIDADES
+    // ============================================
+    
+    function renderEntities() {
+        const container = document.getElementById('entityGrid');
+        const entities = moduleData.entities;
+        const entityData = moduleData.entityData;
+        
+        if (!entities || entities.length === 0) {
+            container.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b;">No entities configured for this module</div>';
+            return;
+        }
+        
+        let html = '';
+        for (const entity of entities) {
+            const data = entityData[entity.id];
+            const previewCount = data.rows.length;
+            const previewText = data.rows.slice(0, 3).map(r => r[0]).join(', ');
+            
+            html += `
+                <div class="entity-card" onclick="selectEntity('${entity.id}')">
+                    <div class="entity-icon">${entity.icon}</div>
+                    <div class="entity-name">${escapeHtml(entity.name)}</div>
+                    <div class="entity-desc">${escapeHtml(entity.description || '')}</div>
+                    <div class="entity-preview">
+                        ${previewCount} item(s)<br>
+                        ${escapeHtml(previewText.substring(0, 40))}${previewCount > 3 ? '...' : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    function checkEntityEditable() {
+        if (!selectedEntity) return false;
+        if (selectedEntity.editableColumns && selectedEntity.editableColumns.length > 0) {
+            return true;
+        }
+        if (selectedEntity.columnRules) {
+            for (const rule of selectedEntity.columnRules) {
+                if (rule.validation !== 'readonly' && rule.validation !== 'checkbox_required') {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    function sortRowsByFirstColumn(rows, isNumeric, isNaturalOrder) {
+        if (!rows || rows.length === 0) return rows;
+        const naturalOrder = ["Hourly", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Quarterly", "Semi-Annual", "Annual", "2 years", "3 years", "4 years", "5 years"];
+        
+        return rows.sort(function(a, b) {
+            var aVal = a[0];
+            var bVal = b[0];
+            if (isNaturalOrder) {
+                var aIndex = naturalOrder.indexOf(aVal);
+                var bIndex = naturalOrder.indexOf(bVal);
+                if (aIndex === -1) aIndex = 999;
+                if (bIndex === -1) bIndex = 999;
+                return aIndex - bIndex;
+            }
+            if (isNumeric) {
+                return (parseFloat(aVal) || 0) - (parseFloat(bVal) || 0);
+            }
+            return String(aVal).localeCompare(String(bVal));
+        });
+    }
+    
+    function selectEntity(entityId) {
+        selectedEntity = moduleData.entities.find(e => e.id === entityId);
+        
+        // Budget editor special case
+        if (selectedModule === 'SYS' && selectedEntity.id === 'budget_amounts') {
+            goToStep(3);
+            loadBudgetEditor();
+            return;
+        }
+        
+        const entityData = moduleData.entityData[entityId];
+        currentEntityRows = entityData.rows.map(row => [...row]);
+        originalEntityRows = entityData.rows.map(row => [...row]);
+        editMode = false;
+        
+        if (selectedEntity.sortByColumn !== undefined) {
+            var isNumeric = (selectedEntity.id === 'peak_season');
+            var isNaturalOrder = (selectedEntity.id === 'allowed_criticality');
+            currentEntityRows = sortRowsByFirstColumn(currentEntityRows, isNumeric, isNaturalOrder);
+        }
+        
+        isEntityEditable = checkEntityEditable();
+        
+        document.getElementById('editorTitle').innerHTML = `${selectedEntity.icon} ${escapeHtml(selectedEntity.name)}`;
+        
+        let warningHtml = '';
+        if (selectedModule === 'WO' && selectedEntity.id === 'statuses') {
+            warningHtml = '⚠️ The order of items defines the workflow sequence. Reorder with caution.';
+        } else if (selectedModule === 'AST' && selectedEntity.id === 'weighted_scores') {
+            warningHtml = '⚖️ Total sum must equal 100. Click MODIFY to edit weights.';
+        } else if (selectedModule === 'AST' && selectedEntity.id === 'ranges') {
+            warningHtml = '📏 Ranges must cover 1.0 to 5.0 continuously. Click MODIFY to edit ranges.';
+        } else if (selectedModule === 'STK' && selectedEntity.id === 'currencies') {
+            warningHtml = '💰 Use 3-letter currency codes: CAD, USD, EUR, MXN, GBP';
+        }
+        document.getElementById('editorWarning').innerHTML = warningHtml;
+        
+        const modifyBtn = document.getElementById('modifyBtn');
+        const addBtn = document.getElementById('addRowBtn');
+        
+        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+        
+        if (isEntityEditable) {
+            modifyBtn.style.display = 'inline-block';
+            modifyBtn.onclick = enableEditMode;
+            if (isLogoUrl || selectedEntity.disableAddRow) {
+                addBtn.style.display = 'none';
+            } else {
+                addBtn.style.display = 'inline-block';
+            }
+        } else {
+            modifyBtn.style.display = 'none';
+            addBtn.style.display = 'none';
+        }
+        
+        renderEntityEditor();
+        goToStep(3);
+    }
+    
+    // ============================================
+    // STEP 3: EDITOR DE ENTIDAD (Genérico)
+    // ============================================
+    
+    function enableEditMode() {
+        editMode = true;
+        const addBtn = document.getElementById('addRowBtn');
+        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+        if (!isLogoUrl && !selectedEntity.disableAddRow) {
+            addBtn.style.display = 'inline-block';
+        } else {
+            addBtn.style.display = 'none';
+        }
+        renderEntityEditor();
+        showToast('Edit mode enabled. You can now modify values.', false);
+    }
+    
+    function updateCell(rowIdx, colIdx, value) {
+        if (!currentEntityRows[rowIdx]) return;
+        currentEntityRows[rowIdx][colIdx] = value;
+        
+        // Auto-generate prefix for areas
+        if (selectedModule === 'AST' && selectedEntity.id === 'areas' && colIdx === 0) {
+            const prefix = autoGeneratePrefix3(value);
+            currentEntityRows[rowIdx][1] = prefix;
+        }
+        
+        // Auto-generate prefix for asset_types
+        if (selectedModule === 'AST' && selectedEntity.id === 'asset_types' && colIdx === 0) {
+            const prefix = autoGeneratePrefix4(value);
+            currentEntityRows[rowIdx][1] = prefix;
+        }
+        
+        renderEntityEditor();
+    }
+    
+    function autoGeneratePrefix3(areaName) {
+        if (!areaName || areaName.toString().trim() === '') return '';
+        const name = areaName.toString().trim().toUpperCase();
+        if (name.length < 3) return name;
+        return name.substring(0, 3);
+    }
+    
+    function autoGeneratePrefix4(categoryName) {
+        if (!categoryName || categoryName.toString().trim() === '') return '';
+        const name = categoryName.toString().trim().toUpperCase();
+        if (name === 'CHSY') return 'CHIL';
+        if (name.length < 4) return name;
+        return name.substring(0, 4);
+    }
+    
+    function updateCriticalityCheckbox(rowIdx, optionValue, isChecked) {
+        if (!currentEntityRows[rowIdx]) return;
+        
+        const colIdx = 1;
+        let currentValue = currentEntityRows[rowIdx][colIdx] || '';
+        let selectedValues = currentValue ? currentValue.split(',').map(s => s.trim()).filter(s => s !== '') : [];
+        
+        if (isChecked) {
+            if (!selectedValues.includes(optionValue)) {
+                selectedValues.push(optionValue);
+            }
+        } else {
+            selectedValues = selectedValues.filter(v => v !== optionValue);
+        }
+        
+        selectedValues.sort();
+        currentEntityRows[rowIdx][colIdx] = selectedValues.join(', ');
+        renderEntityEditor();
+    }
+    
+    function updateWeightedScore(rowIdx, newWeight) {
+        if (!currentEntityRows[rowIdx]) return;
+        const currentValue = currentEntityRows[rowIdx][0];
+        const parts = currentValue.toString().split(',');
+        const label = parts[0] || '';
+        const newValue = label + ', ' + newWeight;
+        currentEntityRows[rowIdx][0] = newValue;
+        renderEntityEditor();
+    }
+    
+    function updateRange(rowIdx, colIdx, newValue) {
+        if (!currentEntityRows[rowIdx]) return;
+        const currentValue = currentEntityRows[rowIdx][0] || '1.0 - 5.0';
+        const match = currentValue.toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/);
+        let fromVal = match ? parseFloat(match[1]) : 1.0;
+        let toVal = match ? parseFloat(match[2]) : 5.0;
+        
+        if (colIdx === 1) {
+            fromVal = parseFloat(newValue);
+        } else if (colIdx === 2) {
+            toVal = parseFloat(newValue);
+        }
+        
+        if (isNaN(fromVal)) fromVal = 1.0;
+        if (isNaN(toVal)) toVal = 5.0;
+        if (fromVal > toVal) toVal = fromVal + 0.1;
+        
+        const newRange = fromVal + ' - ' + toVal;
+        currentEntityRows[rowIdx][0] = newRange;
+        renderEntityEditor();
+    }
+    
+    function addRow() {
+        if (!editMode) {
+            showToast('Please click MODIFY first to enable editing', true);
+            return;
+        }
+        const newRow = selectedEntity.columnHeaders.map(() => '');
+        currentEntityRows.push(newRow);
+        renderEntityEditor();
+        showToast('New row added', false);
+    }
+    
+    function deleteRow(rowIdx) {
+        if (!editMode) {
+            showToast('Please click MODIFY first to enable editing', true);
+            return;
+        }
+        showConfirmation('Are you sure you want to delete this row?', function() {
+            currentEntityRows.splice(rowIdx, 1);
+            renderEntityEditor();
+            showToast('Row deleted', false);
+        });
+    }
+    
+    function renderEntityEditor() {
+        const container = document.getElementById('tableContainer');
+        const headers = selectedEntity.columnHeaders;
+        const rules = selectedEntity.columnRules;
+        const editableColumns = selectedEntity.editableColumns || null;
+        
+        let headerHtml = '<table class="data-table"><thead><tr>';
+        for (let h = 0; h < headers.length; h++) {
+            let headerContent = escapeHtml(headers[h]);
+            if (selectedEntity.id === 'allowed_criticality' && h === 1) {
+                headerContent = `
+                    <div>${escapeHtml(headers[h])}</div>
+                    <div style="display: flex; gap: 18px; justify-content: flex-start; margin-top: 8px; font-size: 0.7rem;">
+                        <span style="width: 32px; text-align: center;">A</span>
+                        <span style="width: 32px; text-align: center;">B</span>
+                        <span style="width: 32px; text-align: center;">C</span>
+                    </div>
+                `;
+            }
+            headerHtml += `<th>${headerContent}</th>`;
+        }
+        headerHtml += '<th style="width: 80px;">Actions</th>';
+        headerHtml += '</tr></thead><tbody>';
+        
+        for (let idx = 0; idx < currentEntityRows.length; idx++) {
+            const row = currentEntityRows[idx];
+            headerHtml += '<tr>';
+            
+            for (let colIdx = 0; colIdx < headers.length; colIdx++) {
+                const cell = row[colIdx] !== undefined ? row[colIdx] : '';
+                const rule = rules[colIdx];
+                const isEditableColumn = editableColumns ? editableColumns.includes(colIdx) : true;
+                const canEdit = editMode && isEntityEditable && isEditableColumn && (!rule || rule.validation !== 'readonly');
+                
+                let inputHtml = '';
+                
+                // Weighted Scores
+                if (selectedEntity.id === 'weighted_scores') {
+                    if (colIdx === 0) {
+                        const parts = row[0] ? row[0].toString().split(',') : ['', ''];
+                        const label = parts[0] || '';
+                        inputHtml = `<span class="text-muted">${escapeHtml(label)}</span>`;
+                    } else if (colIdx === 1) {
+                        const parts = row[0] ? row[0].toString().split(',') : ['', ''];
+                        const weight = parts[1] ? parseFloat(parts[1]) : 0;
+                        if (canEdit) {
+                            inputHtml = `<input type="number" value="${weight}" min="0" max="100" style="width:80px;" onchange="updateWeightedScore(${idx}, this.value)">`;
+                        } else {
+                            inputHtml = `<span class="text-muted">${weight}</span>`;
+                        }
+                    }
+                }
+                // Ranges
+                else if (selectedEntity.id === 'ranges') {
+                    if (colIdx === 0) {
+                        let levelName = '';
+                        if (moduleData && moduleData.entityData && moduleData.entityData.criticality_levels) {
+                            const levelsRows = moduleData.entityData.criticality_levels.rows;
+                            if (idx < levelsRows.length) {
+                                levelName = levelsRows[idx][0] || '';
+                            }
+                        }
+                        inputHtml = `<span class="text-muted">${escapeHtml(levelName)}</span>`;
+                    } else if (colIdx === 1) {
+                        const match = row[0] ? row[0].toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/) : null;
+                        const fromVal = match ? match[1] : '';
+                        if (canEdit) {
+                            inputHtml = `<input type="number" step="0.1" value="${fromVal}" style="width:70px;" onchange="updateRange(${idx}, 1, this.value)">`;
+                        } else {
+                            inputHtml = `<span class="text-muted">${fromVal}</span>`;
+                        }
+                    } else if (colIdx === 2) {
+                        const match = row[0] ? row[0].toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/) : null;
+                        const toVal = match ? match[2] : '';
+                        if (canEdit) {
+                            inputHtml = `<input type="number" step="0.1" value="${toVal}" style="width:70px;" onchange="updateRange(${idx}, 2, this.value)">`;
+                        } else {
+                            inputHtml = `<span class="text-muted">${toVal}</span>`;
+                        }
+                    }
+                }
+                // Allowed Criticality
+                else if (selectedEntity.id === 'allowed_criticality') {
+                    if (colIdx === 1) {
+                        const selectedValues = cell ? cell.toString().split(',').map(s => s.trim()) : [];
+                        const options = ['A', 'B', 'C'];
+                        
+                        if (canEdit) {
+                            inputHtml = `<div class="checkbox-group">`;
+                            for (const opt of options) {
+                                const isChecked = selectedValues.includes(opt);
+                                inputHtml += `<label><input type="checkbox" ${isChecked ? 'checked' : ''} onchange="updateCriticalityCheckbox(${idx}, '${opt}', this.checked)"> ${opt}</label>`;
+                            }
+                            inputHtml += `</div>`;
+                        } else {
+                            inputHtml = `<div class="checkbox-group">`;
+                            for (const opt of options) {
+                                const isChecked = selectedValues.includes(opt);
+                                inputHtml += `<span style="background:${isChecked ? '#dbeafe' : '#f1f5f9'}; padding:2px 8px; border-radius:12px;">${opt}</span>`;
+                            }
+                            inputHtml += `</div>`;
+                        }
+                    } else {
+                        inputHtml = `<span class="text-muted">${escapeHtml(cell)}</span>`;
+                    }
+                }
+                // Others
+                else {
+                    if (!canEdit) {
+                        if (rule && rule.validation === 'checkbox') {
+                            inputHtml = `<span>${cell === '✓' ? '✓' : '✗'}</span>`;
+                        } else if (rule && rule.options && rule.options.length > 0) {
+                            inputHtml = `<span>${escapeHtml(String(cell)) || '—'}</span>`;
+                        } else {
+                            inputHtml = `<span>${escapeHtml(String(cell)) || '—'}</span>`;
+                        }
+                    } else {
+                        if (rule && rule.validation === 'checkbox') {
+                            const isChecked = cell === '✓' || cell === true;
+                            inputHtml = `<input type="checkbox" ${isChecked ? 'checked' : ''} onchange="updateCell(${idx}, ${colIdx}, this.checked ? '✓' : '✗')">`;
+                        } else if (rule && rule.options && rule.options.length > 0) {
+                            inputHtml = `<select onchange="updateCell(${idx}, ${colIdx}, this.value)">`;
+                            inputHtml += `<option value="">-- Select --</option>`;
+                            for (const opt of rule.options) {
+                                inputHtml += `<option value="${escapeHtml(opt)}" ${String(cell) === String(opt) ? 'selected' : ''}>${escapeHtml(opt)}</option>`;
+                            }
+                            inputHtml += `</select>`;
+                        } else if (rule && rule.validation === 'email_optional') {
+                            inputHtml = `<input type="email" value="${escapeHtml(String(cell))}" placeholder="user@domain.com" onchange="updateCell(${idx}, ${colIdx}, this.value)">`;
+                        } else if (rule && rule.validation === 'currency_code') {
+                            inputHtml = `<input type="text" value="${escapeHtml(String(cell))}" placeholder="USD" onchange="updateCell(${idx}, ${colIdx}, this.value.toUpperCase())" style="text-transform:uppercase">`;
+                        } else if (rule && rule.validation === 'single_line') {
+                            inputHtml = `<input type="text" value="${escapeHtml(String(cell))}" style="width:100%;" onchange="updateCell(${idx}, ${colIdx}, this.value)">`;
+                        } else {
+                            inputHtml = `<input type="text" value="${escapeHtml(String(cell))}" onchange="updateCell(${idx}, ${colIdx}, this.value)">`;
+                        }
+                    }
+                }
+                
+                headerHtml += `<td>${inputHtml}</td>`;
+            }
+            
+            // Action buttons
+            const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+            if (editMode && isEntityEditable && !selectedEntity.disableDelete && !isLogoUrl) {
+                headerHtml += `<td><button class="btn-danger" onclick="deleteRow(${idx})"><i class="fas fa-trash"></i></button></td>`;
+            } else {
+                headerHtml += `<td></td>`;
+            }
+            headerHtml += '</tr>';
+        }
+        
+        headerHtml += '</tbody></table>';
+        container.innerHTML = headerHtml;
+    }
+    
+    function validateRows() {
+        // Weighted scores validation
+        if (selectedEntity.id === 'weighted_scores') {
+            let totalSum = 0;
+            for (let k = 0; k < currentEntityRows.length; k++) {
+                const val = currentEntityRows[k][0];
+                if (val && val.toString().trim() !== '') {
+                    const parts = val.toString().split(',');
+                    if (parts.length === 2) {
+                        const weight = parseFloat(parts[1].trim());
+                        if (!isNaN(weight)) totalSum += weight;
+                    }
+                }
+            }
+            if (Math.abs(totalSum - 100) > 0.01) {
+                showToast('ERROR: Weighted Scores total must equal 100. Current total: ' + totalSum, true);
+                return false;
+            }
+        }
+        
+        // Ranges validation (continuous 1.0 to 5.0)
+        if (selectedEntity.id === 'ranges') {
+            const ranges = [];
+            for (let k = 0; k < currentEntityRows.length; k++) {
+                const val = currentEntityRows[k][0];
+                if (val && val.toString().trim() !== '') {
+                    const match = val.toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/);
+                    if (match) {
+                        ranges.push({ from: parseFloat(match[1]), to: parseFloat(match[2]), row: k });
+                    }
+                }
+            }
+            
+            if (ranges.length > 0 && Math.abs(ranges[0].from - 1.0) > 0.01) {
+                showToast('Range must start at 1.0. First range starts at ' + ranges[0].from, true);
+                return false;
+            }
+            
+            if (ranges.length > 0 && Math.abs(ranges[ranges.length - 1].to - 5.0) > 0.01) {
+                showToast('Range must end at 5.0. Last range ends at ' + ranges[ranges.length - 1].to, true);
+                return false;
+            }
+            
+            let expectedFrom = 1.0;
+            for (let k = 0; k < ranges.length; k++) {
+                if (Math.abs(ranges[k].from - expectedFrom) > 0.01) {
+                    showToast('Gap detected: expected ' + expectedFrom + ' but found ' + ranges[k].from, true);
+                    return false;
+                }
+                expectedFrom = ranges[k].to;
+            }
+            if (Math.abs(expectedFrom - 5.0) > 0.01) {
+                showToast('Gap detected: last range ends at ' + expectedFrom + ', should end at 5.0', true);
+                return false;
+            }
+        }
+        
+        // Plan years consecutive validation
+        if (selectedEntity.id === 'plan_years') {
+            const years = [];
+            for (let k = 0; k < currentEntityRows.length; k++) {
+                const val = currentEntityRows[k][0];
+                if (val && val.toString().trim() !== '') {
+                    const year = parseInt(val);
+                    if (!isNaN(year)) years.push(year);
+                }
+            }
+            years.sort((a,b) => a - b);
+            for (let k = 1; k < years.length; k++) {
+                if (years[k] !== years[k-1] + 1) {
+                    showToast('Years must be consecutive. Gap between ' + years[k-1] + ' and ' + years[k], true);
+                    return false;
+                }
+            }
+        }
+        
+        // Currency code validation
+        if (selectedEntity.id === 'currencies') {
+            const currencyRegex = /^[A-Z]{3}$/;
+            for (let k = 0; k < currentEntityRows.length; k++) {
+                const val = currentEntityRows[k][0];
+                if (val && val.toString().trim() !== '') {
+                    if (!currencyRegex.test(val.toString().toUpperCase())) {
+                        showToast('Currency code must be 3 uppercase letters (CAD, USD, EUR)', true);
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    async function saveEntity() {
+        if (!validateRows()) return;
+        
+        showLoading('Saving entity...');
+        
+        // Log audit
+        console.log('Logger.audit: CHANGE_CONFIG, SYS, ' + selectedEntity.id + ', User modified entity');
+        
+        try {
+            const response = await callApi('SYS_saveEntityData', [selectedModule, selectedEntity.id, currentEntityRows]);
+            
+            hideLoading();
+            if (response.success) {
+                showToast(response.message, false);
+                // Recargar módulo para actualizar datos
+                await loadModule(selectedModule);
+            } else {
+                showToast('Error: ' + response.error, true);
+            }
+        } catch (error) {
+            hideLoading();
+            showToast('Server error: ' + error.message, true);
+        }
+    }
+    
+    // ============================================
+    // BUDGET EDITOR (Especial para SYS)
+    // ============================================
+    
+    async function loadBudgetEditor() {
+        document.getElementById('modifyBtn').style.display = 'none';
+        document.getElementById('addRowBtn').style.display = 'none';
+        
+        try {
+            availableYears = await callApi('SYS_getBudgetYears', []);
+            if (availableYears.length === 0) {
+                const currentYear = new Date().getFullYear();
+                availableYears = [currentYear];
+            }
+            currentBudgetYear = availableYears[availableYears.length - 1];
+            await loadBudgetData();
+        } catch (error) {
+            showToast('Error loading years: ' + error.message, true);
+        }
+    }
+    
+    async function loadBudgetData() {
+        showLoading('Loading budget data for ' + currentBudgetYear + '...');
+        
+        try {
+            const response = await callApi('SYS_getBudgetDataByYear', [currentBudgetYear]);
+            if (response.success) {
+                currentBudgetAmounts = response.monthlyAmounts;
+                renderBudgetEditor();
+            } else {
+                showToast('Error loading budget data', true);
+            }
+            hideLoading();
+        } catch (error) {
+            hideLoading();
+            showToast('Error: ' + error.message, true);
+        }
+    }
+    
+    function renderBudgetEditor() {
+        const container = document.getElementById('tableContainer');
+        
+        let yearsOptions = '';
+        for (let i = 0; i < availableYears.length; i++) {
+            yearsOptions += `<option value="${availableYears[i]}" ${availableYears[i] === currentBudgetYear ? 'selected' : ''}>${availableYears[i]}</option>`;
+        }
+        
+        let tableHtml = `
+            <div class="budget-controls">
+                <div class="budget-select">
+                    <label>Select Year</label>
+                    <select id="budgetYearSelect">
+                        ${yearsOptions}
+                    </select>
+                </div>
+                <div>
+                    <button class="btn-success" id="addYearBtn"><i class="fas fa-plus"></i> ADD NEW YEAR</button>
+                </div>
+            </div>
+            <div style="max-height: calc(100vh - 320px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <table class="data-table" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Budget Amount ($)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        for (let i = 0; i < 12; i++) {
+            const amount = currentBudgetAmounts[i];
+            const status = amount > 0 ? '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>' : '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
+            const monthName = MONTH_NAMES[i];
+            const monthNum = i + 1;
+            
+            tableHtml += `
+                <tr>
+                    <td style="font-weight: 600;">${monthName}</td>
+                    <td>
+                        <input type="number" step="0.01" min="0" value="${amount}" 
+                               data-month="${monthNum}"
+                               class="budget-amount-input" 
+                               style="width: 150px; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }
+        
+        tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn-success" id="saveBudgetBtn"><i class="fas fa-save"></i> SAVE ALL CHANGES</button>
+            </div>
+        `;
+        
+        container.innerHTML = tableHtml;
+        
+        // Bind events
+        document.getElementById('budgetYearSelect').addEventListener('change', function(e) {
+            currentBudgetYear = parseInt(e.target.value);
+            loadBudgetData();
+        });
+        
+        document.getElementById('addYearBtn').addEventListener('click', function() {
+            const nextYear = Math.max(...availableYears) + 1;
+            showConfirmation(`Add year ${nextYear} with all amounts set to $0?`, async function() {
+                try {
+                    const response = await callApi('SYS_addBudgetYear', [nextYear]);
+                    if (response.success) {
+                        showToast(response.message, false);
+                        availableYears = await callApi('SYS_getBudgetYears', []);
+                        currentBudgetYear = nextYear;
+                        currentBudgetAmounts = Array(12).fill(0);
+                        renderBudgetEditor();
+                    } else {
+                        showToast('Error: ' + response.error, true);
+                    }
+                } catch (error) {
+                    showToast('Error: ' + error.message, true);
+                }
+            });
+        });
+        
+        document.getElementById('saveBudgetBtn').addEventListener('click', async function() {
+            const inputs = document.querySelectorAll('.budget-amount-input');
+            const newAmounts = Array(12).fill(0);
+            for (let i = 0; i < inputs.length; i++) {
+                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
+                newAmounts[month] = parseFloat(inputs[i].value) || 0;
+            }
+            
+            showLoading('Saving budget for ' + currentBudgetYear + '...');
+            
+            try {
+                const response = await callApi('SYS_saveBudgetYear', [currentBudgetYear, newAmounts]);
+                hideLoading();
+                if (response.success) {
+                    showToast(response.message, false);
+                    await loadBudgetData();
+                } else {
+                    showToast('Error: ' + response.error, true);
+                }
+            } catch (error) {
+                hideLoading();
+                showToast('Error: ' + error.message, true);
+            }
+        });
+    }
+    
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('minimizeModalBtn').addEventListener('click', minimizeModal);
+    document.getElementById('maximizeModalBtn').addEventListener('click', maximizeModal);
+    
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentStep === 2) {
+            goToStep(1);
+        } else if (currentStep === 3) {
+            goToStep(2);
+        }
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentStep === 1) {
+            if (!selectedModule) {
+                showToast('Please select a module first', true);
+                return;
+            }
+        } else if (currentStep === 2) {
+            if (!selectedEntity) {
+                showToast('Please select an entity', true);
+                return;
+            }
+        } else if (currentStep === 3) {
+            const isBudgetEntity = (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget_amounts');
+            if (!isBudgetEntity) {
+                saveEntity();
+            } else {
+                showToast('Use the "SAVE ALL CHANGES" button inside the budget editor', false, true);
+            }
+        }
+    });
+    
+    document.getElementById('addRowBtn').addEventListener('click', addRow);
+    
+    // Module selection
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.module-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            const moduleName = this.dataset.module;
+            if (moduleName) {
+                loadModule(moduleName);
+            } else {
+                showToast('Error: Module not found', true);
+            }
+        });
+    });
+    
+    // Inicializar
+    loadApiUrlAndUser();
+    goToStep(1);
+</script>
+</body>
+</html>
