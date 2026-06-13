@@ -291,7 +291,10 @@
 <div class="modal-container">
     <div class="eams-header">
         <h2><i class="fas fa-plus-circle"></i> Add Asset</h2>
-        <div class="user-badge" id="userDisplay">Loading...</div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+            <div class="user-badge" id="userDisplay">Loading...</div>
+        </div>
     </div>
     <div class="breadcrumbs">
         <span>🏠 Home</span> &gt; 
@@ -428,9 +431,21 @@
         try {
             const version = await callApi('getFullVersion', []);
             const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) versionSpan.innerText = version;
+            if (versionSpan && version) versionSpan.innerText = version;
         } catch(e) {
             console.warn('Could not load version:', e);
+            // Fallback: mantener v2.0 o intentar otra función
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) versionSpan.innerText = 'v2.0';
+        }
+    }
+
+    // Cargar logo de compañía desde el padre
+    function loadCompanyLogo() {
+        const logoImg = document.getElementById('companyLogo');
+        if (logoImg && window.parent.companyLogoUrl) {
+            logoImg.src = window.parent.companyLogoUrl;
+            logoImg.style.display = 'block';
         }
     }
     
@@ -768,6 +783,7 @@
             showLoading('Loading configuration...');
             await loadConfig();
             await loadVersion();
+            loadCompanyLogo();
             hideLoading();
         } else {
             showMessage('API URL not configured. Please log in again.', true);
