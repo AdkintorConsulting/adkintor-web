@@ -931,7 +931,7 @@ function openSysWizard() {
 // FUNCIÓN AUXILIAR PARA ABRIR MODALES
 // ============================================
 
-ffunction openIframeModalWithTitle(title, url) {
+function openIframeModalWithTitle(title, url) {
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
     const titleElem = document.getElementById('modalTitle');
@@ -1052,27 +1052,20 @@ function openAssetModal(type) {
             break;
     }
     
-    const modal = document.getElementById('iframeModal');
-    const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
+    // Reutilizar la función unificada
+    openIframeModalWithTitle(title, url);
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = title;
-        iframe.src = url;
-        modal.style.display = 'flex';
-        
-        // Actualizar breadcrumbs
-        const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
-        if (breadcrumbDynamic) {
-            let path = '';
-            switch(type) {
-                case 'add': path = 'ASSETS > Add Asset'; break;
-                case 'master': path = 'ASSETS > Asset Master'; break;
-                case 'modify': path = 'ASSETS > Modify Asset'; break;
-            }
-            breadcrumbDynamic.textContent = path;
-            breadcrumbDynamic.style.display = 'inline';
+    // Actualizar breadcrumbs específicos de assets
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    if (breadcrumbDynamic) {
+        let path = '';
+        switch(type) {
+            case 'add': path = 'ASSETS > Add Asset'; break;
+            case 'master': path = 'ASSETS > Asset Master'; break;
+            case 'modify': path = 'ASSETS > Modify Asset'; break;
         }
+        breadcrumbDynamic.textContent = path;
+        breadcrumbDynamic.style.display = 'inline';
     }
 }
 
