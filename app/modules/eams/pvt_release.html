@@ -19,6 +19,8 @@
             height: 100vh;
             overflow: hidden;
             color: #1e293b;
+            display: flex;
+            flex-direction: column;
         }
 
         /* EAMS Design System */
@@ -37,33 +39,37 @@
             --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        /* Header */
+        /* EAMS Header */
         .eams-header {
-            background: white;
-            padding: 16px 28px;
-            border-bottom: 1px solid var(--eams-border);
-            box-shadow: var(--eams-shadow);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
             flex-shrink: 0;
         }
 
         .eams-header h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--eams-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1.25rem;
+            margin: 0;
         }
 
         .user-badge {
-            font-size: 0.75rem;
-            color: var(--eams-text-light);
-            background: #f1f5f9;
-            padding: 6px 14px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
             border-radius: 20px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
         }
 
         /* Body */
@@ -86,6 +92,7 @@
             padding: 16px 20px;
             border-radius: 16px;
             box-shadow: var(--eams-shadow);
+            flex-shrink: 0;
         }
 
         .controls-bar select {
@@ -265,17 +272,16 @@
             letter-spacing: 0.5px;
         }
 
-        /* Footer */
+        /* EAMS Status Bar */
         .eams-status-bar {
-            background: white;
-            border-top: 1px solid var(--eams-border);
-            padding: 10px 28px;
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             flex-shrink: 0;
-            font-size: 0.7rem;
-            color: var(--eams-text-light);
         }
 
         /* Modal */
@@ -435,10 +441,20 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- EAMS STANDARD HEADER -->
 <div class="eams-header">
-    <h2><i class="fas fa-paper-plane"></i> WEEKLY RELEASE CONTROL | Maintenance Revision</h2>
-    <div class="user-badge" id="user-display">Loading...</div>
+    <h2><i class="fas fa-paper-plane"></i> Weekly Release Control</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>PREVENTIVE</span> &gt;
+    <span>Weekly Release</span>
 </div>
 
 <!-- Body -->
@@ -473,7 +489,7 @@
                             <td colspan="6" class="empty-state">
                                 <i class="fas fa-calendar-alt fa-3x" style="opacity: 0.3; margin-bottom: 12px; display: block;"></i>
                                 Select a week to load maintenance tasks.
-                            </td>
+                             </td>
                         </tr>
                     </tbody>
                 </table>
@@ -505,13 +521,37 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- EAMS STANDARD FOOTER -->
 <div class="eams-status-bar">
-    <span><i class="fas fa-circle" style="color: var(--eams-success); font-size: 0.5rem;"></i> System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS v2.0</span>
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
     // ============================================
     // API CONFIGURATION
     // ============================================
@@ -524,6 +564,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
                 console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
@@ -609,22 +651,20 @@
         }
         
         try {
-            // Usar logRelease para liberación de WO preventivas
             const taskIds = tasksReleased.map(t => t.pmCode || t.assetId).join(',');
-            const details = `Semana ${week}/${year} - ${tasksReleased.length} WO(s) liberadas: ${taskIds.substring(0, 200)}`;
+            const details = `Week ${week}/${year} - ${tasksReleased.length} WO(s) released: ${taskIds.substring(0, 200)}`;
             
             await window.Logger.audit('RELEASE_PLAN', 'PVT', `WEEK-${week}-${year}`, '', '', '', details);
             console.log('[PVT] Release logged:', tasksReleased.length, 'tasks');
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('PVT', 'WEEKLY_RELEASE', 
-                    `Liberación semanal - Semana ${week}/${year}: ${tasksReleased.length} WO(s) liberadas`);
+                    `Weekly release - Week ${week}/${year}: ${tasksReleased.length} WO(s) released`);
             }
         } catch (err) {
             console.warn('[PVT] Failed to log release:', err);
         }
     }
-    // ============================================
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -652,7 +692,7 @@
         showLoading('Loading configuration...');
         
         try {
-            const response = await callApi('PVT_getReleaseInitialData');
+            const response = await callApi('PVT_getReleaseInitialData', []);
             
             if (response.status === 'success') {
                 availableYears = response.availableYears || [];
@@ -661,16 +701,6 @@
                 showToast('Error loading initial data: ' + (response.message || 'Unknown'), 'error');
                 availableYears = [new Date().getFullYear()];
                 currentYear = new Date().getFullYear();
-            }
-            
-            // Obtener email del usuario
-            try {
-                const userEmail = await callApi('PVT_getCurrentUserEmail');
-                currentUser = userEmail || 'Guest User';
-                document.getElementById('user-display').innerText = currentUser;
-            } catch (e) {
-                currentUser = 'Authenticated User';
-                document.getElementById('user-display').innerText = currentUser;
             }
             
             initUI();
@@ -880,7 +910,6 @@
             return;
         }
         
-        // Mostrar spinner
         const confirmBtn = document.getElementById('confirmReleaseBtn');
         const btnText = document.getElementById('releaseBtnText');
         const btnSpinner = document.getElementById('releaseBtnSpinner');
@@ -894,7 +923,6 @@
         try {
             const response = await callApi('PVT_releaseWorkOrders', [selectedData]);
             
-            // Restaurar botón
             if (confirmBtn) {
                 if (btnText) btnText.style.display = 'inline';
                 if (btnSpinner) btnSpinner.style.display = 'none';
@@ -902,17 +930,12 @@
             closeReleaseModal();
             
             if (response.status === 'success') {
-                // ============================================
-                // REGISTRAR LOG DE RELEASE
-                // ============================================
                 const week = document.getElementById('weekSelector').value;
                 const year = document.getElementById('yearSelector').value;
                 logPVTRelease(selectedData, currentUser || 'system', week, year).catch(e => console.warn('[PVT] Release log failed:', e));
-                // ============================================
                 
                 showToast(response.message, 'success');
                 
-                // Actualizar localTasks inmediatamente
                 if (response.updatedTasks && response.updatedTasks.length > 0) {
                     for (let i = 0; i < response.updatedTasks.length; i++) {
                         const updated = response.updatedTasks[i];
@@ -923,28 +946,21 @@
                     }
                 }
                 
-                // Recargar la tabla visualmente
                 renderTable();
                 updateStats();
                 
-                // Resetear checkbox master
                 const masterCheck = document.getElementById('masterCheck');
                 if (masterCheck) masterCheck.checked = false;
                 
-                // Recargar en background para sincronizar
                 setTimeout(() => loadWeek(false), 100);
                 
             } else {
                 showToast('Error: ' + response.message, 'error');
             }
         } catch (e) {
-            // ============================================
-            // REGISTRAR ERROR EN LOG
-            // ============================================
             if (window.Logger && typeof window.Logger.error === 'function') {
                 window.Logger.error('PVT', 'releaseWorkOrders', e.message).catch(err => console.warn('[PVT] Error log failed:', err));
             }
-            // ============================================
             
             if (confirmBtn) {
                 if (btnText) btnText.style.display = 'inline';
@@ -967,7 +983,15 @@
     window.executeRelease = executeRelease;
 
     // Inicializar
-    document.addEventListener('DOMContentLoaded', loadInitialData);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            loadInitialData();
+        } else {
+            showToast('Please login to access EAMS', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
+        }
+    });
 </script>
 </body>
 </html>
