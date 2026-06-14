@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-CA">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -17,121 +17,50 @@
             background: #f1f5f9;
             color: #1e293b;
             line-height: 1.4;
-        }
-
-        /* Modal Container (web version) */
-        .eams-modal {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* Header */
+        /* EAMS Header */
         .eams-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            padding: 18px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #3b82f6;
-            flex-wrap: wrap;
-            gap: 12px;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            flex-shrink: 0;
         }
 
         .eams-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: -0.3px;
+            font-size: 1.25rem;
+            margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .user-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
         /* Breadcrumbs */
         .breadcrumbs {
             padding: 12px 24px;
-            background: #ffffff;
-            font-size: 0.7rem;
-            color: #475569;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 500;
-        }
-
-        .breadcrumbs span {
-            color: #3b82f6;
-        }
-
-        /* Notification / Toast */
-        #toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 40px;
+            background: #eef2f5;
             font-size: 0.8rem;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            align-items: center;
-            gap: 10px;
-            max-width: 350px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
         }
-
-        .toast-success { background: #059669; border-left: 4px solid #34d399; }
-        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
-        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
-        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(3px);
-        }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .spinner {
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Main content */
         .eams-body {
+            flex: 1;
             padding: 24px;
         }
 
@@ -285,7 +214,7 @@
         .btn-adjust { background: #ea580c; color: white; }
         .btn-history { background: #475569; color: white; }
 
-        /* Modal overlays (floating cards) */
+        /* Modal overlays */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -402,73 +331,242 @@
         .history-type.ADJUST { background: #fef3c7; color: #92400e; }
         .history-type.NEW_SKU_INITIALIZED { background: #e0e7ff; color: #3730a3; }
 
-        .status-bar {
-            background: #f1f5f9;
-            padding: 10px 24px;
-            font-size: 0.7rem;
-            color: #475569;
-            border-top: 1px solid #e2e8f0;
+        /* EAMS Status Bar */
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
+            flex-shrink: 0;
         }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-success { background: #059669; border-left: 4px solid #34d399; }
+        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
+        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
+        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(3px);
+        }
+
+        .loading-content {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-<div class="eams-modal">
-    <div class="eams-header">
-        <h2><i class="bi bi-box-seam"></i> INVENTORY HUB</h2>
-        <div class="user-badge" id="user-display">Loading...</div>
+
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="bi bi-box-seam"></i> Inventory Hub</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
     </div>
-    <div class="breadcrumbs">
-        <i class="bi bi-house-door-fill"></i> Inicio > <span>INVENTORY</span> > Inventory Hub
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>INVENTORY</span> &gt;
+    <span>Inventory Hub</span>
+</div>
+
+<div class="eams-body">
+    <!-- KPI ROW -->
+    <div class="kpi-container">
+        <div class="kpi-card"><div class="kpi-value" id="totalSKUs">--</div><div class="kpi-label">Total SKUs</div></div>
+        <div class="kpi-card low"><div class="kpi-value" id="lowStockCount">--</div><div class="kpi-label">Low Stock (Below Min)</div></div>
+        <div class="kpi-card critical"><div class="kpi-value" id="outOfStockCount">--</div><div class="kpi-label">Out of Stock</div></div>
     </div>
 
-    <div class="eams-body">
-        <!-- KPI ROW -->
-        <div class="kpi-container">
-            <div class="kpi-card"><div class="kpi-value" id="totalSKUs">--</div><div class="kpi-label">Total SKUs</div></div>
-            <div class="kpi-card low"><div class="kpi-value" id="lowStockCount">--</div><div class="kpi-label">Low Stock (Below Min)</div></div>
-            <div class="kpi-card critical"><div class="kpi-value" id="outOfStockCount">--</div><div class="kpi-label">Out of Stock</div></div>
-        </div>
+    <!-- FILTERS + ACTIONS -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description, Part Number..." onkeyup="filterAndRender()">
+        <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
+        <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
+        <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
+        <button class="btn-primary" onclick="showAllCatalog()" style="background:#2b6e3c;">📋 Show All</button>
+        <button class="btn-primary" onclick="openNewSkuModal()"><i class="bi bi-plus-circle"></i> NEW SKU</button>
+    </div>
 
-        <!-- FILTERS + ACTIONS -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description, Part Number..." onkeyup="filterAndRender()">
-            <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
-            <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
-            <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
-            <button class="btn-primary" onclick="showAllCatalog()" style="background:#2b6e3c;">📋 Show All</button>
-            <button class="btn-primary" onclick="openNewSkuModal()"><i class="bi bi-plus-circle"></i> NEW SKU</button>
-        </div>
-
-        <!-- TABLE -->
-        <div class="datagrid-container">
-            <div class="datagrid-header"><strong id="resultCount">0</strong> items</div>
-            <div style="overflow-x: auto; max-height: 520px;">
-                <table class="datagrid-table" id="inventoryTable">
-                    <thead><tr><th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th><th>ACTIONS</th></tr></thead>
-                    <tbody id="tableBody"><tr><td colspan="8" style="text-align:center; padding:40px;">Loading inventory data...</td></tr></tbody>
-                </table>
-            </div>
+    <!-- TABLE -->
+    <div class="datagrid-container">
+        <div class="datagrid-header"><strong id="resultCount">0</strong> items</div>
+        <div style="overflow-x: auto; max-height: 520px;">
+            <table class="datagrid-table" id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th><th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"><tr><td colspan="8" style="text-align:center; padding:40px;">Loading inventory data...</td></tr></tbody>
+            </table>
         </div>
     </div>
-    <div class="status-bar"><span>System Status: <strong id="footer-status">Ready</strong></span><span>EAMS v26 · Inventory Hub</span></div>
+</div>
+
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <!-- MODAL: CREATE / EDIT SKU -->
-<div id="skuModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h4 id="skuModalTitle">Create New SKU</h4><button class="btn-close" onclick="closeSkuModal()">&times;</button></div><div class="modal-body"><form id="skuForm" onsubmit="saveSku(event)"><input type="hidden" id="editSkuId"><div class="form-grid"><div class="full-width"><label class="field-label">SKU</label><input type="text" id="skuDisplay" class="readonly-field" readonly placeholder="Will be auto-generated"></div><div class="full-width"><label class="field-label">Description *</label><input type="text" id="skuDescription" required></div><div><label class="field-label">Category</label><select id="skuCategory"></select></div><div><label class="field-label">Storage Location</label><select id="skuLocation"></select></div><div class="full-width"><label class="field-label">Asset Linkage (Technical Location)</label><input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)"></div><div><label class="field-label">Manufacturer</label><input type="text" id="skuManufacturer"></div><div><label class="field-label">Model / Part #</label><input type="text" id="skuModel"></div><div><label class="field-label">Unit Price</label><input type="number" id="skuPrice" step="0.01"></div><div><label class="field-label">Currency</label><select id="skuCurrency"></select></div><div><label class="field-label">Unit of Measure</label><select id="skuUnit"></select></div><div><label class="field-label">Min Stock</label><input type="number" id="skuMinStock" step="1"></div><div><label class="field-label">Vendor Name</label><input type="text" id="skuVendor"></div></div><div class="modal-footer"><button type="button" class="btn-secondary" onclick="closeSkuModal()">CANCEL</button><button type="submit" class="btn-primary">SAVE SKU</button></div></form></div></div></div>
+<div id="skuModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4 id="skuModalTitle">Create New SKU</h4>
+            <button class="btn-close" onclick="closeSkuModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="skuForm" onsubmit="saveSku(event)">
+                <input type="hidden" id="editSkuId">
+                <div class="form-grid">
+                    <div class="full-width"><label class="field-label">SKU</label><input type="text" id="skuDisplay" class="readonly-field" readonly placeholder="Will be auto-generated"></div>
+                    <div class="full-width"><label class="field-label">Description *</label><input type="text" id="skuDescription" required></div>
+                    <div><label class="field-label">Category</label><select id="skuCategory"></select></div>
+                    <div><label class="field-label">Storage Location</label><select id="skuLocation"></select></div>
+                    <div class="full-width"><label class="field-label">Asset Linkage (Technical Location)</label><input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)"></div>
+                    <div><label class="field-label">Manufacturer</label><input type="text" id="skuManufacturer"></div>
+                    <div><label class="field-label">Model / Part #</label><input type="text" id="skuModel"></div>
+                    <div><label class="field-label">Unit Price</label><input type="number" id="skuPrice" step="0.01"></div>
+                    <div><label class="field-label">Currency</label><select id="skuCurrency"></select></div>
+                    <div><label class="field-label">Unit of Measure</label><select id="skuUnit"></select></div>
+                    <div><label class="field-label">Min Stock</label><input type="number" id="skuMinStock" step="1"></div>
+                    <div><label class="field-label">Vendor Name</label><input type="text" id="skuVendor"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeSkuModal()">CANCEL</button>
+                    <button type="submit" class="btn-primary">SAVE SKU</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- MODAL: STOCK ADJUSTMENT -->
-<div id="adjustModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h4>Adjust Stock</h4><button class="btn-close" onclick="closeAdjustModal()">&times;</button></div><div class="modal-body"><form id="adjustForm" onsubmit="applyStockAdjustment(event)"><div class="form-grid"><div class="full-width"><label class="field-label">SKU</label><input type="text" id="adjustSku" class="readonly-field" readonly></div><div class="full-width"><label class="field-label">Current Stock</label><input type="text" id="adjustCurrentStock" class="readonly-field" readonly></div><div><label class="field-label">Adjustment Quantity *</label><input type="number" id="adjustQty" step="1" placeholder="+ for add, - for subtract" required></div><div><label class="field-label">Reason *</label><select id="adjustReason" required></select></div></div><div class="modal-footer"><button type="button" class="btn-secondary" onclick="closeAdjustModal()">CANCEL</button><button type="submit" class="btn-primary">APPLY ADJUSTMENT</button></div></form></div></div></div>
+<div id="adjustModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4>Adjust Stock</h4>
+            <button class="btn-close" onclick="closeAdjustModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="adjustForm" onsubmit="applyStockAdjustment(event)">
+                <div class="form-grid">
+                    <div class="full-width"><label class="field-label">SKU</label><input type="text" id="adjustSku" class="readonly-field" readonly></div>
+                    <div class="full-width"><label class="field-label">Current Stock</label><input type="text" id="adjustCurrentStock" class="readonly-field" readonly></div>
+                    <div><label class="field-label">Adjustment Quantity *</label><input type="number" id="adjustQty" step="1" placeholder="+ for add, - for subtract" required></div>
+                    <div><label class="field-label">Reason *</label><select id="adjustReason" required></select></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAdjustModal()">CANCEL</button>
+                    <button type="submit" class="btn-primary">APPLY ADJUSTMENT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- MODAL: HISTORY -->
-<div id="historyModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h4 id="historyModalTitle">Transaction History</h4><button class="btn-close" onclick="closeHistoryModal()">&times;</button></div><div class="modal-body" id="historyContent"><p class="text-muted">Loading...</p></div><div class="modal-footer"><button class="btn-secondary" onclick="closeHistoryModal()">CLOSE</button></div></div></div>
+<div id="historyModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4 id="historyModalTitle">Transaction History</h4>
+            <button class="btn-close" onclick="closeHistoryModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="historyContent"><p class="text-muted">Loading...</p></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeHistoryModal()">CLOSE</button>
+        </div>
+    </div>
+</div>
 
 <div id="toast" class="toast"></div>
-<div id="loadingOverlay" class="loading-overlay" style="display: none;"><div class="loading-content"><div class="spinner"></div><div>Processing...</div></div></div>
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <div>Processing...</div>
+    </div>
+</div>
 
 <script>
-    // ------------------------ WEB CONFIG ------------------------
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
 
@@ -478,6 +576,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) { console.error('Session parse error', e); }
         }
     }
@@ -498,25 +598,6 @@
         window.parent.postMessage('closeIframe', '*');
     }
 
-    // Toast system
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info-circle')}"></i> ${message}`;
-        toast.style.display = 'flex';
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
-
-    function showLoading(msg = 'Loading...') {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.querySelector('.loading-content').innerHTML = `<div class="spinner"></div><div>${msg}</div>`;
-        overlay.style.display = 'flex';
-    }
-
-    function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
     // ============================================
     // FUNCIONES DE LOGGING PARA INVENTARIO
     // ============================================
@@ -528,7 +609,7 @@
         
         try {
             await window.Logger.audit('RECEIVE_STOCK', 'STK', skuId, 'Stock', oldStock, newStock, 
-                `Ajuste: ${qtyChange} (${reason})`);
+                `Adjustment: ${qtyChange} (${reason})`);
             console.log('[STK] Stock adjustment logged:', skuId);
             
             if (window.Logger.foresight) {
@@ -547,7 +628,7 @@
         }
         
         try {
-            const details = `SKU creado: ${skuData.description} | Categoría: ${skuData.category} | Precio: ${skuData.price}`;
+            const details = `SKU created: ${skuData.description} | Category: ${skuData.category} | Price: ${skuData.price}`;
             await window.Logger.audit('CREATE_SKU', 'STK', skuId, '', '', '', details);
             console.log('[STK] SKU creation logged:', skuId);
             
@@ -573,7 +654,27 @@
             console.warn('[STK] Failed to log SKU modification:', err);
         }
     }
-    // ============================================
+
+    // Toast system
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info-circle')}"></i> ${message}`;
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    function showLoading(msg = 'Loading...') {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.querySelector('.loading-content').innerHTML = `<div class="spinner"></div><div>${msg}</div>`;
+        overlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     // Global state
     let catalogData = [];
@@ -584,23 +685,23 @@
     let currenciesList = [];
     let currentUser = '';
 
-    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
     // ======================= DATA FETCH =======================
     async function loadUserEmail() {
         try {
-            const email = await callApi('STK_getCurrentUserEmail');
+            const email = await callApi('STK_getCurrentUserEmail', []);
             currentUser = email || 'Active Session';
-            document.getElementById('user-display').innerText = currentUser;
+            const userDisplay = document.getElementById('userDisplay');
+            if (userDisplay) userDisplay.innerText = currentUser;
         } catch(e) { 
             currentUser = 'User';
-            document.getElementById('user-display').innerText = currentUser; 
+            const userDisplay = document.getElementById('userDisplay');
+            if (userDisplay) userDisplay.innerText = currentUser; 
         }
     }
 
     async function loadKPI() {
         try {
-            const kpi = await callApi('STK_getInventoryKPI');
+            const kpi = await callApi('STK_getInventoryKPI', []);
             document.getElementById('totalSKUs').innerText = kpi.totalSKUs;
             document.getElementById('lowStockCount').innerText = kpi.lowStockCount;
             document.getElementById('outOfStockCount').innerText = kpi.outOfStockCount;
@@ -609,7 +710,7 @@
 
     async function loadFilters() {
         try {
-            const filterData = await callApi('STK_getInventoryFilters');
+            const filterData = await callApi('STK_getInventoryFilters', []);
             categoriesList = filterData.categories || [];
             locationsList = filterData.locations || [];
             const catSelect = document.getElementById('categoryFilter');
@@ -633,7 +734,7 @@
 
     async function loadAdjustmentReasons() {
         try {
-            const config = await callApi('STK_getProcurementHubConfig');
+            const config = await callApi('STK_getProcurementHubConfig', []);
             adjustmentReasons = config.adjustmentReasons || [];
             const reasonSelect = document.getElementById('adjustReason');
             reasonSelect.innerHTML = '<option value="">-- Select a reason --</option>';
@@ -643,7 +744,7 @@
 
     async function loadUnits() {
         try {
-            unitsList = await callApi('STK_getSetupUnits');
+            unitsList = await callApi('STK_getSetupUnits', []);
             const unitSelect = document.getElementById('skuUnit');
             unitSelect.innerHTML = '<option value="">Select Unit...</option>';
             unitsList.forEach(u => { unitSelect.innerHTML += `<option value="${u}">${u}</option>`; });
@@ -652,7 +753,7 @@
 
     async function loadCurrencies() {
         try {
-            currenciesList = await callApi('STK_getSetupCurrencies');
+            currenciesList = await callApi('STK_getSetupCurrencies', []);
             const currencySelect = document.getElementById('skuCurrency');
             currencySelect.innerHTML = '<option value="">Select Currency...</option>';
             currenciesList.forEach(c => { currencySelect.innerHTML += `<option value="${c}">${c}</option>`; });
@@ -663,7 +764,7 @@
         const action = showAll ? 'STK_getFullCatalogDynamic' : 'STK_getCatalogCurrentMonth';
         showLoading('Loading inventory...');
         try {
-            const response = await callApi(action);
+            const response = await callApi(action, []);
             if (response.mode === 'empty' && response.message) {
                 catalogData = [];
                 renderTable([]);
@@ -746,9 +847,6 @@
         const item = catalogData.find(i => i['Part ID / SKU'] === sku);
         if(!item) { showToast('SKU not found','error'); return; }
         
-        // ============================================
-        // GUARDAR COPIA DEL ESTADO ORIGINAL PARA LOGGING
-        // ============================================
         window._originalSkuData = JSON.parse(JSON.stringify({
             description: item.Description,
             category: item.Category,
@@ -756,7 +854,6 @@
             minStock: item['Min Stock'],
             unitPrice: item['Unit Price']
         }));
-        // ============================================
         
         document.getElementById('skuModalTitle').innerText = '✏️ EDIT SKU: ' + sku;
         document.getElementById('editSkuId').value = sku;
@@ -798,14 +895,11 @@
         showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
         try {
             const res = await callApi('STK_updatePartMasterData', [payload]);
-            // ============================================
-            // REGISTRAR LOG SEGÚN SEA CREACIÓN O MODIFICACIÓN
-            // ============================================
+            
             const isEdit = sku && sku !== '';
             const newSkuId = res.skuId || sku || payload.description.substring(0, 10);
             
             if (isEdit) {
-                // Calcular cambios
                 const changes = [];
                 const original = window._originalSkuData || {};
                 if (original.description !== payload.description) changes.push({field: 'description', oldValue: original.description || '', newValue: payload.description});
@@ -818,10 +912,8 @@
                     logSKUModification(newSkuId, changes, currentUser).catch(e => console.warn('[STK] Edit log failed:', e));
                 }
             } else {
-                // Creación
                 logSKUCreation(newSkuId, payload, currentUser).catch(e => console.warn('[STK] Create log failed:', e));
             }
-            // ============================================
             
             showToast(res.message, 'success');
             closeSkuModal();
@@ -858,13 +950,9 @@
         showLoading('Adjusting stock...');
         try {
             const res = await callApi('STK_adjustStock', [sku, qtyChange, reason]);
-            // ============================================
-            // REGISTRAR LOG DE AJUSTE DE STOCK
-            // ============================================
             const oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
             const newStock = oldStock + qtyChange;
             logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(e => console.warn('[STK] Adjustment log failed:', e));
-            // ============================================
             
             showToast(res.message, 'success');
             closeAdjustModal();
@@ -873,7 +961,7 @@
         } catch(err) { 
             showToast('Error: ' + err.message, 'error');
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('STK', 'saveSku', err.message).catch(e => console.warn('[STK] Error log failed:', e));
+                window.Logger.error('STK', 'applyStockAdjustment', err.message).catch(e => console.warn('[STK] Error log failed:', e));
             }
         } finally { 
             hideLoading(); 
@@ -905,16 +993,16 @@
     }
     function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
-    // ASSET SUGGESTIONS (simplified but functional)
-    document.addEventListener('DOMContentLoaded', () => {
+    // ASSET SUGGESTIONS
+    (function setupAssetSuggestions() {
         const assetInput = document.getElementById('skuAssetId');
         if(assetInput) {
+            let suggestionsDiv = null;
             assetInput.addEventListener('input', async function(e) {
                 const term = e.target.value.trim();
                 if(term.length >= 3) {
                     try {
                         const assets = await callApi('STK_searchTechnicalLocations', [term]);
-                        let suggestionsDiv = document.getElementById('assetSuggestions');
                         if(!suggestionsDiv) {
                             suggestionsDiv = document.createElement('div');
                             suggestionsDiv.id = 'assetSuggestions';
@@ -925,12 +1013,12 @@
                         if(assets && assets.length) {
                             suggestionsDiv.innerHTML = assets.map(a => `<div style="padding:8px; cursor:pointer;" onclick="document.getElementById('skuAssetId').value='${a.id}'; suggestionsDiv.style.display='none';">🔧 ${a.id} - ${a.name}</div>`).join('');
                             suggestionsDiv.style.display = 'block';
-                        } else suggestionsDiv.style.display = 'none';
+                        } else if(suggestionsDiv) suggestionsDiv.style.display = 'none';
                     } catch(e){}
-                } else { const div = document.getElementById('assetSuggestions'); if(div) div.style.display = 'none'; }
+                } else { if(suggestionsDiv) suggestionsDiv.style.display = 'none'; }
             });
         }
-    });
+    })();
 
     // MAIN INIT
     (async function init() {
