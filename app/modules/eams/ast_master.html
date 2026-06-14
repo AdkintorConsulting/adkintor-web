@@ -404,13 +404,16 @@
 </head>
 <body>
 
-<div class="modal-header">
+<div class="eams-header">
     <h2><i class="fas fa-database"></i> Asset Master</h2>
-    <button class="btn-close" onclick="closeModal()">&times;</button>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
 </div>
 <div class="breadcrumbs">
-    <a href="#" onclick="closeModal()">Inicio</a> &gt; 
-    <a href="#" onclick="closeModal()">ASSETS</a> &gt; 
+    <span>🏠 Home</span> &gt; 
+    <span>ASSETS</span> &gt; 
     <span>Asset Master</span>
 </div>
 
@@ -538,6 +541,11 @@
     </div>
 </div>
 
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
     // ============================================
     // CONFIGURACIÓN
@@ -566,6 +574,28 @@
             }
         }
     }
+
+    // Recibir mensajes del padre (logo y versión)
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
     
     function showLoading(message) {
         const overlay = document.getElementById('loadingOverlay');
@@ -916,6 +946,37 @@
                     @media print {
                         body { padding: 0; }
                         .no-print { display: none; }
+                    }
+
+                    .eams-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        background: #1a1a2e;
+                        color: white;
+                        padding: 16px 24px;
+                    }
+                    
+                    .eams-header h2 {
+                        font-size: 1.25rem;
+                        margin: 0;
+                    }
+                    
+                    .user-badge {
+                        font-size: 0.8rem;
+                        background: rgba(255,255,255,0.2);
+                        padding: 4px 12px;
+                        border-radius: 20px;
+                    }
+                    
+                    .eams-status-bar {
+                        background: #f8f9fa;
+                        padding: 8px 24px;
+                        font-size: 0.75rem;
+                        color: #6c757d;
+                        border-top: 1px solid #eee;
+                        display: flex;
+                        justify-content: space-between;
                     }
                 </style>
             </head>
