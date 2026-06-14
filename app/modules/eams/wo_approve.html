@@ -7,6 +7,10 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Approval Manager - EAMS</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     /* Reset and Base Styles */
     * {
@@ -26,70 +30,37 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
 
-    /* Modal Container */
-    .modal-container {
-      min-height: 100%;
-      background: white;
-    }
-
-    /* Header */
-    .modal-header {
-      background: #004a99;
-      color: white;
-      padding: 16px 24px;
+    /* EAMS Header */
+    .eams-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: #1a1a2e;
+      color: white;
+      padding: 16px 24px;
+      flex-shrink: 0;
     }
 
-    .modal-header h2 {
-      font-size: 18px;
-      font-weight: 600;
+    .eams-header h2 {
+      font-size: 1.25rem;
       margin: 0;
     }
 
-    .close-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-
-    .close-btn:hover {
+    .user-badge {
+      font-size: 0.8rem;
       background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
     }
 
     /* Breadcrumbs */
     .breadcrumbs {
       padding: 12px 24px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      font-size: 13px;
-    }
-
-    .breadcrumbs a {
-      color: #004a99;
-      text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumbs span {
-      color: #6c757d;
+      background: #eef2f5;
+      font-size: 0.8rem;
+      color: #555;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
     }
 
     /* Content */
@@ -113,16 +84,7 @@
     .approval-header h3 {
       margin: 0;
       font-size: 1.3rem;
-      color: #004a99;
-    }
-
-    .user-badge {
-      background: #e9ecef;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #495057;
+      color: #1a1a2e;
     }
 
     .form-group {
@@ -157,9 +119,9 @@
     }
 
     select:focus, textarea:focus, input:focus {
-      border-color: #004a99;
+      border-color: #1a56db;
       outline: none;
-      box-shadow: 0 0 0 3px rgba(0, 74, 153, 0.1);
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
     }
 
     select.error, textarea.error, input.error {
@@ -261,7 +223,7 @@
       border-radius: 8px;
       margin: 16px 0;
       display: none;
-      border-left: 4px solid #004a99;
+      border-left: 4px solid #1a56db;
     }
 
     .audit-grid {
@@ -352,17 +314,16 @@
       display: block;
     }
 
-    /* Footer */
+    /* EAMS Status Bar */
     .eams-status-bar {
-      background: #f1f2f6;
-      color: #7f8c8d;
-      padding: 12px 24px;
+      background: #f8f9fa;
+      padding: 8px 24px;
       font-size: 0.75rem;
+      color: #6c757d;
+      border-top: 1px solid #eee;
       display: flex;
       justify-content: space-between;
-      border-top: 1px solid #dcdde1;
-      font-weight: 600;
-      margin-top: 24px;
+      flex-shrink: 0;
     }
 
     /* Toast Notifications */
@@ -390,7 +351,7 @@
 
     .toast.success { border-left-color: #2e7d32; }
     .toast.error { border-left-color: #b52b27; }
-    .toast.info { border-left-color: #004a99; }
+    .toast.info { border-left-color: #1a56db; }
 
     .toast-icon { font-size: 20px; }
     .toast-message { flex: 1; font-size: 14px; color: #2c3e50; }
@@ -433,7 +394,7 @@
       width: 40px;
       height: 40px;
       border: 3px solid #e9ecef;
-      border-top-color: #004a99;
+      border-top-color: #1a56db;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin: 0 auto 16px;
@@ -462,133 +423,137 @@
 </head>
 <body>
 
-<div class="modal-container">
-  <!-- Header -->
-  <div class="modal-header">
-    <h2>📋 APPROVAL MANAGER</h2>
-    <button class="close-btn" onclick="closeModal()">✕</button>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+  <h2><i class="fas fa-check-circle"></i> Approval Manager</h2>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+  </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span>WORK ORDERS</span> &gt;
+  <span>Approval</span>
+</div>
+
+<!-- Main Content -->
+<div class="card-approval">
+  <div class="approval-header">
+    <h3><i class="fas fa-clipboard-list"></i> Work Order Approval</h3>
   </div>
 
-  <!-- Breadcrumbs -->
-  <div class="breadcrumbs">
-    <a href="#" onclick="window.parent.postMessage('navigateTo', '*')">Inicio</a> &gt;
-    <span>WORK ORDERS</span> &gt;
-    <span>Approval</span>
+  <div id="preventiveBanner" class="preventive-banner" style="display:none;">
+    <button id="toggleModeBtn" class="btn-toggle" onclick="toggleApproveMode()">
+      <i class="fas fa-layer-group"></i> ENABLE MULTI-APPROVAL (PM ONLY)
+    </button>
   </div>
 
-  <!-- Main Content -->
-  <div class="card-approval">
-    <div class="approval-header">
-      <h3>Work Order Approval</h3>
-      <div class="user-badge" id="userDisplay">Loading...</div>
-    </div>
+  <div class="form-group">
+    <label>WO Type <span class="required">*</span></label>
+    <select id="woTypeSelect" onchange="toggleApproveMode()">
+      <option value="CORRECTIVE">🔧 Corrective (Normal)</option>
+      <option value="ON_HOLD">⏸️ On Hold (Follow Up)</option>
+      <option value="PREVENTIVE">📋 Preventive (PM)</option>
+    </select>
+  </div>
 
-    <div id="preventiveBanner" class="preventive-banner" style="display:none;">
-      <button id="toggleModeBtn" class="btn-toggle" onclick="toggleApproveMode()">
-        ENABLE MULTI-APPROVAL (PM ONLY)
-      </button>
-    </div>
-
+  <div id="singleArea">
     <div class="form-group">
-      <label>WO Type <span class="required">*</span></label>
-      <select id="woTypeSelect" onchange="toggleApproveMode()">
-        <option value="CORRECTIVE">🔧 Corrective (Normal)</option>
-        <option value="ON_HOLD">⏸️ On Hold (Follow Up)</option>
-        <option value="PREVENTIVE">📋 Preventive (PM)</option>
+      <label>Select Work Order <span class="required">*</span></label>
+      <select id="folioSelect" data-required="true" onchange="updateAuditPanel()">
+        <option value="">-- Select Folio --</option>
       </select>
     </div>
 
-    <div id="singleArea">
-      <div class="form-group">
-        <label>Select Work Order <span class="required">*</span></label>
-        <select id="folioSelect" data-required="true" onchange="updateAuditPanel()">
-          <option value="">-- Select Folio --</option>
-        </select>
-      </div>
-
-      <div id="auditPanel" class="audit-panel">
-        <div class="audit-grid">
-          <div>
-            <div class="audit-label">Original Creation Date</div>
-            <div class="audit-value" id="vDate">--</div>
-          </div>
-          <div>
-            <div class="audit-label">Priority</div>
-            <div class="audit-value" id="vPrio">--</div>
-          </div>
-          <div>
-            <div class="audit-label">Equipment</div>
-            <div class="audit-value" id="vEquip">--</div>
-          </div>
-          <div>
-            <div class="audit-label">Location</div>
-            <div class="audit-value" id="vLoc">--</div>
-          </div>
+    <div id="auditPanel" class="audit-panel">
+      <div class="audit-grid">
+        <div>
+          <div class="audit-label">Original Creation Date</div>
+          <div class="audit-value" id="vDate">--</div>
         </div>
-        <div class="audit-label">Description</div>
-        <div id="vDesc" class="audit-desc">--</div>
+        <div>
+          <div class="audit-label">Priority</div>
+          <div class="audit-value" id="vPrio">--</div>
+        </div>
+        <div>
+          <div class="audit-label">Equipment</div>
+          <div class="audit-value" id="vEquip">--</div>
+        </div>
+        <div>
+          <div class="audit-label">Location</div>
+          <div class="audit-value" id="vLoc">--</div>
+        </div>
       </div>
-    </div>
-
-    <div class="form-group" id="realDateGroup" style="margin-top: 16px;">
-      <label>🔧 Correct Actual Failure Date/Time <span style="color:#e67e22;">(optional)</span></label>
-      <input type="datetime-local" id="realCreationDate" style="width:100%; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px;">
-      <small class="field-hint">
-        ⚠️ If the WO was created after the actual failure occurred, correct the date here to improve OTIF accuracy.
-        <br>Leave empty to keep the original creation date.
-      </small>
-    </div>
-
-    <div id="multiArea" class="mass-container">
-      <span class="mass-title">BATCH PREVENTIVE MODE</span>
-      <div id="pmList" class="pm-list"></div>
-    </div>
-
-    <div class="row-2cols">
-      <div class="form-group">
-        <label>Technician <span class="required">*</span></label>
-        <select id="techSelect" data-required="true" onchange="validateFields()">
-          <option value="">-- Select Technician --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Maintenance Type <span class="required">*</span></label>
-        <select id="typeSelect" data-required="true" onchange="validateFields()">
-          <option value="">-- Select Type --</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Approver <span class="required">*</span></label>
-      <select id="apprSelect" data-required="true" onchange="validateFields()">
-        <option value="">-- Select Approver --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Quick Response</label>
-      <select id="smartSelect" onchange="fillQuickComment()">
-        <option value="">-- Quick Fill --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Observations <span id="obsRequired" class="required" style="display:none;">*</span></label>
-      <textarea id="comments" rows="3" placeholder="Required for rejection..." oninput="validateFields()"></textarea>
-    </div>
-
-    <div class="button-group">
-      <button id="rejectBtn" class="btn-reject" onclick="runProcess('REJECTED')" disabled>REJECT</button>
-      <button id="approveBtn" class="btn-approve" onclick="runProcess('APPROVED')" disabled>APPROVE & RELEASE</button>
+      <div class="audit-label">Description</div>
+      <div id="vDesc" class="audit-desc">--</div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS v2.0</span>
+  <div class="form-group" id="realDateGroup" style="margin-top: 16px;">
+    <label><i class="fas fa-calendar-alt"></i> Correct Actual Failure Date/Time <span style="color:#e67e22;">(optional)</span></label>
+    <input type="datetime-local" id="realCreationDate">
+    <small class="field-hint">
+      ⚠️ If the WO was created after the actual failure occurred, correct the date here to improve OTIF accuracy.
+      <br>Leave empty to keep the original creation date.
+    </small>
   </div>
+
+  <div id="multiArea" class="mass-container">
+    <span class="mass-title"><i class="fas fa-tasks"></i> BATCH PREVENTIVE MODE</span>
+    <div id="pmList" class="pm-list"></div>
+  </div>
+
+  <div class="row-2cols">
+    <div class="form-group">
+      <label>Technician <span class="required">*</span></label>
+      <select id="techSelect" data-required="true" onchange="validateFields()">
+        <option value="">-- Select Technician --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Maintenance Type <span class="required">*</span></label>
+      <select id="typeSelect" data-required="true" onchange="validateFields()">
+        <option value="">-- Select Type --</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Approver <span class="required">*</span></label>
+    <select id="apprSelect" data-required="true" onchange="validateFields()">
+      <option value="">-- Select Approver --</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Quick Response</label>
+    <select id="smartSelect" onchange="fillQuickComment()">
+      <option value="">-- Quick Fill --</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Observations <span id="obsRequired" class="required" style="display:none;">*</span></label>
+    <textarea id="comments" rows="3" placeholder="Required for rejection..." oninput="validateFields()"></textarea>
+  </div>
+
+  <div class="button-group">
+    <button id="rejectBtn" class="btn-reject" onclick="runProcess('REJECTED')" disabled>
+      <i class="fas fa-times"></i> REJECT
+    </button>
+    <button id="approveBtn" class="btn-approve" onclick="runProcess('APPROVED')" disabled>
+      <i class="fas fa-check"></i> APPROVE & RELEASE
+    </button>
+  </div>
+</div>
+
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+  <span>System Status: <strong id="footer-status">Ready</strong></span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <!-- Toast Container -->
@@ -604,6 +569,30 @@
 
 <script>
   // ============================================
+  // RECIBIR MENSAJES DEL PADRE (logo y versión)
+  // ============================================
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[iframe] Logo loaded from parent');
+      }
+    }
+    
+    if (data.type === 'SET_VERSION' && data.version) {
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[iframe] Version set to:', data.version);
+      }
+    }
+  });
+
+  // ============================================
   // API CONFIGURATION
   // ============================================
   const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
@@ -615,6 +604,8 @@
       try {
         const sessionData = JSON.parse(session);
         EAMS_API_URL = sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
         if (!EAMS_API_URL) {
           throw new Error('eamsApiUrl not found in session');
         }
@@ -651,9 +642,9 @@
   // ============================================
   // GLOBAL VARIABLES
   // ============================================
-  let woData = [];        // CORRECTIVOS (OPEN no preventivos)
-  let onHoldData = [];    // ON HOLD
-  let pmWOs = [];         // PREVENTIVOS
+  let woData = [];
+  let onHoldData = [];
+  let pmWOs = [];
   let techniciansWithEmails = [];
   let isMassMode = false;
   let isSubmitting = false;
@@ -687,46 +678,6 @@
     if (overlay) overlay.style.display = 'none';
   }
 
-  // ============================================
-  // FUNCIONES DE LOGGING PARA APROBACIÓN/RECHAZO
-  // ============================================
-  async function logWOApproval(woId, approvedBy, comments) {
-    if (!window.Logger || typeof window.Logger.woApproved !== 'function') {
-      console.warn('[WO] Logger not available, skipping log');
-      return;
-    }
-    
-    try {
-      await window.Logger.woApproved(woId, approvedBy);
-      console.log('[WO] WO approval logged:', woId);
-      
-      if (window.Logger.foresight) {
-        await window.Logger.foresight('WO', 'WO_APPROVED', `WO ${woId} aprobada por ${approvedBy}`);
-      }
-    } catch (err) {
-      console.warn('[WO] Failed to log WO approval:', err);
-    }
-  }
-
-  async function logWORejection(woId, rejectedBy, reason) {
-    if (!window.Logger || typeof window.Logger.woRejected !== 'function') {
-      console.warn('[WO] Logger not available, skipping log');
-      return;
-    }
-    
-    try {
-      await window.Logger.woRejected(woId, reason);
-      console.log('[WO] WO rejection logged:', woId);
-      
-      if (window.Logger.foresight) {
-        await window.Logger.foresight('WO', 'WO_REJECTED', `WO ${woId} rechazada por ${rejectedBy}: ${reason.substring(0, 100)}`);
-      }
-    } catch (err) {
-      console.warn('[WO] Failed to log WO rejection:', err);
-    }
-  }
-  // ============================================
-
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
   }
@@ -740,21 +691,6 @@
     document.querySelectorAll('[data-required="true"]').forEach(field => {
       field.classList.remove('error');
     });
-  }
-
-  function validateAndHighlight() {
-    let allValid = true;
-    document.querySelectorAll('[data-required="true"]').forEach(field => {
-      let value = field.tagName === 'SELECT' ? field.value : field.value.trim();
-      const isValid = value !== '' && value !== null;
-      if (!isValid) {
-        field.classList.add('error');
-        allValid = false;
-      } else {
-        field.classList.remove('error');
-      }
-    });
-    return allValid;
   }
 
   function updateSubmitButtons() {
@@ -922,6 +858,45 @@
   }
 
   // ============================================
+  // LOGGING FUNCTIONS
+  // ============================================
+  async function logWOApproval(woId, approvedBy, comments) {
+    if (!window.Logger || typeof window.Logger.woApproved !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woApproved(woId, approvedBy);
+      console.log('[WO] WO approval logged:', woId);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_APPROVED', `WO ${woId} approved by ${approvedBy}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO approval:', err);
+    }
+  }
+
+  async function logWORejection(woId, rejectedBy, reason) {
+    if (!window.Logger || typeof window.Logger.woRejected !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.woRejected(woId, reason);
+      console.log('[WO] WO rejection logged:', woId);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_REJECTED', `WO ${woId} rejected by ${rejectedBy}: ${reason.substring(0, 100)}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO rejection:', err);
+    }
+  }
+
+  // ============================================
   // DATA LOADING
   // ============================================
   async function loadData() {
@@ -945,9 +920,6 @@
       fillSelect('typeSelect', response.maintTypes || [], '-- Select Type --');
       fillSelect('apprSelect', response.approvers || [], '-- Select Approver --');
       fillSelect('smartSelect', response.smartComments || [], '-- Quick Fill --');
-      
-      const userBadge = document.getElementById('userDisplay');
-      if (userBadge) userBadge.innerText = 'Session: Approver';
       
       const pmBanner = document.getElementById('preventiveBanner');
       if (pmBanner && pmWOs.length > 0) {
@@ -1039,10 +1011,7 @@
       
       hideLoading();
 
-        if (response.success) {
-        // ============================================
-        // REGISTRAR LOGS DE APROBACIÓN/RECHAZO
-        // ============================================
+      if (response.success) {
         const processedFolios = isPreventiveSelected ? folio : [folio];
         const actorName = approver;
         
@@ -1055,13 +1024,11 @@
             }
           }
         }
-        // ============================================
         
         let emailMsg = (response.emailSent === false) ? ' ⚠️ Email notification failed.' : (response.emailSent === true ? ' 📧 Email sent.' : '');
         showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
         document.getElementById('footer-status').innerText = 'Processed ' + (response.count || 0) + ' WO(s)';
         
-        // Reset and reload
         if (document.getElementById('folioSelect')) document.getElementById('folioSelect').value = '';
         if (document.getElementById('comments')) document.getElementById('comments').value = '';
         if (document.getElementById('realCreationDate')) document.getElementById('realCreationDate').value = '';
@@ -1073,13 +1040,9 @@
       }
       
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
         window.Logger.error('WO', 'processApproval', error.message).catch(e => console.warn('[WO] Error log failed:', e));
       }
-      // ============================================
       
       hideLoading();
       showToast('Error: ' + error.message, 'error');
