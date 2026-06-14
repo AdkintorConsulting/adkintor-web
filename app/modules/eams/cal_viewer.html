@@ -13,6 +13,14 @@
       box-sizing: border-box;
     }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
     :root {
       --eams-main: #1a56db;
       --eams-accent: #3b82f6;
@@ -22,38 +30,44 @@
       --cal-green: #2e7d32;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: var(--eams-bg);
-      padding: 0;
+    /* EAMS Header */
+    .eams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1a1a2e;
+      color: white;
+      padding: 16px 24px;
+      flex-shrink: 0;
+    }
+
+    .eams-header h2 {
+      font-size: 1.25rem;
       margin: 0;
     }
 
-    /* Breadcrumbs */
-    .breadcrumb {
-      background: white;
-      padding: 12px 24px;
-      border-bottom: 1px solid #e2e8f0;
+    .user-badge {
       font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
     }
 
-    .breadcrumb a {
-      color: var(--eams-main);
-      text-decoration: none;
-    }
-
-    .breadcrumb a:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumb span {
-      color: #64748b;
+    /* Breadcrumbs */
+    .breadcrumbs {
+      padding: 12px 24px;
+      background: #eef2f5;
+      font-size: 0.8rem;
+      color: #555;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
     }
 
     .hub-container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 24px;
+      flex: 1;
     }
 
     /* Toast Notifications */
@@ -246,6 +260,18 @@
       background: #475569;
     }
 
+    /* EAMS Status Bar */
+    .eams-status-bar {
+      background: #f8f9fa;
+      padding: 8px 24px;
+      font-size: 0.75rem;
+      color: #6c757d;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
     /* Modal */
     .modal-overlay {
       display: none;
@@ -402,12 +428,23 @@
 </head>
 <body>
 
-<div class="breadcrumb">
-  <a href="#" onclick="window.parent.location.href='/app/modules/eams/cal_dispatcher.html'">Inicio</a> / 
-  <span>CALIBRATION VIEWER</span>
-  <span style="margin-left: 12px; font-size: 0.7rem; color: #94a3b8;">
-    <i class="bi bi-eye"></i> Read Only Mode
-  </span>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="bi bi-eye"></i> Calibration Viewer</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>CALIBRATION</span> &gt;
+    <span>Calibration Viewer</span>
+    <span style="margin-left: 12px; font-size: 0.7rem; color: #94a3b8;">
+        <i class="bi bi-eye"></i> Read Only Mode
+    </span>
 </div>
 
 <div class="hub-container">
@@ -475,11 +512,17 @@
           <td colspan="9" class="text-center py-5 text-muted">
             <i class="bi bi-hourglass-split"></i><br>
             Loading instruments...
-           </td>
-        </tr>
+            <\/td>
+        <\/tr>
       </tbody>
     </table>
   </div>
+</div>
+
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <!-- MODAL: HISTORY VIEW WITH INSTRUMENT DETAILS -->
@@ -510,367 +553,422 @@
 </div>
 
 <script>
-// ============================================
-// WEB APP ADAPTATION - API via Proxy
-// ============================================
-
-const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-let EAMS_API_URL = null;
-
-function loadApiUrl() {
-  try {
-    const sessionRaw = localStorage.getItem('adkintor_session');
-    if (sessionRaw) {
-      const sessionData = JSON.parse(sessionRaw);
-      EAMS_API_URL = sessionData.eamsApiUrl;
-      console.log('API URL loaded:', EAMS_API_URL);
-    } else {
-      console.warn('No session found in localStorage');
-    }
-  } catch (e) {
-    console.error('Error loading API URL:', e);
-  }
-}
-
-async function callApi(action, args = []) {
-  if (!EAMS_API_URL) {
-    throw new Error('API URL not configured. Please login first.');
-  }
-  
-  const response = await fetch(PROXY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      targetUrl: EAMS_API_URL,
-      payload: { action: action, args: args }
-    })
-  });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
-  
-  const result = await response.json();
-  
-  if (!result.success) {
-    throw new Error(result.error || 'Unknown error from server');
-  }
-  
-  return result.data;
-}
-
-function closeModal() {
-  window.parent.postMessage('closeIframe', '*');
-}
-
-// ============================================
-// UI Helpers
-// ============================================
-
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  
-  let icon = '';
-  if (type === 'success') icon = '<i class="bi bi-check-circle-fill"></i>';
-  else if (type === 'error') icon = '<i class="bi bi-exclamation-triangle-fill"></i>';
-  else icon = '<i class="bi bi-info-circle-fill"></i>';
-  
-  toast.innerHTML = `
-    ${icon}
-    <span class="toast-message">${message}</span>
-    <i class="bi bi-x-lg toast-close"></i>
-  `;
-  
-  container.appendChild(toast);
-  
-  const closeBtn = toast.querySelector('.toast-close');
-  closeBtn.addEventListener('click', () => toast.remove());
-  
-  setTimeout(() => {
-    if (toast.parentNode) toast.remove();
-  }, 5000);
-}
-
-function showLoading(message = 'Processing...') {
-  const overlay = document.getElementById('loadingOverlay');
-  const msgSpan = document.getElementById('loadingMessage');
-  if (msgSpan) msgSpan.textContent = message;
-  overlay.style.display = 'flex';
-}
-
-function hideLoading() {
-  const overlay = document.getElementById('loadingOverlay');
-  overlay.style.display = 'none';
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
-
-function calculateDaysLeft(nextCalStr) {
-  if (!nextCalStr) return 999;
-  const today = new Date();
-  const nextCal = new Date(nextCalStr);
-  const diffTime = nextCal - today;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
-
-// ============================================
-// VIEWER Module (Read Only)
-// ============================================
-
-const VIEWER = (function() {
-  let instruments = [];
-  let config = {
-    areas: [],
-    types: [],
-    statuses: []
-  };
-
-  // ============================================
-  // INITIALIZATION
-  // ============================================
-  
-  async function init() {
-    loadApiUrl();
-    
-    if (!EAMS_API_URL) {
-      showToast('Session not found. Please login from the main application.', 'error');
-      return;
-    }
-    
-    showLoading('Loading calibration data...');
-    await loadConfig();
-    await loadInstruments();
-    setupEventListeners();
-    hideLoading();
-  }
-
-  async function loadConfig() {
-    try {
-      const response = await callApi('CAL_VIEWER_getConfig', []);
-      if (response.status === "success") {
-        config = response.data;
-        populateDropdowns();
-      } else {
-        showToast(response.message || 'Config load failed', 'error');
-      }
-    } catch (error) {
-      showToast('Config load failed: ' + error.message, 'error');
-    }
-  }
-
-  function populateDropdowns() {
-    const typeFilter = document.getElementById('filterType');
-    typeFilter.innerHTML = '<option value="">All Types</option>' + 
-      config.types.map(t => `<option value="${t}">${t}</option>`).join('');
-
-    const areaFilter = document.getElementById('filterArea');
-    areaFilter.innerHTML = '<option value="">All Areas</option>' + 
-      config.areas.map(a => `<option value="${a}">${a}</option>`).join('');
-
-    const statusFilter = document.getElementById('filterStatus');
-    statusFilter.innerHTML = '<option value="">All Status</option>' + 
-      config.statuses.map(s => `<option value="${s}">${s}</option>`).join('');
-  }
-
-  async function loadInstruments() {
-    try {
-      instruments = await callApi('CAL_VIEWER_getAllInstruments', []);
-      renderTable(instruments);
-      updateHeatmap(instruments);
-    } catch (error) {
-      showToast('Failed to load instruments: ' + error.message, 'error');
-      const tbody = document.getElementById('instrumentTableBody');
-      tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">❌ Error loading instruments: ${error.message}</td></tr>`;
-    }
-  }
-
-  function renderTable(data) {
-    const tbody = document.getElementById('instrumentTableBody');
-    
-    if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1"></i><br>No instruments found</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = data.map(inst => {
-      const daysLeft = calculateDaysLeft(inst.nextCal);
-      let daysClass = '', badgeClass = '';
-      
-      if (daysLeft < 30) {
-        daysClass = 'badge-red';
-        badgeClass = 'badge-red';
-      } else if (daysLeft < 90) {
-        daysClass = 'badge-orange';
-        badgeClass = 'badge-orange';
-      } else {
-        daysClass = 'badge-green';
-        badgeClass = 'badge-green';
-      }
-
-      return `
-        <tr>
-          <td><strong style="color: var(--eams-main);">${escapeHtml(inst.tagId)}</strong></td>
-          <td>${escapeHtml(inst.name)}</td>
-          <td>${escapeHtml(inst.type) || '-'}</td>
-          <td>${escapeHtml(inst.area) || '-'}</td>
-          <td>${inst.lastCal || '-'}</td>
-          <td>${inst.nextCal || '-'}</td>
-          <td><span class="status-badge ${daysClass}">${daysLeft} days</span></td>
-          <td><span class="status-badge ${badgeClass}">${escapeHtml(inst.status) || 'Active'}</span></td>
-          <td><button class="btn-history" data-tag="${inst.tagId}">📜 HISTORY</button></td>
-        </tr>
-      `;
-    }).join('');
-    
-    // Attach event listeners to history buttons
-    document.querySelectorAll('.btn-history').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showHistory(btn.dataset.tag);
-      });
-    });
-  }
-
-  function updateHeatmap(data) {
-    let critical = 0, warning = 0, compliant = 0;
-    
-    data.forEach(inst => {
-      const days = calculateDaysLeft(inst.nextCal);
-      if (days < 30) critical++;
-      else if (days < 90) warning++;
-      else compliant++;
-    });
-    
-    document.getElementById('criticalCount').innerText = critical;
-    document.getElementById('warningCount').innerText = warning;
-    document.getElementById('compliantCount').innerText = compliant;
-  }
-
-  function filter() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const typeFilter = document.getElementById('filterType').value;
-    const areaFilter = document.getElementById('filterArea').value;
-    const statusFilter = document.getElementById('filterStatus').value;
-
-    const filtered = instruments.filter(inst => {
-      if (searchTerm && !inst.tagId.toLowerCase().includes(searchTerm) && 
-          !inst.name.toLowerCase().includes(searchTerm)) return false;
-      if (typeFilter && inst.type !== typeFilter) return false;
-      if (areaFilter && inst.area !== areaFilter) return false;
-      if (statusFilter && inst.status !== statusFilter) return false;
-      return true;
-    });
-
-    renderTable(filtered);
-    updateHeatmap(filtered);
-  }
-
-  // ============================================
-  // HISTORY MODAL
-  // ============================================
-
-  async function showHistory(tagId) {
-    showLoading("Loading history...");
-    
-    try {
-      const history = await callApi('CAL_VIEWER_getInstrumentHistory', [tagId]);
-      hideLoading();
-      
-      const container = document.getElementById('historyContent');
-      const title = document.getElementById('historyModalTitle');
-      title.innerText = `Calibration History: ${tagId}`;
-      
-      if (history.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">No calibration records found</p>';
-      } else {
-        // Get instrument details from the first record (all have the same)
-        const inst = history[0]?.instrument;
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
         
-        let instrumentDetailsHtml = '';
-        if (inst) {
-          instrumentDetailsHtml = `
-            <div class="instrument-details">
-              <h4><i class="bi bi-info-circle"></i> Instrument Details</h4>
-              <div class="detail-grid">
-                <div><span class="detail-label">Name:</span> <span class="detail-value">${escapeHtml(inst.name || 'N/A')}</span></div>
-                <div><span class="detail-label">Type:</span> <span class="detail-value">${escapeHtml(inst.type || 'N/A')}</span></div>
-                <div><span class="detail-label">Model:</span> <span class="detail-value">${escapeHtml(inst.model || 'N/A')}</span></div>
-                <div><span class="detail-label">Serial:</span> <span class="detail-value">${escapeHtml(inst.serial || 'N/A')}</span></div>
-                <div><span class="detail-label">Area:</span> <span class="detail-value">${escapeHtml(inst.area || 'N/A')}</span></div>
-                <div><span class="detail-label">Frequency:</span> <span class="detail-value">${inst.frequency || 'N/A'} months</span></div>
-                <div><span class="detail-label">Tolerance:</span> <span class="detail-value">${escapeHtml(inst.tolerance || 'N/A')}</span></div>
-                <div><span class="detail-label">Responsible:</span> <span class="detail-value">${escapeHtml(inst.responsible || 'N/A')}</span></div>
-                <div><span class="detail-label">Associated Asset:</span> <span class="detail-value">${escapeHtml(inst.associatedAssetId || 'None')}</span></div>
-              </div>
-            </div>
-          `;
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
         }
         
-        const historyHtml = history.map(h => `
-          <div class="history-item">
-            <div class="history-date">📅 ${h.date}</div>
-            <div>👤 ${escapeHtml(h.performedBy)} | ${h.result}</div>
-            <div class="history-cert">📄 Certificate: ${escapeHtml(h.certificate) || 'N/A'}</div>
-            ${h.deviation ? `<div class="deviation-value">📊 Deviation: ${h.deviation} ${escapeHtml(h.deviationUnit || '')}</div>` : ''}
-            <div class="small text-muted mt-1">💬 ${escapeHtml(h.comments) || 'No comments'}</div>
-          </div>
-        `).join('');
-        
-        container.innerHTML = instrumentDetailsHtml + '<h4 style="margin: 15px 0 10px 0;">Calibration Records</h4>' + historyHtml;
-      }
-      
-      document.getElementById('historyModal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      
-    } catch (error) {
-      hideLoading();
-      showToast("Failed to load history: " + error.message, "error");
-    }
-  }
-
-  function closeHistoryModal() {
-    document.getElementById('historyModal').style.display = 'none';
-    document.body.style.overflow = '';
-  }
-
-  function setupEventListeners() {
-    // Filter inputs
-    document.getElementById('searchInput').addEventListener('input', () => filter());
-    document.getElementById('filterType').addEventListener('change', () => filter());
-    document.getElementById('filterArea').addEventListener('change', () => filter());
-    document.getElementById('filterStatus').addEventListener('change', () => filter());
-    
-    // Modal close buttons
-    document.getElementById('closeHistoryBtn').addEventListener('click', () => closeHistoryModal());
-    document.getElementById('closeHistoryFooterBtn').addEventListener('click', () => closeHistoryModal());
-    
-    // Close modal on overlay click
-    const modal = document.getElementById('historyModal');
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeHistoryModal();
-      }
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
     });
-  }
 
-  return {
-    init: init
-  };
-})();
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
 
-window.addEventListener('DOMContentLoaded', () => {
-  VIEWER.init();
-});
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                console.log('API URL loaded:', EAMS_API_URL);
+            } catch(e) {
+                console.error('Error parsing session:', e);
+                showToast('Session error. Please log in again.', 'error');
+            }
+        } else {
+            console.error('No session found');
+            showToast('Please log in to continue.', 'error');
+        }
+    }
+
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured. Please log in.');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        return result.data;
+    }
+
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA VISUALIZACIÓN (solo lectura)
+    // ============================================
+    async function logCalibrationView(tagId, viewedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[CAL] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit('VIEW', 'CAL', tagId, '', '', '', `Calibration history viewed`);
+            console.log('[CAL] Calibration view logged:', tagId);
+        } catch (err) {
+            console.warn('[CAL] Failed to log calibration view:', err);
+        }
+    }
+
+    // ============================================
+    // UI Helpers
+    // ============================================
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let icon = '';
+        if (type === 'success') icon = '<i class="bi bi-check-circle-fill"></i>';
+        else if (type === 'error') icon = '<i class="bi bi-exclamation-triangle-fill"></i>';
+        else icon = '<i class="bi bi-info-circle-fill"></i>';
+        
+        toast.innerHTML = `
+            ${icon}
+            <span class="toast-message">${message}</span>
+            <i class="bi bi-x-lg toast-close"></i>
+        `;
+        
+        container.appendChild(toast);
+        
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => toast.remove());
+        
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 5000);
+    }
+
+    function showLoading(message = 'Processing...') {
+        const overlay = document.getElementById('loadingOverlay');
+        const msgSpan = document.getElementById('loadingMessage');
+        if (msgSpan) msgSpan.textContent = message;
+        overlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'none';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function calculateDaysLeft(nextCalStr) {
+        if (!nextCalStr) return 999;
+        const today = new Date();
+        const nextCal = new Date(nextCalStr);
+        const diffTime = nextCal - today;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    // ============================================
+    // VIEWER Module (Read Only)
+    // ============================================
+
+    const VIEWER = (function() {
+        let instruments = [];
+        let config = {
+            areas: [],
+            types: [],
+            statuses: []
+        };
+        let currentUser = '';
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        async function init() {
+            loadApiUrl();
+            
+            if (!EAMS_API_URL) {
+                showToast('Session not found. Please login from the main application.', 'error');
+                return;
+            }
+            
+            // Obtener usuario actual para logs
+            try {
+                const email = await callApi('getCurrentUserEmail', []);
+                currentUser = email || 'System';
+            } catch(e) {
+                currentUser = 'System';
+            }
+            
+            showLoading('Loading calibration data...');
+            await loadConfig();
+            await loadInstruments();
+            setupEventListeners();
+            hideLoading();
+            document.getElementById('footer-status').innerText = 'Ready';
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await callApi('CAL_VIEWER_getConfig', []);
+                if (response.status === "success") {
+                    config = response.data;
+                    populateDropdowns();
+                } else {
+                    showToast(response.message || 'Config load failed', 'error');
+                }
+            } catch (error) {
+                showToast('Config load failed: ' + error.message, 'error');
+            }
+        }
+
+        function populateDropdowns() {
+            const typeFilter = document.getElementById('filterType');
+            typeFilter.innerHTML = '<option value="">All Types</option>' + 
+                config.types.map(t => `<option value="${t}">${t}</option>`).join('');
+
+            const areaFilter = document.getElementById('filterArea');
+            areaFilter.innerHTML = '<option value="">All Areas</option>' + 
+                config.areas.map(a => `<option value="${a}">${a}</option>`).join('');
+
+            const statusFilter = document.getElementById('filterStatus');
+            statusFilter.innerHTML = '<option value="">All Status</option>' + 
+                config.statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        async function loadInstruments() {
+            try {
+                instruments = await callApi('CAL_VIEWER_getAllInstruments', []);
+                renderTable(instruments);
+                updateHeatmap(instruments);
+            } catch (error) {
+                showToast('Failed to load instruments: ' + error.message, 'error');
+                const tbody = document.getElementById('instrumentTableBody');
+                tbody.innerHTML = `<td><td colspan="9" class="text-center py-5 text-muted">❌ Error loading instruments: ${error.message}<\/td><\/tr>`;
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('instrumentTableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1"></i><br>No instruments found<\/td><\/tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(inst => {
+                const daysLeft = calculateDaysLeft(inst.nextCal);
+                let daysClass = '', badgeClass = '';
+                
+                if (daysLeft < 30) {
+                    daysClass = 'badge-red';
+                    badgeClass = 'badge-red';
+                } else if (daysLeft < 90) {
+                    daysClass = 'badge-orange';
+                    badgeClass = 'badge-orange';
+                } else {
+                    daysClass = 'badge-green';
+                    badgeClass = 'badge-green';
+                }
+
+                return `
+                    <tr>
+                        <td><strong style="color: var(--eams-main);">${escapeHtml(inst.tagId)}</strong><\/td>
+                        <td>${escapeHtml(inst.name)}<\/td>
+                        <td>${escapeHtml(inst.type) || '-'}<\/td>
+                        <td>${escapeHtml(inst.area) || '-'}<\/td>
+                        <td>${inst.lastCal || '-'}<\/td>
+                        <td>${inst.nextCal || '-'}<\/td>
+                        <td><span class="status-badge ${daysClass}">${daysLeft} days</span><\/td>
+                        <td><span class="status-badge ${badgeClass}">${escapeHtml(inst.status) || 'Active'}</span><\/td>
+                        <td><button class="btn-history" data-tag="${inst.tagId}">📜 HISTORY<\/button><\/td>
+                    <\/tr>
+                `;
+            }).join('');
+            
+            // Attach event listeners to history buttons
+            document.querySelectorAll('.btn-history').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showHistory(btn.dataset.tag);
+                });
+            });
+        }
+
+        function updateHeatmap(data) {
+            let critical = 0, warning = 0, compliant = 0;
+            
+            data.forEach(inst => {
+                const days = calculateDaysLeft(inst.nextCal);
+                if (days < 30) critical++;
+                else if (days < 90) warning++;
+                else compliant++;
+            });
+            
+            document.getElementById('criticalCount').innerText = critical;
+            document.getElementById('warningCount').innerText = warning;
+            document.getElementById('compliantCount').innerText = compliant;
+        }
+
+        function filter() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value;
+            const areaFilter = document.getElementById('filterArea').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            const filtered = instruments.filter(inst => {
+                if (searchTerm && !inst.tagId.toLowerCase().includes(searchTerm) && 
+                    !inst.name.toLowerCase().includes(searchTerm)) return false;
+                if (typeFilter && inst.type !== typeFilter) return false;
+                if (areaFilter && inst.area !== areaFilter) return false;
+                if (statusFilter && inst.status !== statusFilter) return false;
+                return true;
+            });
+
+            renderTable(filtered);
+            updateHeatmap(filtered);
+        }
+
+        // ============================================
+        // HISTORY MODAL
+        // ============================================
+
+        async function showHistory(tagId) {
+            showLoading("Loading history...");
+            
+            try {
+                const history = await callApi('CAL_VIEWER_getInstrumentHistory', [tagId]);
+                hideLoading();
+                
+                // Log de visualización
+                logCalibrationView(tagId, currentUser).catch(e => console.warn('[CAL] View log failed:', e));
+                
+                const container = document.getElementById('historyContent');
+                const title = document.getElementById('historyModalTitle');
+                title.innerText = `Calibration History: ${tagId}`;
+                
+                if (history.length === 0) {
+                    container.innerHTML = '<p class="text-muted text-center">No calibration records found</p>';
+                } else {
+                    // Get instrument details from the first record (all have the same)
+                    const inst = history[0]?.instrument;
+                    
+                    let instrumentDetailsHtml = '';
+                    if (inst) {
+                        instrumentDetailsHtml = `
+                            <div class="instrument-details">
+                                <h4><i class="bi bi-info-circle"></i> Instrument Details</h4>
+                                <div class="detail-grid">
+                                    <div><span class="detail-label">Name:</span> <span class="detail-value">${escapeHtml(inst.name || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Type:</span> <span class="detail-value">${escapeHtml(inst.type || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Model:</span> <span class="detail-value">${escapeHtml(inst.model || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Serial:</span> <span class="detail-value">${escapeHtml(inst.serial || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Area:</span> <span class="detail-value">${escapeHtml(inst.area || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Frequency:</span> <span class="detail-value">${inst.frequency || 'N/A'} months</span></div>
+                                    <div><span class="detail-label">Tolerance:</span> <span class="detail-value">${escapeHtml(inst.tolerance || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Responsible:</span> <span class="detail-value">${escapeHtml(inst.responsible || 'N/A')}</span></div>
+                                    <div><span class="detail-label">Associated Asset:</span> <span class="detail-value">${escapeHtml(inst.associatedAssetId || 'None')}</span></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    const historyHtml = history.map(h => `
+                        <div class="history-item">
+                            <div class="history-date">📅 ${h.date}</div>
+                            <div>👤 ${escapeHtml(h.performedBy)} | ${h.result}</div>
+                            <div class="history-cert">📄 Certificate: ${escapeHtml(h.certificate) || 'N/A'}</div>
+                            ${h.deviation ? `<div class="deviation-value">📊 Deviation: ${h.deviation} ${escapeHtml(h.deviationUnit || '')}</div>` : ''}
+                            <div class="small text-muted mt-1">💬 ${escapeHtml(h.comments) || 'No comments'}</div>
+                        </div>
+                    `).join('');
+                    
+                    container.innerHTML = instrumentDetailsHtml + '<h4 style="margin: 15px 0 10px 0;">Calibration Records</h4>' + historyHtml;
+                }
+                
+                document.getElementById('historyModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+            } catch (error) {
+                // Registrar error
+                if (window.Logger && typeof window.Logger.error === 'function') {
+                    window.Logger.error('CAL', 'viewHistory', error.message).catch(e => console.warn('[CAL] Error log failed:', e));
+                }
+                hideLoading();
+                showToast("Failed to load history: " + error.message, "error");
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function setupEventListeners() {
+            // Filter inputs
+            document.getElementById('searchInput').addEventListener('input', () => filter());
+            document.getElementById('filterType').addEventListener('change', () => filter());
+            document.getElementById('filterArea').addEventListener('change', () => filter());
+            document.getElementById('filterStatus').addEventListener('change', () => filter());
+            
+            // Modal close buttons
+            document.getElementById('closeHistoryBtn').addEventListener('click', () => closeHistoryModal());
+            document.getElementById('closeHistoryFooterBtn').addEventListener('click', () => closeHistoryModal());
+            
+            // Close modal on overlay click
+            const modal = document.getElementById('historyModal');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeHistoryModal();
+                }
+            });
+        }
+
+        return {
+            init: init
+        };
+    })();
+
+    window.addEventListener('DOMContentLoaded', () => {
+        VIEWER.init();
+    });
 </script>
 </body>
 </html>
