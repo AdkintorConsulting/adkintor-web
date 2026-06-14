@@ -20,15 +20,47 @@
             background: #f4f6f9;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .eams-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            flex-shrink: 0;
+        }
+        
+        .eams-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        
+        .user-badge {
+            font-size: 0.8rem;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
         }
         
         .master-container {
             display: flex;
-            width: 100%;
-            height: calc(100% - 100px);
+            flex: 1;
+            overflow: hidden;
         }
         
-        /* Left Pane */
         .left-pane {
             width: 320px;
             background: #ffffff;
@@ -154,11 +186,6 @@
             background: #e2e8f0;
         }
         
-        .node-selected {
-            background: #1a56db !important;
-            color: white !important;
-        }
-        
         .children-container {
             margin-left: 18px;
             display: none;
@@ -169,7 +196,6 @@
             display: block;
         }
         
-        /* Right Pane */
         .right-pane {
             flex: 1;
             padding: 20px;
@@ -325,51 +351,15 @@
             background: #f8fafc;
         }
         
-        /* Modal Header */
-        .modal-header {
-            background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-header h2 {
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 8px;
-        }
-        
-        .btn-close:hover {
-            opacity: 0.8;
-        }
-        
-        .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .breadcrumbs a {
-            color: #1a1a2e;
-            text-decoration: none;
-        }
-        
-        .breadcrumbs a:hover {
-            text-decoration: underline;
+            flex-shrink: 0;
         }
         
         #custom-confirm {
@@ -485,13 +475,16 @@
 </head>
 <body>
 
-<div class="modal-header">
+<div class="eams-header">
     <h2><i class="fas fa-edit"></i> Modify Asset</h2>
-    <button class="btn-close" onclick="closeModal()">&times;</button>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
 </div>
 <div class="breadcrumbs">
-    <a href="#" onclick="closeModal()">Inicio</a> &gt; 
-    <a href="#" onclick="closeModal()">ASSETS</a> &gt; 
+    <span>🏠 Home</span> &gt; 
+    <span>ASSETS</span> &gt; 
     <span>Modify Asset</span>
 </div>
 
@@ -608,6 +601,11 @@
     </div>
 </div>
 
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <div id="custom-confirm">
     <div>
         <p><i class="fas fa-exclamation-triangle"></i> Unsaved changes will be lost. Continue?</p>
@@ -638,8 +636,31 @@
     let currentAssetData = null;
     let isDirty = false;
     
-    // Mapeo estático por índice (orden de SETUP_AST columna H)
     const CRITICALITY_FIELD_MAP = ['hse', 'prod', 'usage', 'oper', 'redun'];
+    
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
     
     // ============================================
     // FUNCIONES BASE
@@ -651,6 +672,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
                 console.error('Error parsing session:', e);
             }
@@ -911,11 +934,7 @@
     function renderEditor(assetData) {
         currentAssetData = assetData;
         
-        // ============================================
-        // GUARDAR COPIA DEL ESTADO ORIGINAL PARA LOGGING
-        // ============================================
         window._originalAssetData = JSON.parse(JSON.stringify(assetData));
-        // ============================================
         
         document.getElementById('searchPane').style.display = 'none';
         document.getElementById('editorPane').style.display = 'block';
@@ -935,7 +954,6 @@
             loadSelect('v-status', DBconfig.statuses, assetData.status);
         }
         
-        // Aplicar lógica según Asset Type
         const typeSelect = document.getElementById('v-type');
         if (typeSelect) {
             typeSelect.removeEventListener('change', applyTypeLogic);
@@ -1055,6 +1073,45 @@
         return isValid;
     }
     
+    function computeChanges(original, updated) {
+        const changes = [];
+        const fieldsToTrack = ['name', 'area', 'assetType', 'category', 'status', 
+                                'manufacturer', 'model', 'serial', 'year', 'parentId',
+                                'hse', 'prod', 'usage', 'oper', 'redun', 'level'];
+        
+        for (const field of fieldsToTrack) {
+            const oldVal = original[field] || '';
+            const newVal = updated[field] || '';
+            if (String(oldVal).trim() !== String(newVal).trim()) {
+                changes.push({
+                    field: field,
+                    oldValue: String(oldVal).substring(0, 100),
+                    newValue: String(newVal).substring(0, 100)
+                });
+            }
+        }
+        return changes;
+    }
+    
+    async function logAssetModification(assetId, changes) {
+        if (!window.Logger || typeof window.Logger.assetModified !== 'function') {
+            console.warn('[AST] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.assetModified(assetId, changes);
+            console.log('[AST] Asset modification logged:', assetId, changes.length, 'changes');
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('AST', 'ASSET_MODIFIED', 
+                    `Asset ${assetId} modified - ${changes.length} changes`);
+            }
+        } catch (err) {
+            console.warn('[AST] Failed to log asset modification:', err);
+        }
+    }
+    
     async function saveAsset() {
         if (!validateForm()) return;
         
@@ -1086,92 +1143,33 @@
         formData.score = crit.score;
         formData.level = crit.level;
         
-        // ============================================
-        // CALCULAR CAMBIOS ANTES DE GUARDAR
-        // ============================================
         const originalData = window._originalAssetData || {};
         const changes = computeChanges(originalData, formData);
-        // ============================================
         
         try {
             const res = await callApi('AST_updateAssetFull', [formData]);
             
-            // ============================================
-            // REGISTRAR LOG DE MODIFICACIÓN
-            // ============================================
             if (changes.length > 0) {
                 logAssetModification(formData.id, changes).catch(e => console.warn('[AST] Log failed:', e));
-            } else {
-                console.log('[AST] No changes detected, skipping log');
             }
-            // ============================================
             
             hideLoading();
             enableButton('updateBtn');
             showMessage(res.message || 'Asset updated successfully', false);
             markClean();
             
-            // Recargar los datos actualizados
             await loadAsset(formData.id);
             
         } catch (error) {
-            // ============================================
-            // REGISTRAR ERROR EN LOG
-            // ============================================
             if (window.Logger && typeof window.Logger.error === 'function') {
                 window.Logger.error('AST', 'modifyAsset', error.message).catch(e => console.warn('[AST] Error log failed:', e));
             }
-            // ============================================
             
             hideLoading();
             enableButton('updateBtn');
             showMessage('Save failed: ' + error.message, true);
         }
     }
-    // ============================================
-    // FUNCIÓN DE LOGGING PARA MODIFICACIÓN DE ACTIVO
-    // ============================================
-    async function logAssetModification(assetId, changes) {
-        if (!window.Logger || typeof window.Logger.assetModified !== 'function') {
-            console.warn('[AST] Logger not available, skipping log');
-            return;
-        }
-        
-        try {
-            await window.Logger.assetModified(assetId, changes);
-            console.log('[AST] Asset modification logged:', assetId, changes.length, 'changes');
-            
-            // También registrar en FORESIGHT
-            if (window.Logger.foresight) {
-                await window.Logger.foresight('AST', 'ASSET_MODIFIED', 
-                    `Activo ${assetId} modificado - ${changes.length} cambios`);
-            }
-        } catch (err) {
-            console.warn('[AST] Failed to log asset modification:', err);
-        }
-    }
-    
-    // Función para calcular cambios entre objeto original y nuevo
-    function computeChanges(original, updated) {
-        const changes = [];
-        const fieldsToTrack = ['name', 'area', 'assetType', 'category', 'status', 
-                                'manufacturer', 'model', 'serial', 'year', 'parentId',
-                                'hse', 'prod', 'usage', 'oper', 'redun', 'level'];
-        
-        for (const field of fieldsToTrack) {
-            const oldVal = original[field] || '';
-            const newVal = updated[field] || '';
-            if (String(oldVal).trim() !== String(newVal).trim()) {
-                changes.push({
-                    field: field,
-                    oldValue: String(oldVal).substring(0, 100),
-                    newValue: String(newVal).substring(0, 100)
-                });
-            }
-        }
-        return changes;
-    }
-    // ============================================
     
     // ============================================
     // UI ACTIONS
