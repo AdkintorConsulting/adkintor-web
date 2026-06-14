@@ -23,93 +23,37 @@
             flex-direction: column;
         }
         
-        /* Modal Header - sin título, solo controles */
-        .modal-header {
-            background: #1a1a2e;
-            padding: 8px 16px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            flex-shrink: 0;
-            border-bottom: 1px solid #334155;
-        }
-        
-        .modal-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .modal-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        
-        .modal-btn:hover {
-            background: #334155;
-            color: white;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .modal-close:hover {
-            background: #dc2626;
-            color: white;
-        }
-        
         /* EAMS Header */
         .eams-header {
-            background: white;
-            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e2e8f0;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
             flex-shrink: 0;
         }
         
         .eams-header h2 {
             font-size: 1.25rem;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin: 0;
         }
         
         .user-badge {
-            background: #f1f5f9;
-            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: #475569;
         }
         
         /* Breadcrumbs */
         .breadcrumbs {
-            padding: 10px 24px;
-            background: #f8fafc;
-            font-size: 0.75rem;
-            color: #64748b;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
             flex-shrink: 0;
-        }
-        
-        .breadcrumbs span {
-            color: #475569;
         }
         
         /* Step Indicator */
@@ -410,16 +354,16 @@
             flex-shrink: 0;
         }
         
-        /* Status Bar */
+        /* EAMS Status Bar */
         .eams-status-bar {
-            background: #f1f5f9;
-            padding: 6px 20px;
-            font-size: 0.7rem;
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            border-top: 1px solid #e2e8f0;
             flex-shrink: 0;
-            color: #64748b;
         }
         
         /* Loading Overlay */
@@ -554,25 +498,19 @@
 </head>
 <body>
 
-<!-- Modal Header (solo controles, sin título) -->
-<div class="modal-header">
-    <div class="modal-controls">
-        <button class="modal-btn modal-minimize" id="minimizeModalBtn">−</button>
-        <button class="modal-btn modal-maximize" id="maximizeModalBtn">□</button>
-        <button class="modal-close" id="closeModalBtn">✕</button>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="fas fa-cog"></i> Universal Configurator</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
     </div>
 </div>
 
-<!-- EAMS Header -->
-<div class="eams-header">
-    <h2><i class="fas fa-cog"></i> UNIVERSAL CONFIGURATOR</h2>
-    <div class="user-badge" id="userDisplay">Loading...</div>
-</div>
-
-<!-- Breadcrumbs -->
+<!-- EAMS STANDARD BREADCRUMBS -->
 <div class="breadcrumbs" id="breadcrumbs">
-    <span>🏠 Home</span> > 
-    <span>⚙️ SYSTEM</span> > 
+    <span>🏠 Home</span> &gt; 
+    <span>SYSTEM</span> &gt; 
     <span>Universal Configurator</span>
 </div>
 
@@ -658,9 +596,10 @@
     <button class="btn-primary" id="nextBtn">NEXT ▶</button>
 </div>
 
+<!-- EAMS STANDARD FOOTER -->
 <div class="eams-status-bar">
-    <span>🟢 SYSTEM: <strong id="sysStatus">READY</strong></span>
-    <span>UNIVERSAL CONFIGURATOR · EAMS v2.0</span>
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <!-- Toast y Loading Overlay -->
@@ -673,6 +612,30 @@
 </div>
 
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
     // ============================================
     // CONFIGURACIÓN Y CONSTANTES
     // ============================================
@@ -709,11 +672,13 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
-                currentUser = sessionData.userEmail || 'Unknown User';
-                document.getElementById('userDisplay').innerText = currentUser;
+                currentUser = sessionData.email || 'Unknown User';
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = currentUser;
             } catch(e) {
                 console.error('Error parsing session:', e);
-                document.getElementById('userDisplay').innerText = 'User';
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = 'User';
             }
         }
     }
@@ -744,14 +709,6 @@
     
     function closeModal() {
         window.parent.postMessage('closeIframe', '*');
-    }
-    
-    function minimizeModal() {
-        window.parent.postMessage('minimizeIframe', '*');
-    }
-    
-    function maximizeModal() {
-        window.parent.postMessage('maximizeIframe', '*');
     }
     
     async function callApi(action, args = []) {
@@ -790,11 +747,11 @@
     function updateBreadcrumbs(step) {
         const bread = document.getElementById('breadcrumbs');
         if (step === 1) {
-            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span>`;
+            bread.innerHTML = `<span>🏠 Home</span> > <span>SYSTEM</span> > <span>Universal Configurator</span>`;
         } else if (step === 2 && selectedModule) {
-            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span>`;
+            bread.innerHTML = `<span>🏠 Home</span> > <span>SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span>`;
         } else if (step === 3 && selectedModule && selectedEntity) {
-            bread.innerHTML = `<span>🏠 Home</span> > <span>⚙️ SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span> > <span>${selectedEntity.name}</span>`;
+            bread.innerHTML = `<span>🏠 Home</span> > <span>SYSTEM</span> > <span>Universal Configurator</span> > <span>${selectedModule}</span> > <span>${selectedEntity.name}</span>`;
         }
     }
     
@@ -824,6 +781,27 @@
         document.getElementById('confirmNo').onclick = function() {
             document.body.removeChild(overlay);
         };
+    }
+    
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA CONFIGURACIÓN
+    // ============================================
+    async function logConfigChange(entityId, action, details) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[SYS] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit(action, 'SYS', entityId, '', '', '', details);
+            console.log('[SYS] Config change logged:', entityId, action);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('SYS', action, details.substring(0, 200));
+            }
+        } catch (err) {
+            console.warn('[SYS] Failed to log config change:', err);
+        }
     }
     
     // ============================================
@@ -877,9 +855,6 @@
     async function loadModule(module) {
         showLoading('Loading SETUP_' + module + '...');
         selectedModule = module;
-        
-        // Log apertura
-        console.log('Logger.foresight: SYS, OPEN_WIZARD, User opened Configurator - Module: ' + module);
         
         try {
             const response = await callApi('SYS_loadModuleSetup', [module]);
@@ -1178,7 +1153,7 @@
             headerHtml += `<th>${headerContent}</th>`;
         }
         headerHtml += '<th style="width: 80px;">Actions</th>';
-        headerHtml += '</tr></thead><tbody>';
+        headerHtml += '<tr></thead><tbody>';
         
         for (let idx = 0; idx < currentEntityRows.length; idx++) {
             const row = currentEntityRows[idx];
@@ -1410,21 +1385,24 @@
         
         showLoading('Saving entity...');
         
-        // Log audit
-        console.log('Logger.audit: CHANGE_CONFIG, SYS, ' + selectedEntity.id + ', User modified entity');
-        
         try {
             const response = await callApi('SYS_saveEntityData', [selectedModule, selectedEntity.id, currentEntityRows]);
             
             hideLoading();
             if (response.success) {
+                // Registrar log de auditoría
+                const changesCount = currentEntityRows.length;
+                logConfigChange(selectedEntity.id, 'MODIFY_CONFIG', `Entity ${selectedEntity.id} modified - ${changesCount} rows saved`).catch(e => console.warn('[SYS] Config log failed:', e));
+                
                 showToast(response.message, false);
-                // Recargar módulo para actualizar datos
                 await loadModule(selectedModule);
             } else {
                 showToast('Error: ' + response.error, true);
             }
         } catch (error) {
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('SYS', 'saveConfig', error.message).catch(e => console.warn('[SYS] Error log failed:', e));
+            }
             hideLoading();
             showToast('Server error: ' + error.message, true);
         }
@@ -1572,12 +1550,19 @@
                 const response = await callApi('SYS_saveBudgetYear', [currentBudgetYear, newAmounts]);
                 hideLoading();
                 if (response.success) {
+                    // Registrar log de auditoría para budget
+                    const totalBudget = newAmounts.reduce((a,b) => a + b, 0);
+                    logConfigChange('budget', 'MODIFY_BUDGET', `Budget ${currentBudgetYear} saved - Total: $${totalBudget}`).catch(e => console.warn('[SYS] Budget log failed:', e));
+                    
                     showToast(response.message, false);
                     await loadBudgetData();
                 } else {
                     showToast('Error: ' + response.error, true);
                 }
             } catch (error) {
+                if (window.Logger && typeof window.Logger.error === 'function') {
+                    window.Logger.error('SYS', 'saveBudget', error.message).catch(e => console.warn('[SYS] Error log failed:', e));
+                }
                 hideLoading();
                 showToast('Error: ' + error.message, true);
             }
@@ -1587,10 +1572,6 @@
     // ============================================
     // EVENT LISTENERS
     // ============================================
-    
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    document.getElementById('minimizeModalBtn').addEventListener('click', minimizeModal);
-    document.getElementById('maximizeModalBtn').addEventListener('click', maximizeModal);
     
     document.getElementById('prevBtn').addEventListener('click', () => {
         if (currentStep === 2) {
@@ -1640,6 +1621,7 @@
     // Inicializar
     loadApiUrlAndUser();
     goToStep(1);
+    document.getElementById('footer-status').innerText = 'Ready';
 </script>
 </body>
 </html>
