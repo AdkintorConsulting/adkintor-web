@@ -13,111 +13,151 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: white;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .asset-dispatcher {
-            padding: 1rem;
+        .stk-dispatcher {
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
         }
         
         .dispatcher-header {
-            margin-bottom: 2rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
         
         .dispatcher-header h2 {
             color: #1a1a2e;
             font-size: 1.8rem;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         
-        .date-info {
-            color: #666;
-            font-size: 0.9rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid #e0e0e0;
+        .dispatcher-header h2 i {
+            margin-right: 12px;
+            color: #1a1a2e;
         }
         
-        .asset-buttons-grid {
+        /* Grid para 3 botones - centrados */
+        .stk-buttons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            margin: 2rem 0;
+            margin: 0 auto;
+            max-width: 900px;
         }
         
-        .asset-card {
-            background: #f8f9fa;
+        .stk-card {
+            background: white;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.5rem 1rem;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.25s ease;
             cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        .asset-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        .stk-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
             border-color: #1a1a2e;
+            background: #fafafc;
         }
         
-        .asset-card i {
-            font-size: 2.5rem;
+        .stk-card i {
+            font-size: 2.2rem;
             color: #1a1a2e;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
         }
         
-        .asset-card h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
+        .stk-card h3 {
+            color: #1a1a2e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            letter-spacing: 0.3px;
         }
         
-        .asset-card p {
-            color: #666;
-            font-size: 0.85rem;
+        .stk-card p {
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 400;
         }
         
-        @media (max-width: 768px) {
-            .asset-buttons-grid {
+        /* Responsive */
+        @media (max-width: 700px) {
+            .stk-buttons-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
+                max-width: 350px;
+            }
+            
+            .stk-dispatcher {
+                padding: 1.5rem;
             }
             
             .dispatcher-header h2 {
-                font-size: 1.4rem;
+                font-size: 1.5rem;
             }
+        }
+        
+        /* Toast message */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .toast.error {
+            background: #dc3545;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="asset-dispatcher">
+    <div class="stk-dispatcher">
         <div class="dispatcher-header">
             <h2>
                 <i class="fas fa-boxes"></i> INVENTORY CONTROL CENTER
             </h2>
-            <div class="date-info" id="dateInfo"></div>
         </div>
         
-        <div class="asset-buttons-grid">
-            <div class="asset-card" id="viewerBtn">
+        <div class="stk-buttons-grid">
+            <div class="stk-card" id="viewerBtn">
                 <i class="fas fa-eye"></i>
                 <h3>INVENTORY VIEWER</h3>
-                <p>Read-only catalog and stock viewer</p>
+                <p>Read-only catalog viewer</p>
             </div>
             
-            <div class="asset-card" id="inventoryBtn">
+            <div class="stk-card" id="inventoryBtn">
                 <i class="fas fa-boxes"></i>
                 <h3>INVENTORY HUB</h3>
-                <p>Manage stock levels, catalog, adjustments</p>
+                <p>Manage stock and catalog</p>
             </div>
             
-            <div class="asset-card" id="procurementBtn">
+            <div class="stk-card" id="procurementBtn">
                 <i class="fas fa-truck"></i>
                 <h3>PROCUREMENT HUB</h3>
-                <p>Create requisitions, receive POs, track procurement</p>
+                <p>Requisitions and POs</p>
             </div>
         </div>
     </div>
+    
+    <div id="toast" class="toast"></div>
     
 <script>
     // Función hasPermission
@@ -140,14 +180,12 @@
         let permissions = [];
         
         try {
-            // Intentar obtener permisos del padre
             permissions = await waitForPermissions();
             console.log('Permisos obtenidos del padre:', permissions);
         } catch(e) {
             console.error('Error loading permissions from parent:', e);
         }
         
-        // Si no hay permisos del padre, ir a la API directamente
         if (!permissions || permissions.length === 0) {
             try {
                 const session = JSON.parse(localStorage.getItem('adkintor_session'));
@@ -187,23 +225,7 @@
         }
     })();   
 
-    // Display current date and week number
-    function displayDateInfo() {
-        const dateInfo = document.getElementById('dateInfo');
-        if (dateInfo) {
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = now.toLocaleDateString('en-US', options);
-            
-            const startDate = new Date(now.getFullYear(), 0, 1);
-            const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
-            const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
-            
-            dateInfo.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
-        }
-    }
-    
-    // Mostrar mensaje temporal (si existe la función)
+    // Mostrar mensaje temporal
     function showMessage(message, isError = false) {
         const toast = document.getElementById('toast');
         if (toast) {
@@ -216,38 +238,35 @@
         }
     }
         
-        // Abrir modales
-        function openViewer() {
-            window.parent.postMessage({
-                type: 'openIframeModal',
-                title: 'Inventory Viewer',
-                url: '/app/modules/eams/stk_viewer.html'
-            }, '*');
-        }
-        
-        function openInventory() {
-            window.parent.postMessage({
-                type: 'openIframeModal',
-                title: 'Inventory Hub',
-                url: '/app/modules/eams/stk_inventory.html'
-            }, '*');
-        }
-        
-        function openProcurement() {
-            window.parent.postMessage({
-                type: 'openIframeModal',
-                title: 'Procurement Hub',
-                url: '/app/modules/eams/stk_procurement.html'
-            }, '*');
-        }
-        
-        // Configurar botones
-        document.getElementById('viewerBtn').onclick = openViewer;
-        document.getElementById('inventoryBtn').onclick = openInventory;
-        document.getElementById('procurementBtn').onclick = openProcurement;
-        
-        // Inicializar
-        displayDateInfo();
-    </script>
+    // Abrir modales
+    function openViewer() {
+        window.parent.postMessage({
+            type: 'openIframeModal',
+            title: 'Inventory Viewer',
+            url: '/app/modules/eams/stk_viewer.html'
+        }, '*');
+    }
+    
+    function openInventory() {
+        window.parent.postMessage({
+            type: 'openIframeModal',
+            title: 'Inventory Hub',
+            url: '/app/modules/eams/stk_inventory.html'
+        }, '*');
+    }
+    
+    function openProcurement() {
+        window.parent.postMessage({
+            type: 'openIframeModal',
+            title: 'Procurement Hub',
+            url: '/app/modules/eams/stk_procurement.html'
+        }, '*');
+    }
+    
+    // Configurar botones
+    document.getElementById('viewerBtn').onclick = openViewer;
+    document.getElementById('inventoryBtn').onclick = openInventory;
+    document.getElementById('procurementBtn').onclick = openProcurement;
+</script>
 </body>
 </html>
