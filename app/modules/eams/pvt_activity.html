@@ -19,6 +19,8 @@
             height: 100vh;
             overflow: hidden;
             color: #1e293b;
+            display: flex;
+            flex-direction: column;
         }
 
         /* EAMS Design System */
@@ -37,11 +39,56 @@
             --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
         }
 
+        /* EAMS Header */
+        .eams-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            flex-shrink: 0;
+        }
+
+        .eams-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .user-badge {
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        /* EAMS Status Bar */
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
         /* Layout */
         .app-container {
             display: flex;
-            height: 100vh;
-            width: 100%;
+            flex: 1;
+            overflow: hidden;
         }
 
         /* Sidebar */
@@ -619,6 +666,22 @@
 </head>
 <body>
 
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="fas fa-tools"></i> Activity Master Builder</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>PREVENTIVE</span> &gt;
+    <span>Activity Builder</span>
+</div>
+
 <div class="app-container">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -701,7 +764,37 @@
     </div>
 </div>
 
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
     // ============================================
     // API CONFIGURATION
     // ============================================
@@ -714,6 +807,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
                 console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
@@ -732,7 +827,7 @@
         
         const response = await fetch(PROXY_URL, {
             method: 'POST',
-            headers: { 'Content-Type':application/json' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 targetUrl: EAMS_API_URL,
                 payload: { action: action, args: args }
@@ -832,7 +927,7 @@
 
     async function updateDashboard() {
         try {
-            const stats = await callApi('PVT_getProgressStats');
+            const stats = await callApi('PVT_getProgressStats', []);
             if (stats) {
                 document.getElementById('stat-total').innerText = stats.total || 0;
                 document.getElementById('stat-done').innerText = stats.done || 0;
@@ -846,7 +941,7 @@
 
     async function loadHierarchyTree() {
         try {
-            const tree = await callApi('PVT_getHierarchyTree');
+            const tree = await callApi('PVT_getHierarchyTree', []);
             let html = '';
             for (let area in tree) {
                 html += `<div class="tree-area" onclick="toggleArea(this)">${escapeHtml(area)}</div>`;
@@ -986,7 +1081,7 @@
         if (!tbody) return;
         
         if (!existingTasks || existingTasks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.32</td></tr>';
             return;
         }
         
