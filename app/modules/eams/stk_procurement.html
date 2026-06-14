@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-CA">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -17,115 +17,61 @@
             background: #f1f5f9;
             color: #1e293b;
             line-height: 1.4;
-        }
-
-        .eams-modal {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
+        /* EAMS Header */
         .eams-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            padding: 18px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #8b5cf6;
-            flex-wrap: wrap;
-            gap: 12px;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            flex-shrink: 0;
         }
 
         .eams-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: -0.3px;
+            font-size: 1.25rem;
+            margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .user-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
+        /* Breadcrumbs */
         .breadcrumbs {
             padding: 12px 24px;
-            background: #ffffff;
-            font-size: 0.7rem;
-            color: #475569;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 500;
-        }
-
-        .breadcrumbs span {
-            color: #8b5cf6;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 40px;
+            background: #eef2f5;
             font-size: 0.8rem;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            align-items: center;
-            gap: 10px;
-            max-width: 350px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
         }
 
-        .toast-success { background: #059669; border-left: 4px solid #34d399; }
-        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
-        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
-        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
+        /* EAMS Status Bar */
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(3px);
+            justify-content: space-between;
+            flex-shrink: 0;
         }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .spinner {
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #8b5cf6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .eams-body {
+            flex: 1;
             padding: 24px;
         }
 
@@ -149,7 +95,7 @@
 
         .tracker-header {
             padding: 16px;
-            background: #8b5cf6;
+            background: #1a56db;
             color: white;
         }
 
@@ -265,8 +211,8 @@
         }
 
         .action-tab.active {
-            border-bottom-color: #8b5cf6;
-            color: #8b5cf6;
+            border-bottom-color: #1a56db;
+            color: #1a56db;
             background: white;
         }
 
@@ -295,7 +241,7 @@
             font-size: 0.7rem;
             font-weight: 800;
             text-transform: uppercase;
-            color: #8b5cf6;
+            color: #1a56db;
             margin-bottom: 6px;
         }
 
@@ -327,10 +273,10 @@
         }
 
         .btn-primary {
-            background: #8b5cf6;
+            background: #1a56db;
             color: white;
         }
-        .btn-primary:hover { background: #7c3aed; transform: translateY(-1px); }
+        .btn-primary:hover { background: #1e3a8a; transform: translateY(-1px); }
 
         .btn-secondary {
             background: #e2e8f0;
@@ -358,8 +304,8 @@
 
         .btn-add {
             background: none;
-            border: 1px dashed #8b5cf6;
-            color: #8b5cf6;
+            border: 1px dashed #1a56db;
+            color: #1a56db;
             padding: 6px 12px;
             margin: 8px 0;
             cursor: pointer;
@@ -399,22 +345,12 @@
         }
 
         .custom-suggestions div:hover {
-            background: #f3e8ff;
+            background: #eef2ff;
         }
 
         .invalid-sku {
             border-color: #dc2626 !important;
             background-color: #fef2f2 !important;
-        }
-
-        .status-bar {
-            background: #f1f5f9;
-            padding: 10px 24px;
-            font-size: 0.7rem;
-            color: #475569;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
         }
 
         .modal-overlay {
@@ -437,7 +373,7 @@
             max-width: 92%;
             max-height: 80vh;
             overflow-y: auto;
-            border-top: 4px solid #8b5cf6;
+            border-top: 4px solid #1a56db;
         }
 
         .modal-header {
@@ -454,104 +390,182 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-success { background: #059669; border-left: 4px solid #34d399; }
+        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
+        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
+        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(3px);
+        }
+
+        .loading-content {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #1a56db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-<div class="eams-modal">
-    <div class="eams-header">
-        <h2><i class="bi bi-cart-plus"></i> PROCUREMENT HUB</h2>
-        <div class="user-badge" id="user-display">Loading...</div>
-    </div>
-    <div class="breadcrumbs">
-        <i class="bi bi-house-door-fill"></i> Inicio > <span>INVENTORY</span> > Procurement Hub
-    </div>
 
-    <div class="eams-body">
-        <div class="split-container">
-            <!-- LEFT PANEL: TRACKER -->
-            <div class="tracker-panel">
-                <div class="tracker-header">
-                    <h3><i class="bi bi-list-ul"></i> Procurement Tracker</h3>
-                    <div class="filter-bar">
-                        <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." onkeyup="handleSearchInput()">
-                        <div style="display: flex; gap: 8px;">
-                            <select id="monthsFilter" onchange="refreshTracker()">
-                                <option value="1">Last Month</option>
-                                <option value="6">Last 6 Months</option>
-                                <option value="12">Last 12 Months</option>
-                                <option value="24">Last 24 Months</option>
-                                <option value="0">All Time</option>
-                            </select>
-                            <select id="statusFilter" onchange="refreshTracker()">
-                                <option value="ALL">All Status</option>
-                            </select>
-                        </div>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="bi bi-cart-plus"></i> Procurement Hub</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>INVENTORY</span> &gt;
+    <span>Procurement Hub</span>
+</div>
+
+<div class="eams-body">
+    <div class="split-container">
+        <!-- LEFT PANEL: TRACKER -->
+        <div class="tracker-panel">
+            <div class="tracker-header">
+                <h3><i class="bi bi-list-ul"></i> Procurement Tracker</h3>
+                <div class="filter-bar">
+                    <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." onkeyup="handleSearchInput()">
+                    <div style="display: flex; gap: 8px;">
+                        <select id="monthsFilter" onchange="refreshTracker()">
+                            <option value="1">Last Month</option>
+                            <option value="6">Last 6 Months</option>
+                            <option value="12">Last 12 Months</option>
+                            <option value="24">Last 24 Months</option>
+                            <option value="0">All Time</option>
+                        </select>
+                        <select id="statusFilter" onchange="refreshTracker()">
+                            <option value="ALL">All Status</option>
+                        </select>
                     </div>
                 </div>
-                <div class="tracker-list" id="trackerList"><div style="text-align:center;padding:40px;">Loading...</div></div>
             </div>
+            <div class="tracker-list" id="trackerList"><div style="text-align:center;padding:40px;">Loading...</div></div>
+        </div>
 
-            <!-- RIGHT PANEL -->
-            <div class="action-panel">
-                <div class="action-tabs">
-                    <div class="action-tab active" data-tab="new" onclick="activateTab('new')">📝 New Request</div>
-                    <div class="action-tab" data-tab="receive" onclick="activateTab('receive')">📥 Process Receipt</div>
+        <!-- RIGHT PANEL -->
+        <div class="action-panel">
+            <div class="action-tabs">
+                <div class="action-tab active" data-tab="new" onclick="activateTab('new')">📝 New Request</div>
+                <div class="action-tab" data-tab="receive" onclick="activateTab('receive')">📥 Process Receipt</div>
+            </div>
+            <div class="action-content">
+                <div id="empty-state" class="empty-state" style="display:none;"><i class="bi bi-hand-index-thumb"></i><p>Select a tab above to start</p></div>
+                
+                <!-- TAB: NEW REQUEST -->
+                <div id="tab-new">
+                    <h4>Create Requisition / PO</h4>
+                    <form id="reqForm">
+                        <div class="row"><div class="form-group"><label>Reference number</label><input type="text" id="reqId" placeholder="Optional internal reference"></div>
+                        <div class="form-group"><label>PO Number</label><input type="text" id="poNumber" placeholder="PO number"></div></div>
+                        <div class="row"><div class="form-group"><label>Vendor / Supplier *</label><div style="position:relative"><input type="text" id="vendor" required autocomplete="off"><div id="vendorSuggestions" class="custom-suggestions" style="display:none;"></div></div></div>
+                        <div class="form-group"><label>Payment Method *</label><select id="paymentMethod" required><option value="">-- Select one --</option></select></div></div>
+                        <div class="row"><div class="form-group"><label>Issue Date</label><input type="date" id="issueDate"></div>
+                        <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
+                        <div class="row"><div class="form-group"><label>Budget Area *</label><select id="budgetArea"><option value="">-- Select area --</option></select></div>
+                        <div class="form-group"><label>General Ledger</label><input type="text" id="budgetCode" readonly placeholder="Auto-filled"></div></div>
+                        <div class="form-group"><label>Items</label>
+                            <table class="items-table" id="reqItemsTable"><thead><tr><th style="width:100px">Type</th><th style="width:140px">SKU/Code</th><th style="width:220px">Description</th><th style="width:70px">Qty</th><th style="width:150px">Unit Price</th><th style="width:30px"></th></tr></thead><tbody id="reqItemsBody"></tbody></table>
+                            <button type="button" class="btn-add" onclick="addReqItem()">+ Add Item</button>
+                        </div>
+                        <div class="form-group"><label>Notes / Justification</label><textarea id="reqNotes" rows="2"></textarea></div>
+                        <div class="btn-container"><button type="button" class="btn-secondary" onclick="clearReqForm()">Clear</button>
+                        <button type="button" class="btn-primary" onclick="submitRequisition()">Save Requisition</button></div>
+                    </form>
                 </div>
-                <div class="action-content">
-                    <div id="empty-state" class="empty-state" style="display:none;"><i class="bi bi-hand-index-thumb"></i><p>Select a tab above to start</p></div>
-                    
-                    <!-- TAB: NEW REQUEST -->
-                    <div id="tab-new">
-                        <h4>Create Requisition / PO</h4>
-                        <form id="reqForm">
-                            <div class="row"><div class="form-group"><label>Reference number</label><input type="text" id="reqId" placeholder="Optional internal reference"></div>
-                            <div class="form-group"><label>PO Number</label><input type="text" id="poNumber" placeholder="PO number"></div></div>
-                            <div class="row"><div class="form-group"><label>Vendor / Supplier *</label><div style="position:relative"><input type="text" id="vendor" required autocomplete="off"><div id="vendorSuggestions" class="custom-suggestions" style="display:none;"></div></div></div>
-                            <div class="form-group"><label>Payment Method *</label><select id="paymentMethod" required><option value="">-- Select one --</option></select></div></div>
-                            <div class="row"><div class="form-group"><label>Issue Date</label><input type="date" id="issueDate"></div>
-                            <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
-                            <div class="row"><div class="form-group"><label>Budget Area *</label><select id="budgetArea"><option value="">-- Select area --</option></select></div>
-                            <div class="form-group"><label>General Ledger</label><input type="text" id="budgetCode" readonly placeholder="Auto-filled"></div></div>
-                            <div class="form-group"><label>Items</label>
-                                <table class="items-table" id="reqItemsTable"><thead><tr><th style="width:100px">Type</th><th style="width:140px">SKU/Code</th><th style="width:220px">Description</th><th style="width:70px">Qty</th><th style="width:150px">Unit Price</th><th style="width:30px"></th></tr></thead><tbody id="reqItemsBody"></tbody></table>
-                                <button type="button" class="btn-add" onclick="addReqItem()">+ Add Item</button>
-                            </div>
-                            <div class="form-group"><label>Notes / Justification</label><textarea id="reqNotes" rows="2"></textarea></div>
-                            <div class="btn-container"><button type="button" class="btn-secondary" onclick="clearReqForm()">Clear</button>
-                            <button type="button" class="btn-primary" onclick="submitRequisition()">Save Requisition</button></div>
-                        </form>
-                    </div>
-                    
-                    <!-- TAB: PROCESS RECEIPT -->
-                    <div id="tab-receive" style="display:none;">
-                        <h4>Process Material Receipt</h4>
-                        <div class="po-search-container"><input type="text" id="poSearchInput" placeholder="Search by PO Number..."><button class="btn-primary" onclick="searchPOForReceipt()">🔍 SEARCH</button></div>
-                        <div id="receiveSelectionMsg" style="margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:10px">Enter a PO number above.</div>
-                        <form id="receiptForm" style="display:none">
-                            <div class="row"><div class="form-group"><label>PO Number</label><input type="text" id="receiptPONumber" readonly></div>
-                            <div class="form-group"><label>Vendor</label><input type="text" id="receiptVendor" readonly></div></div>
-                            <div class="row"><div class="form-group"><label>Payment Method</label><input type="text" id="receiptPaymentMethod" readonly></div>
-                            <div class="form-group"><label>Status</label><input type="text" id="receiptStatus" readonly></div></div>
-                            <div class="row"><div class="form-group"><label>Receipt Date</label><input type="date" id="receiptDate"></div>
-                            <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
-                            <div class="form-group"><label>Items Received</label><div id="receiptItemsContainer"></div></div>
-                            <div class="form-group"><label>Delivery Note / Comments</label><textarea id="receiptNotes" rows="2"></textarea></div>
-                            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px;">
-                                <button type="button" class="btn-secondary" onclick="cancelCurrentPO()" style="background:#f87171;">❌ Cancel PO</button>
-                                <button type="button" class="btn-secondary" onclick="forceCloseCurrentPO()" style="background:#fbbf24;">🔒 Force Close</button>
-                                <button type="button" class="btn-primary" onclick="submitReceipt()">Confirm Receipt</button>
-                            </div>
-                        </form>
-                    </div>
+                
+                <!-- TAB: PROCESS RECEIPT -->
+                <div id="tab-receive" style="display:none;">
+                    <h4>Process Material Receipt</h4>
+                    <div class="po-search-container"><input type="text" id="poSearchInput" placeholder="Search by PO Number..."><button class="btn-primary" onclick="searchPOForReceipt()">🔍 SEARCH</button></div>
+                    <div id="receiveSelectionMsg" style="margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:10px">Enter a PO number above.</div>
+                    <form id="receiptForm" style="display:none">
+                        <div class="row"><div class="form-group"><label>PO Number</label><input type="text" id="receiptPONumber" readonly></div>
+                        <div class="form-group"><label>Vendor</label><input type="text" id="receiptVendor" readonly></div></div>
+                        <div class="row"><div class="form-group"><label>Payment Method</label><input type="text" id="receiptPaymentMethod" readonly></div>
+                        <div class="form-group"><label>Status</label><input type="text" id="receiptStatus" readonly></div></div>
+                        <div class="row"><div class="form-group"><label>Receipt Date</label><input type="date" id="receiptDate"></div>
+                        <div class="form-group"><label>&nbsp;</label><div style="font-size:0.7rem;color:#666;padding-top:8px;">Leave empty for today</div></div></div>
+                        <div class="form-group"><label>Items Received</label><div id="receiptItemsContainer"></div></div>
+                        <div class="form-group"><label>Delivery Note / Comments</label><textarea id="receiptNotes" rows="2"></textarea></div>
+                        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px;">
+                            <button type="button" class="btn-secondary" onclick="cancelCurrentPO()" style="background:#f87171;">❌ Cancel PO</button>
+                            <button type="button" class="btn-secondary" onclick="forceCloseCurrentPO()" style="background:#fbbf24;">🔒 Force Close</button>
+                            <button type="button" class="btn-primary" onclick="submitReceipt()">Confirm Receipt</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="status-bar"><span>Status: <strong id="footer-status">Ready</strong></span><span>EAMS v26 · Procurement Hub</span></div>
 </div>
 
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
+<!-- Toast -->
 <div id="toast" class="toast"></div>
-<div id="loadingOverlay" class="loading-overlay" style="display:none;"><div class="loading-content"><div class="spinner"></div><div>Processing...</div></div></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <div>Processing...</div>
+    </div>
+</div>
 
 <!-- Modales -->
 <div id="detailModal" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>PO Details</h3><button class="btn-close" onclick="closeModal('detailModal')">&times;</button></div><div class="modal-body" id="detailModalContent"></div></div></div>
@@ -563,6 +577,33 @@
 <div id="modalForceClosePO" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3>🔒 FORCE CLOSE PO</h3><button class="btn-close" onclick="closeModal('modalForceClosePO')">&times;</button></div><div class="modal-body"><p id="modalForceClosePOMsg"></p><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn-secondary" onclick="resolveModal('modalForceClosePO', false)">Cancel</button><button class="btn-primary" onclick="resolveModal('modalForceClosePO', true)">Confirm</button></div></div></div></div>
 
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
 
@@ -572,6 +613,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) { console.error(e); }
         }
     }
@@ -592,6 +635,7 @@
     function showToast(msg, type='info') { const t=document.getElementById('toast'); t.className=`toast toast-${type}`; t.innerHTML=`<i class="bi bi-${type==='success'?'check-circle':(type==='error'?'x-circle':'info-circle')}"></i> ${msg}`; t.style.display='flex'; setTimeout(()=>t.style.display='none',4000); }
     function showLoading(msg) { const ov=document.getElementById('loadingOverlay'); ov.querySelector('.loading-content').innerHTML=`<div class="spinner"></div><div>${msg}</div>`; ov.style.display='flex'; }
     function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     // ============================================
     // FUNCIONES DE LOGGING PARA PROCUREMENT
@@ -603,7 +647,7 @@
         }
         
         try {
-            const details = `PO ${poNumber} creada | Proveedor: ${vendor} | Total: $${totalAmount}`;
+            const details = `PO ${poNumber} created | Vendor: ${vendor} | Total: $${totalAmount}`;
             await window.Logger.audit('CREATE_PO', 'STK', poNumber, '', '', '', details);
             console.log('[STK] PO creation logged:', poNumber);
             
@@ -622,7 +666,7 @@
         }
         
         try {
-            const details = `Recepción PO ${poNumber} | ${itemsReceived} items | Total: $${totalValue}`;
+            const details = `PO ${poNumber} receipt | ${itemsReceived} items | Total: $${totalValue}`;
             await window.Logger.audit('RECEIVE_STOCK', 'STK', poNumber, '', '', '', details);
             console.log('[STK] PO receipt logged:', poNumber);
             
@@ -641,15 +685,14 @@
         }
         
         try {
-            await window.Logger.audit('DELETE', 'STK', poNumber, '', '', '', `PO cancelada: ${reason}`);
+            await window.Logger.audit('DELETE', 'STK', poNumber, '', '', '', `PO cancelled: ${reason}`);
             console.log('[STK] PO cancellation logged:', poNumber);
         } catch (err) {
             console.warn('[STK] Failed to log PO cancellation:', err);
         }
     }
-    // ============================================
-    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
+    // Modal promise helpers
     let modalResolve = null;
     function showModalPromise(modalId) { return new Promise((resolve) => { modalResolve = resolve; document.getElementById(modalId).style.display = 'flex'; }); }
     function resolveModal(modalId, value) { document.getElementById(modalId).style.display = 'none'; if(modalResolve) { modalResolve(value); modalResolve = null; } }
@@ -694,9 +737,9 @@
             if(result && result.success) {
                 const header = result.header;
                 const items = result.items || [];
-                let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;"><div><strong>PO:</strong> ${escapeHtml(header.poNumber)}</div><div><strong>Vendor:</strong> ${escapeHtml(header.vendor)}</div><div><strong>Status:</strong> ${escapeHtml(header.status)}</div><div><strong>Date:</strong> ${escapeHtml(header.issueDate)}</div></div><h4>Items</h4><table style="width:100%;border-collapse:collapse;"><tr style="background:#f8fafc;"><th>SKU</th><th>Description</th><th>Ordered</th><th>Received</th><th>Unit Price</th></tr>`;
-                items.forEach(i => { html += `<tr><td>${escapeHtml(i.sku)}</td><td>${escapeHtml(i.description)}</td><td>${i.qtyOrdered||0}</td><td>${i.qtyReceived||0}</td><td>$${(i.unitPrice||0).toFixed(2)}</td></tr>`; });
-                html += `</table>`;
+                let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;"><div><strong>PO:</strong> ${escapeHtml(header.poNumber)}</div><div><strong>Vendor:</strong> ${escapeHtml(header.vendor)}</div><div><strong>Status:</strong> ${escapeHtml(header.status)}</div><div><strong>Date:</strong> ${escapeHtml(header.issueDate)}</div></div><h4>Items</h4><table style="width:100%;border-collapse:collapse;"><tr style="background:#f8fafc;"><th>SKU</th><th>Description</th><th>Ordered</th><th>Received</th><th>Unit Price</th></td>`;
+                items.forEach(i => { html += `<tr><td>${escapeHtml(i.sku)}</td><td>${escapeHtml(i.description)}</td><td style="text-align:center">${i.qtyOrdered||0}</td><td style="text-align:center">${i.qtyReceived||0}</td><td style="text-align:right">$${(i.unitPrice||0).toFixed(2)}<\/td><\/tr>`; });
+                html += `<\/table>`;
                 document.getElementById('detailModalContent').innerHTML = html;
                 document.getElementById('detailModal').style.display = 'flex';
             } else showToast('PO not found','error');
@@ -816,16 +859,11 @@
         showLoading('Saving...');
         try {
             const res = await callApi('STK_saveProcurementRequisition', [payload]);
-            // ============================================
-            // REGISTRAR LOG DE CREACIÓN DE PO
-            // ============================================
             const totalAmount = items.reduce((sum, item) => sum + (item.qty * item.unitPrice), 0);
             const finalPoNumber = res.poNumber || poNumber || 'N/A';
             if (finalPoNumber !== 'N/A') {
                 logPOCreation(finalPoNumber, vendor, totalAmount, currentUser).catch(e => console.warn('[STK] PO log failed:', e));
             }
-            // ============================================
-            
             showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading();
         } catch(err) { hideLoading(); showToast(err.message,'error'); }
             if (window.Logger && typeof window.Logger.error === 'function') {
@@ -838,9 +876,6 @@
         showLoading('Processing...');
         try { const res = await callApi('STK_saveDirectPurchase', [payload]); showToast(res.message,'success'); clearReqForm(); refreshTracker(); hideLoading(); } 
         catch(err) { hideLoading(); showToast(err.message,'error'); }
-            if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('STK', 'submitRequisition', err.message).catch(e => console.warn('[STK] Error log failed:', e));
-            }
     }
 
     async function createTemporaryPO(ctx) {
@@ -874,7 +909,7 @@
                 let itemsHtml = '<table style="width:100%;border-collapse:collapse;"><thead><tr><th>SKU</th><th>Description</th><th>Ordered</th><th>Received</th><th>Pending</th><th>Receive Now</th><th>Unit Price</th></tr></thead><tbody>';
                 items.forEach((item,idx) => {
                     const ordered = item.qtyOrdered||0, received = item.qtyReceived||0, pending = ordered-received, price = item.unitPrice||0;
-                    itemsHtml += `<tr><td>${escapeHtml(item.sku)}</td><td>${escapeHtml(item.description)}</td><td style="text-align:center">${ordered}</td><td style="text-align:center">${received}</td><td style="text-align:center">${pending}</td><td style="text-align:center"><input type="number" id="recQty_${idx}" value="0" min="0" max="${pending}" style="width:70px" onchange="updateReceiptTotal()"></td><td style="text-align:right">$${price.toFixed(2)}</td></tr>`;
+                    itemsHtml += `<tr><td style="text-align:left">${escapeHtml(item.sku)}<\/td><td style="text-align:left">${escapeHtml(item.description)}<\/td><td style="text-align:center">${ordered}<\/td><td style="text-align:center">${received}<\/td><td style="text-align:center">${pending}<\/td><td style="text-align:center"><input type="number" id="recQty_${idx}" value="0" min="0" max="${pending}" style="width:70px" onchange="updateReceiptTotal()"><\/td><td style="text-align:right">$${price.toFixed(2)}<\/td><\/tr>`;
                 });
                 itemsHtml += '</tbody></table><div style="text-align:right;margin-top:10px"><strong>Total: $<span id="receiptTotal">0.00</span></strong></div>';
                 document.getElementById('receiptItemsContainer').innerHTML = itemsHtml;
@@ -896,13 +931,8 @@
         showLoading('Processing receipt...');
         try {
             const res = await callApi('STK_saveProcurementReceipt', [payload]);
-            // ============================================
-            // REGISTRAR LOG DE RECEPCIÓN DE PO
-            // ============================================
             const totalReceived = items.reduce((sum, item) => sum + (item.qtyReceived * item.unitPrice), 0);
             logPOReceipt(selectedPO.poNumber, items.length, totalReceived, currentUser).catch(e => console.warn('[STK] Receipt log failed:', e));
-            // ============================================
-            
             showToast(res.message,'success');
             document.getElementById('receiptForm').style.display='none';
             document.getElementById('poSearchInput').value='';
@@ -919,26 +949,15 @@
             showLoading('Cancelling...');
             try { 
                 const res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber]);
-                
-                // ============================================
-                // REGISTRAR LOG DE CANCELACIÓN DE PO
-                // ============================================
-                logPOCancellation(selectedPO.poNumber, 'Cancelada por usuario', currentUser).catch(e => console.warn('[STK] Cancel log failed:', e));
-                // ============================================
-                
+                logPOCancellation(selectedPO.poNumber, 'Cancelled by user', currentUser).catch(e => console.warn('[STK] Cancel log failed:', e));
                 showToast(res.message,'success'); 
                 refreshTracker(); 
                 hideLoading(); 
             } 
             catch(err) { 
-                // ============================================
                 if (window.Logger && typeof window.Logger.error === 'function') {
                     window.Logger.error('STK', 'cancelPO', err.message).catch(e => console.warn('[STK] Error log failed:', e));
                 }
-               if (window.Logger && typeof window.Logger.error === 'function') {
-                   window.Logger.error('STK', 'submitRequisition', err.message).catch(e => console.warn('[STK] Error log failed:', e));
-               }
-                // ============================================
                 hideLoading(); 
                 showToast(err.message,'error'); 
             }
@@ -962,7 +981,7 @@
         try {
             const email = await callApi('STK_getCurrentUserEmail');
             currentUser = email || 'User';
-            document.getElementById('user-display').innerText = currentUser;
+            document.getElementById('userDisplay').innerText = currentUser;
             const configRaw = await callApi('STK_getProcurementHubConfig');
             const config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
             budgetAreas = config.budgetAreas || [];
