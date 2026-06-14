@@ -7,6 +7,10 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Technical Execution Portal - EAMS</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     /* Reset and Base Styles */
     * {
@@ -26,75 +30,42 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
 
-    /* Modal Container */
-    .modal-container {
-      min-height: 100%;
-      background: white;
-    }
-
-    /* Header */
-    .modal-header {
-      background: #202124;
-      color: white;
-      padding: 16px 24px;
+    /* EAMS Header */
+    .eams-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: #1a1a2e;
+      color: white;
+      padding: 16px 24px;
+      flex-shrink: 0;
     }
 
-    .modal-header h2 {
-      font-size: 18px;
-      font-weight: 600;
+    .eams-header h2 {
+      font-size: 1.25rem;
       margin: 0;
     }
 
-    .close-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-
-    .close-btn:hover {
+    .user-badge {
+      font-size: 0.8rem;
       background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
     }
 
     /* Breadcrumbs */
     .breadcrumbs {
       padding: 12px 24px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      font-size: 13px;
-    }
-
-    .breadcrumbs a {
-      color: #004a99;
-      text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumbs span {
-      color: #6c757d;
+      background: #eef2f5;
+      font-size: 0.8rem;
+      color: #555;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
     }
 
     /* Wizard Header */
     .wizard-header {
-      background: #202124;
+      background: #1a1a2e;
       color: white;
       padding: 20px;
       text-align: center;
@@ -123,7 +94,7 @@
 
     .progress-bar {
       height: 6px;
-      background: #004a99;
+      background: #1a56db;
       transition: width 0.4s ease-in-out;
       width: 20%;
     }
@@ -166,7 +137,7 @@
     }
 
     .info-item b {
-      color: #004a99;
+      color: #1a56db;
       display: block;
       font-size: 14px;
       margin-top: 2px;
@@ -188,7 +159,7 @@
     .history-box {
       grid-column: span 2;
       background: #e8f0fe;
-      border: 1px solid #004a99;
+      border: 1px solid #1a56db;
       padding: 10px;
       border-radius: 8px;
       font-size: 12px;
@@ -227,8 +198,8 @@
     }
 
     select:focus, input:focus, textarea:focus {
-      border-color: #004a99;
-      box-shadow: 0 0 0 2px rgba(0, 74, 153, 0.1);
+      border-color: #1a56db;
+      box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.1);
     }
 
     select.error, input.error, textarea.error {
@@ -259,7 +230,7 @@
     .labour-display {
       text-align: center;
       font-weight: bold;
-      color: #004a99;
+      color: #1a56db;
       margin-bottom: 15px;
       background: #e8f0fe;
       padding: 10px;
@@ -292,7 +263,7 @@
       width: 18px;
       height: 18px;
       border: 2px solid #f3f3f3;
-      border-top: 2px solid #004a99;
+      border-top: 2px solid #1a56db;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       display: none;
@@ -345,7 +316,7 @@
       background: #e8f0fe;
       padding: 15px;
       border-radius: 8px;
-      border: 1px solid #004a99;
+      border: 1px solid #1a56db;
       margin-bottom: 15px;
       display: none;
     }
@@ -375,7 +346,7 @@
       border-radius: 8px;
       margin-bottom: 8px;
       border: 1px solid #dadce0;
-      border-left: 5px solid #004a99;
+      border-left: 5px solid #1a56db;
     }
 
     .remove-btn {
@@ -421,7 +392,7 @@
 
     .task-row .task-equipment {
       font-size: 10px;
-      color: #004a99;
+      color: #1a56db;
       font-weight: 600;
       text-transform: uppercase;
       margin-bottom: 4px;
@@ -440,7 +411,7 @@
     }
 
     .btn-next {
-      background: #004a99;
+      background: #1a56db;
       color: white;
     }
 
@@ -450,7 +421,7 @@
     }
 
     .btn-back {
-      background: #455a64;
+      background: #6c757d;
       color: white;
     }
 
@@ -472,19 +443,19 @@
     }
 
     .closure-panel label {
-      color: #004a99;
+      color: #1a56db;
     }
 
-    /* Footer */
+    /* EAMS Status Bar */
     .eams-status-bar {
-      background: #f1f2f6;
-      color: #7f8c8d;
-      padding: 12px 24px;
+      background: #f8f9fa;
+      padding: 8px 24px;
       font-size: 0.75rem;
+      color: #6c757d;
+      border-top: 1px solid #eee;
       display: flex;
       justify-content: space-between;
-      border-top: 1px solid #dcdde1;
-      font-weight: 600;
+      flex-shrink: 0;
     }
 
     /* Toast Notifications */
@@ -512,7 +483,7 @@
 
     .toast.success { border-left-color: #2e7d32; }
     .toast.error { border-left-color: #b52b27; }
-    .toast.info { border-left-color: #004a99; }
+    .toast.info { border-left-color: #1a56db; }
 
     .toast-icon { font-size: 20px; }
     .toast-message { flex: 1; font-size: 14px; color: #2c3e50; }
@@ -555,7 +526,7 @@
       width: 40px;
       height: 40px;
       border: 3px solid #e9ecef;
-      border-top-color: #004a99;
+      border-top-color: #1a56db;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin: 0 auto 16px;
@@ -591,190 +562,191 @@
 </head>
 <body>
 
-<div class="modal-container">
-  <!-- Header -->
-  <div class="modal-header">
-    <h2>🔧 TECHNICAL EXECUTION PORTAL</h2>
-    <button class="close-btn" onclick="closeModal()">✕</button>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+  <h2><i class="fas fa-tools"></i> Technical Execution Portal</h2>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
   </div>
+</div>
 
-  <!-- Breadcrumbs -->
-  <div class="breadcrumbs">
-    <a href="#" onclick="window.parent.postMessage('navigateTo', '*')">Inicio</a> &gt;
-    <span>WORK ORDERS</span> &gt;
-    <span>Technical Report</span>
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span>WORK ORDERS</span> &gt;
+  <span>Technical Report</span>
+</div>
+
+<!-- Wizard Header -->
+<div class="wizard-header">
+  <h3 id="stepHeader">Step 1: Context Selection</h3>
+  <div class="header-buttons">
+    <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> Back</button>
+    <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step <i class="fas fa-arrow-right"></i></button>
   </div>
+</div>
+<div class="progress-bar" id="progressBar"></div>
 
-  <!-- Wizard Header -->
-  <div class="wizard-header">
-    <h3 id="stepHeader">Step 1: Context Selection</h3>
-    <div class="header-buttons">
-      <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)">← Back</button>
-      <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step →</button>
-    </div>
-  </div>
-  <div class="progress-bar" id="progressBar"></div>
-
-  <!-- Content -->
-  <div class="content">
-    <!-- STEP 1: Context -->
-    <div class="step active" id="step1">
-      <div class="wo-select-container">
-        <label>Active Work Order</label>
-        <select id="woSelect" onchange="loadWOContext()">
-          <option value="">-- Loading WOs --</option>
-        </select>
-        <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:12px 20px; font-size:13px; flex:0;" onclick="printWorkOrder()">🖨️ Print Form</button>
-      </div>
-      <div id="woInfo" style="display:none;">
-        <div class="info-grid">
-          <div class="info-item">Requester <b id="info-requester"></b></div>
-          <div class="info-item">Created <b id="outDate"></b></div>
-          <div class="info-item">Type <b id="outMaintType" style="color:#ef6c00"></b></div>
-          <div class="info-item">Priority <b id="info-priority"></b></div>
-          <div class="info-item">Location <b id="outArea"></b></div>
-          <div class="info-item">Equipment <b id="outEqName"></b></div>
-          <div class="work-description-box">
-            <label style="color:#ef6c00; margin-bottom:5px;">Original Request Description</label>
-            <span id="info-description"></span>
-          </div>
-          <div class="history-box">
-            <label style="color:#004a99; font-size:10px;">Previous Shift Logs</label>
-            <div id="info-comments"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 2: Component Selection -->
-    <div class="step" id="step2">
-      <label id="assetLabel">Specific Component Intervened <span class="required">*</span></label>
-      <select id="assetSelect" data-required="true" onchange="validateStep()">
-        <option value="">-- Select Component --</option>
+<!-- Content -->
+<div class="content">
+  <!-- STEP 1: Context -->
+  <div class="step active" id="step1">
+    <div class="wo-select-container">
+      <label>Active Work Order</label>
+      <select id="woSelect" onchange="loadWOContext()">
+        <option value="">-- Loading WOs --</option>
       </select>
-      <p id="assetHelpText" style="font-size: 12px; color: #666;">* If the specific component is not listed, select the main Equipment.</p>
+      <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:12px 20px; font-size:13px; flex:0;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
     </div>
-
-    <!-- STEP 3: Labor & Technical Report (Dynamic Container) -->
-    <div class="step" id="step3">
-      <div id="step3DynamicContainer"></div>
-    </div>
-
-    <!-- STEP 4: Spare Parts -->
-    <div class="step" id="step4">
-      <label>Spare Parts Search</label>
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." oninput="triggerSearch(this.value)">
-          <div id="searchSpinner" class="search-spinner"></div>
+    <div id="woInfo" style="display:none;">
+      <div class="info-grid">
+        <div class="info-item">Requester <b id="info-requester"></b></div>
+        <div class="info-item">Created <b id="outDate"></b></div>
+        <div class="info-item">Type <b id="outMaintType" style="color:#ef6c00"></b></div>
+        <div class="info-item">Priority <b id="info-priority"></b></div>
+        <div class="info-item">Location <b id="outArea"></b></div>
+        <div class="info-item">Equipment <b id="outEqName"></b></div>
+        <div class="work-description-box">
+          <label style="color:#ef6c00; margin-bottom:5px;">Original Request Description</label>
+          <span id="info-description"></span>
         </div>
-        <div id="searchResults" class="search-results"></div>
-      </div>
-
-      <div id="qtyPanel" class="qty-panel">
-        <label id="selectedPartLabel" style="color:#004a99"></label>
-        <div class="qty-flex">
-          <input type="number" id="partQty" placeholder="Quantity" min="1">
-          <button class="btn" style="background:#004a99; color:white; flex:0;" onclick="confirmAddPart()">ADD TO WO</button>
-          <button class="btn" style="background:none; color:#b52b27; flex:0;" onclick="cancelAdd()">Cancel</button>
-        </div>
-      </div>
-      
-      <div class="cart-container">
-        <label>Parts consumed in this shift</label>
-        <div id="materialCart">
-          <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;">No parts selected yet.</p>
+        <div class="history-box">
+          <label style="color:#1a56db; font-size:10px;">Previous Shift Logs</label>
+          <div id="info-comments"></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- STEP 5: Closure -->
-    <div class="step" id="step5">
-      <div style="background:#f1f3f4; padding:15px; border-radius:8px; margin-bottom:20px;">
-        <label style="color:#004a99;">🔒 CLOSURE ACTION</label>
-        <div id="pmClosureSummary" style="display:none; background:#e8f0fe; padding:10px; border-radius:8px; margin-top:10px;">
-          <strong>📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText">--</span>
-          <div style="margin-top:10px;">
-            <label><input type="checkbox" id="supervisorConfirmPM"> I confirm the preventive tasks were completed as reported</label>
-          </div>
-        </div>
+  <!-- STEP 2: Component Selection -->
+  <div class="step" id="step2">
+    <label id="assetLabel">Specific Component Intervened <span class="required">*</span></label>
+    <select id="assetSelect" data-required="true" onchange="validateStep()">
+      <option value="">-- Select Component --</option>
+    </select>
+    <p id="assetHelpText" style="font-size: 12px; color: #666;">* If the specific component is not listed, select the main Equipment.</p>
+  </div>
+
+  <!-- STEP 3: Labor & Technical Report (Dynamic Container) -->
+  <div class="step" id="step3">
+    <div id="step3DynamicContainer"></div>
+  </div>
+
+  <!-- STEP 4: Spare Parts -->
+  <div class="step" id="step4">
+    <label>Spare Parts Search</label>
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." oninput="triggerSearch(this.value)">
+        <div id="searchSpinner" class="search-spinner"></div>
       </div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
 
-      <div id="actionButtons" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-        <button class="btn" style="background: #1b5e20; color:white;" id="btnFinish" onclick="prepareClosure('COMPLETED')">✅ CLOSE (Completed)</button>
-        <button class="btn" style="background: #e65100; color:white;" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')">🔄 FOLLOW UP (Create new WO)</button>
-        <button class="btn" style="background: #455a64; color:white;" id="btnReunify" onclick="prepareClosure('REUNIFY')">💾 STILL WORKING (Asset Down)</button>
+    <div id="qtyPanel" class="qty-panel">
+      <label id="selectedPartLabel" style="color:#1a56db"></label>
+      <div class="qty-flex">
+        <input type="number" id="partQty" placeholder="Quantity" min="1">
+        <button class="btn" style="background:#1a56db; color:white; flex:0;" onclick="confirmAddPart()"><i class="fas fa-plus"></i> ADD TO WO</button>
+        <button class="btn" style="background:none; color:#b52b27; flex:0;" onclick="cancelAdd()">Cancel</button>
       </div>
+    </div>
+    
+    <div class="cart-container">
+      <label>Parts consumed in this shift</label>
+      <div id="materialCart">
+        <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;">No parts selected yet.</p>
+      </div>
+    </div>
+  </div>
 
-      <!-- Panel: COMPLETED -->
-      <div id="completedPanel" class="closure-panel">
-        <label style="color:#004a99;">✅ COMPLETED</label>
+  <!-- STEP 5: Closure -->
+  <div class="step" id="step5">
+    <div style="background:#f1f3f4; padding:15px; border-radius:8px; margin-bottom:20px;">
+      <label style="color:#1a56db;"><i class="fas fa-lock"></i> CLOSURE ACTION</label>
+      <div id="pmClosureSummary" style="display:none; background:#e8f0fe; padding:10px; border-radius:8px; margin-top:10px;">
+        <strong>📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText">--</span>
         <div style="margin-top:10px;">
+          <label><input type="checkbox" id="supervisorConfirmPM"> I confirm the preventive tasks were completed as reported</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="actionButtons" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+      <button class="btn" style="background: #1b5e20; color:white;" id="btnFinish" onclick="prepareClosure('COMPLETED')"><i class="fas fa-check-circle"></i> CLOSE (Completed)</button>
+      <button class="btn" style="background: #e65100; color:white;" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')"><i class="fas fa-code-branch"></i> FOLLOW UP (Create new WO)</button>
+      <button class="btn" style="background: #6c757d; color:white;" id="btnReunify" onclick="prepareClosure('REUNIFY')"><i class="fas fa-save"></i> STILL WORKING (Asset Down)</button>
+    </div>
+
+    <!-- Panel: COMPLETED -->
+    <div id="completedPanel" class="closure-panel">
+      <label style="color:#1a56db;"><i class="fas fa-check-circle"></i> COMPLETED</label>
+      <div style="margin-top:10px;">
+        <label>Root Cause <span class="required">*</span></label>
+        <select id="completedRootCause" data-required="true" onchange="validateConfirmButton('COMPLETED')">
+          <option value="">-- Select Cause --</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn" style="background:#1b5e20; color:white; flex:1;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
+        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+      </div>
+    </div>
+
+    <!-- Panel: FOLLOW UP -->
+    <div id="followUpPanel" class="closure-panel">
+      <label style="color:#1a56db;"><i class="fas fa-code-branch"></i> FOLLOW UP</label>
+      <div style="margin-top:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <input type="checkbox" id="fuNeedsSparePartPurchase" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
+          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs Spare Part Purchase</label>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <input type="checkbox" id="fuNeedsExternalService" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
+          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs External Service Coordination</label>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <input type="checkbox" id="fuNeedsOther" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="toggleOtherComment(); validateConfirmButton('FOLLOW_UP')">
+          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Other (requires comment)</label>
+        </div>
+        <div id="fuOtherCommentDiv" style="display:none; margin-top:10px; margin-left:25px;">
+          <label style="text-transform:none; font-weight:500; margin-bottom:5px;">Please describe the additional requirement:</label>
+          <textarea id="fuOtherComment" rows="3" style="width:100%; margin-top:5px;" placeholder="Describe what else is needed... (minimum 10 characters)" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
+          <div id="fuOtherCommentWarning" style="color:#b52b27; font-size:12px; margin-top:5px; display:none;">Please enter at least 10 characters</div>
+        </div>
+        <div style="margin-top:15px;">
           <label>Root Cause <span class="required">*</span></label>
-          <select id="completedRootCause" data-required="true" onchange="validateConfirmButton('COMPLETED')">
+          <select id="fuRootCause" data-required="true" style="margin-bottom:15px;" onchange="validateConfirmButton('FOLLOW_UP')">
             <option value="">-- Select Cause --</option>
           </select>
         </div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
-          <button class="btn" style="background:#1b5e20; color:white; flex:1;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')">✅ CONFIRM & CLOSE</button>
-          <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()">✕ CANCEL</button>
-        </div>
       </div>
-
-      <!-- Panel: FOLLOW UP -->
-      <div id="followUpPanel" class="closure-panel">
-        <label style="color:#004a99;">🔄 FOLLOW UP</label>
-        <div style="margin-top:10px;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-            <input type="checkbox" id="fuNeedsSparePartPurchase" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-            <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs Spare Part Purchase</label>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-            <input type="checkbox" id="fuNeedsExternalService" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-            <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs External Service Coordination</label>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-            <input type="checkbox" id="fuNeedsOther" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="toggleOtherComment(); validateConfirmButton('FOLLOW_UP')">
-            <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Other (requires comment)</label>
-          </div>
-          <div id="fuOtherCommentDiv" style="display:none; margin-top:10px; margin-left:25px;">
-            <label style="text-transform:none; font-weight:500; margin-bottom:5px;">Please describe the additional requirement:</label>
-            <textarea id="fuOtherComment" rows="3" style="width:100%; margin-top:5px;" placeholder="Describe what else is needed... (minimum 10 characters)" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
-            <div id="fuOtherCommentWarning" style="color:#b52b27; font-size:12px; margin-top:5px; display:none;">Please enter at least 10 characters</div>
-          </div>
-          <div style="margin-top:15px;">
-            <label>Root Cause <span class="required">*</span></label>
-            <select id="fuRootCause" data-required="true" style="margin-bottom:15px;" onchange="validateConfirmButton('FOLLOW_UP')">
-              <option value="">-- Select Cause --</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
-          <button class="btn" style="background:#e65100; color:white; flex:1;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')">🔄 CONFIRM & CREATE FOLLOW UP</button>
-          <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()">✕ CANCEL</button>
-        </div>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn" style="background:#e65100; color:white; flex:1;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
+        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
       </div>
+    </div>
 
-      <!-- Panel: REUNIFY -->
-      <div id="reunifyPanel" class="closure-panel">
-        <label style="color:#004a99;">💾 STILL WORKING (REUNIFY)</label>
-        <div style="margin-top:10px; padding:10px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:4px;">
-          <strong>⚠️ Equipment will be marked as DOWN</strong><br>
-          This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.
-        </div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
-          <button class="btn" style="background:#455a64; color:white; flex:1;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')">💾 CONFIRM & CONTINUE WORKING</button>
-          <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()">✕ CANCEL</button>
-        </div>
+    <!-- Panel: REUNIFY -->
+    <div id="reunifyPanel" class="closure-panel">
+      <label style="color:#1a56db;"><i class="fas fa-save"></i> STILL WORKING (REUNIFY)</label>
+      <div style="margin-top:10px; padding:10px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:4px;">
+        <strong>⚠️ Equipment will be marked as DOWN</strong><br>
+        This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.
+      </div>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn" style="background:#6c757d; color:white; flex:1;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
+        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Footer -->
-  <div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS v2.0</span>
-  </div>
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+  <span>System Status: <strong id="footer-status">Ready</strong></span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <!-- Toast Container -->
@@ -790,6 +762,30 @@
 
 <script>
   // ============================================
+  // RECIBIR MENSAJES DEL PADRE (logo y versión)
+  // ============================================
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[iframe] Logo loaded from parent');
+      }
+    }
+    
+    if (data.type === 'SET_VERSION' && data.version) {
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[iframe] Version set to:', data.version);
+      }
+    }
+  });
+
+  // ============================================
   // API CONFIGURATION
   // ============================================
   const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
@@ -801,6 +797,8 @@
       try {
         const sessionData = JSON.parse(session);
         EAMS_API_URL = sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
         if (!EAMS_API_URL) {
           throw new Error('eamsApiUrl not found in session');
         }
@@ -842,7 +840,6 @@
   let isSubmitting = false;
   const stepTitles = ["Context Selection", "Component Selection", "Labor & Technical Report", "Spare Parts Consumption", "Job Closure"];
   
-  // Variables for preventive
   let pmTasksCompleted = 0;
   let pmTotalTasks = 0;
   let windowPmTasksLoadAttempted = false;
@@ -876,31 +873,6 @@
     if (overlay) overlay.style.display = 'none';
   }
 
-  // ============================================
-  // FUNCIÓN DE LOGGING PARA EJECUCIÓN/CAMBIO DE WO
-  // ============================================
-  async function logWOExecution(woId, action, details = {}) {
-    if (!window.Logger || typeof window.Logger.audit !== 'function') {
-      console.warn('[WO] Logger not available, skipping log');
-      return;
-    }
-    
-    try {
-      // Usamos logChange para cambios de estado durante ejecución
-      await window.Logger.audit('CHANGE_WO', 'WO', woId, 'Status', '', '', 
-        `Acción: ${action} | ${JSON.stringify(details).substring(0, 200)}`);
-      console.log('[WO] WO execution logged:', woId, action);
-      
-      if (window.Logger.foresight) {
-        await window.Logger.foresight('WO', 'WO_EXECUTED', 
-          `WO ${woId} - Acción: ${action} - Tareas: ${details.tasksCompleted || 0}/${details.totalTasks || 0}`);
-      }
-    } catch (err) {
-      console.warn('[WO] Failed to log WO execution:', err);
-    }
-  }
-  // ============================================
-
   function closeModal() {
     window.parent.postMessage('closeIframe', '*');
   }
@@ -924,6 +896,29 @@
     document.querySelectorAll('[data-required="true"]').forEach(field => {
       field.classList.remove('error');
     });
+  }
+
+  // ============================================
+  // FUNCIÓN DE LOGGING PARA EJECUCIÓN/CAMBIO DE WO
+  // ============================================
+  async function logWOExecution(woId, action, details = {}) {
+    if (!window.Logger || typeof window.Logger.audit !== 'function') {
+      console.warn('[WO] Logger not available, skipping log');
+      return;
+    }
+    
+    try {
+      await window.Logger.audit('CHANGE_WO', 'WO', woId, 'Status', '', '', 
+        `Action: ${action} | ${JSON.stringify(details).substring(0, 200)}`);
+      console.log('[WO] WO execution logged:', woId, action);
+      
+      if (window.Logger.foresight) {
+        await window.Logger.foresight('WO', 'WO_EXECUTED', 
+          `WO ${woId} - Action: ${action} - Tasks: ${details.tasksCompleted || 0}/${details.totalTasks || 0}`);
+      }
+    } catch (err) {
+      console.warn('[WO] Failed to log WO execution:', err);
+    }
   }
 
   // ============================================
@@ -1036,16 +1031,16 @@
       
       if (!windowPmTasksLoadAttempted) {
         windowPmTasksLoadAttempted = true;
-        container.innerHTML = '<div style="padding:40px; text-align:center;">Loading preventative tasks...</div>';
+        container.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading preventative tasks...</div>';
         setTimeout(function() {
           if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
-            container.innerHTML = '<div style="padding:40px; text-align:center; color:red;">Error: The tasks could not be loaded. Please go back and select the WO again.</div>';
+            container.innerHTML = '<div style="padding:40px; text-align:center; color:red;"><i class="fas fa-exclamation-triangle"></i> Error: The tasks could not be loaded. Please go back and select the WO again.</div>';
           } else {
             renderPreventiveUI(container);
           }
         }, 2000);
       } else {
-        container.innerHTML = '<div style="padding:40px; text-align:center;">Waiting for tasks... select the WO again if they do not load.</div>';
+        container.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Waiting for tasks... select the WO again if they do not load.</div>';
       }
     } else {
       renderCorrectiveUI(container);
@@ -1068,38 +1063,38 @@
         <div class="task-row">
           <input type="checkbox" class="pm-checkbox" data-idx="${i}" id="pmCheck_${i}">
           <div class="task-content">
-            <div class="task-equipment">🔧 ${escapeHtml(task.equipment || '')}</div>
+            <div class="task-equipment"><i class="fas fa-tools"></i> ${escapeHtml(task.equipment || '')}</div>
             <div class="task-title">${escapeHtml(task.task || '')}</div>
-            <div class="task-standard">📋 Standard: ${escapeHtml(task.standard || 'N/A')}</div>
+            <div class="task-standard"><i class="fas fa-book"></i> Standard: ${escapeHtml(task.standard || 'N/A')}</div>
           </div>
         </div>
       `;
     }
     
     const htmlContent = `
-      <div id="labourDisplay" class="labour-display">Total Labour: 0.00 hours</div>
+      <div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>
       
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
         <div style="flex:1; min-width:200px;">
-          <label>Start Time <span class="required">*</span></label>
+          <label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>
           <input type="datetime-local" id="startTime" data-required="true">
         </div>
         <div style="flex:1; min-width:200px;">
-          <label>End Time <span class="required">*</span></label>
+          <label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>
           <input type="datetime-local" id="endTime" data-required="true">
         </div>
       </div>
       <div id="timeWarning" class="warning-message"></div>
       
       <div style="background:#e8f0fe; padding:15px; border-radius:8px; margin-bottom:20px;">
-        <label style="color:#004a99;">📋 PREVENTIVE MAINTENANCE CHECKLIST</label>
+        <label style="color:#1a56db;"><i class="fas fa-clipboard-list"></i> PREVENTIVE MAINTENANCE CHECKLIST</label>
         <div id="pmSummary" style="font-size:13px; margin-top:8px;">Progress: 0/${pmTotalTasks} tasks completed</div>
       </div>
       <div id="pmTasksList" style="max-height: 350px; overflow-y: auto; border:1px solid #dadce0; border-radius:8px; margin-bottom:20px;">
         ${tasksHtml}
       </div>
       <div style="margin-top:20px;">
-        <label>Technical Findings & Actions Taken <span class="required"></span></label>
+        <label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken</label>
         <textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken..."></textarea>
       </div>
     `;
@@ -1134,10 +1129,10 @@
       
       if (end > start) {
         const diff = (end - start) / 3600000;
-        if (labourDisplay) labourDisplay.innerHTML = `Total Labour: ${diff.toFixed(2)} hours`;
+        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: ${diff.toFixed(2)} hours`;
         if (timeWarning) timeWarning.style.display = 'none';
       } else {
-        if (labourDisplay) labourDisplay.innerHTML = `Total Labour: 0.00 hours`;
+        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: 0.00 hours`;
         if (timeWarning) {
           timeWarning.innerHTML = '⚠️ End time must be after start time';
           timeWarning.style.display = 'block';
@@ -1182,7 +1177,7 @@
     
     const summary = document.getElementById('pmSummary');
     if (summary) {
-      summary.innerHTML = `Progress: ${pmTasksCompleted}/${pmTotalTasks} tasks completed`;
+      summary.innerHTML = `<i class="fas fa-tasks"></i> Progress: ${pmTasksCompleted}/${pmTotalTasks} tasks completed`;
     }
     validatePMStep();
   }
@@ -1198,9 +1193,9 @@
       
       if (end > start) {
         const diff = (end - start) / 3600000;
-        if (labourDisplay) labourDisplay.innerHTML = `Total Labour: ${diff.toFixed(2)} hours`;
+        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: ${diff.toFixed(2)} hours`;
       } else {
-        if (labourDisplay) labourDisplay.innerHTML = `Total Labour: 0.00 hours`;
+        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: 0.00 hours`;
       }
     }
     validateCorrective();
@@ -1244,19 +1239,19 @@
 
   function renderCorrectiveUI(container) {
     container.innerHTML = `
-      <div id="labourDisplay" class="labour-display">Total Labour: 0.00 hours</div>
+      <div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <div style="flex:1; min-width:200px;">
-          <label>Start Time <span class="required">*</span></label>
+          <label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>
           <input type="datetime-local" id="startTime" data-required="true">
         </div>
         <div style="flex:1; min-width:200px;">
-          <label>End Time <span class="required">*</span></label>
+          <label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>
           <input type="datetime-local" id="endTime" data-required="true">
         </div>
       </div>
       <div id="timeWarning" class="warning-message"></div>
-      <label>Technical Findings & Actions Taken <span class="required">*</span></label>
+      <label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>
       <textarea id="reportNotes" rows="5" data-required="true" placeholder="Describe what you found and how you fixed it... (min. 10 characters)"></textarea>
     `;
     
@@ -1481,7 +1476,7 @@
             return `
               <div class="search-item" onclick='selectPartForQty(${JSON.stringify(p.id)}, ${JSON.stringify(p.name)}, ${p.price}, ${p.stock})'>
                 <span><b>${escapeHtml(p.id)}</b> ${displayName}</span>
-                <span class="stock-tag">Stock: ${p.stock}</span>
+                <span class="stock-tag"><i class="fas fa-boxes"></i> Stock: ${p.stock}</span>
               </div>
             `;
           }).join('');
@@ -1498,7 +1493,7 @@
     DB.tempPart = { id: id, name: name, price: price, stock: stock };
     document.getElementById('searchResults').style.display = 'none';
     document.getElementById('partSearch').value = '';
-    document.getElementById('selectedPartLabel').innerText = `Adding: ${name} (In Stock: ${stock})`;
+    document.getElementById('selectedPartLabel').innerHTML = `<i class="fas fa-box"></i> Adding: ${name} (In Stock: ${stock})`;
     document.getElementById('qtyPanel').style.display = 'block';
     document.getElementById('partQty').focus();
   }
@@ -1534,13 +1529,13 @@
   function renderCart() {
     const container = document.getElementById('materialCart');
     if (DB.cart.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;">No parts selected yet.</p>';
+      container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;"><i class="fas fa-shopping-cart"></i> No parts selected yet.</p>';
       return;
     }
     container.innerHTML = DB.cart.map((item, idx) => `
       <div class="cart-item">
         <span><b>${item.qty}x</b> ${escapeHtml(item.name)} <small style="color:#5f6368">[${escapeHtml(item.id)}]</small></span>
-        <span class="remove-btn" onclick="removeItem(${idx})">✕</span>
+        <span class="remove-btn" onclick="removeItem(${idx})"><i class="fas fa-trash-alt"></i></span>
       </div>
     `).join('');
   }
@@ -1877,9 +1872,6 @@
       
       hideLoading();
       
-      // ============================================
-      // REGISTRAR LOG DE EJECUCIÓN DE WO
-      // ============================================
       const executionDetails = {
         action: action,
         tasksCompleted: pmTasksCompleted || 0,
@@ -1888,7 +1880,6 @@
         rootCause: rootCause || 'N/A'
       };
       logWOExecution(folio, action, executionDetails).catch(e => console.warn('[WO] Execution log failed:', e));
-      // ============================================
       
       showToast('Report processed successfully!', 'success');
       document.getElementById('footer-status').innerText = 'Report Saved';
@@ -1935,13 +1926,9 @@
       DB.selectedWO = null;
       
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
         window.Logger.error('WO', 'executeWorkOrder', error.message).catch(e => console.warn('[WO] Error log failed:', e));
       }
-      // ============================================
       
       hideLoading();
       showToast('Error: ' + error.message, 'error');
