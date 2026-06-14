@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAMS INTELLIGENCE - Consulting Intelligence</title>
+  <title>FORESIGHT - Consulting Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
   <style>
-    /* Core Styles de Adkintor INTELLIGENCE */
+    /* FORESIGHT Dark Mode Theme */
     :root {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-card: #1e293b;
-      --bg-hover: #334155;
-      --border-color: #334155;
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111827;
+      --bg-card: #1a1a2e;
+      --bg-hover: #1f2937;
+      --border-color: #2d2d44;
       --text-primary: #f1f5f9;
       --text-secondary: #94a3b8;
-      --accent-color: #38bdf8;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --info: #38bdf8;
+      --accent-color: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.2);
+      --success: #00e676;
+      --warning: #ffb74d;
+      --danger: #ff5252;
+      --info: #00e5ff;
       --gray: #64748b;
       --border-radius-sm: 8px;
     }
@@ -36,131 +37,72 @@
       overflow: hidden;
     }
     
-    /* Web App Header */
-    .web-app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      border-bottom: 2px solid var(--accent-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    
-    .web-app-header h2 {
-      font-size: 18px;
-      color: var(--accent-color);
-      margin: 0;
-    }
-    
-    .web-app-header h2 i {
-      margin-right: 8px;
-    }
-    
-    .close-modal-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    
-    .close-modal-btn:hover {
-      background: rgba(248, 113, 113, 0.2);
-      color: var(--danger);
-      transform: none;
-    }
-    
-    /* Breadcrumbs */
-    .web-breadcrumbs {
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      font-size: 12px;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .web-breadcrumbs span {
-      color: var(--text-secondary);
-    }
-    
-    .web-breadcrumbs span:last-child {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
-    
-    /* Toast Notifications */
-    .toast-notification {
+    /* Toast Container */
+    #toastContainer {
       position: fixed;
       top: 80px;
       right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
       z-index: 10000;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+    
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border-left: 4px solid var(--info);
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    
+    .toast-close {
+      cursor: pointer;
+      margin-left: auto;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .toast-close:hover { opacity: 1; }
     
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     
-    .toast-success {
-      background: #10b981;
-      color: white;
-      border-left: 4px solid #059669;
-    }
-    
-    .toast-error {
-      background: #ef4444;
-      color: white;
-      border-left: 4px solid #b91c1c;
-    }
-    
-    .toast-info {
-      background: var(--accent-color);
-      color: var(--bg-primary);
-      border-left: 4px solid #0284c7;
-    }
-    
-    .toast-warning {
-      background: var(--warning);
-      color: var(--bg-primary);
-      border-left: 4px solid #d97706;
-    }
-    
     /* Loading Overlay */
-    .adk-loading-overlay {
+    #loadingOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(4px);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 9999;
     }
     
-    .adk-loading-content {
+    .loading-content {
       text-align: center;
-      background: var(--bg-secondary);
+      background: var(--bg-card);
       padding: 30px 40px;
       border-radius: 16px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
     
-    .adk-loading {
+    .loading-spinner {
       width: 40px;
       height: 40px;
       border: 3px solid var(--border-color);
@@ -174,29 +116,65 @@
       to { transform: rotate(360deg); }
     }
     
-    /* Alert */
-    .adk-alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin: 20px;
+    /* EAMS Unified Header */
+    .eams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     
-    .adk-alert-danger {
-      background: rgba(248, 113, 113, 0.2);
-      border-left: 4px solid var(--danger);
-      color: var(--danger);
+    .eams-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
     }
     
-    .adk-alert-info {
-      background: rgba(56, 189, 248, 0.2);
-      border-left: 4px solid var(--accent-color);
+    .eams-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .user-badge {
+      background: rgba(0, 229, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--accent-color);
     }
     
-    .adk-alert-success {
-      background: rgba(74, 222, 128, 0.2);
-      border-left: 4px solid var(--success);
-      color: var(--success);
+    /* Breadcrumbs */
+    .breadcrumbs {
+      padding: 10px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* EAMS Status Bar (Footer) */
+    .eams-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-secondary);
+      position: sticky;
+      bottom: 0;
+      z-index: 1000;
     }
     
     /* Consulting Container */
@@ -204,7 +182,7 @@
       padding: 24px;
       max-width: 1400px;
       margin: 0 auto;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 115px);
       overflow-y: auto;
     }
     
@@ -296,11 +274,12 @@
     .adk-btn-primary:hover {
       opacity: 0.9;
       transform: scale(1.02);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
     
     .adk-btn-success {
       background: var(--success);
-      color: white;
+      color: var(--bg-primary);
     }
     
     .adk-btn-success:hover:not(:disabled) {
@@ -394,9 +373,9 @@
       display: inline-block;
     }
     
-    .status-critical { background: rgba(239,68,68,0.2); color: var(--danger); }
-    .status-warning { background: rgba(245,158,11,0.2); color: var(--warning); }
-    .status-good { background: rgba(16,185,129,0.2); color: var(--success); }
+    .status-critical { background: rgba(255,82,82,0.2); color: var(--danger); }
+    .status-warning { background: rgba(255,183,77,0.2); color: var(--warning); }
+    .status-good { background: rgba(0,230,118,0.2); color: var(--success); }
     
     /* Tables */
     .data-table {
@@ -420,7 +399,7 @@
     }
     
     .data-table tr:hover {
-      background: rgba(56, 189, 248, 0.05);
+      background: rgba(0, 229, 255, 0.05);
     }
     
     /* Alerts */
@@ -431,17 +410,17 @@
     }
     
     .alert-critical {
-      background: rgba(239,68,68,0.15);
+      background: rgba(255,82,82,0.15);
       border-left: 4px solid var(--danger);
     }
     
     .alert-warning {
-      background: rgba(245,158,11,0.15);
+      background: rgba(255,183,77,0.15);
       border-left: 4px solid var(--warning);
     }
     
     .alert-good {
-      background: rgba(16,185,129,0.15);
+      background: rgba(0,230,118,0.15);
       border-left: 4px solid var(--success);
     }
     
@@ -479,17 +458,31 @@
 </head>
 <body>
 
-<!-- WEB APP HEADER -->
-<div class="web-app-header">
-  <h2><i class="fas fa-chalkboard-user"></i> EAMS INTELLIGENCE - Consulting Intelligence</h2>
-  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <div id="loadingMessage">Loading consulting data...</div>
+  </div>
 </div>
 
-<!-- BREADCRUMBS -->
-<div class="web-breadcrumbs">
-  <span>🏠 Home</span> > 
-  <span>📈 INTELLIGENCE</span> > 
-  <span>📊 Consulting Intelligence</span>
+<!-- EAMS Unified Header (FORESIGHT Dark Mode) -->
+<div class="eams-header">
+  <h2><i class="fas fa-chalkboard-user"></i> Consulting Intelligence Dashboard</h2>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+  </div>
+</div>
+
+<!-- Breadcrumbs in English with Home -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span>FORESIGHT</span> &gt;
+  <span>Consulting Intelligence</span>
 </div>
 
 <div class="consulting-container">
@@ -534,153 +527,177 @@
   
   <div id="reportContent">
     <div class="loading">
-      <div class="adk-loading" style="margin: 0 auto 15px;"></div>
+      <div class="loading-spinner" style="margin: 0 auto 15px;"></div>
       <p>Select a year and month, then click Generate Report</p>
     </div>
   </div>
 </div>
 
+<!-- EAMS Status Bar (Footer) -->
+<div class="eams-status-bar">
+  <span>System Status: <strong id="footer-status">Ready</strong></span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
+  // ============================================
+  // GLOBAL VARIABLES
+  // ============================================
   let currentReportData = null;
-  let currentYear = 2026;
-  let currentMonth = 12;
+  let EAMS_API_URL = null;
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  
+  // ============================================
+  // LOAD API URL FROM SESSION
+  // ============================================
+  function loadApiUrl() {
+    const session = localStorage.getItem('adkintor_session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) {
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+        }
+        console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);
+      } catch(e) { 
+        console.error('[CONSULTING] Error parsing session:', e);
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = 'User';
+      }
+    } else {
+      console.warn('[CONSULTING] No session found');
+      const userDisplay = document.getElementById('userDisplay');
+      if (userDisplay) userDisplay.innerText = 'Guest';
+    }
+  }
+  
+  // ============================================
+  // API CALL FUNCTION (via Proxy)
+  // ============================================
+  async function callApi(action, args = []) {
+    if (!EAMS_API_URL) {
+      throw new Error('API URL not configured. Please check your session.');
+    }
+    
+    console.log('[CONSULTING] Calling API:', action, args);
+    
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        targetUrl: EAMS_API_URL, 
+        payload: { action: action, args: args } 
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log('[CONSULTING] API Response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API call failed');
+    }
+    
+    return result.data;
+  }
   
   // ============================================
   // TOAST NOTIFICATION SYSTEM
   // ============================================
   function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
     const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
+    
+    container.appendChild(toast);
+    
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => toast.remove());
     
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
-      setTimeout(() => toast.remove(), 300);
+      if (toast.parentNode) toast.remove();
     }, 4000);
-  }
-  
-  // ============================================
-  // CLOSE MODAL FUNCTION
-  // ============================================
-  function closeModal() {
-    if (window.parent !== window) {
-      window.parent.postMessage({ action: 'closeModal' }, '*');
-    }
-    showToast('Closing module...', 'info');
-    setTimeout(() => {
-      window.close();
-    }, 100);
-  }
-  
-  // ============================================
-  // INTELLIGENCE API COMMUNICATION
-  // ============================================
-  async function callIntelligenceApi(action, args = []) {
-    try {
-      const sessionStr = localStorage.getItem('adkintor_session');
-      if (!sessionStr) {
-        throw new Error('No session found. Please login again.');
-      }
-      const session = JSON.parse(sessionStr);
-      const API_URL = session.intelligenceApiUrl;
-      if (!API_URL) {
-        throw new Error('Intelligence API URL not found in session.');
-      }
-      
-      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-      
-      const response = await fetch(proxyUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl: API_URL,
-          payload: { action: action, args: args }
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'API call error');
-      }
-      return result.data;
-    } catch (error) {
-      console.error('Intelligence API call error:', error);
-      showToast(`Error: ${error.message}`, 'error');
-      throw error;
-    }
   }
   
   // ============================================
   // LOADING OVERLAY FUNCTIONS
   // ============================================
-  function showLoading() {
-    let overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
-    
-    overlay = document.createElement('div');
-    overlay.id = 'adkLoadingOverlay';
-    overlay.className = 'adk-loading-overlay';
-    overlay.innerHTML = `
-      <div class="adk-loading-content">
-        <div class="adk-loading"></div>
-        <div style="color: var(--text-primary); font-size: 14px;">Loading report data...</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
+  function showLoading(message = 'Processing...') {
+    const overlay = document.getElementById('loadingOverlay');
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = message;
+    if (overlay) overlay.style.display = 'flex';
   }
   
   function hideLoading() {
-    const overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
   }
-
+  
   // ============================================
-  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // LOGGING FUNCTIONS (using global Logger)
   // ============================================
-  async function logIntelligenceAction(module, action, details) {
-    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
-      console.warn('[CONSULTING] Logger not available, skipping log');
-      return;
+  async function logForesight(module, action, details) {
+    if (window.Logger && typeof window.Logger.foresight === 'function') {
+      try {
+        await window.Logger.foresight(module, action, details);
+        console.log(`[CONSULTING] Logged: ${module}/${action}`);
+      } catch (err) {
+        console.warn('[CONSULTING] Logger error:', err);
+      }
+    } else {
+      console.log(`[CONSULTING] Log (Logger not available): ${module}/${action} - ${details}`);
+    }
+  }
+  
+  // ============================================
+  // LISTENER FOR LOGO AND VERSION FROM PARENT
+  // ============================================
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[CONSULTING] Logo set from parent');
+      }
     }
     
-    try {
-      await window.Logger.foresight(module, action, details);
-      console.log('[CONSULTING] Intelligence log recorded:', module, action);
-    } catch (err) {
-      console.warn('[CONSULTING] Failed to log intelligence action:', err);
+    if (data.type === 'SET_VERSION' && data.version) {
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[CONSULTING] Version set from parent:', data.version);
+      }
     }
-  }
-  // ============================================
-  
-  function showError(message) {
-    showToast(message, 'error');
-  }
+  });
   
   // ============================================
   // REPORT GENERATION
   // ============================================
   async function generateReport() {
-    const year = parseInt(yearSelect.value);
-    const month = parseInt(monthSelect.value);
+    const year = parseInt(document.getElementById('yearSelect').value);
+    const month = parseInt(document.getElementById('monthSelect').value);
     
-    // ============================================
-    // REGISTRAR GENERACIÓN DE REPORTE
-    // ============================================
-    logIntelligenceAction('CONSULTING', 'GENERATE_REPORT', `Reporte generado para ${month}/${year}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
-    // ============================================
+    await logForesight('CONSULTING', 'GENERATE_REPORT', `Report generated for ${month}/${year}`);
     
-    showLoading();
+    showLoading('Generating report...');
     const reportContainer = document.getElementById('reportContent');
-    reportContainer.innerHTML = '<div class="loading"><div class="adk-loading" style="margin: 0 auto 15px;"></div><p>Loading report data...</p></div>';
+    reportContainer.innerHTML = '<div class="loading"><div class="loading-spinner" style="margin: 0 auto 15px;"></div><p>Loading report data...</p></div>';
     
     try {
-      const data = await callIntelligenceApi('getConsultingReportData', [year, month]);
+      const data = await callApi('getConsultingReportData', [year, month]);
       currentReportData = data;
       renderReport(data);
       const exportBtn = document.getElementById('exportPdfBtn');
@@ -688,16 +705,11 @@
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
         window.Logger.error('CONSULTING', 'generateReport', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
       }
-      // ============================================
-      
       hideLoading();
-      showError('Error: ' + error.message);
+      showToast('Error: ' + error.message, 'error');
       reportContainer.innerHTML = `<div class="alert alert-critical">❌ Error: ${error.message}</div>`;
     }
   }
@@ -711,16 +723,12 @@
       return;
     }
     
-    // ============================================
-    // REGISTRAR EXPORTACIÓN A PDF
-    // ============================================
     const period = `${currentReportData.period?.month || ''}/${currentReportData.period?.year || ''}`;
-    logIntelligenceAction('CONSULTING', 'EXPORT_PDF', `Exportación de reporte de consultoría a PDF - Período: ${period}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
-    // ============================================
+    await logForesight('CONSULTING', 'EXPORT_PDF', `Consulting report PDF export - Period: ${period}`);
     
-    showLoading();
+    showLoading('Generating PDF...');
     try {
-      const result = await callIntelligenceApi('exportConsultingReportToPDF', [currentReportData]);
+      const result = await callApi('exportConsultingReportToPDF', [currentReportData]);
       hideLoading();
       if (result && result.url) {
         window.open(result.url, '_blank');
@@ -729,16 +737,11 @@
         showToast('PDF generation started. Check your Google Drive.', 'info');
       }
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
         window.Logger.error('CONSULTING', 'exportPDF', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
       }
-      // ============================================
-      
       hideLoading();
-      showError('Error generating PDF: ' + error.message);
+      showToast('Error generating PDF: ' + error.message, 'error');
     }
   }
   
@@ -782,12 +785,12 @@
         
         <div class="alert ${summary.topIssues.length > 0 ? 'alert-critical' : 'alert-warning'}">
           <strong>⚠️ Top Issues</strong><br>
-          ${summary.topIssues.map(issue => `• ${issue.assetId}: ${issue.failures} failures (${issue.criticality})`).join('<br>') || 'No major issues detected'}
+          ${summary.topIssues.map(issue => `• ${escapeHtml(issue.assetId)}: ${issue.failures} failures (${issue.criticality})`).join('<br>') || 'No major issues detected'}
         </div>
         
         <div class="alert alert-good">
           <strong>✅ Achievements</strong><br>
-          ${summary.topAchievements.map(ach => `• ${ach}`).join('<br>') || 'No achievements recorded'}
+          ${summary.topAchievements.map(ach => `• ${escapeHtml(ach)}`).join('<br>') || 'No achievements recorded'}
         </div>
       </div>
     `;
@@ -849,7 +852,11 @@
         <thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead>
         <tbody>
           ${financial.topCostAssets.map(asset => `
-            <tr><td><strong>${escapeHtml(asset.name)}</strong></td><td>$${asset.cost.toLocaleString()}</td><td>${asset.criticality}</td></tr>
+            <tr>
+              <td><strong>${escapeHtml(asset.name)}</strong></td>
+              <td>$${asset.cost.toLocaleString()}</td>
+              <td>${escapeHtml(asset.criticality)}</td>
+            </tr>
           `).join('') || '<tr><td colspan="3">No data available</td></tr>'}
         </tbody>
       </table>
@@ -859,7 +866,10 @@
         <thead><tr><th>Category</th><th>Amount</th></tr></thead>
         <tbody>
           ${Object.entries(financial.spendByCategory).map(([cat, amt]) => `
-            <tr><td>${escapeHtml(cat)}</td><td>$${amt.toLocaleString()}</td></tr>
+            <tr>
+              <td>${escapeHtml(cat)}</td>
+              <td>$${amt.toLocaleString()}</td>
+            </tr>
           `).join('') || '<tr><td colspan="2">No data available</td></tr>'}
         </tbody>
       </table>
@@ -962,7 +972,7 @@
             <tr>
               <td><strong>${escapeHtml(asset.name)}</strong></td>
               <td>${asset.failures}</td>
-              <td>${asset.criticality}</td>
+              <td>${escapeHtml(asset.criticality)}</td>
             </tr>
           `).join('') || '<tr><td colspan="3">No failures recorded</td></tr>'}
         </tbody>
@@ -1052,11 +1062,7 @@
           'recommendations': 'Recommendations'
         };
         
-        // ============================================
-        // REGISTRAR CAMBIO DE PESTAÑA
-        // ============================================
-        logIntelligenceAction('CONSULTING', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[CONSULTING] Log failed:', e));
-        // ============================================
+        logForesight('CONSULTING', 'CHANGE_TAB', `User switched to tab: ${tabNames[tabId] || tabId}`);
         
         tabs.forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -1085,18 +1091,13 @@
   // ============================================
   // INITIALIZATION
   // ============================================
-   document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     const yearSelectElem = document.getElementById('yearSelect');
     const monthSelectElem = document.getElementById('monthSelect');
     const generateBtn = document.getElementById('generateBtn');
     const exportPdfBtn = document.getElementById('exportPdfBtn');
-    const closeBtn = document.getElementById('closeModalBtn');
     
-    // ============================================
-    // REGISTRAR APERTURA DEL MÓDULO
-    // ============================================
-    logIntelligenceAction('CONSULTING', 'OPEN_MODULE', 'Usuario accedió a Consulting Intelligence').catch(e => console.warn('[CONSULTING] Log failed:', e));
-    // ============================================
+    logForesight('CONSULTING', 'OPEN_MODULE', 'User accessed Consulting Intelligence');
     
     // Set current date
     const today = new Date();
@@ -1111,8 +1112,13 @@
       exportPdfBtn.addEventListener('click', () => exportPDF());
     }
     
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
+    // Load API URL and initialize
+    loadApiUrl();
+    
+    // Request logo and version from parent
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+      window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
     }
   });
 </script>
