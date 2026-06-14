@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAMS INTELLIGENCE - Inventory Intelligence</title>
+  <title>FORESIGHT - Inventory Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
   <style>
-    /* Core Styles de Adkintor INTELLIGENCE */
+    /* FORESIGHT Dark Mode Theme */
     :root {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-card: #1e293b;
-      --bg-hover: #334155;
-      --border-color: #334155;
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111827;
+      --bg-card: #1a1a2e;
+      --bg-hover: #1f2937;
+      --border-color: #2d2d44;
       --text-primary: #f1f5f9;
       --text-secondary: #94a3b8;
-      --accent-color: #38bdf8;
-      --success: #4ade80;
-      --warning: #fbbf24;
-      --danger: #f87171;
-      --info: #38bdf8;
+      --accent-color: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.2);
+      --success: #00e676;
+      --warning: #ffb74d;
+      --danger: #ff5252;
+      --info: #00e5ff;
       --gray: #64748b;
-      --border-radius-sm: 8px;
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,131 +36,72 @@
       overflow: hidden;
     }
     
-    /* Web App Header */
-    .web-app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      border-bottom: 2px solid var(--accent-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    
-    .web-app-header h2 {
-      font-size: 18px;
-      color: var(--accent-color);
-      margin: 0;
-    }
-    
-    .web-app-header h2 i {
-      margin-right: 8px;
-    }
-    
-    .close-modal-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    
-    .close-modal-btn:hover {
-      background: rgba(248, 113, 113, 0.2);
-      color: var(--danger);
-      transform: none;
-    }
-    
-    /* Breadcrumbs */
-    .web-breadcrumbs {
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      font-size: 12px;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .web-breadcrumbs span {
-      color: var(--text-secondary);
-    }
-    
-    .web-breadcrumbs span:last-child {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
-    
-    /* Toast Notifications */
-    .toast-notification {
+    /* Toast Container */
+    #toastContainer {
       position: fixed;
       top: 80px;
       right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
       z-index: 10000;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+    
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border-left: 4px solid var(--info);
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    
+    .toast-close {
+      cursor: pointer;
+      margin-left: auto;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .toast-close:hover { opacity: 1; }
     
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     
-    .toast-success {
-      background: #10b981;
-      color: white;
-      border-left: 4px solid #059669;
-    }
-    
-    .toast-error {
-      background: #ef4444;
-      color: white;
-      border-left: 4px solid #b91c1c;
-    }
-    
-    .toast-info {
-      background: var(--accent-color);
-      color: var(--bg-primary);
-      border-left: 4px solid #0284c7;
-    }
-    
-    .toast-warning {
-      background: var(--warning);
-      color: var(--bg-primary);
-      border-left: 4px solid #d97706;
-    }
-    
     /* Loading Overlay */
-    .adk-loading-overlay {
+    #loadingOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(4px);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 9999;
     }
     
-    .adk-loading-content {
+    .loading-content {
       text-align: center;
-      background: var(--bg-secondary);
+      background: var(--bg-card);
       padding: 30px 40px;
       border-radius: 16px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
     
-    .adk-loading {
+    .loading-spinner {
       width: 40px;
       height: 40px;
       border: 3px solid var(--border-color);
@@ -174,36 +115,72 @@
       to { transform: rotate(360deg); }
     }
     
-    /* Alert */
-    .adk-alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin: 20px;
+    /* EAMS Unified Header */
+    .eams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     
-    .adk-alert-danger {
-      background: rgba(248, 113, 113, 0.2);
-      border-left: 4px solid var(--danger);
-      color: var(--danger);
+    .eams-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
     }
     
-    .adk-alert-info {
-      background: rgba(56, 189, 248, 0.2);
-      border-left: 4px solid var(--accent-color);
+    .eams-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .user-badge {
+      background: rgba(0, 229, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--accent-color);
     }
     
-    .adk-alert-success {
-      background: rgba(74, 222, 128, 0.2);
-      border-left: 4px solid var(--success);
-      color: var(--success);
+    /* Breadcrumbs */
+    .breadcrumbs {
+      padding: 10px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* EAMS Status Bar (Footer) */
+    .eams-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-secondary);
+      position: sticky;
+      bottom: 0;
+      z-index: 1000;
     }
     
     /* Dashboard Container */
     .dashboard-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 115px);
       padding: 20px;
       background: var(--bg-primary);
       max-width: 1400px;
@@ -216,7 +193,7 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 16px;
-      border-bottom: 2px solid var(--accent-color);
+      border-bottom: 1px solid var(--border-color);
     }
     
     .logo-area h1 { 
@@ -379,7 +356,7 @@
     }
     
     tr:hover {
-      background: rgba(56, 189, 248, 0.05);
+      background: rgba(0, 229, 255, 0.05);
     }
     
     /* Badges */
@@ -391,10 +368,10 @@
       font-weight: 500;
     }
     
-    .adk-badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
-    .adk-badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-    .adk-badge-success { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; }
-    .adk-badge-primary { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+    .adk-badge-danger { background: rgba(255,82,82,0.2); color: #ff5252; border: 1px solid #ff5252; }
+    .adk-badge-warning { background: rgba(255,183,77,0.2); color: #ffb74d; border: 1px solid #ffb74d; }
+    .adk-badge-success { background: rgba(0,230,118,0.2); color: #00e676; border: 1px solid #00e676; }
+    .adk-badge-primary { background: rgba(0,229,255,0.2); color: #00e5ff; border: 1px solid #00e5ff; }
     
     /* Filter bar */
     .filter-bar {
@@ -442,6 +419,7 @@
     .adk-btn-primary:hover {
       opacity: 0.9;
       transform: scale(1.02);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
     
     .adk-btn-secondary {
@@ -462,17 +440,31 @@
 </head>
 <body>
 
-<!-- WEB APP HEADER -->
-<div class="web-app-header">
-  <h2><i class="fas fa-boxes"></i> EAMS INTELLIGENCE - Inventory Intelligence</h2>
-  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <div id="loadingMessage">Loading inventory data...</div>
+  </div>
 </div>
 
-<!-- BREADCRUMBS -->
-<div class="web-breadcrumbs">
-  <span>🏠 Home</span> > 
-  <span>📈 INTELLIGENCE</span> > 
-  <span>📦 Inventory Intelligence</span>
+<!-- EAMS Unified Header (FORESIGHT Dark Mode) -->
+<div class="eams-header">
+  <h2><i class="fas fa-boxes"></i> Inventory Intelligence Dashboard</h2>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+  </div>
+</div>
+
+<!-- Breadcrumbs in English with Home -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span>FORESIGHT</span> &gt;
+  <span>Inventory Intelligence</span>
 </div>
 
 <div class="dashboard-container">
@@ -535,127 +527,157 @@
   </div>
 </div>
 
+<!-- EAMS Status Bar (Footer) -->
+<div class="eams-status-bar">
+  <span>System Status: <strong id="footer-status">Ready</strong></span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
+  // ============================================
+  // GLOBAL VARIABLES
+  // ============================================
   let currentData = null;
   let pendingPOsData = [];
   let obsoletePartsData = [];
+  let EAMS_API_URL = null;
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  
+  // ============================================
+  // LOAD API URL FROM SESSION
+  // ============================================
+  function loadApiUrl() {
+    const session = localStorage.getItem('adkintor_session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) {
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+        }
+        console.log('[STK] API URL loaded:', EAMS_API_URL);
+      } catch(e) { 
+        console.error('[STK] Error parsing session:', e);
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = 'User';
+      }
+    } else {
+      console.warn('[STK] No session found');
+      const userDisplay = document.getElementById('userDisplay');
+      if (userDisplay) userDisplay.innerText = 'Guest';
+    }
+  }
+  
+  // ============================================
+  // API CALL FUNCTION (via Proxy)
+  // ============================================
+  async function callApi(action, args = []) {
+    if (!EAMS_API_URL) {
+      throw new Error('API URL not configured. Please check your session.');
+    }
+    
+    console.log('[STK] Calling API:', action, args);
+    
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        targetUrl: EAMS_API_URL, 
+        payload: { action: action, args: args } 
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log('[STK] API Response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API call failed');
+    }
+    
+    return result.data;
+  }
   
   // ============================================
   // TOAST NOTIFICATION SYSTEM
   // ============================================
   function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
     const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
+    
+    container.appendChild(toast);
+    
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => toast.remove());
     
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
-      setTimeout(() => toast.remove(), 300);
+      if (toast.parentNode) toast.remove();
     }, 4000);
-  }
-  
-  // ============================================
-  // CLOSE MODAL FUNCTION
-  // ============================================
-  function closeModal() {
-    if (window.parent !== window) {
-      window.parent.postMessage({ action: 'closeModal' }, '*');
-    }
-    showToast('Closing module...', 'info');
-    setTimeout(() => {
-      window.close();
-    }, 100);
-  }
-  
-  // ============================================
-  // INTELLIGENCE API COMMUNICATION
-  // ============================================
-  async function callIntelligenceApi(action, args = []) {
-    try {
-      const sessionStr = localStorage.getItem('adkintor_session');
-      if (!sessionStr) {
-        throw new Error('No session found. Please login again.');
-      }
-      const session = JSON.parse(sessionStr);
-      const API_URL = session.intelligenceApiUrl;
-      if (!API_URL) {
-        throw new Error('Intelligence API URL not found in session.');
-      }
-      
-      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-      
-      const response = await fetch(proxyUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl: API_URL,
-          payload: { action: action, args: args }
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'API call error');
-      }
-      return result.data;
-    } catch (error) {
-      console.error('Intelligence API call error:', error);
-      showToast(`Error: ${error.message}`, 'error');
-      throw error;
-    }
   }
   
   // ============================================
   // LOADING OVERLAY FUNCTIONS
   // ============================================
-  function showLoading() {
-    let overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
-    
-    overlay = document.createElement('div');
-    overlay.id = 'adkLoadingOverlay';
-    overlay.className = 'adk-loading-overlay';
-    overlay.innerHTML = `
-      <div class="adk-loading-content">
-        <div class="adk-loading"></div>
-        <div style="color: var(--text-primary); font-size: 14px;">Loading data...</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
+  function showLoading(message = 'Processing...') {
+    const overlay = document.getElementById('loadingOverlay');
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = message;
+    if (overlay) overlay.style.display = 'flex';
   }
   
   function hideLoading() {
-    const overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
   }
-
+  
   // ============================================
-  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // LOGGING FUNCTIONS (using global Logger)
   // ============================================
-  async function logIntelligenceAction(module, action, details) {
-    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
-      console.warn('[STK_INTEL] Logger not available, skipping log');
-      return;
+  async function logForesight(module, action, details) {
+    if (window.Logger && typeof window.Logger.foresight === 'function') {
+      try {
+        await window.Logger.foresight(module, action, details);
+        console.log(`[STK] Logged: ${module}/${action}`);
+      } catch (err) {
+        console.warn('[STK] Logger error:', err);
+      }
+    } else {
+      console.log(`[STK] Log (Logger not available): ${module}/${action} - ${details}`);
+    }
+  }
+  
+  // ============================================
+  // LISTENER FOR LOGO AND VERSION FROM PARENT
+  // ============================================
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[STK] Logo set from parent');
+      }
     }
     
-    try {
-      await window.Logger.foresight(module, action, details);
-      console.log('[STK_INTEL] Intelligence log recorded:', module, action);
-    } catch (err) {
-      console.warn('[STK_INTEL] Failed to log intelligence action:', err);
+    if (data.type === 'SET_VERSION' && data.version) {
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[STK] Version set from parent:', data.version);
+      }
     }
-  }
-  // ============================================
-  
-  function showError(message) {
-    showToast(message, 'error');
-  }
+  });
   
   // ============================================
   // TAB FUNCTION
@@ -672,19 +694,16 @@
   }
   
   // ============================================
-  // LOAD DATA
+  // DATA LOADING FUNCTIONS
   // ============================================
-   async function refreshAllData() {
-    // ============================================
-    // REGISTRAR APERTURA/REFRESCO DEL DASHBOARD
-    // ============================================
-    logIntelligenceAction('STK', 'OPEN_DASHBOARD', 'Usuario accedió a Inventory Intelligence Dashboard').catch(e => console.warn('[STK_INTEL] Log failed:', e));
-    // ============================================
+  async function refreshAllData() {
+    showLoading('Loading inventory data...');
     
-    showLoading();
+    // Log dashboard access
+    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Intelligence Dashboard');
     
     try {
-      const data = await callIntelligenceApi('STK_getIntelligenceData', []);
+      const data = await callApi('STK_getIntelligenceData', []);
       
       if (!data || data.error) {
         showError(data?.error || 'No data received');
@@ -706,17 +725,14 @@
       
       hideLoading();
       showToast('Data loaded successfully', 'success');
-    } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
-      if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('STK_INTEL', 'refreshAllData', error.message).catch(e => console.warn('[STK_INTEL] Error log failed:', e));
-      }
-      // ============================================
       
+      await logForesight('STK', 'DATA_LOADED', `Total SKUs: ${data.summary?.totalSKUs || 0}, Pending POs: ${data.pendingPOs?.length || 0}`);
+    } catch (error) {
       hideLoading();
+      console.error('Load data error:', error);
       showError('Failed to load: ' + error.message);
+      
+      await logForesight('STK', 'DATA_ERROR', error.message);
     }
   }
   
@@ -728,7 +744,7 @@
     
     const summaryHtml = `
       <div class="summary-card"><h3>Total SKUs</h3><div class="value">${data.summary?.totalSKUs || 0}</div></div>
-      <div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value" style="color:#f97316;">${overdueCount + outOfStockCount}</div><div class="sub">${overdueCount} overdue | ${outOfStockCount} out of stock</div></div>
+      <div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value" style="color:var(--warning);">${overdueCount + outOfStockCount}</div><div class="sub">${overdueCount} overdue | ${outOfStockCount} out of stock</div></div>
       <div class="summary-card"><h3>📦 Pending POs</h3><div class="value">${pendingCount}</div></div>
       <div class="summary-card"><h3>💡 Optimizations</h3><div class="value">${optCount}</div></div>
     `;
@@ -739,24 +755,24 @@
     const container = document.getElementById('alertsContent');
     let html = '';
     
-    html += `<h3 style="margin:0 0 12px 0; color:#f97316;">🔴 Critical Overdue Purchase Orders</h3>`;
+    html += `<h3 style="margin:0 0 12px 0; color:var(--warning);">🔴 Critical Overdue Purchase Orders</h3>`;
     if (alerts.overduePOs && alerts.overduePOs.length > 0) {
       html += `<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Overdue</th><th>Items</th><th>Recommendation</th></tr></thead><tbody>`;
       for (const po of alerts.overduePOs) {
         html += `<tr>
           <td><strong>${escapeHtml(po.poNumber)}</strong></td>
           <td>${escapeHtml(po.vendor)}</td>
-          <td style="color:#f97316; font-weight:bold;">${po.daysOverdue}</td>
+          <td style="color:var(--warning); font-weight:bold;">${po.daysOverdue}</td>
           <td>${escapeHtml(po.items)}</td>
           <td>${escapeHtml(po.recommendation)}</td>
         </tr>`;
       }
       html += `</tbody></table></div>`;
     } else {
-      html += `<div class="adk-alert adk-alert-success">✅ No critical overdue purchase orders.</div>`;
+      html += `<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success);">✅ No critical overdue purchase orders.</div>`;
     }
     
-    html += `<h3 style="margin:24px 0 12px 0; color:#ef4444;">🔴 Out of Stock - Critical Parts</h3>`;
+    html += `<h3 style="margin:24px 0 12px 0; color:var(--danger);">🔴 Out of Stock - Critical Parts</h3>`;
     if (alerts.outOfStockCritical && alerts.outOfStockCritical.length > 0) {
       html += `<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>`;
       for (const item of alerts.outOfStockCritical) {
@@ -769,7 +785,7 @@
       }
       html += `</tbody></table></div>`;
     } else {
-      html += `<div class="adk-alert adk-alert-success">✅ No critical parts out of stock.</div>`;
+      html += `<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success);">✅ No critical parts out of stock.</div>`;
     }
     
     container.innerHTML = html;
@@ -780,7 +796,7 @@
     pendingPOsData = pendingPOs || [];
     
     if (pendingPOsData.length === 0) {
-      container.innerHTML = `<div class="adk-alert adk-alert-info">📭 No pending purchase orders.</div>`;
+      container.innerHTML = `<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">📭 No pending purchase orders.</div>`;
       return;
     }
     
@@ -807,11 +823,7 @@
   function filterPendingPOs() {
     const filter = document.getElementById('poFilter')?.value || 'all';
     
-    // ============================================
-    // REGISTRAR CAMBIO DE FILTRO
-    // ============================================
-    logIntelligenceAction('STK', 'FILTER_PENDING_POS', `Filtro aplicado en POs pendientes: ${filter}`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
-    // ============================================
+    logForesight('STK', 'FILTER_PENDING_POS', `Filter applied: ${filter}`);
     
     let filtered = pendingPOsData;
     
@@ -819,11 +831,9 @@
     if (filter === 'overdue') filtered = filtered.filter(po => po.isOverdue);
     
     if (filtered.length === 0) {
-      document.getElementById('pendingPOsTable').innerHTML = `<div class="adk-alert adk-alert-info">No POs match filter.</div>`;
+      document.getElementById('pendingPOsTable').innerHTML = `<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">No POs match filter.</div>`;
       return;
     }
-    
-    // ... resto del código existente ...
     
     let html = `<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Expected (days)</th><th>Status</th><th>Items</th></tr></thead><tbody>`;
     
@@ -846,10 +856,10 @@
   function renderOptimizationTab(optimizations, config) {
     const container = document.getElementById('optimizationContent');
     
-    let html = `<div class="adk-card" style="margin-bottom:16px;">💡 Safety Factor: <strong>${config?.safetyFactor || 1.5}</strong> (50% buffer). Update in SETUP_STK to change.</div>`;
+    let html = `<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05);">💡 Safety Factor: <strong>${config?.safetyFactor || 1.5}</strong> (50% buffer). Update in SETUP_STK to change.</div>`;
     
     if (!optimizations || optimizations.length === 0) {
-      html += `<div class="adk-alert adk-alert-success">✅ All min stock levels appear optimal.</div>`;
+      html += `<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success);">✅ All min stock levels appear optimal.</div>`;
       container.innerHTML = html;
       return;
     }
@@ -859,7 +869,7 @@
     </tr></thead><tbody>`;
     
     for (const opt of optimizations) {
-      const actionColor = opt.action === 'increase' ? '#f97316' : '#4ade80';
+      const actionColor = opt.action === 'increase' ? 'var(--warning)' : 'var(--success)';
       const actionIcon = opt.action === 'increase' ? '⬆️' : '⬇️';
       const critClass = opt.criticality === 'A' ? 'badge adk-badge-danger' : (opt.criticality === 'B' ? 'badge adk-badge-warning' : 'badge adk-badge-success');
       
@@ -876,7 +886,7 @@
     }
     
     html += `</tbody></table></div>`;
-    html += `<div class="adk-card" style="margin-top:16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>`;
+    html += `<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05);">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>`;
     container.innerHTML = html;
   }
   
@@ -904,21 +914,15 @@
   function applyObsoleteFilter() {
     const monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
     
-    // ============================================
-    // REGISTRAR CAMBIO DE FILTRO DE OBSOLETOS
-    // ============================================
-    logIntelligenceAction('STK', 'FILTER_OBSOLETE', `Filtro de partes obsoletas aplicado: ${monthsFilter}+ meses`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
-    // ============================================
+    logForesight('STK', 'FILTER_OBSOLETE', `Obsolete filter applied: ${monthsFilter}+ months`);
     
     let filtered = obsoletePartsData.filter(p => p.monthsInactive >= monthsFilter);
     const totalValue = obsoletePartsData.reduce((sum, p) => sum + p.stockValue, 0);
     
-    // ... resto del código existente ...
-    
-    let html = `<div class="adk-card" style="margin-bottom:16px;">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
+    let html = `<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05);">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
     
     if (filtered.length === 0) {
-      html += `<div class="adk-alert adk-alert-success">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
+      html += `<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success);">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
       document.getElementById('obsoleteTable').innerHTML = html;
       return;
     }
@@ -934,12 +938,12 @@
         <td>${part.currentStock}</td>
         <td>$${part.stockValue.toLocaleString()}</td>
         <td>${part.lastConsumptionDate || 'Never'}</td>
-        <td style="color:#f97316;">${part.monthsInactive}</td>
+        <td style="color:var(--warning);">${part.monthsInactive}</td>
       </tr>`;
     }
     
     html += `</tbody></table></div>`;
-    html += `<div class="adk-card" style="margin-top:16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
+    html += `<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05);">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
     
     document.getElementById('obsoleteTable').innerHTML = html;
   }
@@ -949,10 +953,10 @@
     let filtered = obsoletePartsData.filter(p => p.monthsInactive >= monthsFilter);
     const totalValue = obsoletePartsData.reduce((sum, p) => sum + p.stockValue, 0);
     
-    let html = `<div class="adk-card" style="margin-bottom:16px;">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
+    let html = `<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05);">💰 Total capital locked: <strong>$${totalValue.toLocaleString()}</strong></div>`;
     
     if (filtered.length === 0) {
-      html += `<div class="adk-alert adk-alert-success">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
+      html += `<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success);">✅ No parts inactive for ${monthsFilter}+ months.</div>`;
       document.getElementById('obsoleteTable').innerHTML = html;
       return;
     }
@@ -968,26 +972,23 @@
         <td>${part.currentStock}</td>
         <td>$${part.stockValue.toLocaleString()}</td>
         <td>${part.lastConsumptionDate || 'Never'}</td>
-        <td style="color:#f97316;">${part.monthsInactive}</td>
+        <td style="color:var(--warning);">${part.monthsInactive}</td>
       </tr>`;
     }
     
     html += `</tbody></table></div>`;
-    html += `<div class="adk-card" style="margin-top:16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
+    html += `<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05);">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>`;
     
     document.getElementById('obsoleteTable').innerHTML = html;
   }
   
   async function printToPDF() {
-    // ============================================
-    // REGISTRAR EXPORTACIÓN A PDF
-    // ============================================
-    logIntelligenceAction('STK', 'EXPORT_PDF', 'Exportación de reporte Inventory Intelligence a PDF').catch(e => console.warn('[STK_INTEL] Log failed:', e));
-    // ============================================
+    showLoading('Generating PDF report...');
     
-    showLoading();
+    await logForesight('STK', 'EXPORT_PDF', 'Inventory Intelligence PDF export');
+    
     try {
-      const html = await callIntelligenceApi('STK_getPrintView', []);
+      const html = await callApi('STK_getPrintView', []);
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
         showToast('Popup blocked. Please allow popups.', 'error');
@@ -1000,19 +1001,19 @@
       printWindow.print();
       hideLoading();
       showToast('Report generated successfully', 'success');
-    } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
-      if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('STK_INTEL', 'printToPDF', error.message).catch(e => console.warn('[STK_INTEL] Error log failed:', e));
-      }
-      // ============================================
       
+      await logForesight('STK', 'PDF_EXPORT_SUCCESS', 'PDF generated successfully');
+    } catch (error) {
       hideLoading();
       showError('Print failed: ' + error.message);
+      
+      await logForesight('STK', 'PDF_EXPORT_ERROR', error.message);
     }
-  }     
+  }
+  
+  function showError(message) {
+    showToast(message, 'error');
+  }
   
   function escapeHtml(str) {
     if (!str) return '';
@@ -1025,12 +1026,11 @@
   }
   
   // ============================================
-  // EVENT LISTENERS
+  // EVENT LISTENERS & INITIALIZATION
   // ============================================
   document.addEventListener('DOMContentLoaded', function() {
     const refreshBtn = document.getElementById('refreshBtn');
     const printBtn = document.getElementById('printBtn');
-    const closeBtn = document.getElementById('closeModalBtn');
     
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => refreshAllData());
@@ -1038,10 +1038,6 @@
     
     if (printBtn) {
       printBtn.addEventListener('click', () => printToPDF());
-    }
-    
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
     }
     
     // Tabs
@@ -1054,15 +1050,19 @@
           'optimize': 'Optimize Stock',
           'obsolete': 'Obsolete Parts'
         };
-        // ============================================
-        // REGISTRAR CAMBIO DE PESTAÑA
-        // ============================================
-        logIntelligenceAction('STK', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[STK_INTEL] Log failed:', e));
-        // ============================================
-        
+        logForesight('STK', 'CHANGE_TAB', `User switched to: ${tabNames[tabId] || tabId}`);
         showTab(tabId);
       });
     });
+    
+    // Load API URL and initialize
+    loadApiUrl();
+    
+    // Request logo and version from parent
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+      window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+    }
     
     // Initial load
     refreshAllData();
