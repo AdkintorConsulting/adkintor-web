@@ -19,6 +19,8 @@
             height: 100vh;
             overflow: hidden;
             color: #1e293b;
+            display: flex;
+            flex-direction: column;
         }
 
         /* EAMS Design System */
@@ -37,41 +39,46 @@
             --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        /* Main Container */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: var(--eams-bg);
-        }
-
-        /* Header */
+        /* EAMS Header */
         .eams-header {
-            background: white;
-            padding: 20px 28px;
-            border-bottom: 1px solid var(--eams-border);
-            box-shadow: var(--eams-shadow);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
             flex-shrink: 0;
         }
 
         .eams-header h2 {
             font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--eams-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin: 0;
         }
 
         .user-badge {
             font-size: 0.8rem;
-            color: var(--eams-text-light);
-            background: #f1f5f9;
-            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
             border-radius: 20px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        /* Main Container */
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--eams-bg);
+            overflow: hidden;
         }
 
         /* Body */
@@ -242,15 +249,15 @@
 
         /* Footer */
         .eams-status-bar {
-            background: white;
-            border-top: 1px solid var(--eams-border);
-            padding: 12px 28px;
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            font-size: 0.75rem;
-            color: var(--eams-text-light);
         }
 
         .footer-buttons {
@@ -441,13 +448,23 @@
 </head>
 <body>
 
-<div class="app-container">
-    <!-- Header -->
-    <div class="eams-header">
-        <h2><i class="fas fa-hand-paper"></i> MANUAL PM SCHEDULER | Strategy Override</h2>
-        <div class="user-badge" id="user-display">Loading...</div>
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="fas fa-hand-paper"></i> Manual PM Scheduler</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
     </div>
+</div>
 
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>PREVENTIVE</span> &gt;
+    <span>Manual PM</span>
+</div>
+
+<div class="app-container">
     <!-- Body -->
     <div class="eams-body">
         <div class="manual-layout">
@@ -488,20 +505,44 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Footer -->
-    <div class="eams-status-bar">
-        <span><i class="fas fa-circle" style="color: var(--eams-success); font-size: 0.5rem;"></i> System Status: <strong id="footer-status">Ready</strong></span>
-        <span>EAMS v2.0</span>
-        <div class="footer-buttons">
-            <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
-            <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
-            <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
-        </div>
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+    <div class="footer-buttons">
+        <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
+        <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
+        <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
     </div>
 </div>
 
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
     // ============================================
     // API CONFIGURATION
     // ============================================
@@ -514,6 +555,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
                 console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
@@ -660,7 +703,7 @@
         showLoading('Loading TL configuration...');
         
         try {
-            const rawResponse = await callApi('PVT_getManualPMConfig');
+            const rawResponse = await callApi('PVT_getManualPMConfig', []);
             const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
             
             if (response.status === 'success' && response.data) {
@@ -714,7 +757,7 @@
         showLoading('Loading configuration...');
         
         try {
-            const rawResponse = await callApi('PVT_getManualPMConfig');
+            const rawResponse = await callApi('PVT_getManualPMConfig', []);
             const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
             
             if (response.status === 'success' && response.data) {
