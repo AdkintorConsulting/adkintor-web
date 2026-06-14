@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAMS INTELLIGENCE - PVT Intelligence</title>
+  <title>FORESIGHT - PVT Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
   <style>
-    /* Core Styles de Adkintor INTELLIGENCE */
+    /* FORESIGHT Dark Mode Theme */
     :root {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-card: #1e293b;
-      --bg-hover: #334155;
-      --border-color: #334155;
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111827;
+      --bg-card: #1a1a2e;
+      --bg-hover: #1f2937;
+      --border-color: #2d2d44;
       --text-primary: #f1f5f9;
       --text-secondary: #94a3b8;
-      --accent-color: #38bdf8;
-      --success: #4ade80;
-      --warning: #fbbf24;
-      --danger: #f87171;
-      --info: #38bdf8;
+      --accent-color: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.2);
+      --success: #00e676;
+      --warning: #ffb74d;
+      --danger: #ff5252;
+      --info: #00e5ff;
       --gray: #64748b;
       --border-radius-sm: 8px;
     }
@@ -36,131 +37,72 @@
       overflow: hidden;
     }
     
-    /* Web App Header */
-    .web-app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      border-bottom: 2px solid var(--accent-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    
-    .web-app-header h2 {
-      font-size: 18px;
-      color: var(--accent-color);
-      margin: 0;
-    }
-    
-    .web-app-header h2 i {
-      margin-right: 8px;
-    }
-    
-    .close-modal-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    
-    .close-modal-btn:hover {
-      background: rgba(248, 113, 113, 0.2);
-      color: var(--danger);
-      transform: none;
-    }
-    
-    /* Breadcrumbs */
-    .web-breadcrumbs {
-      padding: 12px 24px;
-      background: var(--bg-secondary);
-      font-size: 12px;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .web-breadcrumbs span {
-      color: var(--text-secondary);
-    }
-    
-    .web-breadcrumbs span:last-child {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
-    
-    /* Toast Notifications */
-    .toast-notification {
+    /* Toast Container */
+    #toastContainer {
       position: fixed;
       top: 80px;
       right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
       z-index: 10000;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+    
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border-left: 4px solid var(--info);
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    
+    .toast-close {
+      cursor: pointer;
+      margin-left: auto;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .toast-close:hover { opacity: 1; }
     
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     
-    .toast-success {
-      background: #10b981;
-      color: white;
-      border-left: 4px solid #059669;
-    }
-    
-    .toast-error {
-      background: #ef4444;
-      color: white;
-      border-left: 4px solid #b91c1c;
-    }
-    
-    .toast-info {
-      background: var(--accent-color);
-      color: var(--bg-primary);
-      border-left: 4px solid #0284c7;
-    }
-    
-    .toast-warning {
-      background: var(--warning);
-      color: var(--bg-primary);
-      border-left: 4px solid #d97706;
-    }
-    
     /* Loading Overlay */
-    .adk-loading-overlay {
+    #loadingOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(4px);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 9999;
     }
     
-    .adk-loading-content {
+    .loading-content {
       text-align: center;
-      background: var(--bg-secondary);
+      background: var(--bg-card);
       padding: 30px 40px;
       border-radius: 16px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
     
-    .adk-loading {
+    .loading-spinner {
       width: 40px;
       height: 40px;
       border: 3px solid var(--border-color);
@@ -174,41 +116,72 @@
       to { transform: rotate(360deg); }
     }
     
-    /* Alert */
-    .adk-alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin: 20px;
+    /* EAMS Unified Header */
+    .eams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     
-    .adk-alert-danger {
-      background: rgba(248, 113, 113, 0.2);
-      border-left: 4px solid var(--danger);
-      color: var(--danger);
+    .eams-header h2 {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin: 0;
     }
     
-    .adk-alert-info {
-      background: rgba(56, 189, 248, 0.2);
-      border-left: 4px solid var(--accent-color);
+    .eams-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .user-badge {
+      background: rgba(0, 229, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--accent-color);
     }
     
-    .adk-alert-warning {
-      background: rgba(249, 115, 22, 0.1);
-      border: 1px solid var(--warning);
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
+    /* Breadcrumbs */
+    .breadcrumbs {
+      padding: 10px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs span:last-child {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* EAMS Status Bar (Footer) */
+    .eams-status-bar {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      padding: 8px 24px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-secondary);
+      position: sticky;
+      bottom: 0;
+      z-index: 1000;
     }
     
     /* Dashboard Container */
     .dashboard-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 115px);
       padding: 20px;
       background: var(--bg-primary);
       max-width: 1400px;
@@ -221,7 +194,7 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 16px;
-      border-bottom: 2px solid var(--accent-color);
+      border-bottom: 1px solid var(--border-color);
     }
     
     .logo-area h1 { 
@@ -336,7 +309,7 @@
     }
     
     tr:hover {
-      background: rgba(56, 189, 248, 0.05);
+      background: rgba(0, 229, 255, 0.05);
     }
     
     /* Badges */
@@ -348,10 +321,10 @@
       font-weight: 500;
     }
     
-    .adk-badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
-    .adk-badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-    .adk-badge-success { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; }
-    .adk-badge-primary { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+    .adk-badge-danger { background: rgba(255,82,82,0.2); color: #ff5252; border: 1px solid #ff5252; }
+    .adk-badge-warning { background: rgba(255,183,77,0.2); color: #ffb74d; border: 1px solid #ffb74d; }
+    .adk-badge-success { background: rgba(0,230,118,0.2); color: #00e676; border: 1px solid #00e676; }
+    .adk-badge-primary { background: rgba(0,229,255,0.2); color: #00e5ff; border: 1px solid #00e5ff; }
     
     /* Progress bar */
     .progress-container {
@@ -365,13 +338,13 @@
       padding: 4px 8px;
       font-size: 10px;
       text-align: center;
-      color: #0f172a;
+      color: #0a0a0f;
       font-weight: bold;
     }
     
-    .progress-green { background: #4ade80; }
-    .progress-yellow { background: #f59e0b; }
-    .progress-red { background: #ef4444; }
+    .progress-green { background: var(--success); }
+    .progress-yellow { background: var(--warning); }
+    .progress-red { background: var(--danger); }
     
     /* Columns */
     .col-code { font-family: monospace; font-size: 12px; }
@@ -434,6 +407,18 @@
     .adk-btn-primary:hover {
       opacity: 0.9;
       transform: scale(1.02);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    .adk-alert-warning {
+      background: rgba(255, 183, 77, 0.1);
+      border: 1px solid var(--warning);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     
     ::-webkit-scrollbar { width: 6px; }
@@ -443,17 +428,31 @@
 </head>
 <body>
 
-<!-- WEB APP HEADER -->
-<div class="web-app-header">
-  <h2><i class="fas fa-calendar-alt"></i> EAMS INTELLIGENCE - PVT Intelligence</h2>
-  <button class="close-modal-btn" id="closeModalBtn" title="Close">✕</button>
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <div id="loadingMessage">Loading PVT data...</div>
+  </div>
 </div>
 
-<!-- BREADCRUMBS -->
-<div class="web-breadcrumbs">
-  <span>🏠 Home</span> > 
-  <span>📈 INTELLIGENCE</span> > 
-  <span>🔧 PVT Intelligence</span>
+<!-- EAMS Unified Header (FORESIGHT Dark Mode) -->
+<div class="eams-header">
+  <h2><i class="fas fa-calendar-alt"></i> Preventive Maintenance Intelligence Dashboard</h2>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+  </div>
+</div>
+
+<!-- Breadcrumbs in English with Home -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span>FORESIGHT</span> &gt;
+  <span>PVT Intelligence</span>
 </div>
 
 <div class="dashboard-container">
@@ -508,129 +507,159 @@
   </div>
 </div>
 
+<!-- EAMS Status Bar (Footer) -->
+<div class="eams-status-bar">
+  <span>System Status: <strong id="footer-status">Ready</strong></span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
+  // ============================================
+  // GLOBAL VARIABLES
+  // ============================================
   let duplicateData = [];
   let coverageData = [];
   let orphanData = {};
   let effectivenessData = [];
   let failingData = [];
+  let EAMS_API_URL = null;
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  
+  // ============================================
+  // LOAD API URL FROM SESSION
+  // ============================================
+  function loadApiUrl() {
+    const session = localStorage.getItem('adkintor_session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) {
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+        }
+        console.log('[PVT] API URL loaded:', EAMS_API_URL);
+      } catch(e) { 
+        console.error('[PVT] Error parsing session:', e);
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = 'User';
+      }
+    } else {
+      console.warn('[PVT] No session found');
+      const userDisplay = document.getElementById('userDisplay');
+      if (userDisplay) userDisplay.innerText = 'Guest';
+    }
+  }
+  
+  // ============================================
+  // API CALL FUNCTION (via Proxy)
+  // ============================================
+  async function callApi(action, args = []) {
+    if (!EAMS_API_URL) {
+      throw new Error('API URL not configured. Please check your session.');
+    }
+    
+    console.log('[PVT] Calling API:', action, args);
+    
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        targetUrl: EAMS_API_URL, 
+        payload: { action: action, args: args } 
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log('[PVT] API Response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API call failed');
+    }
+    
+    return result.data;
+  }
   
   // ============================================
   // TOAST NOTIFICATION SYSTEM
   // ============================================
   function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
     const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
+    
+    container.appendChild(toast);
+    
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => toast.remove());
     
     setTimeout(() => {
-      toast.style.animation = 'slideIn 0.3s ease reverse';
-      setTimeout(() => toast.remove(), 300);
+      if (toast.parentNode) toast.remove();
     }, 4000);
-  }
-  
-  // ============================================
-  // CLOSE MODAL FUNCTION
-  // ============================================
-  function closeModal() {
-    if (window.parent !== window) {
-      window.parent.postMessage({ action: 'closeModal' }, '*');
-    }
-    showToast('Closing module...', 'info');
-    setTimeout(() => {
-      window.close();
-    }, 100);
-  }
-  
-  // ============================================
-  // INTELLIGENCE API COMMUNICATION
-  // ============================================
-  async function callIntelligenceApi(action, args = []) {
-    try {
-      const sessionStr = localStorage.getItem('adkintor_session');
-      if (!sessionStr) {
-        throw new Error('No session found. Please login again.');
-      }
-      const session = JSON.parse(sessionStr);
-      const API_URL = session.intelligenceApiUrl;
-      if (!API_URL) {
-        throw new Error('Intelligence API URL not found in session.');
-      }
-      
-      const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-      
-      const response = await fetch(proxyUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl: API_URL,
-          payload: { action: action, args: args }
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'API call error');
-      }
-      return result.data;
-    } catch (error) {
-      console.error('Intelligence API call error:', error);
-      showToast(`Error: ${error.message}`, 'error');
-      throw error;
-    }
   }
   
   // ============================================
   // LOADING OVERLAY FUNCTIONS
   // ============================================
-  function showLoading() {
-    let overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
-    
-    overlay = document.createElement('div');
-    overlay.id = 'adkLoadingOverlay';
-    overlay.className = 'adk-loading-overlay';
-    overlay.innerHTML = `
-      <div class="adk-loading-content">
-        <div class="adk-loading"></div>
-        <div style="color: var(--text-primary); font-size: 14px;">Loading data...</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
+  function showLoading(message = 'Processing...') {
+    const overlay = document.getElementById('loadingOverlay');
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = message;
+    if (overlay) overlay.style.display = 'flex';
   }
   
   function hideLoading() {
-    const overlay = document.getElementById('adkLoadingOverlay');
-    if (overlay) overlay.remove();
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
   }
-
+  
   // ============================================
-  // FUNCIÓN DE LOGGING PARA MÓDULOS INTELLIGENCE
+  // LOGGING FUNCTIONS (using global Logger)
   // ============================================
-  async function logIntelligenceAction(module, action, details) {
-    if (!window.Logger || typeof window.Logger.foresight !== 'function') {
-      console.warn('[PVT_INTEL] Logger not available, skipping log');
-      return;
+  async function logForesight(module, action, details) {
+    if (window.Logger && typeof window.Logger.foresight === 'function') {
+      try {
+        await window.Logger.foresight(module, action, details);
+        console.log(`[PVT] Logged: ${module}/${action}`);
+      } catch (err) {
+        console.warn('[PVT] Logger error:', err);
+      }
+    } else {
+      console.log(`[PVT] Log (Logger not available): ${module}/${action} - ${details}`);
+    }
+  }
+  
+  // ============================================
+  // LISTENER FOR LOGO AND VERSION FROM PARENT
+  // ============================================
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[PVT] Logo set from parent');
+      }
     }
     
-    try {
-      await window.Logger.foresight(module, action, details);
-      console.log('[PVT_INTEL] Intelligence log recorded:', module, action);
-    } catch (err) {
-      console.warn('[PVT_INTEL] Failed to log intelligence action:', err);
+    if (data.type === 'SET_VERSION' && data.version) {
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[PVT] Version set from parent:', data.version);
+      }
     }
-  }
-  // ============================================
-  
-  function showError(message) {
-    showToast(message, 'error');
-  }
+  });
   
   // ============================================
   // TAB FUNCTION
@@ -651,26 +680,21 @@
   // ============================================
   async function loadCoverage() {
     try {
-      const coverage = await callIntelligenceApi('pvtGetStrategyCoverage', []);
+      const coverage = await callApi('pvtGetStrategyCoverage', []);
       coverageData = Array.isArray(coverage) ? coverage : [];
       renderCoverage(coverageData);
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('PVT_INTEL', 'loadCoverage', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+        window.Logger.error('PVT_INTEL', 'loadCoverage', error.message).catch(e => console.warn('[PVT] Error log failed:', e));
       }
-      // ============================================
-      
-      document.getElementById('coverageContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading coverage data: ${error.message}</div>`;
-      showError('Error loading coverage data');
+      document.getElementById('coverageContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">❌ Error loading coverage data: ${error.message}</div>`;
+      showToast('Error loading coverage data', 'error');
     }
   }
   
   async function loadOrphans() {
     try {
-      const orphans = await callIntelligenceApi('pvtGetOrphanActivities', []);
+      const orphans = await callApi('pvtGetOrphanActivities', []);
       orphanData = orphans || { orphans: [], totalOrphans: 0, duplicates: [] };
       duplicateData = orphanData.duplicates || [];
       renderOrphans(orphanData);
@@ -685,55 +709,43 @@
         }
       }
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('PVT_INTEL', 'loadOrphans', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+        window.Logger.error('PVT_INTEL', 'loadOrphans', error.message).catch(e => console.warn('[PVT] Error log failed:', e));
       }
-      // ============================================
-      document.getElementById('orphansContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading orphan activities: ${error.message}</div>`;
-      showError('Error loading orphan activities');
+      document.getElementById('orphansContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">❌ Error loading orphan activities: ${error.message}</div>`;
+      showToast('Error loading orphan activities', 'error');
     }
   }
   
   async function loadEffectiveness() {
     try {
-      const effectiveness = await callIntelligenceApi('pvtGetPMEffectiveness', []);
+      const effectiveness = await callApi('pvtGetPMEffectiveness', []);
       effectivenessData = Array.isArray(effectiveness) ? effectiveness : [];
       renderEffectiveness(effectivenessData);
     } catch (error) {
-      document.getElementById('effectivenessContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading PM effectiveness: ${error.message}</div>`;
-      showError('Error loading PM effectiveness');
+      document.getElementById('effectivenessContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">❌ Error loading PM effectiveness: ${error.message}</div>`;
+      showToast('Error loading PM effectiveness', 'error');
     }
   }
   
   async function loadFailing() {
     try {
-      const failing = await callIntelligenceApi('pvtGetFailingComponents', []);
+      const failing = await callApi('pvtGetFailingComponents', []);
       failingData = Array.isArray(failing) ? failing : [];
       renderFailing(failingData);
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('PVT_INTEL', 'loadFailing', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+        window.Logger.error('PVT_INTEL', 'loadFailing', error.message).catch(e => console.warn('[PVT] Error log failed:', e));
       }
-      // ============================================
-      document.getElementById('failingContent').innerHTML = `<div class="adk-alert adk-alert-danger">❌ Error loading failing components: ${error.message}</div>`;
-      showError('Error loading failing components');
+      document.getElementById('failingContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">❌ Error loading failing components: ${error.message}</div>`;
+      showToast('Error loading failing components', 'error');
     }
   }
   
   async function refreshAll() {
-    // ============================================
-    // REGISTRAR APERTURA/REFRESCO DEL DASHBOARD
-    // ============================================
-    logIntelligenceAction('PVT', 'OPEN_DASHBOARD', 'Usuario accedió a PVT Intelligence Dashboard').catch(e => console.warn('[PVT_INTEL] Log failed:', e));
-    // ============================================
+    await logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Intelligence Dashboard');
     
-    showLoading();
+    showLoading('Loading PVT data...');
     await Promise.all([
       loadCoverage(),
       loadOrphans(),
@@ -750,13 +762,13 @@
   function renderCoverage(data) {
     const container = document.getElementById('coverageContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div class="adk-alert adk-alert-info">✅ No TLs found</div>';
+      container.innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">✅ No TLs found</div>';
       return;
     }
     
-    let html = '<div class="table-wrapper"><table><thead><tr>';
-    html += '<th>TL Asset ID</th><th>Criticality</th><th>Components</th><th>Covered</th><th>Coverage</th>';
-    html += '</tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><td><thead>';
+    html += '<tr><th>TL Asset ID</th><th>Criticality</th><th>Components</th><th>Covered</th><th>Coverage</th></tr>';
+    html += '</thead><tbody>';
     
     data.forEach(item => {
       let progressClass = 'progress-green';
@@ -784,13 +796,13 @@
   function renderOrphans(data) {
     const container = document.getElementById('orphansContent');
     if (!data.orphans || data.orphans.length === 0) {
-      container.innerHTML = '<div class="adk-alert adk-alert-info">✅ No orphan activities found</div>';
+      container.innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">✅ No orphan activities found</div>';
       return;
     }
     
-    let html = '<div class="table-wrapper"><table><thead><tr>';
-    html += '<th>Asset ID</th><th>Strategy ID</th><th>Frequency</th><th>Task</th>';
-    html += '</tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Asset ID</th><th>Strategy ID</th><th>Frequency</th><th>Task</th></tr>';
+    html += '</thead><tbody>';
     
     data.orphans.slice(0, 50).forEach(item => {
       html += `<tr>
@@ -802,7 +814,7 @@
     });
     
     if (data.orphans.length > 50) {
-      html += `<tr><td colspan="4" class="adk-alert adk-alert-info">... and ${data.orphans.length - 50} more</td></tr>`;
+      html += `<tr><td colspan="4" class="adk-card" style="background:rgba(0,229,255,0.1);">... and ${data.orphans.length - 50} more</td></tr>`;
     }
     
     html += '</tbody></table></div>';
@@ -812,13 +824,13 @@
   function renderEffectiveness(data) {
     const container = document.getElementById('effectivenessContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div class="adk-alert adk-alert-info">✅ No ineffective PMs found</div>';
+      container.innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">✅ No ineffective PMs found</div>';
       return;
     }
     
-    let html = '<div class="table-wrapper"><table><thead><tr>';
-    html += '<th>Component</th><th>TL</th><th>Criticality</th><th>Frequency</th><th>Failures</th><th>MTBF</th><th>Suggestion</th>';
-    html += '</tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Component</th><th>TL</th><th>Criticality</th><th>Frequency</th><th>Failures</th><th>MTBF</th><th>Suggestion</th></tr>';
+    html += '</thead><tbody>';
     
     data.forEach(item => {
       let severityClass = 'adk-badge-success';
@@ -843,13 +855,13 @@
   function renderFailing(data) {
     const container = document.getElementById('failingContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div class="adk-alert adk-alert-info">✅ No failing components without PM found</div>';
+      container.innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info);">✅ No failing components without PM found</div>';
       return;
     }
     
-    let html = '<div class="table-wrapper"><table><thead><tr>';
-    html += '<th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Failures</th><th>MTBF</th><th>Suggested Freq</th>';
-    html += '</tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><tr><thead>';
+    html += '<tr><th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Failures</th><th>MTBF</th><th>Suggested Freq</th></tr>';
+    html += '</thead><tbody>';
     
     data.forEach(item => {
       let priorityClass = 'adk-badge-success';
@@ -882,15 +894,11 @@
   // ============================================
   
   async function printReport() {
-    // ============================================
-    // REGISTRAR EXPORTACIÓN DE REPORTE
-    // ============================================
-    logIntelligenceAction('PVT', 'EXPORT_PDF', 'Exportación de reporte PVT Intelligence a PDF').catch(e => console.warn('[PVT_INTEL] Log failed:', e));
-    // ============================================
+    await logForesight('PVT', 'EXPORT_PDF', 'PVT Intelligence PDF export');
     
-    showLoading();
+    showLoading('Generating PDF...');
     try {
-      const html = await callIntelligenceApi('pvtGetPrintHTML', []);
+      const html = await callApi('pvtGetPrintHTML', []);
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
         showToast('Popup blocked. Please allow popups.', 'error');
@@ -903,27 +911,18 @@
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
-      // ============================================
-      // REGISTRAR ERROR EN LOG
-      // ============================================
       if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('PVT_INTEL', 'printReport', error.message).catch(e => console.warn('[PVT_INTEL] Error log failed:', e));
+        window.Logger.error('PVT_INTEL', 'printReport', error.message).catch(e => console.warn('[PVT] Error log failed:', e));
       }
-      // ============================================
-      
       hideLoading();
-      showError('Error generating report: ' + error.message);
+      showToast('Error generating report: ' + error.message, 'error');
     }
   }
   
   function showDuplicatesModal() {
     if (!duplicateData || duplicateData.length === 0) return;
     
-    // ============================================
-    // REGISTRAR VISUALIZACIÓN DE DUPLICADOS
-    // ============================================
-    logIntelligenceAction('PVT', 'VIEW_DUPLICATES', `Usuario visualizó ${duplicateData.length} actividades duplicadas`).catch(e => console.warn('[PVT_INTEL] Log failed:', e));
-    // ============================================
+    logForesight('PVT', 'VIEW_DUPLICATES', `User viewed ${duplicateData.length} duplicate activities`);
     
     let modalHtml = `
       <div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)">
@@ -951,7 +950,7 @@
                 </tbody>
               </table>
             </div>
-            <div style="margin-top: 20px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">
+            <div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">
               💡 <strong>Suggestion:</strong> Review and unify duplicate tasks into a single strategy.
             </div>
           </div>
@@ -981,19 +980,17 @@
   }
   
   // ============================================
-  // EVENT LISTENERS
+  // EVENT LISTENERS & INITIALIZATION
   // ============================================
   document.addEventListener('DOMContentLoaded', function() {
     const exportBtn = document.getElementById('exportBtn');
-    const closeBtn = document.getElementById('closeModalBtn');
     const viewDuplicatesLink = document.getElementById('viewDuplicatesLink');
+    
+    // Log dashboard open
+    logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Intelligence Dashboard');
     
     if (exportBtn) {
       exportBtn.addEventListener('click', () => printReport());
-    }
-    
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
     }
     
     if (viewDuplicatesLink) {
@@ -1010,15 +1007,20 @@
           'effectiveness': 'PM Effectiveness',
           'failing': 'Failing Components'
         };
-        // ============================================
-        // REGISTRAR CAMBIO DE PESTAÑA
-        // ============================================
-        logIntelligenceAction('PVT', 'CHANGE_TAB', `Usuario cambió a pestaña: ${tabNames[tabId] || tabId}`).catch(e => console.warn('[PVT_INTEL] Log failed:', e));
-        // ============================================
-        
+        logForesight('PVT', 'CHANGE_TAB', `User switched to: ${tabNames[tabId] || tabId}`);
         showTab(tabId);
       });
     });
+    
+    // Load API URL and initialize
+    loadApiUrl();
+    
+    // Request logo and version from parent
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+      window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+    }
+    
     // Initial load
     refreshAll();
   });
