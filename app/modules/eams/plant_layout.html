@@ -23,37 +23,30 @@
             flex-direction: column;
         }
         
-        /* Modal Header */
-        .modal-header {
-            background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+        /* EAMS Header */
+        .eams-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
             flex-shrink: 0;
         }
         
-        .modal-header h2 {
+        .eams-header h2 {
             font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin: 0;
         }
         
-        .btn-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 8px;
+        .user-badge {
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
         
-        .btn-close:hover {
-            opacity: 0.8;
-        }
-        
+        /* Breadcrumbs */
         .breadcrumbs {
             padding: 12px 24px;
             background: #eef2f5;
@@ -61,15 +54,6 @@
             color: #555;
             border-bottom: 1px solid #ddd;
             flex-shrink: 0;
-        }
-        
-        .breadcrumbs a {
-            color: #1a1a2e;
-            text-decoration: none;
-        }
-        
-        .breadcrumbs a:hover {
-            text-decoration: underline;
         }
         
         /* Layout Viewer */
@@ -139,14 +123,15 @@
             pointer-events: none;
         }
         
-        .status-bar {
-            background: #f1f2f6;
-            color: #5f6368;
-            padding: 6px 20px;
-            font-size: 0.7rem;
+        /* EAMS Status Bar */
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            border-top: 1px solid #dcdde1;
             flex-shrink: 0;
         }
         
@@ -199,15 +184,22 @@
 </head>
 <body>
 
-<div class="modal-header">
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
     <h2><i class="fas fa-draw-polygon"></i> Plant Layout</h2>
-    <button class="btn-close" onclick="closeModal()">&times;</button>
-</div>
-<div class="breadcrumbs">
-    <a href="#" onclick="closeModal()">Inicio</a> &gt; 
-    <a href="#" onclick="closeModal()">PLANT LAYOUT</a>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
 </div>
 
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>PLANT LAYOUT</span>
+</div>
+
+<!-- Layout Viewer -->
 <div class="layout-header">
     <h2><i class="fas fa-draw-polygon"></i> PLANT LAYOUT</h2>
     <div style="display: flex; gap: 12px; align-items: center;">
@@ -228,9 +220,10 @@
     </div>
 </div>
 
-<div class="status-bar">
-    <span>🟢 SYSTEM: READY</span>
-    <span>🖱️ Scroll wheel zoom | Drag to pan</span>
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -242,7 +235,33 @@
 </div>
 
 <script>
-    // Configuración
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
     
@@ -266,9 +285,16 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
+                showMessage('Session error. Please log in again.', true);
             }
+        } else {
+            console.error('No session found');
+            showMessage('Please log in to continue.', true);
         }
     }
     
@@ -321,6 +347,27 @@
         return result.data;
     }
     
+    // ============================================
+    // FUNCIÓN DE LOGGING PARA VISUALIZACIÓN
+    // ============================================
+    async function logPlantLayoutView(viewedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[SYS] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit('VIEW', 'SYS', 'PLANT_LAYOUT', '', '', '', 'Plant layout viewed');
+            console.log('[SYS] Plant layout view logged');
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('SYS', 'PLANT_LAYOUT_VIEWED', 'Plant layout accessed');
+            }
+        } catch (err) {
+            console.warn('[SYS] Failed to log plant layout view:', err);
+        }
+    }
+    
     function update() {
         container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
         zoomSpan.innerText = Math.round(currentZoom * 100) + '%';
@@ -358,13 +405,13 @@
         showLoading('Loading plant layout...');
         
         try {
-            // Intentar obtener URL desde la API
             const url = await callApi('getPlantLayoutImageUrlForFrontend', []);
             const img = document.getElementById('plantImage');
             
             img.onload = function() {
                 hideLoading();
                 img.style.opacity = '1';
+                document.getElementById('footer-status').innerText = 'Image Loaded';
             };
             
             img.onerror = function() {
@@ -375,12 +422,28 @@
             };
             
             img.src = url;
+            
+            // Registrar log de visualización
+            const session = localStorage.getItem('adkintor_session');
+            let currentUser = 'System';
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    currentUser = sessionData.email || sessionData.userName || 'System';
+                } catch(e) {}
+            }
+            logPlantLayoutView(currentUser).catch(e => console.warn('[SYS] View log failed:', e));
+            
         } catch (error) {
             hideLoading();
             showMessage('Error loading image: ' + error.message, true);
             const img = document.getElementById('plantImage');
             img.src = 'https://i.imgur.com/aQol7vU.png';
             img.style.opacity = '1';
+            
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('SYS', 'loadPlantLayout', error.message).catch(e => console.warn('[SYS] Error log failed:', e));
+            }
         }
     }
     
@@ -419,8 +482,15 @@
     document.getElementById('zoomResetBtn').onclick = resetZoom;
     
     // Inicializar
-    loadApiUrl();
-    loadImage();
+    document.addEventListener('DOMContentLoaded', () => {
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            loadImage();
+        } else {
+            showMessage('API URL not configured. Please log in first.', true);
+            document.getElementById('footer-status').innerText = 'Not Configured';
+        }
+    });
 </script>
 </body>
 </html>
