@@ -18,7 +18,8 @@
             background: #f0f2f5;
             min-height: 100vh;
             color: #1e293b;
-            padding: 24px;
+            display: flex;
+            flex-direction: column;
         }
 
         /* EAMS Design System */
@@ -37,12 +38,47 @@
             --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
         }
 
+        /* EAMS Header */
+        .eams-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 24px;
+            flex-shrink: 0;
+        }
+
+        .eams-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .user-badge {
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            padding: 12px 24px;
+            background: #eef2f5;
+            font-size: 0.8rem;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 24px;
+            flex: 1;
         }
 
-        /* Header */
+        /* Header Section */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -347,6 +383,18 @@
             display: block;
         }
 
+        /* EAMS Status Bar */
+        .eams-status-bar {
+            background: #f8f9fa;
+            padding: 8px 24px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
         /* Toast */
         .toast-notification {
             position: fixed;
@@ -523,8 +571,24 @@
 </head>
 <body>
 
+<!-- EAMS STANDARD HEADER -->
+<div class="eams-header">
+    <h2><i class="fas fa-broom"></i> System Sweeper Audit</h2>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+    </div>
+</div>
+
+<!-- EAMS STANDARD BREADCRUMBS -->
+<div class="breadcrumbs">
+    <span>🏠 Home</span> &gt;
+    <span>PREVENTIVE</span> &gt;
+    <span>System Sweeper</span>
+</div>
+
 <div class="container">
-    <!-- Header -->
+    <!-- Header Section -->
     <div class="page-header">
         <div class="header-title">
             <h1>EAMS <span>Sweeper</span> Audit</h1>
@@ -612,7 +676,37 @@
     </div>
 </div>
 
+<!-- EAMS STANDARD FOOTER -->
+<div class="eams-status-bar">
+    <span>System Status: <strong id="footer-status">Ready</strong></span>
+    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+</div>
+
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
     // ============================================
     // API CONFIGURATION
     // ============================================
@@ -625,6 +719,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
                 console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
@@ -710,7 +806,7 @@
         }
         
         try {
-            const details = `Sweeper ejecutado: ${result.expiredCount || 0} planes expirados, ${result.closedCount || 0} WO cerradas automáticamente`;
+            const details = `Sweeper executed: ${result.expiredCount || 0} expired plans, ${result.closedCount || 0} WO auto-closed`;
             await window.Logger.audit('CHANGE_STATUS', 'PVT', 'SWEEPER', '', '', '', details);
             console.log('[PVT] Sweeper execution logged');
             
@@ -721,7 +817,6 @@
             console.warn('[PVT] Failed to log sweeper execution:', err);
         }
     }
-    // ============================================
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -752,7 +847,7 @@
         showLoading('Loading Sweeper configuration...');
         
         try {
-            const response = await callApi('PVT_getSweeperInitialData');
+            const response = await callApi('PVT_getSweeperInitialData', []);
             
             if (response.status === 'success') {
                 currentWeek = response.currentWeek;
@@ -761,16 +856,12 @@
                 document.getElementById('yearInput').value = currentYear;
                 await searchLogs();
                 
-                // ============================================
-                // OBTENER USUARIO ACTUAL
-                // ============================================
                 try {
                     const userEmail = await callApi('getCurrentUserEmail');
                     currentUser = userEmail || 'system';
                 } catch (e) {
                     currentUser = 'system';
                 }
-                // ============================================
             } else {
                 // Fallback
                 const now = new Date();
@@ -785,7 +876,6 @@
             }
         } catch (e) {
             console.error('Error loading initial data:', e);
-            // Fallback
             const now = new Date();
             const startOfYear = new Date(now.getFullYear(), 0, 1);
             currentWeek = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
@@ -797,6 +887,7 @@
             showToast('Error loading initial data, using fallback: ' + e.message, 'error');
         } finally {
             hideLoading();
+            document.getElementById('footer-status').innerText = 'Ready';
         }
     }
 
@@ -867,7 +958,6 @@
     }
 
     async function runManualSweep() {
-        // Mostrar modal de confirmación
         const modalHtml = `
             <div class="modal-overlay" id="sweeperConfirmModal">
                 <div class="modal-container">
@@ -891,19 +981,15 @@
             showLoading('Executing system hygiene protocol...');
             
             try {
-                const response = await callApi('PVT_runSilentSweeper');
+                const response = await callApi('PVT_runSilentSweeper', []);
                 hideLoading();
                 
                 if (response.status === 'success') {
-                    // ============================================
-                    // REGISTRAR LOG DE EJECUCIÓN DEL SWEEPER
-                    // ============================================
                     const sweeperResult = {
                         expiredCount: response.expiredCount || 0,
                         closedCount: response.closedCount || 0
                     };
                     logSweeperExecution(sweeperResult, currentUser || 'system').catch(e => console.warn('[PVT] Sweeper log failed:', e));
-                    // ============================================
                     
                     showToast(response.message, 'success');
                     await searchLogs();
@@ -911,13 +997,9 @@
                     showToast('Error: ' + response.message, 'error');
                 }
             } catch (e) {
-                // ============================================
-                // REGISTRAR ERROR EN LOG
-                // ============================================
                 if (window.Logger && typeof window.Logger.error === 'function') {
                     window.Logger.error('PVT', 'runSweeper', e.message).catch(err => console.warn('[PVT] Error log failed:', err));
                 }
-                // ============================================
                 
                 hideLoading();
                 showToast('Error: ' + e.message, 'error');
@@ -944,6 +1026,7 @@
             loadInitialData();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
         }
     });
 </script>
