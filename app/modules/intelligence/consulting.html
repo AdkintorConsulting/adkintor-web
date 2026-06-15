@@ -478,7 +478,7 @@
   </div>
 </div>
 
-<!-- Breadcrumbs in English with Home -->
+<!-- Breadcrumbs -->
 <div class="breadcrumbs">
   <span>🏠 Home</span> &gt;
   <span>FORESIGHT</span> &gt;
@@ -488,7 +488,7 @@
 <div class="consulting-container">
   <div class="consulting-header">
     <h1>📊 Adkintor Consulting Intelligence</h1>
-    <div class="header-badge">For Mauricio (Adkintor Owner)</div>
+    <div class="header-badge">Strategic Advisory Report</div>
   </div>
   
   <div class="controls">
@@ -529,6 +529,7 @@
     <div class="loading">
       <div class="loading-spinner" style="margin: 0 auto 15px;"></div>
       <p>Select a year and month, then click Generate Report</p>
+      <p style="font-size: 12px; margin-top: 8px;">For annual reports, select December. For quarterly, select March/June/September.</p>
     </div>
   </div>
 </div>
@@ -644,7 +645,7 @@
   }
   
   // ============================================
-  // LOGGING FUNCTIONS (using global Logger)
+  // LOGGING FUNCTIONS
   // ============================================
   async function logForesight(module, action, details) {
     if (window.Logger && typeof window.Logger.foresight === 'function') {
@@ -784,12 +785,12 @@
         </div>
         
         <div class="alert ${summary.topIssues.length > 0 ? 'alert-critical' : 'alert-warning'}">
-          <strong>⚠️ Top Issues</strong><br>
+          <strong>⚠️ Top Issues Impacting Performance</strong><br>
           ${summary.topIssues.map(issue => `• ${escapeHtml(issue.assetId)}: ${issue.failures} failures (${issue.criticality})`).join('<br>') || 'No major issues detected'}
         </div>
         
         <div class="alert alert-good">
-          <strong>✅ Achievements</strong><br>
+          <strong>✅ Key Achievements</strong><br>
           ${summary.topAchievements.map(ach => `• ${escapeHtml(ach)}`).join('<br>') || 'No achievements recorded'}
         </div>
       </div>
@@ -847,7 +848,7 @@
         </div>
       </div>
       
-      <h4>Top Cost Assets</h4>
+      <h4>Top 5 Assets by Maintenance Cost</h4>
       <table class="data-table">
         <thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead>
         <tbody>
@@ -878,7 +879,7 @@
   
   function renderStaffTab(staff) {
     return `
-      <h3>👥 Staff & Organization</h3>
+      <h3>👥 Staff & Organization Analysis</h3>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-value">${staff.staffCount}</div>
@@ -891,7 +892,7 @@
         </div>
         <div class="kpi-card">
           <div class="kpi-value">${staff.totalOpenWOs}</div>
-          <div class="kpi-label">Open WOs</div>
+          <div class="kpi-label">Open Work Orders</div>
         </div>
       </div>
       
@@ -914,12 +915,12 @@
       
       <h4>Backlog by Age</h4>
       <table class="data-table">
-        <thead><tr><th>Age</th><th>Count</th></tr></thead>
+        <thead><tr><th>Age Category</th><th>Number of WOs</th><th>Recommendation</th></tr></thead>
         <tbody>
-          <tr><td>&lt;7 days</td><td>${staff.backlogByAge['<7d'] || 0}</td></tr>
-          <tr><td>7-14 days</td><td>${staff.backlogByAge['7-14d'] || 0}</td></tr>
-          <tr><td>15-30 days</td><td>${staff.backlogByAge['15-30d'] || 0}</td></tr>
-          <tr><td>&gt;30 days</td><td>${staff.backlogByAge['>30d'] || 0}</td></tr>
+          <tr><td>&lt;7 days</td><td>${staff.backlogByAge['<7d'] || 0}</td><td>Normal priority</td></tr>
+          <tr><td>7-14 days</td><td>${staff.backlogByAge['7-14d'] || 0}</td><td>${(staff.backlogByAge['7-14d'] || 0) > 5 ? '⚠️ Monitor closely' : 'Normal'}</td></tr>
+          <tr><td>15-30 days</td><td>${staff.backlogByAge['15-30d'] || 0}</td><td>${(staff.backlogByAge['15-30d'] || 0) > 3 ? '🔴 Escalate' : '⚠️ Review'}</td></tr>
+          <tr><td>&gt;30 days</td><td>${staff.backlogByAge['>30d'] || 0}</td><td>🔴 <strong>URGENT - Escalate immediately</strong></td></tr>
         </tbody>
       </table>
     `;
@@ -931,16 +932,16 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-value">${reliability.mtbf.A} days</div>
-          <div class="kpi-label">MTBF Class A</div>
+          <div class="kpi-label">MTBF Class A (Critical)</div>
           <div class="kpi-status ${reliability.mtbf.status === '✅ MEETS TARGET' ? 'status-good' : 'status-critical'}">${reliability.mtbf.status}</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-value">${reliability.mtbf.B} days</div>
-          <div class="kpi-label">MTBF Class B</div>
+          <div class="kpi-label">MTBF Class B (Important)</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-value">${reliability.mtbf.C} days</div>
-          <div class="kpi-label">MTBF Class C</div>
+          <div class="kpi-label">MTBF Class C (Standard)</div>
         </div>
       </div>
       
@@ -952,7 +953,7 @@
       
       <h4>MTTR by Technician</h4>
       <table class="data-table">
-        <thead><tr><th>Technician</th><th>MTTR (hours)</th><th>Status</th></tr></thead>
+        <thead><tr><th>Technician</th><th>MTTR (hours)</th><th>vs Target (${reliability.mttrTarget}h)</th></tr></thead>
         <tbody>
           ${reliability.mttr.map(m => `
             <tr>
@@ -966,7 +967,7 @@
       
       <h4>Top Failing Assets</h4>
       <table class="data-table">
-        <thead><tr><th>Asset</th><th>Failures</th><th>Criticality</th></tr></thead>
+        <thead><tr><th>Asset</th><th>Failures (Period)</th><th>Criticality</th></tr></thead>
         <tbody>
           ${reliability.topFailures.map(asset => `
             <tr>
@@ -982,7 +983,7 @@
   
   function renderCapexTab(capex) {
     return `
-      <h3>🏗️ CAPEX Proposal for Next Year</h3>
+      <h3>🏗️ CAPEX Proposal for Next Fiscal Year</h3>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-value">$${capex.totalProposedCapex.toLocaleString()}</div>
@@ -998,31 +999,33 @@
         </div>
       </div>
       
-      <h4>Proposed Projects</h4>
+      <h4>Proposed CAPEX Projects</h4>
       <table class="data-table">
-        <thead><tr><th>Project</th><th>Priority</th><th>Estimated Cost</th><th>Expected Savings</th><th>ROI (years)</th></tr></thead>
+        <thead><tr><th>Project Name</th><th>Priority</th><th>Estimated Cost</th><th>Expected Savings</th><th>ROI (years)</th><th>Justification</th></tr></thead>
         <tbody>
           ${capex.proposals.map(proj => `
             <tr>
               <td><strong>${escapeHtml(proj.name)}</strong></td>
               <td class="${proj.priority === 'HIGH' ? 'status-critical' : 'status-warning'}">${proj.priority}</td>
               <td>$${proj.estimatedCost.toLocaleString()}</td>
-              <td>$${proj.estimatedSavings.toLocaleString()}</td>
-              <td>${proj.roiYears}</td>
+              <td>$${proj.estimatedSavings.toLocaleString()}/year</td>
+              <td>${proj.roiYears} years</td>
+              <td class="small-text">${escapeHtml(proj.justification)}</td>
             </tr>
-          `).join('') || '<tr><td colspan="5">No CAPEX proposals generated</td></tr>'}
+          `).join('') || '<tr><td colspan="6">No CAPEX proposals generated based on failure analysis</td></tr>'}
         </tbody>
       </table>
       
       <div class="alert alert-warning">
-        <strong>📌 Note:</strong> These are preliminary proposals based on current data. Adjust numbers in CONSULTING_CAPEX_PLANNER sheet.
+        <strong>📌 CAPEX Recommendation:</strong><br>
+        Phase the CAPEX request across quarters to manage cash flow. Priority should be given to HIGH priority projects with ROI &lt; ${capex.roiThreshold} years.
       </div>
     `;
   }
   
   function renderRecommendationsTab(recommendations) {
     if (!recommendations || recommendations.length === 0) {
-      return `<div class="alert alert-good">✅ No recommendations at this time. All metrics are healthy.</div>`;
+      return `<div class="alert alert-good">✅ No recommendations at this time. All metrics are within targets.</div>`;
     }
     
     return `
@@ -1031,17 +1034,23 @@
         <div class="alert ${rec.priority === 'CRITICAL' ? 'alert-critical' : 'alert-warning'}" style="margin-bottom:16px;">
           <strong>${rec.priority === 'CRITICAL' ? '🔴' : '🟡'} ${escapeHtml(rec.title)}</strong><br>
           ${escapeHtml(rec.description)}<br>
-          <strong>Estimated Cost:</strong> $${rec.estimatedCost.toLocaleString()} &nbsp;|&nbsp;
-          <strong>Expected Savings:</strong> $${rec.expectedSavings.toLocaleString()}<br>
-          <strong>Action:</strong> ${escapeHtml(rec.action)}
+          <table style="margin: 10px 0; width: auto; border: none;">
+            <tr style="border: none;">
+              <td style="border: none; padding: 4px 8px 4px 0;"><strong>Estimated Cost:</strong></td>
+              <td style="border: none; padding: 4px;">$${rec.estimatedCost.toLocaleString()}</td>
+              <td style="border: none; padding: 4px 8px 4px 20px;"><strong>Expected Savings:</strong></td>
+              <td style="border: none; padding: 4px;">$${rec.expectedSavings.toLocaleString()}</td>
+            </tr>
+          </table>
+          <strong>📋 Action Required:</strong> ${escapeHtml(rec.action)}
         </div>
       `).join('')}
       
       <div class="alert alert-good">
-        <strong>📋 Next Steps:</strong><br>
-        1. Review critical recommendations with management<br>
-        2. Schedule implementation for approved items<br>
-        3. Track progress in CONSULTING_RECOMMENDATIONS_TRACKER sheet
+        <strong>📋 Next Steps for Management:</strong><br>
+        1. Review critical recommendations with leadership team<br>
+        2. Prioritize actions based on ROI and operational impact<br>
+        3. Assign owners to each approved recommendation
       </div>
     `;
   }
