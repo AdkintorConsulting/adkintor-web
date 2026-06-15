@@ -981,47 +981,31 @@
     `;
   }
   
-  function renderCapexTab(capex) {
-    return `
-      <h3>🏗️ CAPEX Proposal for Next Fiscal Year</h3>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-value">$${capex.totalProposedCapex.toLocaleString()}</div>
-          <div class="kpi-label">Total Proposed CAPEX</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$${capex.totalExpectedSavings.toLocaleString()}</div>
-          <div class="kpi-label">Expected Annual Savings</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${capex.roiThreshold} years</div>
-          <div class="kpi-label">ROI Threshold</div>
-        </div>
-      </div>
-      
-      <h4>Proposed CAPEX Projects</h4>
-      <table class="data-table">
-        <thead><tr><th>Project Name</th><th>Priority</th><th>Estimated Cost</th><th>Expected Savings</th><th>ROI (years)</th><th>Justification</th></tr></thead>
-        <tbody>
-          ${capex.proposals.map(proj => `
-            <tr>
-              <td><strong>${escapeHtml(proj.name)}</strong></td>
-              <td class="${proj.priority === 'HIGH' ? 'status-critical' : 'status-warning'}">${proj.priority}</td>
-              <td>$${proj.estimatedCost.toLocaleString()}</td>
-              <td>$${proj.estimatedSavings.toLocaleString()}/year</td>
-              <td>${proj.roiYears} years</td>
-              <td class="small-text">${escapeHtml(proj.justification)}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="6">No CAPEX proposals generated based on failure analysis</td></tr>'}
-        </tbody>
-      </table>
-      
-      <div class="alert alert-warning">
-        <strong>📌 CAPEX Recommendation:</strong><br>
-        Phase the CAPEX request across quarters to manage cash flow. Priority should be given to HIGH priority projects with ROI &lt; ${capex.roiThreshold} years.
-      </div>
-    `;
-  }
+function renderCapexTab(capex) {
+  return `
+    <h3>🏗️ CAPEX Proposal for Next Fiscal Year</h3>
+    <div class="alert alert-warning">
+      <strong>📌 Note:</strong> The following are recommendations based on failure data. 
+      Detailed cost estimates require internal evaluation.
+    </div>
+    
+    <h4>Recommended Actions to Evaluate</h4>
+    <table class="data-table">
+      <thead>
+        <tr><th>Recommendation</th><th>Priority</th><th>Justification</th></tr>
+      </thead>
+      <tbody>
+        ${capex.proposals.map(proj => `
+          <tr>
+            <td><strong>${escapeHtml(proj.name)}</strong></td>
+            <td class="${proj.priority === 'HIGH' ? 'status-critical' : 'status-warning'}">${proj.priority}</td>
+            <td class="small-text">${escapeHtml(proj.justification)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="3">No CAPEX recommendations at this time. Continue monitoring asset performance.</td></tr>'}
+      </tbody>
+    </table>
+  `;
+}
   
   function renderRecommendationsTab(recommendations) {
     if (!recommendations || recommendations.length === 0) {
@@ -1096,6 +1080,47 @@
       return m;
     });
   }
+
+// ============================================
+// LOAD AVAILABLE YEARS FROM DATA
+// ============================================
+async function loadAvailableYears() {
+  try {
+    // Llamar a una función que obtenga los años disponibles
+    const years = await callApi('getAvailableYearsForConsulting', []);
+    const yearSelect = document.getElementById('yearSelect');
+    if (years && years.length > 0 && yearSelect) {
+      yearSelect.innerHTML = '';
+      years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      });
+      // Seleccionar el año más reciente por defecto
+      const currentYear = new Date().getFullYear();
+      if (years.includes(currentYear)) {
+        yearSelect.value = currentYear;
+      } else if (years.length > 0) {
+        yearSelect.value = years[years.length - 1];
+      }
+    }
+  } catch (error) {
+    console.warn('[CONSULTING] Could not load years dynamically:', error);
+    // Fallback: años manuales
+    const yearSelect = document.getElementById('yearSelect');
+    if (yearSelect && yearSelect.children.length <= 1) {
+      const currentYear = new Date().getFullYear();
+      for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        yearSelect.appendChild(option);
+      }
+      yearSelect.value = currentYear;
+    }
+  }
+}
   
   // ============================================
   // INITIALIZATION
