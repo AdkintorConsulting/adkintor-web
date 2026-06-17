@@ -838,6 +838,7 @@
             showLoading('Loading configuration...');
             await loadConfig();
             hideLoading();
+        showMessage('Add Asset loaded successfully ✅', false);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
         }
