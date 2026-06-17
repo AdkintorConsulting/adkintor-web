@@ -1483,13 +1483,13 @@
     // INITIALIZATION
     // ============================================
     
-    function init() {
+    async function init() {
         loadUser();
         loadApiUrl();
         
         if (EAMS_API_URL) {
 	    showLoading('Loading hierarchy...');
-            loadTree();
+            await loadTree();
             showMessage('Modify Asset loaded successfully ✅', false);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
