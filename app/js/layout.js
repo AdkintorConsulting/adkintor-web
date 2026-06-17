@@ -1337,3 +1337,136 @@ function applyPermissionsByRole() {
         }
     });
 }
+
+// ============================================
+// 1. ABRIR MODALES MAXIMIZADOS POR DEFECTO
+// ============================================
+
+function openIframeModalWithTitle(title, url) {
+    const modal = document.getElementById('iframeModal');
+    const container = modal?.querySelector('.modal-container');
+    const iframe = document.getElementById('intelIframe');
+    const titleElem = document.getElementById('modalTitle');
+    
+    if (modal && iframe && titleElem) {
+        titleElem.textContent = title;
+        iframe.src = url;
+        modal.style.display = 'flex';
+        
+        // ✅ MAXIMIZADO POR DEFECTO
+        if (container) {
+            // Resetear estados anteriores
+            container.classList.remove('minimized');
+            container.classList.add('maximized');
+            isMaximized = true;
+            isMinimized = false;
+            
+            const maximizeBtn = document.getElementById('maximizeModalBtn');
+            if (maximizeBtn) maximizeBtn.innerHTML = '❐';
+        }
+        
+        // Enviar logo y versión
+        loadCompanyLogoForIframe(iframe);
+        sendVersionToIframe(iframe);
+    }
+}
+
+// ============================================
+// 2. TOAST MEJORADO (arriba derecha)
+// ============================================
+
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) {
+        console.warn('Toast container not found');
+        return;
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    
+    // Auto-remover después de duration
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 350);
+    }, duration);
+}
+
+// ============================================
+// 3. ENVÍO DE LOGO Y VERSIÓN MEJORADO
+// ============================================
+
+function sendLogoToIframe(iframe, logoUrl) {
+    const send = () => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'SET_COMPANY_LOGO',
+                logoUrl: logoUrl
+            }, '*');
+        }
+    };
+    
+    // Si el iframe ya está cargado, enviar ahora
+    if (iframe.contentWindow && iframe.contentWindow.document && 
+        iframe.contentWindow.document.readyState === 'complete') {
+        send();
+    } else {
+        iframe.onload = send;
+    }
+}
+
+// ============================================
+// 4. VERSIÓN DINÁMICA
+// ============================================
+
+function sendVersionToIframe(iframe) {
+    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+    
+    const send = () => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'SET_VERSION',
+                version: version
+            }, '*');
+        }
+    };
+    
+    if (iframe.contentWindow && iframe.contentWindow.document && 
+        iframe.contentWindow.document.readyState === 'complete') {
+        send();
+    } else {
+        // No sobrescribir onload si ya existe
+        const existingOnload = iframe.onload;
+        iframe.onload = function(e) {
+            if (existingOnload) existingOnload(e);
+            send();
+        };
+    }
+}
+
+// ============================================
+// 5. LOGGING CON USUARIO (asegurar)
+// ============================================
+
+// En las funciones de logging, asegurar que se pasa el usuario
+// Ya tienes Logger.js, solo asegurar que se usa correctamente
+
+// ============================================
+// 6. INICIALIZACIÓN - MOSTRAR TOAST DE BIENVENIDA
+// ============================================
+
+// Al cargar main.html, mostrar toast de bienvenida
+document.addEventListener('DOMContentLoaded', function() {
+    // ... código existente ...
+    
+    // Mostrar toast de bienvenida
+    setTimeout(() => {
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        const name = session?.userName || session?.email?.split('@')[0] || 'User';
+        showToast(`Welcome back, ${name}! 👋`, 'info', 3000);
+    }, 500);
+});
