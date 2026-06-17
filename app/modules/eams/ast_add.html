@@ -791,6 +791,7 @@
         }
         if (!isValid) {
             showBanner('Please complete all required fields (marked with *)', 'error');
+            showMessage('Please complete all required fields', true);  // ← AGREGAR ESTO
         }
         return isValid;
     }
