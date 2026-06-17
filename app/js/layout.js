@@ -282,7 +282,10 @@ function setupModalClose() {
     }
 }
 
-// INTELLIGENCE MODAL FUNCTIONS
+// ============================================
+// INTELLIGENCE MODAL FUNCTIONS - CORREGIDAS
+// ============================================
+
 function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
     // Check if module exists (for placeholders)
     const existingModules = ['wo_intel', 'kpi_intel', 'pvt_intel', 'stk_intel', 'cal_intel', 'consulting'];
@@ -295,10 +298,9 @@ function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
     
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = moduleTitle;
+    if (modal && iframe) {
+        // YA NO HAY titleElem - el iframe tiene su propio título
         iframe.src = moduleUrl;
         modal.style.display = 'flex';
     }
@@ -307,12 +309,10 @@ function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
 function showPlaceholderInModal(moduleTitle) {
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = moduleTitle + ' (Coming Soon)';
-        
-        // Create placeholder HTML
+    if (modal && iframe) {
+        // YA NO HAY titleElem - el iframe tiene su propio título
+        // Crear placeholder HTML
         const placeholderHtml = `
             <!DOCTYPE html>
             <html>
@@ -348,9 +348,9 @@ function showPlaceholderInModal(moduleTitle) {
             <body>
                 <div class="placeholder">
                     <i class="fas fa-code-branch"></i>
-                    <h2>Coming Soon</h2>
+                    <h2>${moduleTitle}</h2>
                     <p>Module under development</p>
-                    <p style="font-size: 0.9rem;">${moduleTitle} will be available in the next release</p>
+                    <p style="font-size: 0.9rem;">Coming soon in the next release</p>
                 </div>
             </body>
             </html>
@@ -389,7 +389,7 @@ function closeIframeModal() {
 }
 
 // ============================================
-// EAMS HANDLERS - ACTUALIZADO
+// EAMS HANDLERS
 // ============================================
 
 function handleEamsClick(module) {
@@ -884,10 +884,8 @@ function openPlantLayout() {
     
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = 'Plant Layout';
+    if (modal && iframe) {
         iframe.src = '/app/modules/eams/plant_layout.html';
         modal.style.display = 'flex';
         
@@ -912,10 +910,8 @@ function openSysWizard() {
     
     const modal = document.getElementById('iframeModal');
     const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = 'Universal Configurator';
+    if (modal && iframe) {
         iframe.src = '/app/modules/eams/sys_wizard.html';
         modal.style.display = 'flex';
         
@@ -933,29 +929,42 @@ function openSysWizard() {
 
 function openIframeModalWithTitle(title, url) {
     const modal = document.getElementById('iframeModal');
+    const container = modal?.querySelector('.modal-container');
     const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
     
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = title;
+    if (modal && iframe) {
         iframe.src = url;
         modal.style.display = 'flex';
         
-        // Cargar logo y pasarlo al iframe
-        loadCompanyLogoForIframe(iframe);
+        // Maximizado por defecto
+        if (container) {
+            container.classList.remove('minimized');
+            container.classList.add('maximized');
+            isMaximized = true;
+            isMinimized = false;
+            const maximizeBtn = document.getElementById('maximizeModalBtn');
+            if (maximizeBtn) maximizeBtn.innerHTML = '❐';
+        }
         
-        // Enviar versión al iframe
+        // Enviar logo y versión al iframe
+        loadCompanyLogoForIframe(iframe);
         sendVersionToIframe(iframe);
     }
 }
 
-// Nueva función para cargar logo y pasarlo al iframe
+// ============================================
+// CARGA DE LOGO DESDE API
+// ============================================
+
 async function loadCompanyLogoForIframe(iframe) {
     try {
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
-        if (!session || !session.eamsApiUrl) return;
+        if (!session || !session.eamsApiUrl) {
+            // Logo por defecto
+            sendLogoToIframe(iframe, 'https://i.imgur.com/aQol7vU.png');
+            return;
+        }
         
-        // Llamar a la API para obtener el logo usando WO_getCompanyLogoUrl
         const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -966,92 +975,60 @@ async function loadCompanyLogoForIframe(iframe) {
         });
         
         const result = await response.json();
+        const logoUrl = (result.success && result.data) ? result.data : 'https://i.imgur.com/aQol7vU.png';
+        sendLogoToIframe(iframe, logoUrl);
         
-        if (result.success && result.data) {
-            const logoUrl = result.data;
-            
-            // Función para enviar el logo
-            const sendLogo = () => {
-                if (iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'SET_COMPANY_LOGO',
-                        logoUrl: logoUrl
-                    }, '*');
-                    console.log('[Layout] Logo sent to iframe:', logoUrl);
-                }
-            };
-            
-            // Si el iframe ya está cargado, enviar ahora
-            if (iframe.contentWindow && iframe.contentWindow.document && 
-                iframe.contentWindow.document.readyState === 'complete') {
-                sendLogo();
-            } else {
-                iframe.onload = sendLogo;
-            }
-        } else {
-            console.warn('No logo URL returned from API');
-        }
     } catch (error) {
-        console.warn('Could not load company logo:', error);
+        console.warn('Could not load company logo, using default:', error);
+        sendLogoToIframe(iframe, 'https://i.imgur.com/aQol7vU.png');
     }
 }
 
-// Función para enviar versión al iframe
+function sendLogoToIframe(iframe, logoUrl) {
+    const send = () => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'SET_COMPANY_LOGO',
+                logoUrl: logoUrl
+            }, '*');
+        }
+    };
+    
+    // Si el iframe ya está cargado, enviar ahora
+    if (iframe.contentWindow && iframe.contentWindow.document && 
+        iframe.contentWindow.document.readyState === 'complete') {
+        send();
+    } else {
+        iframe.onload = send;
+    }
+}
+
+// ============================================
+// VERSIÓN DINÁMICA
+// ============================================
+
 function sendVersionToIframe(iframe) {
-    // Función para enviar la versión
-    const sendVersion = (version) => {
+    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+    
+    const send = () => {
         if (iframe.contentWindow) {
             iframe.contentWindow.postMessage({
                 type: 'SET_VERSION',
                 version: version
             }, '*');
-            console.log('[Layout] Version sent to iframe:', version);
         }
     };
     
-    // Intentar obtener versión desde API
-    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-    if (session && session.eamsApiUrl) {
-        fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                targetUrl: session.eamsApiUrl,
-                payload: { action: 'getVersionInfo', args: [] }
-            })
-        })
-        .then(res => res.json())
-        .then(result => {
-            let version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-            if (result.success && result.data && result.data.fullVersion) {
-                version = result.data.fullVersion;
-            }
-            
-            // Si el iframe ya está cargado, enviar ahora
-            if (iframe.contentWindow && iframe.contentWindow.document && 
-                iframe.contentWindow.document.readyState === 'complete') {
-                sendVersion(version);
-            } else {
-                iframe.onload = () => sendVersion(version);
-            }
-        })
-        .catch(() => {
-            const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-            if (iframe.contentWindow && iframe.contentWindow.document && 
-                iframe.contentWindow.document.readyState === 'complete') {
-                sendVersion(version);
-            } else {
-                iframe.onload = () => sendVersion(version);
-            }
-        });
+    if (iframe.contentWindow && iframe.contentWindow.document && 
+        iframe.contentWindow.document.readyState === 'complete') {
+        send();
     } else {
-        const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-        if (iframe.contentWindow && iframe.contentWindow.document && 
-            iframe.contentWindow.document.readyState === 'complete') {
-            sendVersion(version);
-        } else {
-            iframe.onload = () => sendVersion(version);
-        }
+        // No sobrescribir onload si ya existe
+        const existingOnload = iframe.onload;
+        iframe.onload = function(e) {
+            if (existingOnload) existingOnload(e);
+            send();
+        };
     }
 }
 
@@ -1339,40 +1316,7 @@ function applyPermissionsByRole() {
 }
 
 // ============================================
-// 1. ABRIR MODALES MAXIMIZADOS POR DEFECTO
-// ============================================
-
-function openIframeModalWithTitle(title, url) {
-    const modal = document.getElementById('iframeModal');
-    const container = modal?.querySelector('.modal-container');
-    const iframe = document.getElementById('intelIframe');
-    const titleElem = document.getElementById('modalTitle');
-    
-    if (modal && iframe && titleElem) {
-        titleElem.textContent = title;
-        iframe.src = url;
-        modal.style.display = 'flex';
-        
-        // ✅ MAXIMIZADO POR DEFECTO
-        if (container) {
-            // Resetear estados anteriores
-            container.classList.remove('minimized');
-            container.classList.add('maximized');
-            isMaximized = true;
-            isMinimized = false;
-            
-            const maximizeBtn = document.getElementById('maximizeModalBtn');
-            if (maximizeBtn) maximizeBtn.innerHTML = '❐';
-        }
-        
-        // Enviar logo y versión
-        loadCompanyLogoForIframe(iframe);
-        sendVersionToIframe(iframe);
-    }
-}
-
-// ============================================
-// 2. TOAST MEJORADO (arriba derecha)
+// TOAST MEJORADO (arriba derecha)
 // ============================================
 
 function showToast(message, type = 'info', duration = 3000) {
@@ -1397,72 +1341,11 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 // ============================================
-// 3. ENVÍO DE LOGO Y VERSIÓN MEJORADO
-// ============================================
-
-function sendLogoToIframe(iframe, logoUrl) {
-    const send = () => {
-        if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-                type: 'SET_COMPANY_LOGO',
-                logoUrl: logoUrl
-            }, '*');
-        }
-    };
-    
-    // Si el iframe ya está cargado, enviar ahora
-    if (iframe.contentWindow && iframe.contentWindow.document && 
-        iframe.contentWindow.document.readyState === 'complete') {
-        send();
-    } else {
-        iframe.onload = send;
-    }
-}
-
-// ============================================
-// 4. VERSIÓN DINÁMICA
-// ============================================
-
-function sendVersionToIframe(iframe) {
-    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-    
-    const send = () => {
-        if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-                type: 'SET_VERSION',
-                version: version
-            }, '*');
-        }
-    };
-    
-    if (iframe.contentWindow && iframe.contentWindow.document && 
-        iframe.contentWindow.document.readyState === 'complete') {
-        send();
-    } else {
-        // No sobrescribir onload si ya existe
-        const existingOnload = iframe.onload;
-        iframe.onload = function(e) {
-            if (existingOnload) existingOnload(e);
-            send();
-        };
-    }
-}
-
-// ============================================
-// 5. LOGGING CON USUARIO (asegurar)
-// ============================================
-
-// En las funciones de logging, asegurar que se pasa el usuario
-// Ya tienes Logger.js, solo asegurar que se usa correctamente
-
-// ============================================
-// 6. INICIALIZACIÓN - MOSTRAR TOAST DE BIENVENIDA
+// INICIALIZACIÓN - MOSTRAR TOAST DE BIENVENIDA
 // ============================================
 
 // Al cargar main.html, mostrar toast de bienvenida
 document.addEventListener('DOMContentLoaded', function() {
-    // ... código existente ...
-    
     // Mostrar toast de bienvenida
     setTimeout(() => {
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
