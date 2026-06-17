@@ -350,29 +350,6 @@
         .btn-secondary:hover {
             background: #5a6268;
         }
-        
-        .banner {
-            padding: 10px 16px;
-            margin: 0 0 12px 0;
-            border-radius: 6px;
-            display: none;
-            font-size: 13px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .banner.success {
-            display: block;
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .banner.error {
-            display: block;
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
     </style>
 </head>
 <body>
@@ -407,9 +384,6 @@
     
     <!-- CUERPO -->
     <div class="module-body">
-        
-        <!-- BANNER -->
-        <div id="banner-msg" class="banner"></div>
         
         <form id="assetForm" novalidate>
             <div class="grid-2">
@@ -502,6 +476,7 @@
     </div>
     
 </div>
+
 <script src="/app/js/module-base.js"></script>
 <script>
     // ============================================
@@ -593,15 +568,6 @@
                 console.error('Error parsing session:', e);
             }
         }
-    }
-
-    function showBanner(message, type) {
-        const banner = document.getElementById('banner-msg');
-        banner.textContent = message;
-        banner.className = 'banner ' + type;
-        setTimeout(() => {
-            banner.className = 'banner';
-        }, 5000);
     }
 
     async function callApi(action, args = []) {
@@ -790,8 +756,7 @@
             }
         }
         if (!isValid) {
-            showBanner('Please complete all required fields (marked with *)', 'error');
-            showMessage('Please complete all required fields', true);  // ← AGREGAR ESTO
+            showMessage('Please complete all required fields', true);
         }
         return isValid;
     }
@@ -809,7 +774,7 @@
             setupCriticalityGrid();
             syncUI();
         } catch (error) {
-            showBanner('Failed to load configuration: ' + error.message, 'error');
+            showMessage('Failed to load configuration: ' + error.message, 'error');
             document.getElementById('btnSubmit').disabled = true;
         }
     }
@@ -839,7 +804,7 @@
             showLoading('Loading configuration...');
             await loadConfig();
             hideLoading();
-        showMessage('Add Asset loaded successfully ✅', false);
+            showMessage('Add Asset loaded successfully ✅', false);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
         }
@@ -856,7 +821,7 @@
         if (crit.level === 'INCOMPLETE') {
             hideLoading();
             enableButton('btnSubmit');
-            showBanner('Please complete all criticality criteria', 'error');
+            showMessage('Please complete all criticality criteria', 'error');
             return;
         }
         payload.name = sanitizeInput(payload.name);
@@ -895,7 +860,7 @@
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                 ModuleBase.showToast('Asset saved successfully! ✅', 'success');
             }
-            showBanner(result.message || 'Asset saved successfully!', 'success');
+            showMessage(result.message || 'Asset saved successfully!', false);
             setTimeout(() => closeModal(), 2000);
         } catch (error) {
             if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
@@ -908,7 +873,7 @@
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                 ModuleBase.showToast('Error: ' + error.message, 'error');
             }
-            showBanner('Error: ' + error.message, 'error');
+            showMessage('Error: ' + error.message, 'error');
         }
     });
 
