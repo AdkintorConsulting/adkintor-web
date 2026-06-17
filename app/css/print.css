@@ -1,0 +1,253 @@
+/**
+ * ============================================
+ * ADKINTOR - ESTILOS DE IMPRESIÓN
+ * ============================================
+ * Se aplica SOLO al imprimir (print media)
+ * Estandariza cabecera, footer y colores
+ * ============================================
+ */
+
+@media print {
+    
+    /* ============================================
+       CONFIGURACIÓN GENERAL DE IMPRESIÓN
+       ============================================ */
+    
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: white !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        color: #1a1a2e !important;
+    }
+    
+    /* Ocultar elementos no imprimibles */
+    .no-print,
+    .btn,
+    button,
+    .modal-btn,
+    .modal-close,
+    .modal-controls,
+    .toast-container,
+    #toastContainer,
+    .no-print {
+        display: none !important;
+    }
+    
+    /* ============================================
+       CABECERA DE IMPRESIÓN
+       ============================================ */
+    
+    .print-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding-bottom: 12px !important;
+        border-bottom: 3px solid #1a1a2e !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .print-header .print-logo {
+        height: 40px !important;
+        width: auto !important;
+        object-fit: contain !important;
+    }
+    
+    .print-header .print-title {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #1a1a2e !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .print-header .print-meta {
+        font-size: 11px !important;
+        color: #666 !important;
+        text-align: right !important;
+        line-height: 1.5 !important;
+    }
+    
+    .print-header .print-meta span {
+        display: block !important;
+    }
+    
+    /* ============================================
+       FOOTER DE IMPRESIÓN
+       ============================================ */
+    
+    .print-footer {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        padding: 10px 20px !important;
+        border-top: 2px solid #e0e0e0 !important;
+        font-size: 10px !important;
+        color: #999 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        background: white !important;
+    }
+    
+    .print-footer .footer-version {
+        font-weight: 500 !important;
+        color: #4a6cf7 !important;
+    }
+    
+    .print-footer .footer-date {
+        color: #666 !important;
+    }
+    
+    /* ============================================
+       TABLAS - ESTILO IMPRESIÓN
+       ============================================ */
+    
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 11px !important;
+        margin: 10px 0 !important;
+    }
+    
+    table thead th {
+        background: #1a1a2e !important;
+        color: white !important;
+        padding: 8px 10px !important;
+        text-align: left !important;
+        font-weight: 600 !important;
+        border: 1px solid #1a1a2e !important;
+    }
+    
+    table tbody td {
+        padding: 6px 10px !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    table tbody tr:nth-child(even) {
+        background: #f8f9fa !important;
+    }
+    
+    table tbody tr:nth-child(odd) {
+        background: white !important;
+    }
+    
+    /* ============================================
+       EAMS CLEAR MODE - IMPRESIÓN
+       ============================================ */
+    
+    .eams-print .print-header .print-title {
+        color: #1a1a2e !important;
+    }
+    
+    .eams-print .print-header {
+        border-bottom-color: #1a1a2e !important;
+    }
+    
+    /* ============================================
+       FORESIGHT DARK MODE - IMPRESIÓN
+       ============================================ */
+    
+    .foresight-print .print-header .print-title {
+        color: #4a6cf7 !important;
+    }
+    
+    .foresight-print .print-header {
+        border-bottom-color: #4a6cf7 !important;
+    }
+    
+    .foresight-print table thead th {
+        background: #1a1a2e !important;
+    }
+    
+    /* ============================================
+       BADGES Y ESTADOS EN IMPRESIÓN
+       ============================================ */
+    
+    .badge {
+        display: inline-block !important;
+        padding: 2px 10px !important;
+        border-radius: 12px !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+    }
+    
+    .badge-success {
+        background: #22c55e !important;
+        color: white !important;
+    }
+    
+    .badge-warning {
+        background: #f59e0b !important;
+        color: white !important;
+    }
+    
+    .badge-danger {
+        background: #ef4444 !important;
+        color: white !important;
+    }
+    
+    .badge-info {
+        background: #3b82f6 !important;
+        color: white !important;
+    }
+    
+    .badge-dark {
+        background: #1a1a2e !important;
+        color: white !important;
+    }
+    
+    /* ============================================
+       SALTOS DE PÁGINA
+       ============================================ */
+    
+    .page-break {
+        page-break-after: always !important;
+        border: none !important;
+        margin: 20px 0 !important;
+    }
+    
+    .page-break-before {
+        page-break-before: always !important;
+    }
+    
+    /* ============================================
+       MÁRGENES Y TAMAÑOS
+       ============================================ */
+    
+    @page {
+        margin: 15mm 15mm 25mm 15mm !important;
+        size: A4 portrait !important;
+    }
+    
+    /* ============================================
+       RESPONSIVE PARA IMPRESIÓN PEQUEÑA
+       ============================================ */
+    
+    @media print and (max-width: 600px) {
+        .print-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+        }
+        
+        .print-header .print-meta {
+            text-align: left !important;
+            width: 100% !important;
+        }
+        
+        table {
+            font-size: 9px !important;
+        }
+        
+        table thead th,
+        table tbody td {
+            padding: 4px 6px !important;
+        }
+    }
+}
