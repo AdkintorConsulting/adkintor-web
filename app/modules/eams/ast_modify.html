@@ -1427,7 +1427,9 @@
             flatAssetsList = response.flatList || [];
             DBhierarchy = response.hierarchy || [];
             renderTree(DBhierarchy);
+            hideLoading();
         } catch (error) {
+            hideLoading();
             showMessage('Failed to load hierarchy: ' + error.message, true);
             document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading data</div>';
         }
@@ -1486,6 +1488,7 @@
         loadApiUrl();
         
         if (EAMS_API_URL) {
+	    showLoading('Loading hierarchy...');
             loadTree();
             showMessage('Modify Asset loaded successfully ✅', false);
         } else {
