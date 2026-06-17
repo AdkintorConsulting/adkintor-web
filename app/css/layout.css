@@ -661,3 +661,155 @@ body {
 .content-area {
     background: #f4f6f9;
 }
+
+/* ============================================
+   TOAST - POSICIÓN ARRIBA DERECHA
+   ============================================ */
+
+/* Contenedor de toasts (fijo, arriba derecha) */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 380px;
+    min-width: 200px;
+    pointer-events: none;
+}
+
+#toastContainer .toast {
+    pointer-events: auto;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: toastSlideIn 0.3s ease-out;
+    backdrop-filter: blur(4px);
+}
+
+#toastContainer .toast-success {
+    background: rgba(34, 197, 94, 0.95);
+}
+
+#toastContainer .toast-error {
+    background: rgba(239, 68, 68, 0.95);
+}
+
+#toastContainer .toast-warning {
+    background: rgba(245, 158, 11, 0.95);
+}
+
+#toastContainer .toast-info {
+    background: rgba(26, 26, 46, 0.95);
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ELIMINAR el toast-message antiguo (está en layout.css) */
+/* Buscar y ELIMINAR o COMENTAR estas líneas: */
+/*
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #333;
+    ...
+}
+*/
+
+/* ============================================
+   MODAL - MAXIMIZADO POR DEFECTO
+   ============================================ */
+
+.modal-container {
+    background: white;
+    border-radius: 12px;
+    width: 95%;
+    height: 95%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    resize: both;
+    overflow: auto;
+    transition: all 0.25s ease;
+}
+
+/* Maximizado por defecto - se aplica con clase */
+.modal-container.maximized {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0;
+}
+
+/* ============================================
+   FOOTER - ESTANDARIZADO
+   ============================================ */
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-dot.connected {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.status-dot.disconnected {
+    background: #ef4444;
+}
+
+.status-text {
+    font-size: 12px;
+    color: #666;
+}
+
+/* ============================================
+   MODULE CONTENT - AJUSTE A IFRAME
+   ============================================ */
+
+#intelIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Asegurar que el contenido del iframe ocupe todo */
+.modal-body {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+}
