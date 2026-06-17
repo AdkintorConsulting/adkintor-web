@@ -598,7 +598,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading...</span>
+    <span style="color: #666; font-size: 13px;">Loading hierarchy...</span>
 </div>
 
 <!-- TOAST -->
@@ -1422,11 +1422,13 @@
     }
     
     async function loadTree() {
+        showLoading('Loading hierarchy...');
         try {
             const response = await callApi('AST_getHierarchyForModify', []);
             flatAssetsList = response.flatList || [];
             DBhierarchy = response.hierarchy || [];
             renderTree(DBhierarchy);
+            showMessage('Ready: ' + (flatAssetsList.length || 0) + ' assets loaded', false);
             hideLoading();
         } catch (error) {
             hideLoading();
@@ -1483,14 +1485,12 @@
     // INITIALIZATION
     // ============================================
     
-    async function init() {
+    function init() {
         loadUser();
         loadApiUrl();
         
         if (EAMS_API_URL) {
-	    showLoading('Loading hierarchy...');
-            await loadTree();
-            showMessage('Modify Asset loaded successfully ✅', false);
+            loadTree();
         } else {
             showMessage('API URL not configured. Please log in again.', true);
             document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Authentication required. Please refresh the page.</div>';
@@ -1529,6 +1529,12 @@
         searchInput.addEventListener('keypress', function(e) { 
             if (e.key === 'Enter') loadAsset(searchInput.value); 
         });
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 </script>
 </body>
