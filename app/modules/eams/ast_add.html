@@ -4,93 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Asset - ADKINTOR EAMS</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         /* ============================================
-           BASE - MÍNIMO OBLIGATORIO
+           BASE
            ============================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f4f6f9;
             height: 100vh;
-            overflow: auto;
+            overflow: hidden;
             padding: 0;
+            display: flex;
+            flex-direction: column;
         }
         
         /* ============================================
            WRAPPER
            ============================================ */
         .module-wrapper {
-            padding: 16px 20px;
-            height: 100%;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
         }
         
         /* ============================================
-           HEADER: Logo + Título + Usuario
+           CABECERA - AZUL OSCURO
            ============================================ */
         .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            margin-bottom: 12px;
+            padding: 10px 20px;
+            background: #1a1a2e;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
         
         .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        
-        .company-logo {
-            height: 28px;
-            width: auto;
-            display: none;
         }
         
         .module-title {
             font-size: 16px;
             font-weight: 600;
-            color: #1a1a2e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .user-badge {
             font-size: 12px;
-            color: #555;
-            background: #eef2f5;
-            padding: 4px 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
             border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
         }
         
         /* ============================================
            BREADCRUMBS
            ============================================ */
         .breadcrumbs {
+            padding: 8px 20px;
             font-size: 12px;
             color: #888;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            background: #f8f9fa;
             border-bottom: 1px solid #eee;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .breadcrumbs .current {
@@ -99,27 +97,29 @@
         }
         
         /* ============================================
-           CONTENIDO (SCROLLABLE)
+           CUERPO
            ============================================ */
         .module-body {
             flex: 1;
-            overflow-y: auto;
-            padding-right: 4px;
+            overflow: auto;
+            padding: 16px 20px;
+            background: #f4f6f9;
         }
         
         /* ============================================
-           FOOTER
+           FOOTER - BLANCO
            ============================================ */
         .module-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 10px;
-            margin-top: 12px;
+            padding: 6px 20px;
+            background: #ffffff;
             border-top: 1px solid #eee;
             font-size: 11px;
             color: #999;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .status-dot {
@@ -149,7 +149,7 @@
             width: 100%;
             height: 100%;
             background: rgba(244, 246, 249, 0.95);
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -157,8 +157,8 @@
             gap: 12px;
         }
         
-        #loadingOverlay.hidden {
-            display: none;
+        #loadingOverlay.visible {
+            display: flex;
         }
         
         .spinner {
@@ -175,7 +175,7 @@
         }
         
         /* ============================================
-           TOAST (ARRIBA DERECHA)
+           TOAST - ARRIBA DERECHA
            ============================================ */
         #toastContainer {
             position: fixed;
@@ -196,14 +196,15 @@
             color: white;
             font-size: 13px;
             font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             animation: toastSlideIn 0.3s ease-out;
         }
         
-        #toastContainer .toast-success { background: rgba(34, 197, 94, 0.95); }
-        #toastContainer .toast-error { background: rgba(239, 68, 68, 0.95); }
-        #toastContainer .toast-warning { background: rgba(245, 158, 11, 0.95); }
-        #toastContainer .toast-info { background: rgba(26, 26, 46, 0.95); }
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
         
         @keyframes toastSlideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -216,7 +217,7 @@
         }
         
         /* ============================================
-           ESTILOS ESPECÍFICOS DEL MÓDULO (TUS ESTILOS)
+           ESTILOS ESPECÍFICOS DEL MÓDULO
            ============================================ */
         .grid-2 {
             display: grid;
@@ -234,6 +235,7 @@
             font-weight: 600;
             color: #333;
             font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .required-field label::after {
@@ -250,7 +252,7 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 13px;
-            font-family: inherit;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: white;
         }
         
@@ -271,6 +273,7 @@
             font-size: 0.6rem;
             color: #6c757d;
             margin-top: 4px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .criteria-box {
@@ -287,6 +290,7 @@
             margin-bottom: 15px;
             display: block;
             font-weight: 700;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         #critBadge {
@@ -296,6 +300,7 @@
             border-radius: 4px;
             font-weight: 700;
             background: #ddd;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .btn-container {
@@ -316,6 +321,7 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.3s;
         }
         
@@ -337,6 +343,7 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.3s;
         }
         
@@ -350,6 +357,7 @@
             border-radius: 6px;
             display: none;
             font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .banner.success {
@@ -369,142 +377,201 @@
 </head>
 <body>
 
-<!-- ============================================
-     LOADING OVERLAY (CONTROL MANUAL)
-     ============================================ -->
+<!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
     <span style="color: #666; font-size: 13px;">Loading configuration...</span>
 </div>
 
-<!-- ============================================
-     TOAST CONTAINER (ARRIBA DERECHA)
-     ============================================ -->
+<!-- TOAST -->
 <div id="toastContainer"></div>
 
-<!-- ============================================
-     CONTENIDO DEL MÓDULO
-     ============================================ -->
-<div id="moduleContent" style="display: none;">
-    <div class="module-wrapper">
-        
-        <!-- HEADER: Logo + Título + Usuario -->
-        <div class="module-header">
-            <div class="header-left">
-                <img class="company-logo" id="companyLogo" src="" alt="Logo">
-                <span class="module-title">Add Asset</span>
-            </div>
-            <div class="header-right">
-                <span class="user-badge" id="userDisplay">Loading...</span>
-            </div>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Add Asset</span>
         </div>
-        
-        <!-- BREADCRUMBS -->
-        <div class="breadcrumbs">
-            <span>Home</span> &gt; <span>ASSETS</span> &gt; <span class="current">Add Asset</span>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
+    </div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>ASSETS</span> &gt; <span class="current">Add Asset</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
         
         <!-- BANNER -->
         <div id="banner-msg" class="banner"></div>
         
-        <!-- CONTENIDO ESPECÍFICO -->
-        <div class="module-body">
-            <form id="assetForm" novalidate>
-                <div class="grid-2">
-                    <div class="field-group required-field">
-                        <label>Operational Area</label>
-                        <select id="area" name="area" onchange="syncUI()" required>
-                            <option value=""> — Select — </option>
-                        </select>
-                    </div>
-                    <div class="field-group required-field">
-                        <label>Asset Type</label>
-                        <select id="type" name="type" onchange="syncUI()" required>
-                            <option value=""> — Select — </option>
-                        </select>
-                    </div>
+        <form id="assetForm" novalidate>
+            <div class="grid-2">
+                <div class="field-group required-field">
+                    <label>Operational Area</label>
+                    <select id="area" name="area" onchange="syncUI()" required>
+                        <option value=""> — Select — </option>
+                    </select>
                 </div>
+                <div class="field-group required-field">
+                    <label>Asset Type</label>
+                    <select id="type" name="type" onchange="syncUI()" required>
+                        <option value=""> — Select — </option>
+                    </select>
+                </div>
+            </div>
 
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label>Parent Asset ID</label>
-                        <select id="parentID" name="parentID">
-                            <option value="N/A">N/A - None / Root Level</option>
-                        </select>
-                    </div>
-                    <div class="field-group required-field">
-                        <label>Asset Name</label>
-                        <input type="text" id="name" name="name" placeholder="e.g. Centrifugal Pump P-101" required>
-                    </div>
+            <div class="grid-2">
+                <div class="field-group">
+                    <label>Parent Asset ID</label>
+                    <select id="parentID" name="parentID">
+                        <option value="N/A">N/A - None / Root Level</option>
+                    </select>
                 </div>
+                <div class="field-group required-field">
+                    <label>Asset Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Centrifugal Pump P-101" required>
+                </div>
+            </div>
 
-                <div class="grid-2">
-                    <div class="field-group required-field">
-                        <label>Category / Subtype</label>
-                        <select id="category" name="category" class="lockable" required>
-                            <option value=""> — Select — </option>
-                        </select>
-                    </div>
-                    <div class="field-group required-field">
-                        <label>Current Status</label>
-                        <select id="status" name="status" required>
-                            <option value=""> — Select — </option>
-                        </select>
-                    </div>
+            <div class="grid-2">
+                <div class="field-group required-field">
+                    <label>Category / Subtype</label>
+                    <select id="category" name="category" class="lockable" required>
+                        <option value=""> — Select — </option>
+                    </select>
                 </div>
+                <div class="field-group required-field">
+                    <label>Current Status</label>
+                    <select id="status" name="status" required>
+                        <option value=""> — Select — </option>
+                    </select>
+                </div>
+            </div>
 
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label>Manufacturer</label>
-                        <input type="text" name="mfr" class="lockable" placeholder="e.g. Siemens">
-                    </div>
-                    <div class="field-group">
-                        <label>Model</label>
-                        <input type="text" name="model" class="lockable" placeholder="e.g. P-1000">
-                    </div>
+            <div class="grid-2">
+                <div class="field-group">
+                    <label>Manufacturer</label>
+                    <input type="text" name="mfr" class="lockable" placeholder="e.g. Siemens">
                 </div>
+                <div class="field-group">
+                    <label>Model</label>
+                    <input type="text" name="model" class="lockable" placeholder="e.g. P-1000">
+                </div>
+            </div>
 
-                <div class="grid-2">
-                    <div class="field-group">
-                        <label>Serial Number</label>
-                        <input type="text" name="serial" class="lockable" placeholder="e.g. SN-12345">
-                    </div>
-                    <div class="field-group">
-                        <label>Year of Install</label>
-                        <input type="number" name="year" class="lockable" placeholder="e.g. 2020" min="1950" max="2030">
-                        <div class="field-note">Optional - Format: YYYY</div>
-                    </div>
+            <div class="grid-2">
+                <div class="field-group">
+                    <label>Serial Number</label>
+                    <input type="text" name="serial" class="lockable" placeholder="e.g. SN-12345">
                 </div>
+                <div class="field-group">
+                    <label>Year of Install</label>
+                    <input type="number" name="year" class="lockable" placeholder="e.g. 2020" min="1950" max="2030">
+                    <div class="field-note">Optional - Format: YYYY</div>
+                </div>
+            </div>
 
-                <div class="criteria-box">
-                    <span class="crit-title">⚙️ Criticality Matrix Evaluation</span>
-                    <div id="critGrid" class="grid-2"></div>
-                    <div id="critBadge">AWAITING DATA...</div>
-                </div>
+            <div class="criteria-box">
+                <span class="crit-title">⚙️ Criticality Matrix Evaluation</span>
+                <div id="critGrid" class="grid-2"></div>
+                <div id="critBadge">AWAITING DATA...</div>
+            </div>
 
-                <div class="btn-container">
-                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button type="submit" id="btnSubmit" class="btn-primary">Register Asset</button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- FOOTER -->
-        <div class="module-footer">
-            <span>
-                <span class="status-dot connected"></span>
-                <span>Connected</span>
-            </span>
-            <span class="footer-version" id="eamsVersion">v1.0.0</span>
-        </div>
+            <div class="btn-container">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" id="btnSubmit" class="btn-primary">Register Asset</button>
+            </div>
+        </form>
         
     </div>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
 </div>
 
-<!-- ============================================
-     SCRIPTS - TODAS TUS FUNCIONES ORIGINALES
-     ============================================ -->
 <script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+        }
+        if (data.type === 'SET_VERSION' && data.version) {
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
+        }
+    });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showMessage(message, isError = false) {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, isError ? 'error' : 'success');
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 3000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+    
     // ============================================
     // CONFIGURACIÓN (TUS VARIABLES ORIGINALES)
     // ============================================
@@ -513,33 +580,6 @@
     let DB = {};
     let currentUserEmail = '';
 
-    // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
-    // ============================================
-    window.addEventListener('message', function(event) {
-        const data = event.data;
-        
-        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
-        }
-        
-        if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
-        }
-    });
-
-    // ============================================
-    // CARGAR URL DE EAMS API (TUS FUNCIONES)
-    // ============================================
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
         if (session) {
@@ -555,45 +595,6 @@
         }
     }
 
-    // ============================================
-    // LOADING (TUS FUNCIONES)
-    // ============================================
-    function showLoading(message) {
-        const overlay = document.getElementById('loadingOverlay');
-        const msgEl = document.querySelector('#loadingOverlay span');
-        if (msgEl) msgEl.innerText = message || 'Loading...';
-        if (overlay) overlay.classList.remove('hidden');
-    }
-    
-    function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.classList.add('hidden');
-        document.getElementById('moduleContent').style.display = 'block';
-    }
-
-    // ============================================
-    // TOAST (USANDO ModuleBase.showToast)
-    // ============================================
-    function showMessage(message, isError = false) {
-        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-            ModuleBase.showToast(message, isError ? 'error' : 'success');
-        } else {
-            // Fallback
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.className = 'toast' + (isError ? ' error' : '');
-                toast.style.display = 'block';
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                }, 3000);
-            }
-        }
-    }
-
-    // ============================================
-    // BANNER (TU FUNCIÓN)
-    // ============================================
     function showBanner(message, type) {
         const banner = document.getElementById('banner-msg');
         banner.textContent = message;
@@ -603,14 +604,10 @@
         }, 5000);
     }
 
-    // ============================================
-    // API CALL (TU FUNCIÓN ORIGINAL)
-    // ============================================
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
             throw new Error('API URL not configured');
         }
-        
         const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -619,31 +616,18 @@
                 payload: { action: action, args: args }
             })
         });
-        
         const result = await response.json();
-        
         if (!result.success) {
             throw new Error(result.error || 'Unknown error');
         }
-        
         return result.data;
     }
 
-    // ============================================
-    // CERRAR MODAL (TU FUNCIÓN)
-    // ============================================
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
-    }
-
-    // ============================================
-    // HELPERS (TUS FUNCIONES)
-    // ============================================
     function sanitizeInput(str) {
         if (!str) return '';
         return String(str).replace(/[<>{}[\]\\]/g, '').trim();
     }
-    
+
     function fillSelect(id, list) {
         const s = document.getElementById(id);
         if (!s) return;
@@ -657,38 +641,18 @@
         s.innerHTML = html;
     }
 
-    function fillSelectWithPlaceholder(id, list, placeholderText) {
-        const s = document.getElementById(id);
-        if (!s) return;
-        let html = `<option value="">${placeholderText}</option>`;
-        if (list && list.length > 0) {
-            list.forEach(v => {
-                const value = typeof v === 'object' ? v.name : v;
-                html += `<option value="${value.replace(/"/g, '&quot;')}">${value}</option>`;
-            });
-        }
-        s.innerHTML = html;
-    }
-
-    // ============================================
-    // CRITICALITY MATRIX (TUS FUNCIONES)
-    // ============================================
     function setupCriticalityGrid() {
         const grid = document.getElementById('critGrid');
         if (!grid) return;
         grid.innerHTML = '';
-        
         if (!DB.criteria || DB.criteria.length === 0) {
             grid.innerHTML = '<div class="field-group" style="color: red;">No criteria found in SETUP_AST. Please configure column H.</div>';
             return;
         }
-        
         const staticNames = ['hse', 'prod', 'usage', 'oper', 'redun'];
-        
         for (let i = 0; i < DB.criteria.length && i < staticNames.length; i++) {
             const c = DB.criteria[i];
             const staticName = staticNames[i];
-            
             grid.innerHTML += `
                 <div class="field-group required-field">
                     <label>${c.name}</label>
@@ -701,56 +665,46 @@
                 </div>`;
         }
     }
-    
+
     function recalc() {
         let score = 0;
         let totalWeight = 0;
         let allSelected = true;
-        
         const critSelects = document.querySelectorAll('.crit-input');
         const values = {};
-        
         for (let i = 0; i < critSelects.length; i++) {
             const select = critSelects[i];
             const critName = select.getAttribute('data-crit-name');
             const value = select.value;
-            
             if (!value || value === '') {
                 allSelected = false;
                 continue;
             }
-            
             values[critName] = parseInt(value);
         }
-        
         if (!allSelected) {
             document.getElementById('critBadge').innerHTML = '⚠️ Complete all criteria above';
             document.getElementById('critBadge').style.background = '#f1c40f';
             document.getElementById('critBadge').style.color = '#333';
             return { score: 0, level: 'INCOMPLETE' };
         }
-        
         const weights = DB.weights || {};
         for (const [critName, value] of Object.entries(values)) {
             const weight = weights[critName] || 0;
             score += value * weight;
             totalWeight += weight;
         }
-        
         if (totalWeight === 0 && critSelects.length > 0) {
             const equalWeight = 1 / critSelects.length;
             for (const [critName, value] of Object.entries(values)) {
                 score += value * equalWeight;
             }
         }
-        
         const badge = document.getElementById('critBadge');
         let level = "UNKNOWN";
         let bgColor = "#7f8c8d";
         let textColor = "white";
-        
         const thresholds = DB.thresholds || { critical: 4.0, important: 2.6 };
-        
         if (score >= thresholds.critical) {
             level = "A - CRITICAL";
             bgColor = "#c0392b";
@@ -761,26 +715,20 @@
             level = "C - STANDARD";
             bgColor = "#27ae60";
         }
-        
         badge.style.background = bgColor;
         badge.style.color = textColor;
         badge.innerHTML = `${level} (SCORE: ${score.toFixed(2)})`;
-        
         return { score: score.toFixed(2), level: level };
     }
-    
+
     function syncUI() {
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
-        
         const topLevelTypes = DB.assetTypes && DB.assetTypes.length > 0 ? DB.assetTypes : [];
         const isTopLevelType = topLevelTypes.length > 0 && selectedType === topLevelTypes[0];
-        
         document.querySelectorAll('.lockable').forEach(el => el.disabled = isTopLevelType);
-        
         const area = document.getElementById('area').value;
         const pSel = document.getElementById('parentID');
-        
         if (isTopLevelType) {
             pSel.innerHTML = `<option value="N/A">N/A - None / Root Level</option><option value="${area}">${area} (Root Area)</option>`;
             pSel.value = area;
@@ -795,18 +743,29 @@
         recalc();
     }
 
-    // ============================================
-    // VALIDACIÓN (TU FUNCIÓN)
-    // ============================================
+    function disableButton(id, text) {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = text;
+        }
+    }
+
+    function enableButton(id) {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Register Asset';
+        }
+    }
+
     function validateForm() {
         let isValid = true;
         const requiredSelects = ['area', 'type', 'status'];
         const requiredInput = document.getElementById('name');
-        
         document.querySelectorAll('.invalid-field').forEach(el => {
             el.classList.remove('invalid-field');
         });
-        
         requiredSelects.forEach(id => {
             const el = document.getElementById(id);
             if (el && !el.disabled && (!el.value || el.value === '')) {
@@ -814,18 +773,15 @@
                 isValid = false;
             }
         });
-        
         const categoryEl = document.getElementById('category');
         if (categoryEl && !categoryEl.disabled && (!categoryEl.value || categoryEl.value === '')) {
             categoryEl.classList.add('invalid-field');
             isValid = false;
         }
-        
         if (!requiredInput.value || requiredInput.value.trim() === '') {
             requiredInput.classList.add('invalid-field');
             isValid = false;
         }
-        
         const critInputs = document.querySelectorAll('.crit-input');
         for (let i = 0; i < critInputs.length; i++) {
             if (!critInputs[i].value || critInputs[i].value === '') {
@@ -833,29 +789,22 @@
                 isValid = false;
             }
         }
-        
         if (!isValid) {
             showBanner('Please complete all required fields (marked with *)', 'error');
         }
-        
         return isValid;
     }
 
-    // ============================================
-    // CARGAR CONFIGURACIÓN (TU FUNCIÓN ORIGINAL)
-    // ============================================
     async function loadConfig() {
         try {
             const response = await callApi('AST_getAssetConfig', []);
             DB = response.data;
-            
             const areaNames = DB.areas ? DB.areas.map(a => a.name) : [];
             fillSelect('area', areaNames);
             fillSelect('type', DB.assetTypes || []);
             const categoryNames = DB.categories ? DB.categories.map(c => c.name) : [];
             fillSelect('category', categoryNames);
             fillSelect('status', DB.statuses || []);
-            
             setupCriticalityGrid();
             syncUI();
         } catch (error) {
@@ -864,22 +813,15 @@
         }
     }
 
-    // ============================================
-    // GUARDAR ACTIVO (TU FUNCIÓN ORIGINAL)
-    // ============================================
     async function saveAsset(assetData) {
         return await callApi('AST_saveNewAsset', [assetData]);
     }
 
-    // ============================================
-    // LOGGING (USANDO ModuleBase)
-    // ============================================
     async function logAssetCreation(assetId, assetData, assetName, assetType, location, criticality) {
         if (!window.ModuleBase || typeof ModuleBase.logAction !== 'function') {
             console.warn('[AST] Logger not available, skipping log');
             return;
         }
-        
         try {
             await ModuleBase.logAction('CREATE_ASSET', 'AST', assetId,
                 `Asset: ${assetName || assetData.name} | Type: ${assetType || assetData.type} | Location: ${location || assetData.area} | Criticality: ${criticality || assetData.level}`
@@ -890,9 +832,6 @@
         }
     }
 
-    // ============================================
-    // INICIALIZAR (TU FUNCIÓN ORIGINAL)
-    // ============================================
     async function init() {
         loadApiUrl();
         if (EAMS_API_URL) {
@@ -904,51 +843,25 @@
         }
     }
 
-    // ============================================
-    // SUBMIT FORM (TU FUNCIÓN ORIGINAL)
-    // ============================================
     document.getElementById('assetForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         if (!validateForm()) return;
-        
-        function disableButton(id, text) {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = text;
-            }
-        }
-        
-        function enableButton(id) {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'Register Asset';
-            }
-        }
-        
         disableButton('btnSubmit', 'REGISTERING...');
         showLoading('Processing Transaction...');
-        
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
         const crit = recalc();
-        
         if (crit.level === 'INCOMPLETE') {
             hideLoading();
             enableButton('btnSubmit');
             showBanner('Please complete all criticality criteria', 'error');
             return;
         }
-        
         payload.name = sanitizeInput(payload.name);
-        
         const areaObj = DB.areas.find(a => a.name === payload.area);
         const catObj = DB.categories.find(c => c.name === payload.category);
         const topLevelTypes = DB.assetTypes || [];
         const isTopLevel = topLevelTypes.includes(payload.type);
-        
         const assetData = {
             area: payload.area,
             areaPrefix: areaObj ? areaObj.prefix : "GEN",
@@ -970,16 +883,11 @@
             score: crit.score,
             level: crit.level
         };
-        
         try {
             const result = await saveAsset(assetData);
-            
             const newAssetId = result.assetId || result.data?.assetId || result.id || 
                                (result.data && result.data.assetId) || 'UNKNOWN';
-            
-            // Logging via ModuleBase
             await logAssetCreation(newAssetId, assetData, payload.name, payload.type, payload.area, crit.level);
-            
             hideLoading();
             enableButton('btnSubmit');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
@@ -988,13 +896,11 @@
             showBanner(result.message || 'Asset saved successfully!', 'success');
             setTimeout(() => closeModal(), 2000);
         } catch (error) {
-            // Log error via ModuleBase
             if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
                 try {
                     await ModuleBase.logError('AST', 'saveAsset', error.message);
                 } catch(e) { /* ignore */ }
             }
-            
             hideLoading();
             enableButton('btnSubmit');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
@@ -1004,9 +910,6 @@
         }
     });
 
-    // ============================================
-    // EJECUTAR INICIO
-    // ============================================
     init();
 </script>
 </body>
