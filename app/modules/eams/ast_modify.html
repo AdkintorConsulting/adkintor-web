@@ -1,60 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modify Asset - ADKINTOR EAMS</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f4f6f9;
             height: 100vh;
             overflow: hidden;
+            padding: 0;
             display: flex;
             flex-direction: column;
         }
         
-        .eams-header {
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
             background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
         
-        .eams-header h2 {
-            font-size: 1.25rem;
-            margin: 0;
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .user-badge {
-            font-size: 0.8rem;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
             border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
         .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+            background: #f4f6f9;
+            display: flex;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
         .master-container {
             display: flex;
             flex: 1;
@@ -77,6 +242,7 @@
             flex-shrink: 0;
             font-size: 0.85rem;
             font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .search-area {
@@ -100,28 +266,31 @@
             border-radius: 4px;
             background: white;
             color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .search-group input:focus {
             outline: none;
-            border-color: #1a56db;
-            box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 2px rgba(26,26,46,0.1);
         }
         
         .search-group button {
             padding: 8px 16px;
             font-size: 0.75rem;
             white-space: nowrap;
-            background: #1a56db;
+            background: #1a1a2e;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s;
         }
         
         .search-group button:hover {
-            background: #1e3a8a;
+            background: #2c2c4e;
         }
         
         .suggestions {
@@ -139,10 +308,11 @@
             cursor: pointer;
             border-bottom: 1px solid #e2e8f0;
             font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .suggestion-item:hover {
-            background: #1a56db;
+            background: #1a1a2e;
             color: white;
         }
         
@@ -180,6 +350,7 @@
             border-radius: 4px;
             transition: background 0.2s;
             color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .node-header:hover {
@@ -233,6 +404,7 @@
             font-weight: 600;
             color: #333;
             font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .required-field label::after {
@@ -248,14 +420,15 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 0.85rem;
-            font-family: inherit;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
         }
         
         .field-group input:focus,
         .field-group select:focus {
             outline: none;
-            border-color: #1a56db;
-            box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 2px rgba(26,26,46,0.1);
         }
         
         .readonly-id {
@@ -286,6 +459,7 @@
             border-radius: 6px;
             font-weight: 700;
             font-size: 1.2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .score-container {
@@ -316,20 +490,23 @@
         .editor-header h2 {
             color: #2c3e50;
             font-size: 1.2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .btn-primary {
-            background: #1a56db;
+            background: #1a1a2e;
             color: white;
             border: none;
             padding: 10px 24px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s;
         }
         
         .btn-primary:hover {
-            background: #1e3a8a;
+            background: #2c2c4e;
         }
         
         .btn-primary:disabled {
@@ -338,28 +515,19 @@
         }
         
         .btn-secondary {
-            background: white;
-            color: #475569;
-            border: 1px solid #cbd5e1;
+            background: #6c757d;
+            color: white;
+            border: none;
             padding: 10px 24px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s;
         }
         
         .btn-secondary:hover {
-            background: #f8fafc;
-        }
-        
-        .eams-status-bar {
-            background: #f8f9fa;
-            padding: 8px 24px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
+            background: #5a6268;
         }
         
         #custom-confirm {
@@ -388,73 +556,12 @@
             margin-bottom: 20px;
             font-size: 1rem;
             color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         #custom-confirm button {
             margin: 0 8px;
             padding: 8px 20px;
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            display: none;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-        
-        .toast.error {
-            background: #dc3545;
-        }
-        
-        .toast.success {
-            background: #28a745;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        
-        .loading-spinner {
-            background: white;
-            padding: 20px 40px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .loading-spinner i {
-            font-size: 32px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
         
         .search-pane-message {
@@ -470,140 +577,177 @@
         
         .search-pane-message h3 {
             margin-bottom: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .search-pane-message p {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .btn-primary i, .btn-secondary i {
+            margin-right: 6px;
+        }
+        
+        .editor-header .btn-secondary i {
+            margin-right: 6px;
         }
     </style>
 </head>
 <body>
 
-<div class="eams-header">
-    <h2><i class="fas fa-edit"></i> Modify Asset</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-    </div>
-</div>
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt; 
-    <span>ASSETS</span> &gt; 
-    <span>Modify Asset</span>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading...</span>
 </div>
 
-<div class="master-container">
-    <div class="left-pane">
-        <div class="pane-header">🔍 SEARCH & NAVIGATION</div>
-        <div class="search-area">
-            <div class="search-group">
-                <input type="text" id="search-input" placeholder="Search by Asset ID or Name..." autocomplete="off">
-                <button id="search-btn">SEARCH</button>
-            </div>
-            <div id="suggestions" class="suggestions"></div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
+
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Modify Asset</span>
         </div>
-        <div class="pane-header" style="background: #1e3a8a;">📁 ASSET HIERARCHY</div>
-        <div class="tree-view" id="tree-view">
-            <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                <i class="fas fa-spinner fa-spin"></i> Loading hierarchy...
-            </div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
-
-    <div class="right-pane">
-        <div id="searchPane" class="search-pane-message">
-            <i class="fas fa-edit"></i>
-            <h3>Asset Modification Engine</h3>
-            <p>Search for an asset using the search bar or click on an asset in the hierarchy tree.</p>
-            <p>Then click <strong>SEARCH</strong> to load the data for editing.</p>
-        </div>
-
-        <div id="editorPane" style="display: none;">
-            <div class="editor-header">
-                <h2>✏️ MODIFYING: <span id="display-tag" style="color:#1a56db;">---</span></h2>
-                <button type="button" id="backToSearchBtn" class="btn-secondary">
-                    <i class="fas fa-arrow-left"></i> BACK TO SEARCH
-                </button>
-            </div>
-
-            <form id="modifyForm" novalidate>
-                <div class="form-scroll-container">
-                    <div class="grid-modify">
-                        <div class="field-group">
-                            <label>Asset ID (Read Only)</label>
-                            <input id="v-id" name="id" class="readonly-id" readonly>
-                        </div>
-                        <div class="field-group required-field">
-                            <label>Operational Area</label>
-                            <select id="v-area" name="area" required></select>
-                        </div>
-                        <div class="field-group required-field" style="grid-column: span 2;">
-                            <label>Equipment Name</label>
-                            <input id="v-name" name="name" required>
-                        </div>
-                        <div class="field-group required-field">
-                            <label>Asset Type</label>
-                            <select id="v-type" name="assetType" required></select>
-                        </div>
-                        <div class="field-group">
-                            <label>Parent Asset ID</label>
-                            <select id="v-parent" name="parentId">
-                                <option value="N/A">N/A - None / Root Level</option>
-                            </select>
-                        </div>
-                        <div class="field-group required-field">
-                            <label>Category / Subtype</label>
-                            <select id="v-cat" name="category"></select>
-                        </div>
-                        <div class="field-group required-field">
-                            <label>Asset Status</label>
-                            <select id="v-status" name="status" required></select>
-                        </div>
-                        <div class="field-group">
-                            <label>Manufacturer</label>
-                            <input id="v-man" name="manufacturer">
-                        </div>
-                        <div class="field-group">
-                            <label>Model</label>
-                            <input id="v-model" name="model">
-                        </div>
-                        <div class="field-group">
-                            <label>Serial Number</label>
-                            <input id="v-serial" name="serial">
-                        </div>
-                        <div class="field-group">
-                            <label>Installation Year</label>
-                            <input id="v-year" name="year" type="number" min="1950" max="2030" placeholder="YYYY">
-                        </div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>ASSETS</span> &gt; <span class="current">Modify Asset</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <div class="master-container">
+            <div class="left-pane">
+                <div class="pane-header">🔍 SEARCH & NAVIGATION</div>
+                <div class="search-area">
+                    <div class="search-group">
+                        <input type="text" id="search-input" placeholder="Search by Asset ID or Name..." autocomplete="off">
+                        <button id="search-btn">SEARCH</button>
+                    </div>
+                    <div id="suggestions" class="suggestions"></div>
+                </div>
+                <div class="pane-header" style="background: #1e3a8a;">📁 ASSET HIERARCHY</div>
+                <div class="tree-view" id="tree-view">
+                    <div style="text-align: center; padding: 20px; color: #94a3b8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading hierarchy...
                     </div>
                 </div>
+            </div>
 
-                <div class="crit-evaluation">
-                    <label style="font-weight: 700; color: #2c3e50; border-bottom: 1px solid #e2e8f0; display: block; padding-bottom: 5px; margin-bottom: 15px;">
-                        <i class="fas fa-chart-line"></i> CRITICALITY RE-EVALUATION
-                    </label>
-                    <div id="critGrid" class="grid-criteria"></div>
-                    <div class="score-container">
-                        <div class="field-group">
-                            <label>Weighted Score</label>
-                            <div id="scoreLabel" class="score-box">0.00</div>
-                        </div>
-                        <div class="field-group">
-                            <label>Criticality Level</label>
-                            <div id="levelLabel" class="score-box">---</div>
-                        </div>
+            <div class="right-pane">
+                <div id="searchPane" class="search-pane-message">
+                    <i class="fas fa-edit"></i>
+                    <h3>Asset Modification Engine</h3>
+                    <p>Search for an asset using the search bar or click on an asset in the hierarchy tree.</p>
+                    <p>Then click <strong>SEARCH</strong> to load the data for editing.</p>
+                </div>
+
+                <div id="editorPane" style="display: none;">
+                    <div class="editor-header">
+                        <h2>✏️ MODIFYING: <span id="display-tag" style="color:#1a1a2e;">---</span></h2>
+                        <button type="button" id="backToSearchBtn" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> BACK TO SEARCH
+                        </button>
                     </div>
-                </div>
 
-                <div class="btn-container">
-                    <button type="submit" id="updateBtn" class="btn-primary">
-                        <i class="fas fa-save"></i> SAVE CHANGES
-                    </button>
+                    <form id="modifyForm" novalidate>
+                        <div class="form-scroll-container">
+                            <div class="grid-modify">
+                                <div class="field-group">
+                                    <label>Asset ID (Read Only)</label>
+                                    <input id="v-id" name="id" class="readonly-id" readonly>
+                                </div>
+                                <div class="field-group required-field">
+                                    <label>Operational Area</label>
+                                    <select id="v-area" name="area" required></select>
+                                </div>
+                                <div class="field-group required-field" style="grid-column: span 2;">
+                                    <label>Equipment Name</label>
+                                    <input id="v-name" name="name" required>
+                                </div>
+                                <div class="field-group required-field">
+                                    <label>Asset Type</label>
+                                    <select id="v-type" name="assetType" required></select>
+                                </div>
+                                <div class="field-group">
+                                    <label>Parent Asset ID</label>
+                                    <select id="v-parent" name="parentId">
+                                        <option value="N/A">N/A - None / Root Level</option>
+                                    </select>
+                                </div>
+                                <div class="field-group required-field">
+                                    <label>Category / Subtype</label>
+                                    <select id="v-cat" name="category"></select>
+                                </div>
+                                <div class="field-group required-field">
+                                    <label>Asset Status</label>
+                                    <select id="v-status" name="status" required></select>
+                                </div>
+                                <div class="field-group">
+                                    <label>Manufacturer</label>
+                                    <input id="v-man" name="manufacturer">
+                                </div>
+                                <div class="field-group">
+                                    <label>Model</label>
+                                    <input id="v-model" name="model">
+                                </div>
+                                <div class="field-group">
+                                    <label>Serial Number</label>
+                                    <input id="v-serial" name="serial">
+                                </div>
+                                <div class="field-group">
+                                    <label>Installation Year</label>
+                                    <input id="v-year" name="year" type="number" min="1950" max="2030" placeholder="YYYY">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="crit-evaluation">
+                            <label style="font-weight: 700; color: #2c3e50; border-bottom: 1px solid #e2e8f0; display: block; padding-bottom: 5px; margin-bottom: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                <i class="fas fa-chart-line"></i> CRITICALITY RE-EVALUATION
+                            </label>
+                            <div id="critGrid" class="grid-criteria"></div>
+                            <div class="score-container">
+                                <div class="field-group">
+                                    <label>Weighted Score</label>
+                                    <div id="scoreLabel" class="score-box">0.00</div>
+                                </div>
+                                <div class="field-group">
+                                    <label>Criticality Level</label>
+                                    <div id="levelLabel" class="score-box">---</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-container">
+                            <button type="submit" id="updateBtn" class="btn-primary">
+                                <i class="fas fa-save"></i> SAVE CHANGES
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
 </div>
 
 <div id="custom-confirm">
@@ -614,17 +758,77 @@
     </div>
 </div>
 
-<div id="toast" class="toast"></div>
-<div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-spinner">
-        <i class="fas fa-spinner"></i>
-        <p id="loadingMessage">Loading...</p>
-    </div>
-</div>
-
 <script>
     // ============================================
-    // CONFIGURACIÓN
+    // RECIBIR MENSAJES DEL PADRE
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+        }
+        if (data.type === 'SET_VERSION' && data.version) {
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
+        }
+    });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showMessage(message, isError = false) {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, isError ? 'error' : 'success');
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 3000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+    
+    // ============================================
+    // CONFIGURACIÓN (TU LÓGICA ORIGINAL)
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
@@ -639,31 +843,7 @@
     const CRITICALITY_FIELD_MAP = ['hse', 'prod', 'usage', 'oper', 'redun'];
     
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE
-    // ============================================
-    window.addEventListener('message', function(event) {
-        const data = event.data;
-        
-        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
-        }
-        
-        if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
-        }
-    });
-    
-    // ============================================
-    // FUNCIONES BASE
+    // FUNCIONES BASE (TU LÓGICA ORIGINAL)
     // ============================================
     
     function loadApiUrl() {
@@ -678,28 +858,6 @@
                 console.error('Error parsing session:', e);
             }
         }
-    }
-    
-    function showLoading(message) {
-        const overlay = document.getElementById('loadingOverlay');
-        const msgEl = document.getElementById('loadingMessage');
-        if (msgEl) msgEl.innerText = message || 'Loading...';
-        if (overlay) overlay.style.display = 'flex';
-    }
-    
-    function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.style.display = 'none';
-    }
-    
-    function showMessage(message, isError = false) {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = 'toast ' + (isError ? 'error' : 'success');
-        toast.style.display = 'block';
-        setTimeout(() => {
-            toast.style.display = 'none';
-        }, 3000);
     }
     
     function showBanner(message, type) {
@@ -727,10 +885,6 @@
         }
         
         return result.data;
-    }
-    
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
     }
     
     function sanitizeInput(str) {
@@ -768,7 +922,7 @@
     }
     
     // ============================================
-    // LOAD SELECTS
+    // LOAD SELECTS (TU LÓGICA ORIGINAL)
     // ============================================
     
     function loadSelect(elementId, items, selectedValue) {
@@ -792,7 +946,7 @@
     }
     
     // ============================================
-    // PARENT SELECT
+    // PARENT SELECT (TU LÓGICA ORIGINAL)
     // ============================================
     
     function extractAllAssets(nodes, result) {
@@ -838,7 +992,7 @@
     }
     
     // ============================================
-    // CRITICALITY CALCULATION
+    // CRITICALITY CALCULATION (TU LÓGICA ORIGINAL)
     // ============================================
     
     function recalc() {
@@ -894,7 +1048,7 @@
     }
     
     // ============================================
-    // RENDER EDITOR
+    // RENDER EDITOR (TU LÓGICA ORIGINAL)
     // ============================================
     
     function applyTypeLogic() {
@@ -990,7 +1144,7 @@
     }
     
     // ============================================
-    // LOAD ASSET
+    // LOAD ASSET (TU LÓGICA ORIGINAL)
     // ============================================
     
     async function loadAsset(assetId) {
@@ -1016,7 +1170,7 @@
     }
     
     // ============================================
-    // SAVE ASSET
+    // SAVE ASSET (TU LÓGICA ORIGINAL)
     // ============================================
     
     function validateForm() {
@@ -1172,7 +1326,7 @@
     }
     
     // ============================================
-    // UI ACTIONS
+    // UI ACTIONS (TU LÓGICA ORIGINAL)
     // ============================================
     
     function resetToSearch() {
@@ -1213,7 +1367,7 @@
     }
     
     // ============================================
-    // TREE FUNCTIONS
+    // TREE FUNCTIONS (TU LÓGICA ORIGINAL)
     // ============================================
     
     function buildNode(node) {
@@ -1259,7 +1413,7 @@
         if (!view) return;
         view.innerHTML = '';
         if (!data || data.length === 0) { 
-            view.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">No assets found</div>'; 
+            view.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">No assets found</div>'; 
             return; 
         }
         for (var i = 0; i < data.length; i++) {
@@ -1275,12 +1429,12 @@
             renderTree(DBhierarchy);
         } catch (error) {
             showMessage('Failed to load hierarchy: ' + error.message, true);
-            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;">Error loading data</div>';
+            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading data</div>';
         }
     }
     
     // ============================================
-    // SUGGESTIONS
+    // SUGGESTIONS (TU LÓGICA ORIGINAL)
     // ============================================
     
     function showSuggestions(filter) {
@@ -1328,13 +1482,14 @@
     // ============================================
     
     function init() {
+        loadUser();
         loadApiUrl();
         
         if (EAMS_API_URL) {
             loadTree();
         } else {
             showMessage('API URL not configured. Please log in again.', true);
-            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;">Authentication required. Please refresh the page.</div>';
+            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Authentication required. Please refresh the page.</div>';
         }
         
         document.getElementById('search-btn').onclick = function() { 
