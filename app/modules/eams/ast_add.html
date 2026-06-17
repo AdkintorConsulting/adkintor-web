@@ -216,7 +216,7 @@
         }
         
         /* ============================================
-           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ESTILOS ESPECÍFICOS DEL MÓDULO (TUS ESTILOS)
            ============================================ */
         .grid-2 {
             display: grid;
@@ -370,7 +370,7 @@
 <body>
 
 <!-- ============================================
-     LOADING OVERLAY
+     LOADING OVERLAY (CONTROL MANUAL)
      ============================================ -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
@@ -378,7 +378,7 @@
 </div>
 
 <!-- ============================================
-     TOAST CONTAINER
+     TOAST CONTAINER (ARRIBA DERECHA)
      ============================================ -->
 <div id="toastContainer"></div>
 
@@ -395,7 +395,7 @@
                 <span class="module-title">Add Asset</span>
             </div>
             <div class="header-right">
-                <span class="user-badge" id="userBadge">👤 Loading...</span>
+                <span class="user-badge" id="userDisplay">Loading...</span>
             </div>
         </div>
         
@@ -407,7 +407,7 @@
         <!-- BANNER -->
         <div id="banner-msg" class="banner"></div>
         
-        <!-- CONTENIDO ESPECÍFICO DEL MÓDULO -->
+        <!-- CONTENIDO ESPECÍFICO -->
         <div class="module-body">
             <form id="assetForm" novalidate>
                 <div class="grid-2">
@@ -495,43 +495,155 @@
                 <span class="status-dot connected"></span>
                 <span>Connected</span>
             </span>
-            <span class="footer-version" id="footerVersion">v1.0.0</span>
+            <span class="footer-version" id="eamsVersion">v1.0.0</span>
         </div>
         
     </div>
 </div>
 
 <!-- ============================================
-     SCRIPTS
+     SCRIPTS - TODAS TUS FUNCIONES ORIGINALES
      ============================================ -->
-<script src="/app/js/module-base.js"></script>
 <script>
     // ============================================
-    // INICIALIZACIÓN DEL MÓDULO
+    // CONFIGURACIÓN (TUS VARIABLES ORIGINALES)
     // ============================================
-    ModuleBase.initModule('Add Asset');
-    
-    // ============================================
-    // CONFIGURACIÓN
-    // ============================================
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
     let DB = {};
-    let EAMS_API_URL = ModuleBase.eamsApiUrl;
+    let currentUserEmail = '';
 
     // ============================================
-    // CERRAR MODAL
+    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const logoImg = document.getElementById('companyLogo');
+            if (logoImg) {
+                logoImg.src = data.logoUrl;
+                logoImg.style.display = 'block';
+                console.log('[iframe] Logo loaded from parent');
+            }
+        }
+        
+        if (data.type === 'SET_VERSION' && data.version) {
+            const versionSpan = document.getElementById('eamsVersion');
+            if (versionSpan) {
+                versionSpan.innerText = data.version;
+                console.log('[iframe] Version set to:', data.version);
+            }
+        }
+    });
+
+    // ============================================
+    // CARGAR URL DE EAMS API (TUS FUNCIONES)
+    // ============================================
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = currentUserEmail;
+            } catch(e) {
+                console.error('Error parsing session:', e);
+            }
+        }
+    }
+
+    // ============================================
+    // LOADING (TUS FUNCIONES)
+    // ============================================
+    function showLoading(message) {
+        const overlay = document.getElementById('loadingOverlay');
+        const msgEl = document.querySelector('#loadingOverlay span');
+        if (msgEl) msgEl.innerText = message || 'Loading...';
+        if (overlay) overlay.classList.remove('hidden');
+    }
+    
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.add('hidden');
+        document.getElementById('moduleContent').style.display = 'block';
+    }
+
+    // ============================================
+    // TOAST (USANDO ModuleBase.showToast)
+    // ============================================
+    function showMessage(message, isError = false) {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, isError ? 'error' : 'success');
+        } else {
+            // Fallback
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.className = 'toast' + (isError ? ' error' : '');
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3000);
+            }
+        }
+    }
+
+    // ============================================
+    // BANNER (TU FUNCIÓN)
+    // ============================================
+    function showBanner(message, type) {
+        const banner = document.getElementById('banner-msg');
+        banner.textContent = message;
+        banner.className = 'banner ' + type;
+        setTimeout(() => {
+            banner.className = 'banner';
+        }, 5000);
+    }
+
+    // ============================================
+    // API CALL (TU FUNCIÓN ORIGINAL)
+    // ============================================
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        
+        return result.data;
+    }
+
+    // ============================================
+    // CERRAR MODAL (TU FUNCIÓN)
     // ============================================
     function closeModal() {
         window.parent.postMessage('closeIframe', '*');
     }
 
     // ============================================
-    // HELPERS
+    // HELPERS (TUS FUNCIONES)
     // ============================================
     function sanitizeInput(str) {
         if (!str) return '';
         return String(str).replace(/[<>{}[\]\\]/g, '').trim();
     }
-
+    
     function fillSelect(id, list) {
         const s = document.getElementById(id);
         if (!s) return;
@@ -545,40 +657,21 @@
         s.innerHTML = html;
     }
 
-    function disableButton(id, text) {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = text;
+    function fillSelectWithPlaceholder(id, list, placeholderText) {
+        const s = document.getElementById(id);
+        if (!s) return;
+        let html = `<option value="">${placeholderText}</option>`;
+        if (list && list.length > 0) {
+            list.forEach(v => {
+                const value = typeof v === 'object' ? v.name : v;
+                html += `<option value="${value.replace(/"/g, '&quot;')}">${value}</option>`;
+            });
         }
-    }
-
-    function enableButton(id) {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.disabled = false;
-            btn.textContent = 'Register Asset';
-        }
-    }
-
-    function showBanner(message, type) {
-        const banner = document.getElementById('banner-msg');
-        banner.textContent = message;
-        banner.className = 'banner ' + type;
-        setTimeout(() => {
-            banner.className = 'banner';
-        }, 5000);
+        s.innerHTML = html;
     }
 
     // ============================================
-    // API CALLS (usando ModuleBase)
-    // ============================================
-    async function callApi(action, args = []) {
-        return await ModuleBase.callApi(action, args);
-    }
-
-    // ============================================
-    // CRITICALITY MATRIX
+    // CRITICALITY MATRIX (TUS FUNCIONES)
     // ============================================
     function setupCriticalityGrid() {
         const grid = document.getElementById('critGrid');
@@ -608,7 +701,7 @@
                 </div>`;
         }
     }
-
+    
     function recalc() {
         let score = 0;
         let totalWeight = 0;
@@ -675,7 +768,7 @@
         
         return { score: score.toFixed(2), level: level };
     }
-
+    
     function syncUI() {
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
@@ -702,6 +795,9 @@
         recalc();
     }
 
+    // ============================================
+    // VALIDACIÓN (TU FUNCIÓN)
+    // ============================================
     function validateForm() {
         let isValid = true;
         const requiredSelects = ['area', 'type', 'status'];
@@ -746,7 +842,7 @@
     }
 
     // ============================================
-    // CARGAR CONFIGURACIÓN
+    // CARGAR CONFIGURACIÓN (TU FUNCIÓN ORIGINAL)
     // ============================================
     async function loadConfig() {
         try {
@@ -769,28 +865,78 @@
     }
 
     // ============================================
-    // GUARDAR ACTIVO
+    // GUARDAR ACTIVO (TU FUNCIÓN ORIGINAL)
     // ============================================
     async function saveAsset(assetData) {
         return await callApi('AST_saveNewAsset', [assetData]);
     }
 
     // ============================================
-    // SUBMIT FORM
+    // LOGGING (USANDO ModuleBase)
+    // ============================================
+    async function logAssetCreation(assetId, assetData, assetName, assetType, location, criticality) {
+        if (!window.ModuleBase || typeof ModuleBase.logAction !== 'function') {
+            console.warn('[AST] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await ModuleBase.logAction('CREATE_ASSET', 'AST', assetId,
+                `Asset: ${assetName || assetData.name} | Type: ${assetType || assetData.type} | Location: ${location || assetData.area} | Criticality: ${criticality || assetData.level}`
+            );
+            console.log('[AST] Asset creation logged:', assetId);
+        } catch (err) {
+            console.warn('[AST] Failed to log asset creation:', err);
+        }
+    }
+
+    // ============================================
+    // INICIALIZAR (TU FUNCIÓN ORIGINAL)
+    // ============================================
+    async function init() {
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            showLoading('Loading configuration...');
+            await loadConfig();
+            hideLoading();
+        } else {
+            showMessage('API URL not configured. Please log in again.', true);
+        }
+    }
+
+    // ============================================
+    // SUBMIT FORM (TU FUNCIÓN ORIGINAL)
     // ============================================
     document.getElementById('assetForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
         if (!validateForm()) return;
         
+        function disableButton(id, text) {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = text;
+            }
+        }
+        
+        function enableButton(id) {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Register Asset';
+            }
+        }
+        
         disableButton('btnSubmit', 'REGISTERING...');
-        ModuleBase.showToast('Processing transaction...', 'info');
+        showLoading('Processing Transaction...');
         
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
         const crit = recalc();
         
         if (crit.level === 'INCOMPLETE') {
+            hideLoading();
             enableButton('btnSubmit');
             showBanner('Please complete all criticality criteria', 'error');
             return;
@@ -832,35 +978,36 @@
                                (result.data && result.data.assetId) || 'UNKNOWN';
             
             // Logging via ModuleBase
-            await ModuleBase.logAction('CREATE_ASSET', 'AST', newAssetId, 
-                `Asset created: ${payload.name} | Type: ${payload.type} | Criticality: ${crit.level}`);
+            await logAssetCreation(newAssetId, assetData, payload.name, payload.type, payload.area, crit.level);
             
-            ModuleBase.showToast('Asset saved successfully! ✅', 'success');
+            hideLoading();
+            enableButton('btnSubmit');
+            if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                ModuleBase.showToast('Asset saved successfully! ✅', 'success');
+            }
             showBanner(result.message || 'Asset saved successfully!', 'success');
             setTimeout(() => closeModal(), 2000);
         } catch (error) {
-            await ModuleBase.logError('AST', 'saveAsset', error.message);
-            ModuleBase.showToast('Error: ' + error.message, 'error');
-            showBanner('Error: ' + error.message, 'error');
+            // Log error via ModuleBase
+            if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
+                try {
+                    await ModuleBase.logError('AST', 'saveAsset', error.message);
+                } catch(e) { /* ignore */ }
+            }
+            
+            hideLoading();
             enableButton('btnSubmit');
+            if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                ModuleBase.showToast('Error: ' + error.message, 'error');
+            }
+            showBanner('Error: ' + error.message, 'error');
         }
     });
 
     // ============================================
-    // INICIALIZACIÓN
+    // EJECUTAR INICIO
     // ============================================
-    (async function init() {
-        try {
-            await loadConfig();
-            document.getElementById('loadingOverlay').classList.add('hidden');
-            document.getElementById('moduleContent').style.display = 'block';
-        } catch (error) {
-            console.error('Init error:', error);
-            document.getElementById('loadingOverlay').classList.add('hidden');
-            document.getElementById('moduleContent').style.display = 'block';
-            showBanner('Error loading module: ' + error.message, 'error');
-        }
-    })();
+    init();
 </script>
 </body>
 </html>
