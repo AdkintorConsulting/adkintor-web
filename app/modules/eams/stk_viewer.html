@@ -3,198 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>EAMS - INVENTORY VIEWER</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <title>Inventory Viewer - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
-            line-height: 1.4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
-
-        /* EAMS Header */
-        .eams-header {
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
             background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
-
-        .eams-header h2 {
-            font-size: 1.25rem;
-            margin: 0;
+        
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
         }
-
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
         .user-badge {
-            font-size: 0.8rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
             border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Breadcrumbs */
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
         .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Main content */
-        .eams-body {
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
             flex: 1;
-            padding: 24px;
+            overflow-y: auto;
+            padding: 16px 20px;
+            background: #f4f6f9;
         }
-
-        /* KPI Cards */
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
         .kpi-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .kpi-card {
             background: white;
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px 18px;
             text-align: center;
             border: 1px solid #e2e8f0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             transition: all 0.2s;
         }
 
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
         .kpi-value {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: #065f46;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .kpi-label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #64748b;
-            margin-top: 8px;
+            margin-top: 4px;
             font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .kpi-card.low .kpi-value { color: #f59e0b; }
-        .kpi-card.critical .kpi-value { color: #ef4444; }
+        .kpi-card.critical .kpi-value { color: #dc3545; }
 
-        /* Search bar */
         .search-bar {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
             align-items: center;
         }
 
-        .search-bar input, .search-bar select {
+        .search-bar input,
+        .search-bar select {
             flex: 1;
-            min-width: 150px;
-            padding: 10px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            font-size: 0.85rem;
+            min-width: 130px;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: white;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus,
+        .search-bar select:focus {
+            outline: none;
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
         }
 
         .btn-secondary {
-            padding: 8px 18px;
-            border-radius: 30px;
+            background: #6c757d;
+            color: white;
             border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            transition: 0.2s;
-            background: #e2e8f0;
-            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .btn-secondary:hover { background: #cbd5e1; transform: translateY(-1px); }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
 
-        /* Datagrid */
+        .btn-secondary i {
+            margin-right: 4px;
+        }
+
         .datagrid-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 10px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .datagrid-header {
-            padding: 14px 20px;
+            padding: 10px 16px;
             background: #f8fafc;
             border-bottom: 1px solid #e2e8f0;
             font-weight: 600;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .datagrid-header .badge-info {
+            font-size: 0.6rem;
+            color: #64748b;
+            font-weight: 400;
         }
 
         .datagrid-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .datagrid-table th {
             text-align: left;
-            padding: 14px 12px;
+            padding: 10px 10px;
             background: #f1f5f9;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
             color: #475569;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 2px solid #1a1a2e;
             position: sticky;
             top: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .datagrid-table td {
-            padding: 12px 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.2s;
         }
 
         .datagrid-table tr:hover td {
-            background: #ecfdf5;
+            background: #f8fafc;
         }
 
         .stock-badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 40px;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 16px;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .stock-ok { background: #dcfce7; color: #166534; }
         .stock-low { background: #fef3c7; color: #92400e; }
         .stock-critical { background: #fee2e2; color: #991b1b; }
 
-        /* Modal de historial */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -202,73 +392,99 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(0,0,0,0.5);
             z-index: 10050;
             justify-content: center;
             align-items: center;
         }
 
+        .modal-overlay.active {
+            display: flex;
+        }
+
         .modal-container {
             background: white;
-            border-radius: 24px;
-            width: 680px;
+            border-radius: 12px;
+            width: 640px;
             max-width: 92%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-            border-top: 5px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-top: 4px solid #1a1a2e;
         }
 
         .modal-header {
-            padding: 18px 24px;
+            padding: 14px 20px;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
         }
 
         .modal-header h4 {
-            font-size: 1.2rem;
+            margin: 0;
+            font-size: 0.95rem;
             font-weight: 700;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .btn-close {
+        .btn-close-modal {
             background: none;
             border: none;
-            font-size: 1.8rem;
-            line-height: 1;
+            font-size: 1.3rem;
             cursor: pointer;
-            color: #94a3b8;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+
+        .btn-close-modal:hover {
+            color: #dc3545;
         }
 
         .modal-body {
-            padding: 24px;
+            padding: 16px 20px;
         }
 
         .modal-footer {
-            padding: 16px 24px;
+            padding: 12px 20px;
             border-top: 1px solid #e2e8f0;
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
         }
 
         .history-item {
-            padding: 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
         }
 
         .history-date {
             font-weight: 700;
-            color: #10b981;
+            color: #1a1a2e;
+            font-size: 0.8rem;
         }
 
         .history-type {
             display: inline-block;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 16px;
+            font-size: 0.6rem;
             font-weight: 700;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .history-type.INBOUND_PO { background: #dcfce7; color: #166534; }
@@ -277,182 +493,229 @@
         .history-type.NEW_SKU_INITIALIZED { background: #e0e7ff; color: #3730a3; }
         .history-type.MASTER_DATA_REVISION { background: #f1f5f9; color: #475569; }
 
-        /* EAMS Status Bar */
-        .eams-status-bar {
-            background: #f8f9fa;
-            padding: 8px 24px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        /* Toast */
-        #toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            align-items: center;
-            gap: 10px;
-            max-width: 350px;
-        }
-
-        .toast-success { background: #059669; border-left: 4px solid #34d399; }
-        .toast-error { background: #dc2626; border-left: 4px solid #fca5a5; }
-        .toast-warning { background: #d97706; border-left: 4px solid #fde68a; }
-        .toast-info { background: #2563eb; border-left: 4px solid #93c5fd; }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(3px);
-        }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .spinner {
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #10b981;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .text-muted { color: #64748b; }
+        .text-muted { color: #6c757d; }
         .text-center { text-align: center; }
-        .small { font-size: 0.7rem; }
-        .mt-1 { margin-top: 6px; }
+        .small { font-size: 0.65rem; }
+        .mt-1 { margin-top: 4px; }
+
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .kpi-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .search-bar {
+                flex-direction: column;
+            }
+            .search-bar input,
+            .search-bar select {
+                min-width: 100%;
+            }
+            .search-bar .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-container {
+                grid-template-columns: 1fr;
+            }
+            .module-body {
+                padding: 10px 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-    <h2><i class="bi bi-eye"></i> Inventory Viewer</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-    </div>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Inventory Viewer...</span>
 </div>
 
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt;
-    <span>INVENTORY</span> &gt;
-    <span>Inventory Viewer</span>
-</div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
 
-<div class="eams-body">
-    <!-- KPI ROW -->
-    <div class="kpi-container">
-        <div class="kpi-card"><div class="kpi-value" id="totalSKUs">--</div><div class="kpi-label">Total SKUs</div></div>
-        <div class="kpi-card low"><div class="kpi-value" id="lowStockCount">--</div><div class="kpi-label">Low Stock (Below Min)</div></div>
-        <div class="kpi-card critical"><div class="kpi-value" id="outOfStockCount">--</div><div class="kpi-label">Out of Stock</div></div>
-    </div>
-
-    <!-- FILTERS -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description or Part Number..." onkeyup="filterAndRender()">
-        <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
-        <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
-        <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
-    </div>
-
-    <!-- TABLE -->
-    <div class="datagrid-container">
-        <div class="datagrid-header">
-            <span><strong id="resultCount">0</strong> items</span>
-            <span><i class="bi bi-hand-index-thumb"></i> Click any row to view history</span>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Inventory Viewer</span>
         </div>
-        <div style="overflow-x: auto; max-height: 500px;">
-            <table class="datagrid-table" id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"><tr><td colspan="7" style="text-align:center; padding:40px;">Loading inventory data...<\/td><\/tr><\/tbody>
-            <\/table>
-        <\/div>
-    <\/div>
-<\/div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
+        </div>
+    </div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>INVENTORY</span> &gt; <span class="current">Inventory Viewer</span>
+        <span style="margin-left: 10px; font-size: 0.6rem; color: #94a3b8; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+            <i class="fas fa-eye"></i> Read Only Mode
+        </span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <!-- KPI ROW -->
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-value" id="totalSKUs">--</div>
+                <div class="kpi-label">Total SKUs</div>
+            </div>
+            <div class="kpi-card low">
+                <div class="kpi-value" id="lowStockCount">--</div>
+                <div class="kpi-label">Low Stock (Below Min)</div>
+            </div>
+            <div class="kpi-card critical">
+                <div class="kpi-value" id="outOfStockCount">--</div>
+                <div class="kpi-label">Out of Stock</div>
+            </div>
+        </div>
 
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
-<\/div>
+        <!-- FILTERS -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description or Part Number..." onkeyup="filterAndRender()">
+            <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
+            <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
+            <button class="btn-secondary" onclick="clearFilters()"><i class="fas fa-eraser"></i> Clear Filters</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="datagrid-container">
+            <div class="datagrid-header">
+                <span><strong id="resultCount">0</strong> items</span>
+                <span class="badge-info"><i class="fas fa-hand-pointer"></i> Click any row to view history</span>
+            </div>
+            <div style="overflow-x: auto; max-height: 420px;" class="custom-scroll">
+                <table class="datagrid-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"><tr><td colspan="7" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-boxes fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading inventory data...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
+</div>
 
 <!-- MODAL: HISTORY -->
 <div id="historyModal" class="modal-overlay">
     <div class="modal-container">
-        <div class="modal-header"><h4 id="historyModalTitle">Transaction History</h4><button class="btn-close" onclick="closeHistoryModal()">&times;</button></div>
-        <div class="modal-body" id="historyContent"><p class="text-muted text-center">Loading...</p></div>
-        <div class="modal-footer"><button class="btn-secondary" onclick="closeHistoryModal()">CLOSE</button></div>
-    </div>
-</div>
-
-<div id="toast" class="toast"></div>
-<div id="loadingOverlay" class="loading-overlay" style="display: none;">
-    <div class="loading-content">
-        <div class="spinner"></div>
-        <div>Loading...</div>
+        <div class="modal-header">
+            <h4 id="historyModalTitle">Transaction History</h4>
+            <button class="btn-close-modal" onclick="closeHistoryModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="historyContent"><p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</p></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeHistoryModal()"><i class="fas fa-times"></i> CLOSE</button>
+        </div>
     </div>
 </div>
 
 <script>
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // RECIBIR MENSAJES DEL PADRE
     // ============================================
     window.addEventListener('message', function(event) {
         const data = event.data;
-        
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-        
         if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
         }
     });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
 
     // ============================================
     // API CONFIGURATION
@@ -472,7 +735,8 @@
         }
     }
 
-    async function callApi(action, args = []) {
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
         if (!EAMS_API_URL) throw new Error('API URL not configured. Please login.');
         const response = await fetch(PROXY_URL, {
             method: 'POST',
@@ -484,12 +748,18 @@
         return result.data;
     }
 
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
     // ============================================
-    // FUNCIÓN DE LOGGING PARA VISUALIZACIÓN (solo lectura, log opcional)
+    // FUNCIÓN DE LOGGING PARA VISUALIZACIÓN
     // ============================================
     async function logInventoryView(sku, viewedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
@@ -497,57 +767,40 @@
         }
         
         try {
-            await window.Logger.audit('VIEW', 'STK', sku, '', '', '', `Inventory viewer accessed SKU: ${sku}`);
+            await window.Logger.audit('VIEW', 'STK', sku, '', '', '', 'Inventory viewer accessed SKU: ' + sku);
             console.log('[STK] Inventory view logged:', sku);
         } catch (err) {
             console.warn('[STK] Failed to log inventory view:', err);
         }
     }
 
-    // Toast system
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info-circle')}"></i> ${message}`;
-        toast.style.display = 'flex';
-        setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
+    // ============================================
+    // GLOBAL STATE
+    // ============================================
+    var catalogData = [];
+    var categoriesList = [];
+    var locationsList = [];
+    var currentUser = '';
 
-    function showLoading(msg = 'Loading...') {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.querySelector('.loading-content').innerHTML = `<div class="spinner"></div><div>${msg}</div>`;
-        overlay.style.display = 'flex';
-    }
-
-    function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
-    // Global state
-    let catalogData = [];
-    let categoriesList = [];
-    let locationsList = [];
-    let currentUser = '';
-
-    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-    // ======================= DATA FETCH =======================
+    // ============================================
+    // DATA FETCH
+    // ============================================
     async function loadUserEmail() {
         try {
-            const email = await callApi('STK_VIEWER_getCurrentUserEmail', []);
+            var email = await callApi('STK_VIEWER_getCurrentUserEmail', []);
             currentUser = email || 'Viewer Session';
-            const userDisplay = document.getElementById('userDisplay');
+            var userDisplay = document.getElementById('userDisplay');
             if (userDisplay) userDisplay.innerText = currentUser;
         } catch(e) { 
             currentUser = 'Viewer';
-            const userDisplay = document.getElementById('userDisplay');
+            var userDisplay = document.getElementById('userDisplay');
             if (userDisplay) userDisplay.innerText = currentUser; 
         }
     }
 
     async function loadKPI() {
         try {
-            const kpi = await callApi('STK_VIEWER_getInventoryKPI', []);
+            var kpi = await callApi('STK_VIEWER_getInventoryKPI', []);
             document.getElementById('totalSKUs').innerText = kpi.totalSKUs;
             document.getElementById('lowStockCount').innerText = kpi.lowStockCount;
             document.getElementById('outOfStockCount').innerText = kpi.outOfStockCount;
@@ -556,22 +809,26 @@
 
     async function loadFilters() {
         try {
-            const filterData = await callApi('STK_VIEWER_getInventoryFilters', []);
+            var filterData = await callApi('STK_VIEWER_getInventoryFilters', []);
             categoriesList = filterData.categories || [];
             locationsList = filterData.locations || [];
-            const catSelect = document.getElementById('categoryFilter');
-            const locSelect = document.getElementById('locationFilter');
+            var catSelect = document.getElementById('categoryFilter');
+            var locSelect = document.getElementById('locationFilter');
             catSelect.innerHTML = '<option value="">All Categories</option>';
-            categoriesList.forEach(cat => { catSelect.innerHTML += `<option value="${cat}">${cat}</option>`; });
+            for (var i = 0; i < categoriesList.length; i++) {
+                catSelect.innerHTML += '<option value="' + categoriesList[i] + '">' + categoriesList[i] + '</option>';
+            }
             locSelect.innerHTML = '<option value="">All Locations</option>';
-            locationsList.forEach(loc => { locSelect.innerHTML += `<option value="${loc}">${loc}</option>`; });
+            for (var i = 0; i < locationsList.length; i++) {
+                locSelect.innerHTML += '<option value="' + locationsList[i] + '">' + locationsList[i] + '</option>';
+            }
         } catch(e) { showToast('Error loading filters', 'error'); }
     }
 
     async function refreshCatalog() {
         showLoading('Loading inventory...');
         try {
-            const response = await callApi('STK_VIEWER_getFullCatalog', []);
+            var response = await callApi('STK_VIEWER_getFullCatalog', []);
             catalogData = response.data || [];
             filterAndRender();
             hideLoading();
@@ -582,54 +839,65 @@
     }
 
     function filterAndRender() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const categoryFilter = document.getElementById('categoryFilter').value;
-        const locationFilter = document.getElementById('locationFilter').value;
+        var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        var categoryFilter = document.getElementById('categoryFilter').value;
+        var locationFilter = document.getElementById('locationFilter').value;
         
-        const filtered = catalogData.filter(item => {
-            const matchesSearch = !searchTerm || 
-                (item['Part ID / SKU'] && String(item['Part ID / SKU']).toLowerCase().includes(searchTerm)) ||
-                (item.Description && String(item.Description).toLowerCase().includes(searchTerm)) ||
-                (item['Manufacturer / Brand'] && String(item['Manufacturer / Brand']).toLowerCase().includes(searchTerm)) ||
-                (item['Reference / Model'] && String(item['Reference / Model']).toLowerCase().includes(searchTerm));
+        var filtered = [];
+        for (var i = 0; i < catalogData.length; i++) {
+            var item = catalogData[i];
+            var matchesSearch = !searchTerm || 
+                (item['Part ID / SKU'] && String(item['Part ID / SKU']).toLowerCase().indexOf(searchTerm) !== -1) ||
+                (item.Description && String(item.Description).toLowerCase().indexOf(searchTerm) !== -1) ||
+                (item['Manufacturer / Brand'] && String(item['Manufacturer / Brand']).toLowerCase().indexOf(searchTerm) !== -1) ||
+                (item['Reference / Model'] && String(item['Reference / Model']).toLowerCase().indexOf(searchTerm) !== -1);
             
-            const matchesCategory = !categoryFilter || item.Category === categoryFilter;
-            const matchesLocation = !locationFilter || item['Storage Location'] === locationFilter;
+            var matchesCategory = !categoryFilter || item.Category === categoryFilter;
+            var matchesLocation = !locationFilter || item['Storage Location'] === locationFilter;
             
-            return matchesSearch && matchesCategory && matchesLocation;
-        });
+            if (matchesSearch && matchesCategory && matchesLocation) {
+                filtered.push(item);
+            }
+        }
         
         renderTable(filtered);
         document.getElementById('resultCount').innerText = filtered.length;
         
         if (filtered.length === 0 && searchTerm) {
-            showToast(`No results for "${searchTerm}". Try clearing filters.`, 'warning');
+            showToast('No results for "' + searchTerm + '". Try clearing filters.', 'warning');
         }
     }
 
     function renderTable(data) {
-        const tbody = document.getElementById('tableBody');
-        if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">No items found.<\/td><\/tr>'; return; }
+        var tbody = document.getElementById('tableBody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No items found.</td></tr>';
+            return;
+        }
         
-        tbody.innerHTML = data.map(item => {
-            const stock = parseFloat(item['Current Stock']) || 0;
-            const min = parseFloat(item['Min Stock']) || 0;
-            let stockClass = 'stock-ok', stockIcon = '✓';
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var stock = parseFloat(item['Current Stock']) || 0;
+            var min = parseFloat(item['Min Stock']) || 0;
+            var stockClass = 'stock-ok';
+            var stockIcon = '✓';
             if (stock <= 0) { stockClass = 'stock-critical'; stockIcon = '⚠️'; }
             else if (stock < min) { stockClass = 'stock-low'; stockIcon = '⚠'; }
-            const unit = item.Unit || '';
-            const sku = escapeHtml(item['Part ID / SKU'] || '');
+            var unit = item.Unit || '';
+            var sku = escapeHtml(item['Part ID / SKU'] || '');
             
-            return `<tr onclick="showHistory('${sku.replace(/'/g, "\\'")}')" style="cursor:pointer;">
-                <td><strong>${sku}<\/strong><\/td>
-                <td>${escapeHtml(item.Description || '')}<\/td>
-                <td>${escapeHtml(item.Category || '')}<\/td>
-                <td><span class="stock-badge ${stockClass}">${stockIcon} ${stock} ${unit}</span><\/td>
-                <td>${min}<\/td>
-                <td>${escapeHtml(item['Storage Location'] || 'N/A')}<\/td>
-                <td>${(parseFloat(item['Unit Price']) || 0).toLocaleString(undefined, {minimumFractionDigits: 2})} ${item.Currency || 'CAD'}<\/td>
-            <\/tr>`;
-        }).join('');
+            html += '<tr onclick="showHistory(\'' + sku.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">' +
+                '<td><strong>' + sku + '</strong></td>' +
+                '<td>' + escapeHtml(item.Description || '') + '</td>' +
+                '<td>' + escapeHtml(item.Category || '') + '</td>' +
+                '<td><span class="stock-badge ' + stockClass + '">' + stockIcon + ' ' + stock + ' ' + unit + '</span></td>' +
+                '<td>' + min + '</td>' +
+                '<td>' + escapeHtml(item['Storage Location'] || 'N/A') + '</td>' +
+                '<td>' + (parseFloat(item['Unit Price']) || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' ' + (item.Currency || 'CAD') + '</td>' +
+            '</tr>';
+        }
+        tbody.innerHTML = html;
     }
 
     function clearFilters() {
@@ -639,43 +907,47 @@
         filterAndRender();
     }
 
+    // ============================================
     // HISTORY MODAL
+    // ============================================
     async function showHistory(sku) {
         showLoading('Loading transaction history...');
         try {
-            const history = await callApi('STK_VIEWER_getSkuHistory', [sku]);
-            const container = document.getElementById('historyContent');
-            document.getElementById('historyModalTitle').innerText = `Transaction History: ${sku}`;
+            var history = await callApi('STK_VIEWER_getSkuHistory', [sku]);
+            var container = document.getElementById('historyContent');
+            document.getElementById('historyModalTitle').innerText = 'Transaction History: ' + sku;
             
-            // Log de visualización
-            logInventoryView(sku, currentUser).catch(e => console.warn('[STK] View log failed:', e));
+            logInventoryView(sku, currentUser).catch(function(e) { console.warn('[STK] View log failed:', e); });
             
-            if (!history.length) {
-                container.innerHTML = '<p class="text-muted text-center">No transactions found for this SKU.</p>';
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No transactions found for this SKU.</p>';
             } else {
-                container.innerHTML = history.map(h => {
-                    let typeClass = 'history-type';
+                var html = '';
+                for (var i = 0; i < history.length; i++) {
+                    var h = history[i];
+                    var typeClass = 'history-type';
                     if (h.type === 'INBOUND_PO') typeClass += ' INBOUND_PO';
                     else if (h.type === 'CONSUMED_WO') typeClass += ' CONSUMED_WO';
                     else if (h.type === 'ADJUST') typeClass += ' ADJUST';
                     else if (h.type === 'NEW_SKU_INITIALIZED') typeClass += ' NEW_SKU_INITIALIZED';
                     else if (h.type === 'MASTER_DATA_REVISION') typeClass += ' MASTER_DATA_REVISION';
                     
-                    const qty = parseFloat(h.qty) || 0;
-                    const qtyDisplay = qty > 0 ? `+${qty}` : qty;
-                    const qtyColor = qty > 0 ? '#166534' : (qty < 0 ? '#991b1b' : '');
+                    var qty = parseFloat(h.qty) || 0;
+                    var qtyDisplay = qty > 0 ? '+' + qty : qty;
+                    var qtyColor = qty > 0 ? '#166534' : (qty < 0 ? '#991b1b' : '');
                     
-                    return `<div class="history-item">
-                        <div class="history-date">📅 ${h.date}</div>
-                        <div><span class="${typeClass}">${h.type}</span> <span style="color:${qtyColor}; font-weight:600; margin-left:10px;">Quantity: ${qtyDisplay}</span></div>
-                        ${h.poNumber && h.poNumber !== 'N/A' ? `<div>📄 PO: ${escapeHtml(h.poNumber)}</div>` : ''}
-                        ${h.woNumber && h.woNumber !== 'N/A' ? `<div>🔧 WO: ${escapeHtml(h.woNumber)}</div>` : ''}
-                        <div>👤 ${escapeHtml(h.responsible) || 'System'}</div>
-                        <div class="small" style="margin-top:4px;">💬 ${escapeHtml(h.comments) || 'No comments'}</div>
-                    </div>`;
-                }).join('');
+                    html += '<div class="history-item">' +
+                        '<div class="history-date">📅 ' + h.date + '</div>' +
+                        '<div><span class="' + typeClass + '">' + h.type + '</span> <span style="color:' + qtyColor + '; font-weight:600; margin-left:10px;">Quantity: ' + qtyDisplay + '</span></div>' +
+                        (h.poNumber && h.poNumber !== 'N/A' ? '<div>📄 PO: ' + escapeHtml(h.poNumber) + '</div>' : '') +
+                        (h.woNumber && h.woNumber !== 'N/A' ? '<div>🔧 WO: ' + escapeHtml(h.woNumber) + '</div>' : '') +
+                        '<div>👤 ' + escapeHtml(h.responsible || 'System') + '</div>' +
+                        '<div class="small" style="margin-top:4px;">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
+                    '</div>';
+                }
+                container.innerHTML = html;
             }
-            document.getElementById('historyModal').style.display = 'flex';
+            document.getElementById('historyModal').classList.add('active');
             hideLoading();
         } catch(err) {
             hideLoading();
@@ -684,21 +956,40 @@
     }
 
     function closeHistoryModal() {
-        document.getElementById('historyModal').style.display = 'none';
+        document.getElementById('historyModal').classList.remove('active');
     }
 
-    // ======================= MAIN INIT =======================
-    (async function init() {
+    // ============================================
+    // MAIN INIT
+    // ============================================
+    function init() {
+        loadUser();
+        showLoading('Loading Inventory Viewer...');
         loadApiUrl();
         if (!EAMS_API_URL) { 
+            hideLoading();
             showToast('Session error: missing API URL. Please login first.', 'error');
             document.getElementById('footer-status').innerText = 'Not connected';
             return;
         }
-        await Promise.all([loadUserEmail(), loadKPI(), loadFilters()]);
-        await refreshCatalog();
-        document.getElementById('footer-status').innerText = 'Connected (Read Only)';
-    })();
+        Promise.all([loadUserEmail(), loadKPI(), loadFilters()])
+            .then(function() {
+                refreshCatalog();
+                document.getElementById('footer-status').innerText = 'Connected (Read Only)';
+                hideLoading();
+                showToast('Inventory Viewer loaded successfully ✅', 'success');
+            })
+            .catch(function(err) {
+                hideLoading();
+                showToast('Error loading data: ' + err.message, 'error');
+            });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 </body>
 </html>
