@@ -1,718 +1,960 @@
 <!DOCTYPE html>
 <html lang="en-CA">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAMS - Calibration Manager</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calibration Manager - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #1a1a2e;
+            border-bottom: 2px solid #2a2f4a;
+            flex-shrink: 0;
+            min-height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-badge {
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
+        .breadcrumbs {
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
+        .hub-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+        .heatmap-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-    :root {
-      --eams-main: #1a56db;
-      --eams-accent: #3b82f6;
-      --eams-bg: #f8fafc;
-      --cal-red: #d32f2f;
-      --cal-orange: #ed6c02;
-      --cal-green: #2e7d32;
-    }
+        .heatmap-card {
+            flex: 1;
+            background: white;
+            padding: 16px 18px;
+            border-radius: 10px;
+            border-top: 4px solid #ccc;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
 
-    /* EAMS Header */
-    .eams-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1a1a2e;
-      color: white;
-      padding: 16px 24px;
-      flex-shrink: 0;
-    }
+        .heatmap-card.critical { border-top-color: #dc3545; }
+        .heatmap-card.warning { border-top-color: #f59e0b; }
+        .heatmap-card.compliant { border-top-color: #22c55e; }
 
-    .eams-header h2 {
-      font-size: 1.25rem;
-      margin: 0;
-    }
+        .heatmap-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .user-badge {
-      font-size: 0.8rem;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
+        .heatmap-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* Breadcrumbs */
-    .breadcrumbs {
-      padding: 12px 24px;
-      background: #eef2f5;
-      font-size: 0.8rem;
-      color: #555;
-      border-bottom: 1px solid #ddd;
-      flex-shrink: 0;
-    }
+        .filter-bar {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: end;
+        }
 
-    .hub-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
-      flex: 1;
-    }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-    /* Toast Notifications */
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 2000;
-    }
+        .filter-group label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #495057;
+            margin-bottom: 3px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .toast {
-      background: white;
-      border-radius: 8px;
-      padding: 12px 20px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 280px;
-      animation: slideIn 0.3s ease;
-      border-left: 4px solid;
-    }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            transition: all 0.2s;
+        }
 
-    .toast.success { border-left-color: #10b981; }
-    .toast.error { border-left-color: #ef4444; }
-    .toast.info { border-left-color: #3b82f6; }
-    .toast.warning { border-left-color: #f59e0b; }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
 
-    .toast i { font-size: 1.2rem; }
-    .toast.success i { color: #10b981; }
-    .toast.error i { color: #ef4444; }
-    .toast .toast-message { flex: 1; font-size: 0.85rem; }
-    .toast .toast-close { cursor: pointer; color: #94a3b8; font-size: 1rem; }
+        .btn-primary {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
 
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
+        .btn-primary:hover {
+            background: #2c2c4e;
+        }
 
-    /* Loading Overlay */
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1500;
-      justify-content: center;
-      align-items: center;
-    }
+        .btn-primary i {
+            margin-right: 4px;
+        }
 
-    .loading-spinner {
-      background: white;
-      padding: 24px 32px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
 
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #e2e8f0;
-      border-top-color: var(--eams-main);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+        .btn-secondary i {
+            margin-right: 4px;
+        }
 
-    /* Heatmap */
-    .heatmap-container {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
 
-    .heatmap-card {
-      flex: 1;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      border-top: 4px solid #ccc;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+        .btn-close-modal:hover {
+            color: #dc3545;
+        }
 
-    .heatmap-card.critical { border-top-color: var(--cal-red); }
-    .heatmap-card.warning { border-top-color: var(--cal-orange); }
-    .heatmap-card.compliant { border-top-color: var(--cal-green); }
+        .status-badge {
+            padding: 2px 10px;
+            border-radius: 16px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .heatmap-number {
-      font-size: 2rem;
-      font-weight: 700;
-      margin: 0;
-    }
+        .badge-red { background: #ffebee; color: #dc3545; }
+        .badge-orange { background: #fff3e0; color: #f59e0b; }
+        .badge-green { background: #e8f5e9; color: #22c55e; }
 
-    .heatmap-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      color: #6c757d;
-      margin: 0;
-    }
+        .table-container {
+            max-height: 420px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
 
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      display: inline-block;
-    }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
 
-    .badge-red { background: #ffebee; color: var(--cal-red); }
-    .badge-orange { background: #fff3e0; color: var(--cal-orange); }
-    .badge-green { background: #e8f5e9; color: var(--cal-green); }
+        .table-container th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            padding: 10px 8px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1a1a2e;
+            color: #64748b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .table-container {
-      max-height: 500px;
-      overflow-y: auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+        .table-container td {
+            padding: 8px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
+        .table-container tr:hover {
+            background: #f8fafc;
+        }
 
-    th {
-      position: sticky;
-      top: 0;
-      background: #e9ecef;
-      padding: 12px 8px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      border-bottom: 2px solid #dee2e6;
-    }
+        .btn-record {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: opacity 0.2s;
+            margin-right: 3px;
+        }
 
-    td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #dee2e6;
-      cursor: pointer;
-    }
+        .btn-record:hover { opacity: 0.8; }
 
-    tr:hover {
-      background: #f8f9fa;
-    }
+        .btn-edit {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: opacity 0.2s;
+            margin-right: 3px;
+        }
 
-    .filter-bar {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr auto;
-      gap: 12px;
-      margin-bottom: 20px;
-      align-items: end;
-    }
+        .btn-edit:hover { opacity: 0.8; }
 
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-    }
+        .btn-history {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: opacity 0.2s;
+        }
 
-    .filter-group label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #495057;
-      margin-bottom: 4px;
-    }
+        .btn-history:hover { opacity: 0.8; }
 
-    /* EAMS Status Bar */
-    .eams-status-bar {
-      background: #f8f9fa;
-      padding: 8px 24px;
-      font-size: 0.75rem;
-      color: #6c757d;
-      border-top: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
+        .btn-record i,
+        .btn-edit i,
+        .btn-history i {
+            margin-right: 2px;
+        }
 
-    /* Modals */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(44, 62, 80, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
+        .text-muted { color: #6c757d; }
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 4px; }
+        .small { font-size: 0.7rem; }
 
-    .modal-container {
-      background: white;
-      border-radius: 16px;
-      width: 650px;
-      max-width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      border-top: 5px solid var(--eams-main);
-    }
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .modal-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid #dee2e6;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .modal-overlay.active {
+            display: flex;
+        }
 
-    .modal-header h4 {
-      margin: 0;
-      color: var(--eams-main);
-    }
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 640px;
+            max-width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-top: 4px solid #1a1a2e;
+        }
 
-    .modal-body {
-      padding: 24px;
-    }
+        .modal-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
 
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid #dee2e6;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
+        .modal-header h4 {
+            margin: 0;
+            color: #1a1a2e;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+        .modal-body {
+            padding: 16px 20px;
+        }
 
-    .full-width {
-      grid-column: span 2;
-    }
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+        }
 
-    .field-label {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--eams-main);
-      margin-bottom: 5px;
-    }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-family: inherit;
-    }
+        .full-width {
+            grid-column: span 2;
+        }
 
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--eams-accent);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-    }
+        .field-label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #1a1a2e;
+            margin-bottom: 3px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    input[readonly] {
-      background: #f1f2f6;
-    }
+        .modal-body input,
+        .modal-body select,
+        .modal-body textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            transition: all 0.2s;
+        }
 
-    .btn-primary {
-      background: var(--eams-main);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        .modal-body input:focus,
+        .modal-body select:focus,
+        .modal-body textarea:focus {
+            outline: none;
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
 
-    .btn-primary:hover {
-      background: #0e3f9e;
-    }
+        .modal-body input[readonly] {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
-    .btn-secondary {
-      background: #64748b;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
+        .modal-body textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
 
-    .btn-secondary:hover {
-      background: #475569;
-    }
+        .history-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .btn-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #6c757d;
-    }
+        .history-date {
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 0.8rem;
+        }
 
-    .btn-record, .btn-edit, .btn-history {
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.2s;
-    }
+        .history-cert {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
 
-    .btn-record { background: #10b981; color: white; margin-right: 4px; }
-    .btn-edit { background: #1a56db; color: white; margin-right: 4px; }
-    .btn-history { background: #64748b; color: white; }
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
 
-    .btn-record:hover, .btn-edit:hover, .btn-history:hover {
-      opacity: 0.8;
-    }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
 
-    .history-item {
-      padding: 12px;
-      border-bottom: 1px solid #dee2e6;
-    }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
 
-    .history-date {
-      font-weight: 700;
-      color: var(--eams-main);
-    }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
 
-    .history-cert {
-      font-family: monospace;
-      font-size: 0.75rem;
-      color: #6c757d;
-    }
-
-    .text-muted { color: #6c757d; }
-    .text-center { text-align: center; }
-    .mt-1 { margin-top: 4px; }
-    .small { font-size: 0.75rem; }
-
-    @media (max-width: 768px) {
-      .filter-bar {
-        grid-template-columns: 1fr;
-      }
-      .heatmap-container {
-        flex-direction: column;
-      }
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      .full-width {
-        grid-column: span 1;
-      }
-    }
-  </style>
+        @media (max-width: 768px) {
+            .filter-bar {
+                grid-template-columns: 1fr;
+            }
+            .heatmap-container {
+                flex-direction: column;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-    <h2><i class="bi bi-calendar-check"></i> Calibration Manager</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-    </div>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Calibration Manager...</span>
 </div>
 
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt;
-    <span>CALIBRATION</span> &gt;
-    <span>Calibration Manager</span>
-</div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
 
-<div class="hub-container">
-  
-  <!-- HEATMAP -->
-  <div class="heatmap-container">
-    <div class="heatmap-card critical">
-      <p class="heatmap-label">CRITICAL (&lt; 30 DAYS)</p>
-      <h2 class="heatmap-number" id="criticalCount" style="color: var(--cal-red);">0</h2>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Calibration Manager</span>
+        </div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
+        </div>
     </div>
-    <div class="heatmap-card warning">
-      <p class="heatmap-label">UPCOMING (30-90 DAYS)</p>
-      <h2 class="heatmap-number" id="warningCount" style="color: var(--cal-orange);">0</h2>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>CALIBRATION</span> &gt; <span class="current">Calibration Manager</span>
     </div>
-    <div class="heatmap-card compliant">
-      <p class="heatmap-label">COMPLIANT (&gt; 90 DAYS)</p>
-      <h2 class="heatmap-number" id="compliantCount" style="color: var(--cal-green);">0</h2>
-    </div>
-  </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <div class="hub-container">
+            <!-- HEATMAP -->
+            <div class="heatmap-container">
+                <div class="heatmap-card critical">
+                    <p class="heatmap-label"><i class="fas fa-exclamation-circle"></i> CRITICAL (&lt; 30 DAYS)</p>
+                    <h2 class="heatmap-number" id="criticalCount" style="color: #dc3545;">0</h2>
+                </div>
+                <div class="heatmap-card warning">
+                    <p class="heatmap-label"><i class="fas fa-clock"></i> UPCOMING (30-90 DAYS)</p>
+                    <h2 class="heatmap-number" id="warningCount" style="color: #f59e0b;">0</h2>
+                </div>
+                <div class="heatmap-card compliant">
+                    <p class="heatmap-label"><i class="fas fa-check-circle"></i> COMPLIANT (&gt; 90 DAYS)</p>
+                    <h2 class="heatmap-number" id="compliantCount" style="color: #22c55e;">0</h2>
+                </div>
+            </div>
 
-  <!-- FILTERS -->
-  <div class="filter-bar">
-    <div class="filter-group">
-      <label><i class="bi bi-search"></i> SEARCH</label>
-      <input type="text" id="searchInput" placeholder="Tag ID or Name...">
-    </div>
-    <div class="filter-group">
-      <label>TYPE</label>
-      <select id="filterType">
-        <option value="">All Types</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>AREA</label>
-      <select id="filterArea">
-        <option value="">All Areas</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>STATUS</label>
-      <select id="filterStatus">
-        <option value="">All Status</option>
-      </select>
-    </div>
-    <div>
-      <button class="btn-primary" id="newInstrumentBtn">
-        <i class="bi bi-plus-circle"></i> NEW INSTRUMENT
-      </button>
-    </div>
-  </div>
+            <!-- FILTERS -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label><i class="fas fa-search"></i> SEARCH</label>
+                    <input type="text" id="searchInput" placeholder="Tag ID or Name...">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-tag"></i> TYPE</label>
+                    <select id="filterType">
+                        <option value="">All Types</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-map-marker-alt"></i> AREA</label>
+                    <select id="filterArea">
+                        <option value="">All Areas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-circle"></i> STATUS</label>
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn-primary" id="newInstrumentBtn">
+                        <i class="fas fa-plus-circle"></i> NEW INSTRUMENT
+                    </button>
+                </div>
+            </div>
 
-  <!-- INSTRUMENT TABLE -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>TAG ID</th>
-          <th>INSTRUMENT</th>
-          <th>TYPE</th>
-          <th>AREA</th>
-          <th>LAST CAL</th>
-          <th>NEXT DUE</th>
-          <th>DAYS LEFT</th>
-          <th>STATUS</th>
-          <th>ACTIONS</th>
-        </tr>
-      </thead>
-      <tbody id="instrumentTableBody">
-        <tr><td colspan="9" style="text-align:center; padding:40px;"><i class="bi bi-hourglass-split"></i> Loading instruments...<\/td><\/tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+            <!-- INSTRUMENT TABLE -->
+            <div class="table-container custom-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>TAG ID</th>
+                            <th>INSTRUMENT</th>
+                            <th>TYPE</th>
+                            <th>AREA</th>
+                            <th>LAST CAL</th>
+                            <th>NEXT DUE</th>
+                            <th>DAYS LEFT</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instrumentTableBody">
+                        <tr><td colspan="9" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-hourglass-half fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading instruments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
 </div>
 
 <!-- MODAL: CALIBRATION RECORDING -->
 <div id="calibrationModal" class="modal-overlay">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h4 id="modalTitle">Record Calibration</h4>
-      <button class="btn-close" id="closeCalModalBtn">&times;</button>
-    </div>
-    <div class="modal-body">
-      <form id="calibrationForm">
-        <div class="form-grid">
-          <div class="full-width">
-            <label class="field-label">TAG ID</label>
-            <input type="text" id="tagId" readonly style="background:#f1f2f6;">
-          </div>
-          <div class="full-width">
-            <label class="field-label">INSTRUMENT NAME</label>
-            <input type="text" id="instrumentName" readonly style="background:#f1f2f6;">
-          </div>
-          <div>
-            <label class="field-label">CALIBRATION DATE *</label>
-            <input type="date" id="calibrationDate" required>
-          </div>
-          <div>
-            <label class="field-label">FREQUENCY (MONTHS)</label>
-            <input type="number" id="frequency" readonly style="background:#f1f2f6;">
-          </div>
-          <div class="full-width">
-            <label class="field-label">CERTIFICATE # OR LINK *</label>
-            <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." required>
-          </div>
-          <div class="full-width">
-            <label class="field-label">COMMENTS / NOTES</label>
-            <textarea id="comments" rows="3" placeholder="Any observations, out of tolerance notes, etc."></textarea>
-          </div>
-          <div style="display:flex; gap:12px;">
-            <div style="flex:1;">
-              <label class="field-label">DEVIATION (optional)</label>
-              <input type="number" step="any" id="deviation" placeholder="Ej: 0.018">
-            </div>
-            <div style="flex:1;">
-              <label class="field-label">DEVIATION UNIT</label>
-              <input type="text" id="deviationUnit" placeholder="mm, PSI, °C">
-            </div>
-          </div>
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4 id="modalTitle">Record Calibration</h4>
+            <button class="btn-close-modal" id="closeCalModalBtn">&times;</button>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" id="cancelCalBtn">CANCEL</button>
-          <button type="submit" class="btn-primary">RECORD CALIBRATION</button>
+        <div class="modal-body">
+            <form id="calibrationForm">
+                <div class="form-grid">
+                    <div class="full-width">
+                        <label class="field-label">TAG ID</label>
+                        <input type="text" id="tagId" readonly>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">INSTRUMENT NAME</label>
+                        <input type="text" id="instrumentName" readonly>
+                    </div>
+                    <div>
+                        <label class="field-label">CALIBRATION DATE *</label>
+                        <input type="date" id="calibrationDate" required>
+                    </div>
+                    <div>
+                        <label class="field-label">FREQUENCY (MONTHS)</label>
+                        <input type="number" id="frequency" readonly>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">CERTIFICATE # OR LINK *</label>
+                        <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." required>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">COMMENTS / NOTES</label>
+                        <textarea id="comments" rows="3" placeholder="Any observations, out of tolerance notes, etc."></textarea>
+                    </div>
+                    <div>
+                        <label class="field-label">DEVIATION (optional)</label>
+                        <input type="number" step="any" id="deviation" placeholder="e.g., 0.018">
+                    </div>
+                    <div>
+                        <label class="field-label">DEVIATION UNIT</label>
+                        <input type="text" id="deviationUnit" placeholder="mm, PSI, °C">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelCalBtn"><i class="fas fa-times"></i> CANCEL</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-check"></i> RECORD CALIBRATION</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <!-- MODAL: NEW INSTRUMENT REGISTRATION -->
 <div id="instrumentModal" class="modal-overlay">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h4 id="instModalTitle">Register New Instrument</h4>
-      <button class="btn-close" id="closeInstModalBtn">&times;</button>
-    </div>
-    <div class="modal-body">
-      <form id="instrumentForm">
-        <div class="form-grid">
-          <div class="full-width">
-            <label class="field-label">TAG ID</label>
-            <input type="text" id="newTagId" readonly style="background:#f1f2f6;">
-          </div>
-          <div class="full-width">
-            <label class="field-label">INSTRUMENT NAME *</label>
-            <input type="text" id="newInstrumentName" required>
-          </div>
-          <div>
-            <label class="field-label">INSTRUMENT TYPE *</label>
-            <select id="newType" required></select>
-          </div>
-          <div>
-            <label class="field-label">AREA / LOCATION *</label>
-            <select id="newArea" required></select>
-          </div>
-          <div>
-            <label class="field-label">MANUFACTURER / MODEL</label>
-            <input type="text" id="newModel">
-          </div>
-          <div>
-            <label class="field-label">SERIAL NUMBER</label>
-            <input type="text" id="newSerial">
-          </div>
-          <div>
-            <label class="field-label">FREQUENCY (MONTHS) *</label>
-            <input type="number" id="newFrequency" min="1" required>
-          </div>
-          <div>
-            <label class="field-label">LAST CALIBRATION *</label>
-            <input type="date" id="newLastCal" required>
-          </div>
-          <div>
-            <label class="field-label">STATUS</label>
-            <select id="newStatus"></select>
-          </div>
-          <div>
-            <label class="field-label">RESPONSIBLE</label>
-            <select id="newResponsible"></select>
-          </div>
-          <div class="full-width">
-            <label class="field-label">TOLERANCE / RANGE</label>
-            <div style="display: flex; gap: 12px;">
-              <input type="number" id="newToleranceValue" step="0.01" placeholder="Value (e.g., 0.02, 1.00)" style="flex: 2;">
-              <select id="newToleranceUnit" style="flex: 1;">
-                <option value="">-- Unit --</option>
-              </select>
-            </div>
-            <small style="font-size:10px; color:#6c757d;">Example: 0.02 + mm = "0.02 mm" stored in system</small>
-          </div>
-          <div class="full-width">
-            <label class="field-label">ASSOCIATED ASSET ID (optional)</label>
-            <select id="newAssociatedAsset">
-              <option value="">-- None --</option>
-            </select>
-            <small style="font-size:10px; color:#6c757d;">Only active Technical Locations are shown</small>
-          </div>
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4 id="instModalTitle">Register New Instrument</h4>
+            <button class="btn-close-modal" id="closeInstModalBtn">&times;</button>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" id="cancelInstBtn">CANCEL</button>
-          <button type="submit" class="btn-primary">SAVE INSTRUMENT</button>
+        <div class="modal-body">
+            <form id="instrumentForm">
+                <div class="form-grid">
+                    <div class="full-width">
+                        <label class="field-label">TAG ID</label>
+                        <input type="text" id="newTagId" readonly>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">INSTRUMENT NAME *</label>
+                        <input type="text" id="newInstrumentName" required>
+                    </div>
+                    <div>
+                        <label class="field-label">INSTRUMENT TYPE *</label>
+                        <select id="newType" required></select>
+                    </div>
+                    <div>
+                        <label class="field-label">AREA / LOCATION *</label>
+                        <select id="newArea" required></select>
+                    </div>
+                    <div>
+                        <label class="field-label">MANUFACTURER / MODEL</label>
+                        <input type="text" id="newModel">
+                    </div>
+                    <div>
+                        <label class="field-label">SERIAL NUMBER</label>
+                        <input type="text" id="newSerial">
+                    </div>
+                    <div>
+                        <label class="field-label">FREQUENCY (MONTHS) *</label>
+                        <input type="number" id="newFrequency" min="1" required>
+                    </div>
+                    <div>
+                        <label class="field-label">LAST CALIBRATION *</label>
+                        <input type="date" id="newLastCal" required>
+                    </div>
+                    <div>
+                        <label class="field-label">STATUS</label>
+                        <select id="newStatus"></select>
+                    </div>
+                    <div>
+                        <label class="field-label">RESPONSIBLE</label>
+                        <select id="newResponsible"></select>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">TOLERANCE / RANGE</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="newToleranceValue" step="0.01" placeholder="Value (e.g., 0.02, 1.00)" style="flex: 2;">
+                            <select id="newToleranceUnit" style="flex: 1;">
+                                <option value="">-- Unit --</option>
+                            </select>
+                        </div>
+                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Example: 0.02 + mm = "0.02 mm" stored in system</small>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">ASSOCIATED ASSET ID (optional)</label>
+                        <select id="newAssociatedAsset">
+                            <option value="">-- None --</option>
+                        </select>
+                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Only active Technical Locations are shown</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelInstBtn"><i class="fas fa-times"></i> CANCEL</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> SAVE INSTRUMENT</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <!-- MODAL: HISTORY VIEW -->
 <div id="historyModal" class="modal-overlay">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h4>Calibration History</h4>
-      <button class="btn-close" id="closeHistoryBtn">&times;</button>
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4><i class="fas fa-history"></i> Calibration History</h4>
+            <button class="btn-close-modal" id="closeHistoryBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="historyContent">
+            <p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</p>
+        </div>
     </div>
-    <div class="modal-body" id="historyContent">
-      <p class="text-muted text-center">Loading...</p>
-    </div>
-  </div>
-</div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-    <span id="loadingMessage">Processing...</span>
-  </div>
 </div>
 
 <script>
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // RECIBIR MENSAJES DEL PADRE
     // ============================================
     window.addEventListener('message', function(event) {
         const data = event.data;
-        
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-        
         if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
         }
     });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
 
     // ============================================
     // API CONFIGURATION
@@ -728,18 +970,17 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-                console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
-            console.error('No session found');
             showToast('Please log in to continue.', 'error');
         }
     }
 
-    async function callApi(action, args = []) {
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
         if (!EAMS_API_URL) {
             throw new Error('API URL not configured. Please log in.');
         }
@@ -760,8 +1001,14 @@
         return result.data;
     }
 
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
     // ============================================
@@ -786,84 +1033,37 @@
     }
 
     // ============================================
-    // UI Helpers
+    // GLOBAL STATE
     // ============================================
+    var instruments = [];
+    var config = {
+        areas: [],
+        types: [],
+        statuses: [],
+        responsibles: [],
+        toleranceUnits: []
+    };
+    var currentUser = '';
 
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        let icon = '';
-        if (type === 'success') icon = '<i class="bi bi-check-circle-fill"></i>';
-        else if (type === 'error') icon = '<i class="bi bi-exclamation-triangle-fill"></i>';
-        else icon = '<i class="bi bi-info-circle-fill"></i>';
-        
-        toast.innerHTML = `
-            ${icon}
-            <span class="toast-message">${message}</span>
-            <i class="bi bi-x-lg toast-close"></i>
-        `;
-        
-        container.appendChild(toast);
-        
-        const closeBtn = toast.querySelector('.toast-close');
-        closeBtn.addEventListener('click', () => toast.remove());
-        
-        setTimeout(() => {
-            if (toast.parentNode) toast.remove();
-        }, 5000);
-    }
-
-    function showLoading(message = 'Processing...') {
-        const overlay = document.getElementById('loadingOverlay');
-        const msgSpan = document.getElementById('loadingMessage');
-        if (msgSpan) msgSpan.textContent = message;
-        overlay.style.display = 'flex';
-    }
-
-    function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'none';
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
     function calculateDaysLeft(nextCalStr) {
         if (!nextCalStr) return 999;
-        const today = new Date();
-        const nextCal = new Date(nextCalStr);
-        const diffTime = nextCal - today;
+        var today = new Date();
+        var nextCal = new Date(nextCalStr);
+        var diffTime = nextCal - today;
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
 
     // ============================================
-    // CAL Module
+    // CAL MODULE
     // ============================================
-
-    const CAL = (function() {
-        let instruments = [];
-        let config = {
-            areas: [],
-            types: [],
-            statuses: [],
-            responsibles: [],
-            toleranceUnits: []
-        };
-        let currentUser = '';
-
+    var CAL = (function() {
+        
         // ============================================
         // INITIALIZATION
         // ============================================
-        
 async function init() {
     // ✅ PRIMERO: Mostrar el spinner ANTES de cualquier otra cosa
     showLoading('Synchronizing metrology data...');
@@ -895,17 +1095,17 @@ async function init() {
 
         async function loadConfig() {
             try {
-                const response = await callApi('CAL_getConfig', []);
+                var response = await callApi('CAL_getConfig', []);
                 if (response.status === "success") {
                     config = response.data;
                     populateDropdowns();
                     
                     if (config.toleranceUnits && config.toleranceUnits.length > 0) {
-                        const unitSelect = document.getElementById('newToleranceUnit');
+                        var unitSelect = document.getElementById('newToleranceUnit');
                         unitSelect.innerHTML = '<option value="">-- Unit --</option>';
-                        config.toleranceUnits.forEach(unit => {
-                            unitSelect.innerHTML += `<option value="${unit}">${unit}</option>`;
-                        });
+                        for (var i = 0; i < config.toleranceUnits.length; i++) {
+                            unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
+                        }
                     }
                 } else {
                     showToast(response.message || 'Config load failed', 'error');
@@ -916,30 +1116,54 @@ async function init() {
         }
 
         function populateDropdowns() {
-            const typeFilter = document.getElementById('filterType');
-            typeFilter.innerHTML = '<option value="">All Types</option>' + 
-                config.types.map(t => `<option value="${t}">${t}</option>`).join('');
+            var typeFilter = document.getElementById('filterType');
+            var typeHtml = '<option value="">All Types</option>';
+            for (var i = 0; i < config.types.length; i++) {
+                typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+            }
+            typeFilter.innerHTML = typeHtml;
 
-            const areaFilter = document.getElementById('filterArea');
-            areaFilter.innerHTML = '<option value="">All Areas</option>' + 
-                config.areas.map(a => `<option value="${a}">${a}</option>`).join('');
+            var areaFilter = document.getElementById('filterArea');
+            var areaHtml = '<option value="">All Areas</option>';
+            for (var i = 0; i < config.areas.length; i++) {
+                areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+            }
+            areaFilter.innerHTML = areaHtml;
 
-            const statusFilter = document.getElementById('filterStatus');
-            statusFilter.innerHTML = '<option value="">All Status</option>' + 
-                config.statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+            var statusFilter = document.getElementById('filterStatus');
+            var statusHtml = '<option value="">All Status</option>';
+            for (var i = 0; i < config.statuses.length; i++) {
+                statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+            }
+            statusFilter.innerHTML = statusHtml;
 
-            const typeField = document.getElementById('newType');
-            typeField.innerHTML = config.types.map(t => `<option value="${t}">${t}</option>`).join('');
+            var typeField = document.getElementById('newType');
+            var typeFieldHtml = '';
+            for (var i = 0; i < config.types.length; i++) {
+                typeFieldHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+            }
+            typeField.innerHTML = typeFieldHtml;
 
-            const areaField = document.getElementById('newArea');
-            areaField.innerHTML = config.areas.map(a => `<option value="${a}">${a}</option>`).join('');
+            var areaField = document.getElementById('newArea');
+            var areaFieldHtml = '';
+            for (var i = 0; i < config.areas.length; i++) {
+                areaFieldHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+            }
+            areaField.innerHTML = areaFieldHtml;
 
-            const statusField = document.getElementById('newStatus');
-            statusField.innerHTML = config.statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+            var statusField = document.getElementById('newStatus');
+            var statusFieldHtml = '';
+            for (var i = 0; i < config.statuses.length; i++) {
+                statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+            }
+            statusField.innerHTML = statusFieldHtml;
 
-            const respField = document.getElementById('newResponsible');
-            respField.innerHTML = '<option value="">-- Select --</option>' + 
-                config.responsibles.map(r => `<option value="${r}">${r}</option>`).join('');
+            var respField = document.getElementById('newResponsible');
+            var respHtml = '<option value="">-- Select --</option>';
+            for (var i = 0; i < config.responsibles.length; i++) {
+                respHtml += '<option value="' + config.responsibles[i] + '">' + config.responsibles[i] + '</option>';
+            }
+            respField.innerHTML = respHtml;
         }
 
         async function loadInstruments() {
@@ -949,22 +1173,24 @@ async function init() {
                 updateHeatmap(instruments);
             } catch (error) {
                 showToast('Failed to load instruments: ' + error.message, 'error');
-                const tbody = document.getElementById('instrumentTableBody');
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px;">❌ Error loading instruments: ${error.message}<\/td><\/tr>`;
+                var tbody = document.getElementById('instrumentTableBody');
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-circle fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Error loading instruments: ' + error.message + '</td></tr>';
             }
         }
 
         function renderTable(data) {
-            const tbody = document.getElementById('instrumentTableBody');
+            var tbody = document.getElementById('instrumentTableBody');
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px;"><i class="bi bi-inbox fs-1"></i><br>No instruments found<\/td><\/tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No instruments found</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = data.map(inst => {
-                const daysLeft = calculateDaysLeft(inst.nextCal);
-                let daysClass = '', badgeClass = '';
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                var inst = data[i];
+                var daysLeft = calculateDaysLeft(inst.nextCal);
+                var daysClass = '', badgeClass = '';
                 
                 if (daysLeft < 30) {
                     daysClass = 'badge-red';
@@ -977,55 +1203,55 @@ async function init() {
                     badgeClass = 'badge-green';
                 }
 
-                return `
-                    <tr>
-                        <td><strong style="color:var(--eams-main)">${escapeHtml(inst.tagId)}</strong><\/td>
-                        <td>${escapeHtml(inst.name)}<\/td>
-                        <td>${escapeHtml(inst.type) || '-'}<\/td>
-                        <td>${escapeHtml(inst.area) || '-'}<\/td>
-                        <td>${inst.lastCal || '-'}<\/td>
-                        <td>${inst.nextCal || '-'}<\/td>
-                        <td><span class="status-badge ${daysClass}">${daysLeft} days</span><\/td>
-                        <td><span class="status-badge ${badgeClass}">${escapeHtml(inst.status) || 'Active'}</span><\/td>
-                        <td>
-                            <button class="btn-record" data-tag="${inst.tagId}" data-action="record">🔧 RECORD</button>
-                            <button class="btn-edit" data-tag="${inst.tagId}" data-action="edit">✏️ EDIT</button>
-                            <button class="btn-history" data-tag="${inst.tagId}" data-action="history">📜 HISTORY</button>
-                        <\/td>
-                    <\/tr>
-                `;
-            }).join('');
+                html += 
+                    '<tr>' +
+                        '<td><strong style="color:#1a1a2e;">' + escapeHtml(inst.tagId) + '</strong></td>' +
+                        '<td>' + escapeHtml(inst.name) + '</td>' +
+                        '<td>' + escapeHtml(inst.type) || '-' + '</td>' +
+                        '<td>' + escapeHtml(inst.area) || '-' + '</td>' +
+                        '<td>' + (inst.lastCal || '-') + '</td>' +
+                        '<td>' + (inst.nextCal || '-') + '</td>' +
+                        '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' days</span></td>' +
+                        '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(inst.status || 'Active') + '</span></td>' +
+                        '<td>' +
+                            '<button class="btn-record" data-tag="' + inst.tagId + '" data-action="record"><i class="fas fa-microchip"></i> RECORD</button>' +
+                            '<button class="btn-edit" data-tag="' + inst.tagId + '" data-action="edit"><i class="fas fa-edit"></i> EDIT</button>' +
+                            '<button class="btn-history" data-tag="' + inst.tagId + '" data-action="history"><i class="fas fa-history"></i> HISTORY</button>' +
+                        '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
             
-            // Attach event listeners to buttons
-            document.querySelectorAll('.btn-record').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            // Attach event listeners
+            document.querySelectorAll('.btn-record').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    openCalibrationModal(btn.dataset.tag);
+                    openCalibrationModal(this.dataset.tag);
                 });
             });
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.btn-edit').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    openEditInstrumentModal(btn.dataset.tag);
+                    openEditInstrumentModal(this.dataset.tag);
                 });
             });
-            document.querySelectorAll('.btn-history').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.btn-history').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    showHistory(btn.dataset.tag);
+                    showHistory(this.dataset.tag);
                 });
             });
         }
 
         function updateHeatmap(data) {
-            let critical = 0, warning = 0, compliant = 0;
+            var critical = 0, warning = 0, compliant = 0;
             
-            data.forEach(inst => {
-                const days = calculateDaysLeft(inst.nextCal);
+            for (var i = 0; i < data.length; i++) {
+                var days = calculateDaysLeft(data[i].nextCal);
                 if (days < 30) critical++;
                 else if (days < 90) warning++;
                 else compliant++;
-            });
+            }
             
             document.getElementById('criticalCount').innerText = critical;
             document.getElementById('warningCount').innerText = warning;
@@ -1033,19 +1259,21 @@ async function init() {
         }
 
         function filter() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const typeFilter = document.getElementById('filterType').value;
-            const areaFilter = document.getElementById('filterArea').value;
-            const statusFilter = document.getElementById('filterStatus').value;
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            var typeFilter = document.getElementById('filterType').value;
+            var areaFilter = document.getElementById('filterArea').value;
+            var statusFilter = document.getElementById('filterStatus').value;
 
-            const filtered = instruments.filter(inst => {
-                if (searchTerm && !inst.tagId.toLowerCase().includes(searchTerm) && 
-                    !inst.name.toLowerCase().includes(searchTerm)) return false;
-                if (typeFilter && inst.type !== typeFilter) return false;
-                if (areaFilter && inst.area !== areaFilter) return false;
-                if (statusFilter && inst.status !== statusFilter) return false;
-                return true;
-            });
+            var filtered = [];
+            for (var i = 0; i < instruments.length; i++) {
+                var inst = instruments[i];
+                if (searchTerm && inst.tagId.toLowerCase().indexOf(searchTerm) === -1 && 
+                    inst.name.toLowerCase().indexOf(searchTerm) === -1) continue;
+                if (typeFilter && inst.type !== typeFilter) continue;
+                if (areaFilter && inst.area !== areaFilter) continue;
+                if (statusFilter && inst.status !== statusFilter) continue;
+                filtered.push(inst);
+            }
 
             renderTable(filtered);
             updateHeatmap(filtered);
@@ -1056,7 +1284,13 @@ async function init() {
         // ============================================
 
         function openCalibrationModal(tagId) {
-            const inst = instruments.find(i => i.tagId === tagId);
+            var inst = null;
+            for (var i = 0; i < instruments.length; i++) {
+                if (instruments[i].tagId === tagId) {
+                    inst = instruments[i];
+                    break;
+                }
+            }
             if (!inst) return;
 
             document.getElementById('modalTitle').innerText = 'Record Calibration: ' + inst.tagId;
@@ -1064,25 +1298,25 @@ async function init() {
             document.getElementById('instrumentName').value = inst.name;
             document.getElementById('frequency').value = inst.frequency;
             
-            const today = new Date().toISOString().split('T')[0];
+            var today = new Date().toISOString().split('T')[0];
             document.getElementById('calibrationDate').value = today;
             document.getElementById('certificate').value = '';
             document.getElementById('comments').value = '';
             document.getElementById('deviation').value = '';
             document.getElementById('deviationUnit').value = '';
             
-            document.getElementById('calibrationModal').style.display = 'flex';
+            document.getElementById('calibrationModal').classList.add('active');
         }
 
         async function submitCalibration(event) {
             event.preventDefault();
             
-            const tagId = document.getElementById('tagId').value;
-            const calibrationDate = document.getElementById('calibrationDate').value;
-            const certificate = document.getElementById('certificate').value;
-            const comments = document.getElementById('comments').value;
-            const deviation = document.getElementById('deviation').value;
-            const deviationUnit = document.getElementById('deviationUnit').value;
+            var tagId = document.getElementById('tagId').value;
+            var calibrationDate = document.getElementById('calibrationDate').value;
+            var certificate = document.getElementById('certificate').value;
+            var comments = document.getElementById('comments').value;
+            var deviation = document.getElementById('deviation').value;
+            var deviationUnit = document.getElementById('deviationUnit').value;
             
             if (!calibrationDate) {
                 showToast("Calibration date is required", "error");
@@ -1096,14 +1330,20 @@ async function init() {
 
             showLoading("Recording calibration...");
             
-            const inst = instruments.find(i => i.tagId === tagId);
+            var inst = null;
+            for (var i = 0; i < instruments.length; i++) {
+                if (instruments[i].tagId === tagId) {
+                    inst = instruments[i];
+                    break;
+                }
+            }
             if (!inst) {
                 showToast("Instrument not found", "error");
                 hideLoading();
                 return;
             }
             
-            const payload = {
+            var payload = {
                 tagId: tagId,
                 name: inst.name,
                 type: inst.type,
@@ -1124,11 +1364,11 @@ async function init() {
             };
             
             try {
-                const response = await callApi('CAL_saveInstrument', [payload]);
+                var response = await callApi('CAL_saveInstrument', [payload]);
                 hideLoading();
                 if (response.status === "success") {
-                    // Registrar log de calibración
-                    logCalibrationAction('CALIBRATE', tagId, `Calibration recorded - Date: ${calibrationDate} - Certificate: ${certificate}`).catch(e => console.warn('[CAL] Log failed:', e));
+                    logCalibrationAction('CALIBRATE', tagId, 'Calibration recorded - Date: ' + calibrationDate + ' - Certificate: ' + certificate)
+                        .catch(function(e) { console.warn('[CAL] Log failed:', e); });
                     
                     showToast(response.message, "success");
                     closeCalModal();
@@ -1137,9 +1377,9 @@ async function init() {
                     showToast(response.message, "error");
                 }
             } catch (error) {
-                // Registrar error
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('CAL', 'recordCalibration', error.message).catch(e => console.warn('[CAL] Error log failed:', e));
+                    window.Logger.error('CAL', 'recordCalibration', error.message)
+                        .catch(function(e) { console.warn('[CAL] Error log failed:', e); });
                 }
                 hideLoading();
                 showToast("Save failed: " + error.message, "error");
@@ -1150,7 +1390,7 @@ async function init() {
             showLoading("Generating Tag ID...");
             
             try {
-                const tagId = await callApi('CAL_generateTagId', []);
+                var tagId = await callApi('CAL_generateTagId', []);
                 hideLoading();
                 
                 document.getElementById('instModalTitle').innerText = "Register New Instrument";
@@ -1162,38 +1402,39 @@ async function init() {
                 document.getElementById('newLastCal').value = new Date().toISOString().split('T')[0];
                 document.getElementById('newToleranceValue').value = '';
                 
-                const unitSelect = document.getElementById('newToleranceUnit');
+                var unitSelect = document.getElementById('newToleranceUnit');
                 if (unitSelect.options.length > 0) unitSelect.selectedIndex = 0;
                 
-                const typeSelect = document.getElementById('newType');
+                var typeSelect = document.getElementById('newType');
                 if (typeSelect.options.length > 0) typeSelect.selectedIndex = 0;
-                const areaSelect = document.getElementById('newArea');
+                var areaSelect = document.getElementById('newArea');
                 if (areaSelect.options.length > 0) areaSelect.selectedIndex = 0;
-                const statusSelect = document.getElementById('newStatus');
+                var statusSelect = document.getElementById('newStatus');
                 if (statusSelect.options.length > 0) statusSelect.selectedIndex = 0;
-                const respSelect = document.getElementById('newResponsible');
+                var respSelect = document.getElementById('newResponsible');
                 if (respSelect.options.length > 0) respSelect.selectedIndex = 0;
                 
                 // Load assets for dropdown
                 try {
-                    const assets = await callApi('CAL_getAssetsForSelect', []);
-                    const assetSelect = document.getElementById('newAssociatedAsset');
+                    var assets = await callApi('CAL_getAssetsForSelect', []);
+                    var assetSelect = document.getElementById('newAssociatedAsset');
                     if (assetSelect) {
                         assetSelect.innerHTML = '<option value="">-- None --</option>';
                         if (assets && assets.length > 0) {
-                            assets.forEach(function(a) {
-                                const option = document.createElement('option');
+                            for (var i = 0; i < assets.length; i++) {
+                                var a = assets[i];
+                                var option = document.createElement('option');
                                 option.value = a.id;
                                 option.textContent = a.id + ' - ' + a.name;
                                 assetSelect.appendChild(option);
-                            });
+                            }
                         }
                     }
                 } catch (err) {
                     console.error('Error loading assets:', err);
                 }
                 
-                document.getElementById('instrumentModal').style.display = 'flex';
+                document.getElementById('instrumentModal').classList.add('active');
             } catch (error) {
                 hideLoading();
                 showToast("Failed to generate Tag ID: " + error.message, "error");
@@ -1203,8 +1444,8 @@ async function init() {
         async function saveNewInstrument(event) {
             event.preventDefault();
             
-            const frequencyValue = document.getElementById('newFrequency').value;
-            const frequency = parseInt(frequencyValue);
+            var frequencyValue = document.getElementById('newFrequency').value;
+            var frequency = parseInt(frequencyValue);
             
             if (!frequencyValue || frequencyValue === "") {
                 showToast("Frequency is required", "error");
@@ -1216,8 +1457,8 @@ async function init() {
                 return;
             }
             
-            const toleranceValue = document.getElementById('newToleranceValue').value.trim();
-            const toleranceUnit = document.getElementById('newToleranceUnit').value;
+            var toleranceValue = document.getElementById('newToleranceValue').value.trim();
+            var toleranceUnit = document.getElementById('newToleranceUnit').value;
             
             if (toleranceValue && isNaN(parseFloat(toleranceValue))) {
                 showToast("Tolerance value must be a valid number (e.g., 0.02, 1.00, 100.00)", "error");
@@ -1234,7 +1475,7 @@ async function init() {
                 return;
             }
             
-            const payload = {
+            var payload = {
                 tagId: document.getElementById('newTagId').value,
                 name: document.getElementById('newInstrumentName').value,
                 type: document.getElementById('newType').value,
@@ -1272,11 +1513,11 @@ async function init() {
             showLoading("Saving instrument...");
             
             try {
-                const response = await callApi('CAL_saveInstrument', [payload]);
+                var response = await callApi('CAL_saveInstrument', [payload]);
                 hideLoading();
                 if (response.status === "success") {
-                    // Registrar log de creación/edición
-                    logCalibrationAction('CREATE_INSTRUMENT', payload.tagId, `Instrument created/updated - Name: ${payload.name} - Type: ${payload.type}`).catch(e => console.warn('[CAL] Log failed:', e));
+                    logCalibrationAction('CREATE_INSTRUMENT', payload.tagId, 'Instrument created/updated - Name: ' + payload.name + ' - Type: ' + payload.type)
+                        .catch(function(e) { console.warn('[CAL] Log failed:', e); });
                     
                     showToast(response.message, "success");
                     closeInstrumentModal();
@@ -1286,7 +1527,8 @@ async function init() {
                 }
             } catch (error) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('CAL', 'saveInstrument', error.message).catch(e => console.warn('[CAL] Error log failed:', e));
+                    window.Logger.error('CAL', 'saveInstrument', error.message)
+                        .catch(function(e) { console.warn('[CAL] Error log failed:', e); });
                 }
                 hideLoading();
                 showToast("Save failed: " + error.message, "error");
@@ -1296,23 +1538,27 @@ async function init() {
         async function showHistory(tagId) {
             showLoading("Loading history...");
             try {
-                const history = await callApi('CAL_getInstrumentHistory', [tagId]);
+                var history = await callApi('CAL_getInstrumentHistory', [tagId]);
                 hideLoading();
-                const container = document.getElementById('historyContent');
+                var container = document.getElementById('historyContent');
                 
                 if (history.length === 0) {
-                    container.innerHTML = '<p class="text-muted text-center">No calibration records found</p>';
+                    container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No calibration records found</p>';
                 } else {
-                    container.innerHTML = history.map(h => `
-                        <div class="history-item">
-                            <div class="history-date">📅 ${h.date}</div>
-                            <div>👤 ${escapeHtml(h.performedBy)} | ${h.result}</div>
-                            <div class="history-cert">📄 Certificate: ${escapeHtml(h.certificate) || 'N/A'}</div>
-                            <div class="small text-muted mt-1">💬 ${escapeHtml(h.comments) || 'No comments'}</div>
-                        </div>
-                    `).join('');
+                    var html = '';
+                    for (var i = 0; i < history.length; i++) {
+                        var h = history[i];
+                        html += 
+                            '<div class="history-item">' +
+                                '<div class="history-date">📅 ' + h.date + '</div>' +
+                                '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + h.result + '</div>' +
+                                '<div class="history-cert">📄 Certificate: ' + escapeHtml(h.certificate || 'N/A') + '</div>' +
+                                '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
+                            '</div>';
+                    }
+                    container.innerHTML = html;
                 }
-                document.getElementById('historyModal').style.display = 'flex';
+                document.getElementById('historyModal').classList.add('active');
             } catch (error) {
                 hideLoading();
                 showToast("Failed to load history: " + error.message, "error");
@@ -1323,7 +1569,7 @@ async function init() {
             showLoading("Loading instrument data...");
             
             try {
-                const instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
+                var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
                 hideLoading();
                 
                 if (!instrument) {
@@ -1342,8 +1588,8 @@ async function init() {
                 document.getElementById('newToleranceValue').value = instrument.toleranceValue || '';
                 
                 if (instrument.toleranceUnit) {
-                    const unitSelect = document.getElementById('newToleranceUnit');
-                    for (let i = 0; i < unitSelect.options.length; i++) {
+                    var unitSelect = document.getElementById('newToleranceUnit');
+                    for (var i = 0; i < unitSelect.options.length; i++) {
                         if (unitSelect.options[i].value === instrument.toleranceUnit) {
                             unitSelect.selectedIndex = i;
                             break;
@@ -1353,9 +1599,9 @@ async function init() {
                     document.getElementById('newToleranceUnit').value = '';
                 }
                 
-                const typeSelect = document.getElementById('newType');
+                var typeSelect = document.getElementById('newType');
                 if (typeSelect.options.length > 0) {
-                    for (let i = 0; i < typeSelect.options.length; i++) {
+                    for (var i = 0; i < typeSelect.options.length; i++) {
                         if (typeSelect.options[i].value === instrument.type) {
                             typeSelect.selectedIndex = i;
                             break;
@@ -1363,9 +1609,9 @@ async function init() {
                     }
                 }
                 
-                const areaSelect = document.getElementById('newArea');
+                var areaSelect = document.getElementById('newArea');
                 if (areaSelect.options.length > 0) {
-                    for (let i = 0; i < areaSelect.options.length; i++) {
+                    for (var i = 0; i < areaSelect.options.length; i++) {
                         if (areaSelect.options[i].value === instrument.area) {
                             areaSelect.selectedIndex = i;
                             break;
@@ -1373,9 +1619,9 @@ async function init() {
                     }
                 }
                 
-                const statusSelect = document.getElementById('newStatus');
+                var statusSelect = document.getElementById('newStatus');
                 if (statusSelect.options.length > 0) {
-                    for (let i = 0; i < statusSelect.options.length; i++) {
+                    for (var i = 0; i < statusSelect.options.length; i++) {
                         if (statusSelect.options[i].value === instrument.status) {
                             statusSelect.selectedIndex = i;
                             break;
@@ -1383,9 +1629,9 @@ async function init() {
                     }
                 }
                 
-                const respSelect = document.getElementById('newResponsible');
+                var respSelect = document.getElementById('newResponsible');
                 if (respSelect.options.length > 0) {
-                    for (let i = 0; i < respSelect.options.length; i++) {
+                    for (var i = 0; i < respSelect.options.length; i++) {
                         if (respSelect.options[i].value === instrument.responsible) {
                             respSelect.selectedIndex = i;
                             break;
@@ -1395,27 +1641,28 @@ async function init() {
                 
                 // Load assets for dropdown
                 try {
-                    const assets = await callApi('CAL_getAssetsForSelect', []);
-                    const assetSelect = document.getElementById('newAssociatedAsset');
+                    var assets = await callApi('CAL_getAssetsForSelect', []);
+                    var assetSelect = document.getElementById('newAssociatedAsset');
                     if (assetSelect) {
                         assetSelect.innerHTML = '<option value="">-- None --</option>';
                         if (assets && assets.length > 0) {
-                            assets.forEach(function(a) {
-                                const option = document.createElement('option');
+                            for (var i = 0; i < assets.length; i++) {
+                                var a = assets[i];
+                                var option = document.createElement('option');
                                 option.value = a.id;
                                 option.textContent = a.id + ' - ' + a.name;
                                 if (a.id === instrument.associatedAssetId) {
                                     option.selected = true;
                                 }
                                 assetSelect.appendChild(option);
-                            });
+                            }
                         }
                     }
                 } catch (err) {
                     console.error('Error loading assets:', err);
                 }
                 
-                document.getElementById('instrumentModal').style.display = 'flex';
+                document.getElementById('instrumentModal').classList.add('active');
             } catch (error) {
                 hideLoading();
                 showToast("Failed to load instrument: " + error.message, "error");
@@ -1423,45 +1670,45 @@ async function init() {
         }
 
         function closeCalModal() {
-            document.getElementById('calibrationModal').style.display = 'none';
+            document.getElementById('calibrationModal').classList.remove('active');
             document.getElementById('calibrationForm').reset();
         }
 
         function closeInstrumentModal() {
-            document.getElementById('instrumentModal').style.display = 'none';
+            document.getElementById('instrumentModal').classList.remove('active');
             document.getElementById('instrumentForm').reset();
         }
 
         function closeHistoryModal() {
-            document.getElementById('historyModal').style.display = 'none';
+            document.getElementById('historyModal').classList.remove('active');
         }
 
         function setupEventListeners() {
             // Filter inputs
-            document.getElementById('searchInput').addEventListener('input', () => filter());
-            document.getElementById('filterType').addEventListener('change', () => filter());
-            document.getElementById('filterArea').addEventListener('change', () => filter());
-            document.getElementById('filterStatus').addEventListener('change', () => filter());
+            document.getElementById('searchInput').addEventListener('input', function() { filter(); });
+            document.getElementById('filterType').addEventListener('change', function() { filter(); });
+            document.getElementById('filterArea').addEventListener('change', function() { filter(); });
+            document.getElementById('filterStatus').addEventListener('change', function() { filter(); });
             
             // New instrument button
-            document.getElementById('newInstrumentBtn').addEventListener('click', () => openNewInstrumentModal());
+            document.getElementById('newInstrumentBtn').addEventListener('click', function() { openNewInstrumentModal(); });
             
             // Modal close buttons
-            document.getElementById('closeCalModalBtn').addEventListener('click', () => closeCalModal());
-            document.getElementById('cancelCalBtn').addEventListener('click', () => closeCalModal());
-            document.getElementById('closeInstModalBtn').addEventListener('click', () => closeInstrumentModal());
-            document.getElementById('cancelInstBtn').addEventListener('click', () => closeInstrumentModal());
-            document.getElementById('closeHistoryBtn').addEventListener('click', () => closeHistoryModal());
+            document.getElementById('closeCalModalBtn').addEventListener('click', function() { closeCalModal(); });
+            document.getElementById('cancelCalBtn').addEventListener('click', function() { closeCalModal(); });
+            document.getElementById('closeInstModalBtn').addEventListener('click', function() { closeInstrumentModal(); });
+            document.getElementById('cancelInstBtn').addEventListener('click', function() { closeInstrumentModal(); });
+            document.getElementById('closeHistoryBtn').addEventListener('click', function() { closeHistoryModal(); });
             
             // Form submissions
-            document.getElementById('calibrationForm').addEventListener('submit', (e) => submitCalibration(e));
-            document.getElementById('instrumentForm').addEventListener('submit', (e) => saveNewInstrument(e));
+            document.getElementById('calibrationForm').addEventListener('submit', function(e) { submitCalibration(e); });
+            document.getElementById('instrumentForm').addEventListener('submit', function(e) { saveNewInstrument(e); });
             
             // Close modals on overlay click
-            document.querySelectorAll('.modal-overlay').forEach(overlay => {
-                overlay.addEventListener('click', (e) => {
+            document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+                overlay.addEventListener('click', function(e) {
                     if (e.target === overlay) {
-                        overlay.style.display = 'none';
+                        overlay.classList.remove('active');
                     }
                 });
             });
@@ -1473,9 +1720,11 @@ async function init() {
         };
     })();
 
-    window.addEventListener('DOMContentLoaded', () => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { CAL.init(); });
+    } else {
         CAL.init();
-    });
+    }
 </script>
 </body>
 </html>
