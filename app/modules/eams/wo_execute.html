@@ -1,1997 +1,2411 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>Technical Execution Portal - EAMS</title>
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    /* Reset and Base Styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body, html {
-      margin: 0;
-      padding: 0;
-      background: #e2e8f0;
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    /* EAMS Header */
-    .eams-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1a1a2e;
-      color: white;
-      padding: 16px 24px;
-      flex-shrink: 0;
-    }
-
-    .eams-header h2 {
-      font-size: 1.25rem;
-      margin: 0;
-    }
-
-    .user-badge {
-      font-size: 0.8rem;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
-
-    /* Breadcrumbs */
-    .breadcrumbs {
-      padding: 12px 24px;
-      background: #eef2f5;
-      font-size: 0.8rem;
-      color: #555;
-      border-bottom: 1px solid #ddd;
-      flex-shrink: 0;
-    }
-
-    /* Wizard Header */
-    .wizard-header {
-      background: #1a1a2e;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .wizard-header h3 {
-      margin: 0;
-      white-space: normal;
-      word-wrap: break-word;
-      line-height: 1.4;
-    }
-
-    .header-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-
-    .header-buttons .btn {
-      padding: 8px 24px;
-      font-size: 13px;
-      flex: 0 1 auto;
-      min-width: 100px;
-    }
-
-    .progress-bar {
-      height: 6px;
-      background: #1a56db;
-      transition: width 0.4s ease-in-out;
-      width: 20%;
-    }
-
-    /* Content */
-    .content {
-      padding: 28px 32px;
-      min-height: 500px;
-    }
-
-    /* Step visibility */
-    .step {
-      display: none !important;
-    }
-
-    .step.active {
-      display: block !important;
-      position: relative !important;
-      top: 0 !important;
-      left: 0 !important;
-      visibility: visible !important;
-    }
-
-    /* Info Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: #f1f3f4;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 15px;
-      border: 1px solid #dadce0;
-    }
-
-    .info-item {
-      border-bottom: 1px solid #dadce0;
-      padding: 6px 0;
-    }
-
-    .info-item b {
-      color: #1a56db;
-      display: block;
-      font-size: 14px;
-      margin-top: 2px;
-    }
-
-    .work-description-box {
-      grid-column: span 2;
-      background: #fff3e0;
-      border: 1px solid #ef6c00;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #202124;
-      line-height: 1.5;
-      margin-top: 10px;
-    }
-
-    .history-box {
-      grid-column: span 2;
-      background: #e8f0fe;
-      border: 1px solid #1a56db;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      max-height: 100px;
-      overflow-y: auto;
-      margin-top: 5px;
-    }
-
-    /* Form Elements */
-    label {
-      font-weight: 600;
-      font-size: 11px;
-      display: block;
-      margin-bottom: 8px;
-      color: #5f6368;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    label .required {
-      color: #b52b27;
-      margin-left: 3px;
-    }
-
-    select, input, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #dadce0;
-      border-radius: 8px;
-      font-size: 14px;
-      box-sizing: border-box;
-      margin-bottom: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-      background: white;
-    }
-
-    select:focus, input:focus, textarea:focus {
-      border-color: #1a56db;
-      box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.1);
-    }
-
-    select.error, input.error, textarea.error {
-      border-color: #b52b27;
-      background-color: #fff5f5;
-    }
-
-    select:disabled, input:disabled {
-      background: #f1f5f9;
-      cursor: not-allowed;
-    }
-
-    /* WO Select Container */
-    .wo-select-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    .wo-select-container select {
-      flex: 1;
-      margin-bottom: 0;
-    }
-
-    /* Labour Display */
-    .labour-display {
-      text-align: center;
-      font-weight: bold;
-      color: #1a56db;
-      margin-bottom: 15px;
-      background: #e8f0fe;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .warning-message {
-      color: #e67e22;
-      font-size: 12px;
-      margin-top: -10px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    /* Search */
-    .search-container {
-      position: relative;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-spinner {
-      position: absolute;
-      right: 12px;
-      top: 15px;
-      width: 18px;
-      height: 18px;
-      border: 2px solid #f3f3f3;
-      border-top: 2px solid #1a56db;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      display: none;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .search-results {
-      position: absolute;
-      width: 100%;
-      background: white;
-      border: 1px solid #dadce0;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 100;
-      border-radius: 0 0 8px 8px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-      display: none;
-      margin-top: -15px;
-    }
-
-    .search-item {
-      padding: 12px 15px;
-      cursor: pointer;
-      border-bottom: 1px solid #f1f3f4;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .search-item:hover {
-      background: #e8f0fe;
-    }
-
-    .stock-tag {
-      font-size: 11px;
-      background: #e6f4ea;
-      color: #1e8e3e;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    /* Quantity Panel */
-    .qty-panel {
-      background: #e8f0fe;
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid #1a56db;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .qty-flex {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .qty-flex input {
-      margin-bottom: 0;
-      flex: 1;
-    }
-
-    /* Cart */
-    .cart-container {
-      margin-top: 20px;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      border: 1px solid #dadce0;
-      border-left: 5px solid #1a56db;
-    }
-
-    .remove-btn {
-      color: #b52b27;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 5px;
-    }
-
-    /* Task Row for Preventive Checklist */
-    .task-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .task-row input {
-      width: 20px;
-      height: 20px;
-      margin-top: 2px;
-      margin-bottom: 0;
-      flex-shrink: 0;
-    }
-
-    .task-row .task-content {
-      flex: 1;
-    }
-
-    .task-row .task-title {
-      font-weight: 600;
-      font-size: 13px;
-      color: #1e293b;
-    }
-
-    .task-row .task-standard {
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 4px;
-    }
-
-    .task-row .task-equipment {
-      font-size: 10px;
-      color: #1a56db;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      flex: 1;
-      transition: all 0.2s;
-      font-size: 14px;
-    }
-
-    .btn-next {
-      background: #1a56db;
-      color: white;
-    }
-
-    .btn-next:disabled {
-      background: #bdc1c6;
-      cursor: not-allowed;
-    }
-
-    .btn-back {
-      background: #6c757d;
-      color: white;
-    }
-
-    .footer-buttons {
-      display: flex;
-      gap: 10px;
-      padding: 20px;
-      background: #f8f9fa;
-      border-top: 1px solid #dadce0;
-    }
-
-    /* Closure Panels */
-    .closure-panel {
-      background: #e8f0fe;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .closure-panel label {
-      color: #1a56db;
-    }
-
-    /* EAMS Status Bar */
-    .eams-status-bar {
-      background: #f8f9fa;
-      padding: 8px 24px;
-      font-size: 0.75rem;
-      color: #6c757d;
-      border-top: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    /* Toast Notifications */
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 2000;
-    }
-
-    .toast {
-      background: white;
-      border-radius: 8px;
-      padding: 14px 20px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 280px;
-      max-width: 400px;
-      animation: slideIn 0.3s ease;
-      border-left: 4px solid;
-    }
-
-    .toast.success { border-left-color: #2e7d32; }
-    .toast.error { border-left-color: #b52b27; }
-    .toast.info { border-left-color: #1a56db; }
-
-    .toast-icon { font-size: 20px; }
-    .toast-message { flex: 1; font-size: 14px; color: #2c3e50; }
-    .toast-close {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      color: #94a3b8;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* Loading Overlay */
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1500;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .loading-content {
-      background: white;
-      border-radius: 12px;
-      padding: 24px 32px;
-      text-align: center;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #e9ecef;
-      border-top-color: #1a56db;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
-    }
-
-    /* Responsive */
-    @media (max-width: 650px) {
-      .content {
-        padding: 20px;
-      }
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-      .work-description-box, .history-box {
-        grid-column: span 1;
-      }
-      .wo-select-container {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .task-row {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .task-row input {
-        margin-left: 0;
-      }
-      .eams-status-bar {
-        padding: 12px 20px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Technical Execution Portal - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #1a1a2e;
+            border-bottom: 2px solid #2a2f4a;
+            flex-shrink: 0;
+            min-height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-badge {
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
+        .breadcrumbs {
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow: auto;
+            padding: 0;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
+        .wizard-header {
+            background: #1a1a2e;
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .wizard-header h3 {
+            margin: 0;
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .header-buttons .btn {
+            padding: 6px 20px;
+            font-size: 12px;
+            flex: 0 1 auto;
+            min-width: 80px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #4a6cf7;
+            transition: width 0.4s ease-in-out;
+            width: 20%;
+            flex-shrink: 0;
+        }
+
+        .content {
+            padding: 20px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .step {
+            display: none !important;
+        }
+
+        .step.active {
+            display: block !important;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            visibility: visible !important;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-next {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .btn-next:disabled {
+            background: #bdc1c6;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #2c2c4e;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        .btn i {
+            margin-right: 6px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #f1f3f4;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #dadce0;
+        }
+
+        .info-item {
+            border-bottom: 1px solid #dadce0;
+            padding: 4px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .info-item b {
+            color: #1a1a2e;
+            display: block;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .work-description-box {
+            grid-column: span 2;
+            background: #fff3e0;
+            border: 1px solid #ef6c00;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #202124;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .work-description-box label {
+            color: #ef6c00;
+            margin-bottom: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .history-box {
+            grid-column: span 2;
+            background: #e8f0fe;
+            border: 1px solid #1a1a2e;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            max-height: 80px;
+            overflow-y: auto;
+            margin-top: 4px;
+        }
+
+        .history-box label {
+            color: #1a1a2e;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .wo-select-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .wo-select-container select {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .wo-select-container label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 11px;
+            display: block;
+            margin-bottom: 4px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 3px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
+
+        .form-group select.error,
+        .form-group input.error,
+        .form-group textarea.error {
+            border-color: #dc3545;
+            background-color: #fff5f5;
+        }
+
+        .form-group select:disabled,
+        .form-group input:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .labour-display {
+            text-align: center;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            background: #e8f0fe;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .warning-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 12px;
+            display: none;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .warning-message.visible {
+            display: block;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-spinner {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-results {
+            position: absolute;
+            width: 100%;
+            background: white;
+            border: 1px solid #dadce0;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            display: none;
+            margin-top: -2px;
+        }
+
+        .search-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .search-item:hover {
+            background: #e8f0fe;
+        }
+
+        .stock-tag {
+            font-size: 10px;
+            background: #e6f4ea;
+            color: #1e8e3e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .qty-panel {
+            background: #e8f0fe;
+            padding: 12px 14px;
+            border-radius: 6px;
+            border: 1px solid #1a1a2e;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .qty-flex {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .qty-flex input {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .cart-container {
+            margin-top: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid #dadce0;
+            border-left: 4px solid #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 13px;
+        }
+
+        .remove-btn {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 4px;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .task-row input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+
+        .task-row .task-content {
+            flex: 1;
+        }
+
+        .task-row .task-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .task-row .task-standard {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .task-row .task-equipment {
+            font-size: 10px;
+            color: #1a1a2e;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .task-row .task-status {
+            font-size: 14px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .task-row .task-status.done {
+            color: #22c55e;
+        }
+
+        .task-row .task-status.pending {
+            color: #dc3545;
+        }
+
+        .pm-summary-box {
+            background: #e8f0fe;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 13px;
+        }
+
+        .pm-summary-box label {
+            color: #1a1a2e;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .closure-panel {
+            background: #e8f0fe;
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .closure-panel label {
+            color: #1a1a2e;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .pm-protocol-alert {
+            background: #fff3cd;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        .pm-protocol-alert .pm-title {
+            font-weight: 700;
+            color: #856404;
+            font-size: 13px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #dadce0;
+            flex-shrink: 0;
+        }
+
+        .btn-close {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-close:hover:not(:disabled) {
+            background: #1b5e20;
+        }
+
+        .btn-follow {
+            background: #e65100;
+            color: white;
+        }
+
+        .btn-follow:hover:not(:disabled) {
+            background: #d35400;
+        }
+
+        .btn-reunify {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reunify:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-confirm {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: #2c2c4e;
+        }
+
+        .btn-confirm:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #8b1a1a;
+        }
+
+        .btn-danger:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .flex-row .flex-1 {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+
+        @media (max-width: 650px) {
+            .content { padding: 12px 16px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .work-description-box { grid-column: span 1; }
+            .history-box { grid-column: span 1; }
+            .wo-select-container { flex-direction: column; align-items: stretch; }
+            .task-row { flex-direction: column; gap: 6px; }
+            .task-row input { margin-left: 0; }
+            .header-buttons .btn { padding: 6px 12px; font-size: 11px; min-width: 60px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-  <h2><i class="fas fa-tools"></i> Technical Execution Portal</h2>
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <div class="user-badge" id="userDisplay">Loading...</div>
-    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-  </div>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Technical Portal...</span>
 </div>
 
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-  <span>🏠 Home</span> &gt;
-  <span>WORK ORDERS</span> &gt;
-  <span>Technical Report</span>
-</div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
 
-<!-- Wizard Header -->
-<div class="wizard-header">
-  <h3 id="stepHeader">Step 1: Context Selection</h3>
-  <div class="header-buttons">
-    <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> Back</button>
-    <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step <i class="fas fa-arrow-right"></i></button>
-  </div>
-</div>
-<div class="progress-bar" id="progressBar"></div>
-
-<!-- Content -->
-<div class="content">
-  <!-- STEP 1: Context -->
-  <div class="step active" id="step1">
-    <div class="wo-select-container">
-      <label>Active Work Order</label>
-      <select id="woSelect" onchange="loadWOContext()">
-        <option value="">-- Loading WOs --</option>
-      </select>
-      <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:12px 20px; font-size:13px; flex:0;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
-    </div>
-    <div id="woInfo" style="display:none;">
-      <div class="info-grid">
-        <div class="info-item">Requester <b id="info-requester"></b></div>
-        <div class="info-item">Created <b id="outDate"></b></div>
-        <div class="info-item">Type <b id="outMaintType" style="color:#ef6c00"></b></div>
-        <div class="info-item">Priority <b id="info-priority"></b></div>
-        <div class="info-item">Location <b id="outArea"></b></div>
-        <div class="info-item">Equipment <b id="outEqName"></b></div>
-        <div class="work-description-box">
-          <label style="color:#ef6c00; margin-bottom:5px;">Original Request Description</label>
-          <span id="info-description"></span>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Technical Execution Portal</span>
         </div>
-        <div class="history-box">
-          <label style="color:#1a56db; font-size:10px;">Previous Shift Logs</label>
-          <div id="info-comments"></div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STEP 2: Component Selection -->
-  <div class="step" id="step2">
-    <label id="assetLabel">Specific Component Intervened <span class="required">*</span></label>
-    <select id="assetSelect" data-required="true" onchange="validateStep()">
-      <option value="">-- Select Component --</option>
-    </select>
-    <p id="assetHelpText" style="font-size: 12px; color: #666;">* If the specific component is not listed, select the main Equipment.</p>
-  </div>
-
-  <!-- STEP 3: Labor & Technical Report (Dynamic Container) -->
-  <div class="step" id="step3">
-    <div id="step3DynamicContainer"></div>
-  </div>
-
-  <!-- STEP 4: Spare Parts -->
-  <div class="step" id="step4">
-    <label>Spare Parts Search</label>
-    <div class="search-container">
-      <div class="search-input-wrapper">
-        <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." oninput="triggerSearch(this.value)">
-        <div id="searchSpinner" class="search-spinner"></div>
-      </div>
-      <div id="searchResults" class="search-results"></div>
-    </div>
-
-    <div id="qtyPanel" class="qty-panel">
-      <label id="selectedPartLabel" style="color:#1a56db"></label>
-      <div class="qty-flex">
-        <input type="number" id="partQty" placeholder="Quantity" min="1">
-        <button class="btn" style="background:#1a56db; color:white; flex:0;" onclick="confirmAddPart()"><i class="fas fa-plus"></i> ADD TO WO</button>
-        <button class="btn" style="background:none; color:#b52b27; flex:0;" onclick="cancelAdd()">Cancel</button>
-      </div>
     </div>
     
-    <div class="cart-container">
-      <label>Parts consumed in this shift</label>
-      <div id="materialCart">
-        <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;">No parts selected yet.</p>
-      </div>
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>WORK ORDERS</span> &gt; <span class="current">Technical Execution</span>
     </div>
-  </div>
-
-  <!-- STEP 5: Closure -->
-  <div class="step" id="step5">
-    <div style="background:#f1f3f4; padding:15px; border-radius:8px; margin-bottom:20px;">
-      <label style="color:#1a56db;"><i class="fas fa-lock"></i> CLOSURE ACTION</label>
-      <div id="pmClosureSummary" style="display:none; background:#e8f0fe; padding:10px; border-radius:8px; margin-top:10px;">
-        <strong>📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText">--</span>
-        <div style="margin-top:10px;">
-          <label><input type="checkbox" id="supervisorConfirmPM"> I confirm the preventive tasks were completed as reported</label>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <!-- Wizard Header -->
+        <div class="wizard-header">
+            <h3 id="stepHeader">Step 1: Context Selection</h3>
+            <div class="header-buttons">
+                <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step <i class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
-      </div>
+        <div class="progress-bar" id="progressBar"></div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- STEP 1: Context -->
+            <div class="step active" id="step1">
+                <div class="wo-select-container">
+                    <label>Active Work Order</label>
+                    <select id="woSelect" onchange="loadWOContext()">
+                        <option value="">-- Loading WOs --</option>
+                    </select>
+                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex:0;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
+                </div>
+                <div id="woInfo" style="display:none;">
+                    <div class="info-grid">
+                        <div class="info-item">Requester <b id="info-requester"></b></div>
+                        <div class="info-item">Created <b id="outDate"></b></div>
+                        <div class="info-item">Type <b id="outMaintType" style="color:#ef6c00"></b></div>
+                        <div class="info-item">Priority <b id="info-priority"></b></div>
+                        <div class="info-item">Location <b id="outArea"></b></div>
+                        <div class="info-item">Equipment <b id="outEqName"></b></div>
+                        <div class="work-description-box">
+                            <label>Original Request Description</label>
+                            <span id="info-description"></span>
+                        </div>
+                        <div class="history-box">
+                            <label>Previous Shift Logs</label>
+                            <div id="info-comments"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Component Selection -->
+            <div class="step" id="step2">
+                <div class="form-group">
+                    <label id="assetLabel">Specific Component Intervened <span class="required">*</span></label>
+                    <select id="assetSelect" data-required="true" onchange="validateStep()">
+                        <option value="">-- Select Component --</option>
+                    </select>
+                    <p id="assetHelpText" style="font-size: 11px; color: #666; margin-top: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">* If the specific component is not listed, select the main Equipment.</p>
+                </div>
+            </div>
+
+            <!-- STEP 3: Labor & Technical Report -->
+            <div class="step" id="step3">
+                <div id="step3DynamicContainer"></div>
+            </div>
+
+            <!-- STEP 4: Spare Parts -->
+            <div class="step" id="step4">
+                <div class="form-group">
+                    <label>Spare Parts Search</label>
+                    <div class="search-container">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." oninput="triggerSearch(this.value)">
+                            <div id="searchSpinner" class="search-spinner"></div>
+                        </div>
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                </div>
+
+                <div id="qtyPanel" class="qty-panel">
+                    <label id="selectedPartLabel" style="color:#1a1a2e; font-size:11px; font-weight:700;"></label>
+                    <div class="qty-flex">
+                        <input type="number" id="partQty" placeholder="Quantity" min="1">
+                        <button class="btn" style="background:#1a1a2e; color:white; flex:0; padding:10px 16px;" onclick="confirmAddPart()"><i class="fas fa-plus"></i> ADD TO WO</button>
+                        <button class="btn" style="background:none; color:#dc3545; flex:0; padding:10px 16px;" onclick="cancelAdd()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div class="cart-container">
+                    <label style="font-size:11px; font-weight:700; color:#2c3e50; text-transform:uppercase; display:block; margin-bottom:8px;">Parts consumed in this shift</label>
+                    <div id="materialCart">
+                        <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">No parts selected yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Closure -->
+            <div class="step" id="step5">
+                <div style="background:#f1f3f4; padding:12px 14px; border-radius:6px; margin-bottom:16px;">
+                    <label style="color:#1a1a2e; font-size:11px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-lock"></i> CLOSURE ACTION</label>
+                    <div id="pmClosureSummary" style="display:none; background:#e8f0fe; padding:10px 12px; border-radius:6px; margin-top:8px;">
+                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">--</span>
+                        <div style="margin-top:8px;">
+                            <label style="font-size:11px; font-weight:400; text-transform:none; display:inline; cursor:pointer;"><input type="checkbox" id="supervisorConfirmPM"> I confirm the preventive tasks were completed as reported</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="actionButtons" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+                    <button class="btn btn-close" id="btnFinish" onclick="prepareClosure('COMPLETED')"><i class="fas fa-check-circle"></i> CLOSE (Completed)</button>
+                    <button class="btn btn-follow" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')"><i class="fas fa-code-branch"></i> FOLLOW UP (Create new WO)</button>
+                    <button class="btn btn-reunify" id="btnReunify" onclick="prepareClosure('REUNIFY')"><i class="fas fa-save"></i> STILL WORKING (Asset Down)</button>
+                </div>
+
+                <!-- Panel: COMPLETED -->
+                <div id="completedPanel" class="closure-panel">
+                    <label style="color:#1a1a2e;"><i class="fas fa-check-circle"></i> COMPLETED</label>
+                    <div style="margin-top:8px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Root Cause <span class="required">*</span></label>
+                            <select id="completedRootCause" data-required="true" onchange="validateConfirmButton('COMPLETED')">
+                                <option value="">-- Select Cause --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-confirm" style="flex:1;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
+                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    </div>
+                </div>
+
+                <!-- Panel: FOLLOW UP -->
+                <div id="followUpPanel" class="closure-panel">
+                    <label style="color:#1a1a2e;"><i class="fas fa-code-branch"></i> FOLLOW UP</label>
+                    <div style="margin-top:8px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                            <input type="checkbox" id="fuNeedsSparePartPurchase" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Needs Spare Part Purchase</label>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                            <input type="checkbox" id="fuNeedsExternalService" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Needs External Service Coordination</label>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                            <input type="checkbox" id="fuNeedsOther" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="toggleOtherComment(); validateConfirmButton('FOLLOW_UP')">
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Other (requires comment)</label>
+                        </div>
+                        <div id="fuOtherCommentDiv" style="display:none; margin-top:8px; margin-left:25px;">
+                            <label style="text-transform:none; font-weight:500; margin-bottom:4px; font-size:11px;">Please describe the additional requirement:</label>
+                            <textarea id="fuOtherComment" rows="2" style="width:100%; margin-top:4px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" placeholder="Describe what else is needed... (minimum 10 characters)" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
+                            <div id="fuOtherCommentWarning" style="color:#dc3545; font-size:11px; margin-top:4px; display:none; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Please enter at least 10 characters</div>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Root Cause <span class="required" id="fuRootCauseRequired">*</span></label>
+                                <select id="fuRootCause" data-required="true" style="margin-bottom:0;" onchange="validateConfirmButton('FOLLOW_UP')">
+                                    <option value="">-- Select Cause --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-follow" style="flex:1;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
+                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    </div>
+                </div>
+
+                <!-- Panel: REUNIFY -->
+                <div id="reunifyPanel" class="closure-panel">
+                    <label style="color:#1a1a2e;"><i class="fas fa-save"></i> STILL WORKING (REUNIFY)</label>
+                    <div style="margin-top:8px; padding:10px 12px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:4px;">
+                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">⚠️ Equipment will be marked as DOWN</strong><br>
+                        <span style="font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.</span>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-reunify" style="flex:1;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
+                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="actionButtons" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-      <button class="btn" style="background: #1b5e20; color:white;" id="btnFinish" onclick="prepareClosure('COMPLETED')"><i class="fas fa-check-circle"></i> CLOSE (Completed)</button>
-      <button class="btn" style="background: #e65100; color:white;" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')"><i class="fas fa-code-branch"></i> FOLLOW UP (Create new WO)</button>
-      <button class="btn" style="background: #6c757d; color:white;" id="btnReunify" onclick="prepareClosure('REUNIFY')"><i class="fas fa-save"></i> STILL WORKING (Asset Down)</button>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
-
-    <!-- Panel: COMPLETED -->
-    <div id="completedPanel" class="closure-panel">
-      <label style="color:#1a56db;"><i class="fas fa-check-circle"></i> COMPLETED</label>
-      <div style="margin-top:10px;">
-        <label>Root Cause <span class="required">*</span></label>
-        <select id="completedRootCause" data-required="true" onchange="validateConfirmButton('COMPLETED')">
-          <option value="">-- Select Cause --</option>
-        </select>
-      </div>
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn" style="background:#1b5e20; color:white; flex:1;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
-        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-      </div>
-    </div>
-
-    <!-- Panel: FOLLOW UP -->
-    <div id="followUpPanel" class="closure-panel">
-      <label style="color:#1a56db;"><i class="fas fa-code-branch"></i> FOLLOW UP</label>
-      <div style="margin-top:10px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-          <input type="checkbox" id="fuNeedsSparePartPurchase" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs Spare Part Purchase</label>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-          <input type="checkbox" id="fuNeedsExternalService" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Needs External Service Coordination</label>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-          <input type="checkbox" id="fuNeedsOther" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="toggleOtherComment(); validateConfirmButton('FOLLOW_UP')">
-          <label style="font-weight:normal; text-transform:none; margin:0; cursor:pointer;">Other (requires comment)</label>
-        </div>
-        <div id="fuOtherCommentDiv" style="display:none; margin-top:10px; margin-left:25px;">
-          <label style="text-transform:none; font-weight:500; margin-bottom:5px;">Please describe the additional requirement:</label>
-          <textarea id="fuOtherComment" rows="3" style="width:100%; margin-top:5px;" placeholder="Describe what else is needed... (minimum 10 characters)" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
-          <div id="fuOtherCommentWarning" style="color:#b52b27; font-size:12px; margin-top:5px; display:none;">Please enter at least 10 characters</div>
-        </div>
-        <div style="margin-top:15px;">
-          <label>Root Cause <span class="required">*</span></label>
-          <select id="fuRootCause" data-required="true" style="margin-bottom:15px;" onchange="validateConfirmButton('FOLLOW_UP')">
-            <option value="">-- Select Cause --</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn" style="background:#e65100; color:white; flex:1;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
-        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-      </div>
-    </div>
-
-    <!-- Panel: REUNIFY -->
-    <div id="reunifyPanel" class="closure-panel">
-      <label style="color:#1a56db;"><i class="fas fa-save"></i> STILL WORKING (REUNIFY)</label>
-      <div style="margin-top:10px; padding:10px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:4px;">
-        <strong>⚠️ Equipment will be marked as DOWN</strong><br>
-        This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.
-      </div>
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn" style="background:#6c757d; color:white; flex:1;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
-        <button class="btn" style="background:#9aa0a6; color:white; flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-  <span>System Status: <strong id="footer-status">Ready</strong></span>
-  <span>EAMS <span id="eamsVersion">v2.0</span></span>
-</div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-content">
-    <div class="spinner"></div>
-    <p id="loadingMessage">Processing...</p>
-  </div>
+    
 </div>
 
 <script>
-  // ============================================
-  // RECIBIR MENSAJES DEL PADRE (logo y versión)
-  // ============================================
-  window.addEventListener('message', function(event) {
-    const data = event.data;
-    
-    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-      const logoImg = document.getElementById('companyLogo');
-      if (logoImg) {
-        logoImg.src = data.logoUrl;
-        logoImg.style.display = 'block';
-        console.log('[iframe] Logo loaded from parent');
-      }
-    }
-    
-    if (data.type === 'SET_VERSION' && data.version) {
-      const versionSpan = document.getElementById('eamsVersion');
-      if (versionSpan) {
-        versionSpan.innerText = data.version;
-        console.log('[iframe] Version set to:', data.version);
-      }
-    }
-  });
-
-  // ============================================
-  // API CONFIGURATION
-  // ============================================
-  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-  let EAMS_API_URL = null;
-
-  function loadApiUrl() {
-    const session = localStorage.getItem('adkintor_session');
-    if (session) {
-      try {
-        const sessionData = JSON.parse(session);
-        EAMS_API_URL = sessionData.eamsApiUrl;
-        const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-        if (!EAMS_API_URL) {
-          throw new Error('eamsApiUrl not found in session');
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-      } catch(e) {
-        console.error('Error parsing session:', e);
-        showToast('Session error: Please login again', 'error');
-      }
-    } else {
-      showToast('No session found. Please login.', 'error');
-    }
-  }
-
-  async function callApi(action, args = []) {
-    if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please login again.');
-    }
-    
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        targetUrl: EAMS_API_URL,
-        payload: { action: action, args: args }
-      })
+        if (data.type === 'SET_VERSION' && data.version) {
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
+        }
     });
     
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
-    return result.data;
-  }
-
-  // ============================================
-  // GLOBAL VARIABLES
-  // ============================================
-  let DB = { wos: [], cart: [], tempPart: null, selectedWO: null, woType: null, cachedTasks: [] };
-  let currentStep = 1;
-  let isSubmitting = false;
-  const stepTitles = ["Context Selection", "Component Selection", "Labor & Technical Report", "Spare Parts Consumption", "Job Closure"];
-  
-  let pmTasksCompleted = 0;
-  let pmTotalTasks = 0;
-  let windowPmTasksLoadAttempted = false;
-
-  // ============================================
-  // UTILITY FUNCTIONS
-  // ============================================
-
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-      <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
-      <span class="toast-message">${message}</span>
-      <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-    `;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
-  }
-
-  function showLoading(message = 'Processing...') {
-    const overlay = document.getElementById('loadingOverlay');
-    const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = message;
-    if (overlay) overlay.style.display = 'flex';
-  }
-
-  function hideLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = 'none';
-  }
-
-  function closeModal() {
-    window.parent.postMessage('closeIframe', '*');
-  }
-
-  function sanitizeInput(str) {
-    if (!str) return '';
-    return str.replace(/[<>{}[\]\\]/g, '').trim();
-  }
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
-  }
-
-  function removeErrorHighlights() {
-    document.querySelectorAll('[data-required="true"]').forEach(field => {
-      field.classList.remove('error');
-    });
-  }
-
-  // ============================================
-  // FUNCIÓN DE LOGGING PARA EJECUCIÓN/CAMBIO DE WO
-  // ============================================
-  async function logWOExecution(woId, action, details = {}) {
-    if (!window.Logger || typeof window.Logger.audit !== 'function') {
-      console.warn('[WO] Logger not available, skipping log');
-      return;
-    }
-    
-    try {
-      await window.Logger.audit('CHANGE_WO', 'WO', woId, 'Status', '', '', 
-        `Action: ${action} | ${JSON.stringify(details).substring(0, 200)}`);
-      console.log('[WO] WO execution logged:', woId, action);
-      
-      if (window.Logger.foresight) {
-        await window.Logger.foresight('WO', 'WO_EXECUTED', 
-          `WO ${woId} - Action: ${action} - Tasks: ${details.tasksCompleted || 0}/${details.totalTasks || 0}`);
-      }
-    } catch (err) {
-      console.warn('[WO] Failed to log WO execution:', err);
-    }
-  }
-
-  // ============================================
-  // STEP NAVIGATION
-  // ============================================
-
-  function move(nextStep) {
-    if (isSubmitting) return;
-    
-    if (nextStep > currentStep && !validateCurrentStep()) {
-      return;
-    }
-    
-    document.querySelectorAll('.step').forEach(step => {
-      step.classList.remove('active');
-      step.style.setProperty('display', 'none', 'important');
-    });
-    
-    currentStep = nextStep;
-    const target = document.getElementById(`step${currentStep}`);
-    if (target) {
-      target.classList.add('active');
-      target.style.removeProperty('display');
-      target.style.setProperty('display', 'block', 'important');
-    }
-    
-    document.getElementById('stepHeader').innerText = `Step ${currentStep}: ${stepTitles[currentStep-1]}`;
-    const backBtn = document.getElementById('btnBackHeader');
-    const nextBtn = document.getElementById('btnNextHeader');
-    if (backBtn) backBtn.style.display = currentStep === 1 ? 'none' : 'block';
-    if (nextBtn) nextBtn.style.display = currentStep === 5 ? 'none' : 'block';
-    document.getElementById('progressBar').style.width = (currentStep * 20) + "%";
-    
-    if (currentStep === 2) {
-      const woType = document.getElementById('woSelect').getAttribute('data-wo-type');
-      if (woType !== 'PREVENTIVE') {
-        refreshAssets();
-      }
-    }
-    
-    if (currentStep === 3) {
-      setTimeout(function() {
-        renderStep3Content();
-      }, 25);
-    }
-    
-    validateStep();
-  }
-
-  function validateCurrentStep() {
-    switch(currentStep) {
-      case 1:
-        return !!DB.selectedWO;
-      case 2:
-        const woType = document.getElementById('woSelect').getAttribute('data-wo-type');
-        if (woType === 'PREVENTIVE') return true;
-        return !!document.getElementById('assetSelect').value;
-      case 3:
-        if (DB.selectedWO && DB.selectedWO.date) {
-          let creationDateStr = DB.selectedWO.date;
-          let creationDate = new Date(creationDateStr);
-          if (!isNaN(creationDate.getTime())) {
-            let startTimeElem = document.getElementById('startTime');
-            if (startTimeElem && startTimeElem.value) {
-              let startDateTime = new Date(startTimeElem.value);
-              if (startDateTime < creationDate) {
-                showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
-                return false;
-              }
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
             }
-          }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
         }
-        return true;
-      default:
-        return true;
-    }
-  }
-
-  function validateStep() {
-    const nextBtn = document.getElementById('btnNextHeader');
-    if (!nextBtn) return;
-    
-    if (currentStep === 1) {
-      nextBtn.disabled = !DB.selectedWO;
-    } else if (currentStep === 2) {
-      if (DB.woType === 'PREVENTIVE') {
-        nextBtn.disabled = false;
-      } else {
-        const assetValue = document.getElementById('assetSelect')?.value;
-        nextBtn.disabled = !assetValue;
-      }
-    } else {
-      nextBtn.disabled = false;
-    }
-  }
-
-  // ============================================
-  // STEP 3 - RENDERIZADO DINÁMICO
-  // ============================================
-
-  function renderStep3Content() {
-    const container = document.getElementById('step3DynamicContainer');
-    if (!container) return;
-    
-    if (DB.woType === 'PREVENTIVE') {
-      if (DB.cachedTasks && DB.cachedTasks.length > 0) {
-        renderPreventiveUI(container);
-        return;
-      }
-      
-      if (!windowPmTasksLoadAttempted) {
-        windowPmTasksLoadAttempted = true;
-        container.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading preventative tasks...</div>';
-        setTimeout(function() {
-          if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
-            container.innerHTML = '<div style="padding:40px; text-align:center; color:red;"><i class="fas fa-exclamation-triangle"></i> Error: The tasks could not be loaded. Please go back and select the WO again.</div>';
-          } else {
-            renderPreventiveUI(container);
-          }
-        }, 2000);
-      } else {
-        container.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Waiting for tasks... select the WO again if they do not load.</div>';
-      }
-    } else {
-      renderCorrectiveUI(container);
-    }
-  }
-
-  function renderPreventiveUI(container) {
-    if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
-      container.innerHTML = '<div style="padding:20px; text-align:center;">No preventative tasks were found</div>';
-      return;
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
     }
     
-    pmTotalTasks = DB.cachedTasks.length;
-    pmTasksCompleted = 0;
-    
-    let tasksHtml = '';
-    for (let i = 0; i < DB.cachedTasks.length; i++) {
-      const task = DB.cachedTasks[i];
-      tasksHtml += `
-        <div class="task-row">
-          <input type="checkbox" class="pm-checkbox" data-idx="${i}" id="pmCheck_${i}">
-          <div class="task-content">
-            <div class="task-equipment"><i class="fas fa-tools"></i> ${escapeHtml(task.equipment || '')}</div>
-            <div class="task-title">${escapeHtml(task.task || '')}</div>
-            <div class="task-standard"><i class="fas fa-book"></i> Standard: ${escapeHtml(task.standard || 'N/A')}</div>
-          </div>
-        </div>
-      `;
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
     }
     
-    const htmlContent = `
-      <div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>
-      
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
-        <div style="flex:1; min-width:200px;">
-          <label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>
-          <input type="datetime-local" id="startTime" data-required="true">
-        </div>
-        <div style="flex:1; min-width:200px;">
-          <label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>
-          <input type="datetime-local" id="endTime" data-required="true">
-        </div>
-      </div>
-      <div id="timeWarning" class="warning-message"></div>
-      
-      <div style="background:#e8f0fe; padding:15px; border-radius:8px; margin-bottom:20px;">
-        <label style="color:#1a56db;"><i class="fas fa-clipboard-list"></i> PREVENTIVE MAINTENANCE CHECKLIST</label>
-        <div id="pmSummary" style="font-size:13px; margin-top:8px;">Progress: 0/${pmTotalTasks} tasks completed</div>
-      </div>
-      <div id="pmTasksList" style="max-height: 350px; overflow-y: auto; border:1px solid #dadce0; border-radius:8px; margin-bottom:20px;">
-        ${tasksHtml}
-      </div>
-      <div style="margin-top:20px;">
-        <label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken</label>
-        <textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken..."></textarea>
-      </div>
-    `;
-    
-    container.innerHTML = htmlContent;
-    
-    const startTime = document.getElementById('startTime');
-    const endTime = document.getElementById('endTime');
-    const reportNotes = document.getElementById('reportNotesPM');
-    
-    if (startTime) startTime.addEventListener('change', calcLabourPM);
-    if (endTime) endTime.addEventListener('change', calcLabourPM);
-    if (reportNotes) reportNotes.addEventListener('input', validatePMStep);
-    
-    document.querySelectorAll('.pm-checkbox').forEach(cb => {
-      cb.addEventListener('change', updatePMProgress);
-    });
-    
-    updatePMProgress();
-    validatePMStep();
-  }
-
-  function calcLabourPM() {
-    const startInput = document.getElementById('startTime');
-    const endInput = document.getElementById('endTime');
-    const labourDisplay = document.getElementById('labourDisplay');
-    const timeWarning = document.getElementById('timeWarning');
-    
-    if (startInput && endInput && startInput.value && endInput.value) {
-      const start = new Date(startInput.value);
-      const end = new Date(endInput.value);
-      
-      if (end > start) {
-        const diff = (end - start) / 3600000;
-        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: ${diff.toFixed(2)} hours`;
-        if (timeWarning) timeWarning.style.display = 'none';
-      } else {
-        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: 0.00 hours`;
-        if (timeWarning) {
-          timeWarning.innerHTML = '⚠️ End time must be after start time';
-          timeWarning.style.display = 'block';
-        }
-      }
-    }
-    validatePMStep();
-  }
-
-  function validatePMStep() {
-    const startTime = document.getElementById('startTime')?.value;
-    const endTime = document.getElementById('endTime')?.value;
-    const hasValidTime = startTime && endTime && (new Date(endTime) > new Date(startTime));
-    const hasTasks = pmTasksCompleted > 0;
-    
-    let isValid = hasValidTime && hasTasks;
-    const nextBtn = document.getElementById('btnNextHeader');
-    const timeWarning = document.getElementById('timeWarning');
-    
-    if (startTime && DB.selectedWO && DB.selectedWO.date) {
-      let creationDateStr = DB.selectedWO.date;
-      let creationDate = new Date(creationDateStr);
-      let startDateTime = new Date(startTime);
-      
-      if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
-        isValid = false;
-        if (timeWarning) {
-          timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
-          timeWarning.style.display = 'block';
-        }
-      } else if (timeWarning && timeWarning.innerHTML.includes('creation date')) {
-        timeWarning.style.display = 'none';
-      }
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
     }
     
-    if (nextBtn) nextBtn.disabled = !isValid;
-  }
-
-  function updatePMProgress() {
-    const checkboxes = document.querySelectorAll('.pm-checkbox');
-    pmTasksCompleted = Array.from(checkboxes).filter(cb => cb.checked).length;
-    
-    const summary = document.getElementById('pmSummary');
-    if (summary) {
-      summary.innerHTML = `<i class="fas fa-tasks"></i> Progress: ${pmTasksCompleted}/${pmTotalTasks} tasks completed`;
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
     }
-    validatePMStep();
-  }
 
-  function calcLabour() {
-    const startInput = document.getElementById('startTime');
-    const endInput = document.getElementById('endTime');
-    const labourDisplay = document.getElementById('labourDisplay');
-    
-    if (startInput && endInput && startInput.value && endInput.value) {
-      const start = new Date(startInput.value);
-      const end = new Date(endInput.value);
-      
-      if (end > start) {
-        const diff = (end - start) / 3600000;
-        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: ${diff.toFixed(2)} hours`;
-      } else {
-        if (labourDisplay) labourDisplay.innerHTML = `<i class="fas fa-clock"></i> Total Labour: 0.00 hours`;
-      }
-    }
-    validateCorrective();
-  }
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
 
-  function validateCorrective() {
-    const startTime = document.getElementById('startTime')?.value;
-    const endTime = document.getElementById('endTime')?.value;
-    const notes = document.getElementById('reportNotes')?.value || '';
-    
-    let isValid = startTime && endTime && notes.length >= 10;
-    const nextBtn = document.getElementById('btnNextHeader');
-    const timeWarning = document.getElementById('timeWarning');
-    
-    if (startTime && DB.selectedWO && DB.selectedWO.date) {
-      let creationDateStr = DB.selectedWO.date;
-      let creationDate = new Date(creationDateStr);
-      let startDateTime = new Date(startTime);
-      
-      if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
-        isValid = false;
-        if (timeWarning) {
-          timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
-          timeWarning.style.display = 'block';
-        }
-      }
-    }
-    
-    if (nextBtn) nextBtn.disabled = !isValid;
-    
-    if (startTime && endTime && new Date(endTime) <= new Date(startTime)) {
-      if (timeWarning) {
-        timeWarning.innerHTML = '⚠️ End time must be after start time';
-        timeWarning.style.display = 'block';
-      }
-      if (nextBtn) nextBtn.disabled = true;
-    } else if (timeWarning && timeWarning.innerHTML.includes('End time')) {
-      timeWarning.style.display = 'none';
-    }
-  }
-
-  function renderCorrectiveUI(container) {
-    container.innerHTML = `
-      <div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:200px;">
-          <label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>
-          <input type="datetime-local" id="startTime" data-required="true">
-        </div>
-        <div style="flex:1; min-width:200px;">
-          <label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>
-          <input type="datetime-local" id="endTime" data-required="true">
-        </div>
-      </div>
-      <div id="timeWarning" class="warning-message"></div>
-      <label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>
-      <textarea id="reportNotes" rows="5" data-required="true" placeholder="Describe what you found and how you fixed it... (min. 10 characters)"></textarea>
-    `;
-    
-    document.getElementById('startTime')?.addEventListener('change', calcLabour);
-    document.getElementById('endTime')?.addEventListener('change', calcLabour);
-    document.getElementById('reportNotes')?.addEventListener('input', validateCorrective);
-    
-    validateCorrective();
-  }
-
-  // ============================================
-  // DATA LOADING
-  // ============================================
-
-  async function loadInitialData() {
-    showLoading('Loading Technical Portal...');
-    
-    try {
-      const response = await callApi('WO_getInitialTechData', []);
-      const data = JSON.parse(response);
-      DB.wos = data.wos || [];
-      
-      const woSel = document.getElementById('woSelect');
-      woSel.innerHTML = '<option value="">-- Select WO --</option>';
-      DB.wos.forEach(w => {
-        const opt = document.createElement('option');
-        opt.value = w.folio;
-        const maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
-        opt.textContent = `${w.folio} | ${w.eqName} | ${maintTypeShort}`;
-        woSel.appendChild(opt);
-      });
-      
-      const rootCausesHtml = '<option value="">-- Select Cause --</option>' + 
-        (data.rootCauses || []).map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-      
-      const completedRootCause = document.getElementById('completedRootCause');
-      const fuRootCause = document.getElementById('fuRootCause');
-      if (completedRootCause) completedRootCause.innerHTML = rootCausesHtml;
-      if (fuRootCause) fuRootCause.innerHTML = rootCausesHtml;
-      
-      document.getElementById('footer-status').innerText = 'Data Loaded';
-      validateStep();
-      hideLoading();
-      
-    } catch (error) {
-      hideLoading();
-      showToast('Error loading data: ' + error.message, 'error');
-      console.error('Load error:', error);
-    }
-  }
-
-  async function loadWOContext() {
-    windowPmTasksLoadAttempted = false;
-    DB.cachedTasks = [];
-    resetStep5State();
-    
-    const val = document.getElementById('woSelect').value;
-    const wo = DB.wos.find(x => x.folio == val);
-    
-    if (wo) {
-      DB.selectedWO = wo;
-      let woType = 'CORRECTIVE';
-      if (wo.maintType === 'Scheduled Preventive') {
-        woType = 'PREVENTIVE';
-      } else if (wo.status === 'ON HOLD') {
-        woType = 'ON_HOLD';
-      }
-      DB.woType = woType;
-      
-      updateClosureButtonsByType();
-      
-      document.getElementById('woSelect').setAttribute('data-wo-type', woType);
-      
-      const assetSelect = document.getElementById('assetSelect');
-      const assetLabel = document.getElementById('assetLabel');
-      const assetHelpText = document.getElementById('assetHelpText');
-      
-      if (woType === 'PREVENTIVE') {
-        if (assetSelect) {
-          assetSelect.disabled = true;
-          assetSelect.innerHTML = '<option value="">-- No component selection needed for Preventive Maintenance --</option>';
-        }
-        if (assetLabel) assetLabel.innerHTML = 'Component Selection <span style="color:#e67e22; font-size:10px;">(Not required for PM)</span>';
-        if (assetHelpText) assetHelpText.style.display = 'none';
-        loadPreventiveTasks();
-      } else {
-        if (assetSelect) {
-          assetSelect.disabled = false;
-          assetSelect.innerHTML = '<option value="">-- Select Component --</option>';
-        }
-        if (assetLabel) assetLabel.innerHTML = 'Specific Component Intervened <span class="required">*</span>';
-        if (assetHelpText) assetHelpText.style.display = 'block';
-      }
-      
-      document.getElementById('woInfo').style.display = 'block';
-      document.getElementById('info-requester').innerText = wo.requester || 'N/A';
-      document.getElementById('outDate').innerText = wo.date || 'N/A';
-      document.getElementById('outMaintType').innerText = wo.maintType || 'N/A';
-      document.getElementById('info-priority').innerText = wo.priority || 'N/A';
-      document.getElementById('outArea').innerText = wo.area || 'N/A';
-      document.getElementById('outEqName').innerText = wo.eqName || 'N/A';
-      
-      if (woType === 'PREVENTIVE' && wo.desc && wo.desc.includes('[EAMS MASTER PM]')) {
-        let displayDesc = wo.desc;
-        const strategyMatch = wo.desc.match(/\[EAMS MASTER PM\]\s*(.+?)(?:\n|$)/);
-        if (strategyMatch) {
-          displayDesc = `[EAMS MASTER PM] ${strategyMatch[1].trim()}`;
-        }
-        document.getElementById('info-description').innerText = displayDesc;
-      } else {
-        document.getElementById('info-description').innerText = wo.desc || 'No description';
-      }
-      document.getElementById('info-comments').innerText = wo.history || 'No logs.';
-      validateStep();
-    } else {
-      document.getElementById('woInfo').style.display = 'none';
-    }
-  }
-
-  function updateClosureButtonsByType() {
-    const btnReunify = document.getElementById('btnReunify');
-    if (!btnReunify) return;
-    
-    if (DB.woType === 'PREVENTIVE') {
-      btnReunify.disabled = true;
-      btnReunify.style.opacity = '0.5';
-      btnReunify.style.cursor = 'not-allowed';
-      btnReunify.title = 'Not available for Preventive Maintenance';
-    } else {
-      btnReunify.disabled = false;
-      btnReunify.style.opacity = '1';
-      btnReunify.style.cursor = 'pointer';
-      btnReunify.title = '';
-    }
-  }
-
-  async function loadPreventiveTasks() {
-    if (!DB.selectedWO) return;
-    
-    try {
-      const tasks = await callApi('WO_getPMTasksByFolio', [DB.selectedWO.folio, DB.selectedWO.tl]);
-      DB.cachedTasks = JSON.parse(tasks);
-      
-      if (currentStep === 3 && DB.woType === 'PREVENTIVE') {
-        const container = document.getElementById('step3DynamicContainer');
-        if (container) {
-          renderPreventiveUI(container);
-        }
-      }
-    } catch (error) {
-      showToast('Error loading PM tasks: ' + error.message, 'error');
-    }
-  }
-
-  // ============================================
-  // STEP 2 - ASSETS
-  // ============================================
-
-  async function refreshAssets() {
-    const val = document.getElementById('woSelect').value;
-    const wo = DB.wos.find(x => x.folio == val);
-    if (!wo) return;
-    
-    const woType = document.getElementById('woSelect').getAttribute('data-wo-type');
-    if (woType === 'PREVENTIVE') return;
-    
-    const sel = document.getElementById('assetSelect');
-    sel.innerHTML = '<option value="">Loading components...</option>';
-    
-    try {
-      const assets = await callApi('WO_getSubAssets', [wo.tl]);
-      const assetList = JSON.parse(assets);
-      sel.innerHTML = '<option value="">-- Select Component --</option>';
-      if (assetList.length === 0) {
-        sel.innerHTML += '<option value="" disabled>No components found for this Technical Location</option>';
-      } else {
-        assetList.forEach(a => {
-          const opt = document.createElement('option');
-          opt.value = a.id + ' - ' + a.name;
-          opt.textContent = a.display;
-          sel.appendChild(opt);
-        });
-      }
-      validateStep();
-    } catch (error) {
-      sel.innerHTML = '<option value="">Error loading components</option>';
-      showToast('Error loading components: ' + error.message, 'error');
-    }
-  }
-
-  // ============================================
-  // SPARE PARTS
-  // ============================================
-
-  let searchTimeout;
-
-  async function triggerSearch(q) {
-    const resDiv = document.getElementById('searchResults');
-    const spinner = document.getElementById('searchSpinner');
-    
-    if (searchTimeout) clearTimeout(searchTimeout);
-    
-    if (q.length < 2) {
-      resDiv.style.display = 'none';
-      spinner.style.display = 'none';
-      return;
-    }
-    
-    spinner.style.display = 'block';
-    
-    searchTimeout = setTimeout(async function() {
-      try {
-        const parts = await callApi('WO_searchParts', [q]);
-        const partList = JSON.parse(parts);
-        spinner.style.display = 'none';
-        
-        if (partList.length === 0) {
-          resDiv.innerHTML = '<div class="search-item">No parts found</div>';
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+            } catch(e) {
+                console.error('Error parsing session:', e);
+                showToast('Session error: Please login again', 'error');
+            }
         } else {
-          resDiv.innerHTML = partList.map(p => {
-            const displayName = p.reference ? `${escapeHtml(p.name)} [PN: ${escapeHtml(p.reference)}]` : escapeHtml(p.name);
-            return `
-              <div class="search-item" onclick='selectPartForQty(${JSON.stringify(p.id)}, ${JSON.stringify(p.name)}, ${p.price}, ${p.stock})'>
-                <span><b>${escapeHtml(p.id)}</b> ${displayName}</span>
-                <span class="stock-tag"><i class="fas fa-boxes"></i> Stock: ${p.stock}</span>
-              </div>
-            `;
-          }).join('');
+            showToast('No session found. Please login.', 'error');
         }
-        resDiv.style.display = 'block';
-      } catch (error) {
-        spinner.style.display = 'none';
-        showToast('Error searching parts: ' + error.message, 'error');
-      }
-    }, 300);
-  }
-
-  function selectPartForQty(id, name, price, stock) {
-    DB.tempPart = { id: id, name: name, price: price, stock: stock };
-    document.getElementById('searchResults').style.display = 'none';
-    document.getElementById('partSearch').value = '';
-    document.getElementById('selectedPartLabel').innerHTML = `<i class="fas fa-box"></i> Adding: ${name} (In Stock: ${stock})`;
-    document.getElementById('qtyPanel').style.display = 'block';
-    document.getElementById('partQty').focus();
-  }
-
-  function confirmAddPart() {
-    const qtyInput = document.getElementById('partQty');
-    const qty = parseFloat(qtyInput.value);
-    
-    if (!DB.tempPart) {
-      showToast('Please select a part first', 'error');
-      return;
     }
-    
-    if (qty > 0 && !isNaN(qty)) {
-      if (qty > DB.tempPart.stock) {
-        showToast(`Warning: Quantity (${qty}) exceeds current stock (${DB.tempPart.stock}). Proceeding anyway.`, 'error');
-      }
-      DB.cart.push({ ...DB.tempPart, qty: qty });
-      renderCart();
-      cancelAdd();
-      showToast(`Added ${qty}x ${DB.tempPart.name} to cart`, 'success');
-    } else {
-      showToast('Please enter a valid quantity', 'error');
+
+    async function callApi(action, args = []) {
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured. Please login again.');
+        }
+        
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        return result.data;
     }
-  }
 
-  function cancelAdd() {
-    DB.tempPart = null;
-    document.getElementById('qtyPanel').style.display = 'none';
-    document.getElementById('partQty').value = '';
-  }
+    // ============================================
+    // GLOBAL VARIABLES
+    // ============================================
+    let DB = { wos: [], cart: [], tempPart: null, selectedWO: null, woType: null, cachedTasks: [] };
+    let currentStep = 1;
+    let isSubmitting = false;
+    const stepTitles = ["Context Selection", "Component Selection", "Labor & Technical Report", "Spare Parts Consumption", "Job Closure"];
+    
+    let pmTasksCompleted = 0;
+    let pmTotalTasks = 0;
+    let windowPmTasksLoadAttempted = false;
+    let searchTimeout = null;
 
-  function renderCart() {
-    const container = document.getElementById('materialCart');
-    if (DB.cart.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px;"><i class="fas fa-shopping-cart"></i> No parts selected yet.</p>';
-      return;
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    function sanitizeInput(str) {
+        if (!str) return '';
+        return str.replace(/[<>{}[\]\\]/g, '').trim();
     }
-    container.innerHTML = DB.cart.map((item, idx) => `
-      <div class="cart-item">
-        <span><b>${item.qty}x</b> ${escapeHtml(item.name)} <small style="color:#5f6368">[${escapeHtml(item.id)}]</small></span>
-        <span class="remove-btn" onclick="removeItem(${idx})"><i class="fas fa-trash-alt"></i></span>
-      </div>
-    `).join('');
-  }
 
-  function removeItem(idx) {
-    DB.cart.splice(idx, 1);
-    renderCart();
-  }
-
-  // ============================================
-  // CLOSURE FUNCTIONS
-  // ============================================
-
-  function resetStep5State() {
-    const btnFinish = document.getElementById('btnFinish');
-    const btnFollow = document.getElementById('btnFollow');
-    const btnReunify = document.getElementById('btnReunify');
-    
-    if (btnFinish) {
-      btnFinish.disabled = false;
-      btnFinish.style.opacity = '1';
-      btnFinish.style.cursor = 'pointer';
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
-    if (btnFollow) {
-      btnFollow.disabled = false;
-      btnFollow.style.opacity = '1';
-      btnFollow.style.cursor = 'pointer';
-    }
-    if (btnReunify) {
-      btnReunify.disabled = false;
-      btnReunify.style.opacity = '1';
-      btnReunify.style.cursor = 'pointer';
-    }
-    
-    document.getElementById('completedPanel').style.display = 'none';
-    document.getElementById('followUpPanel').style.display = 'none';
-    document.getElementById('reunifyPanel').style.display = 'none';
-    
-    const fuSpare = document.getElementById('fuNeedsSparePartPurchase');
-    const fuService = document.getElementById('fuNeedsExternalService');
-    const fuOther = document.getElementById('fuNeedsOther');
-    const fuOtherDiv = document.getElementById('fuOtherCommentDiv');
-    const fuOtherComment = document.getElementById('fuOtherComment');
-    
-    if (fuSpare) fuSpare.checked = false;
-    if (fuService) fuService.checked = false;
-    if (fuOther) fuOther.checked = false;
-    if (fuOtherDiv) fuOtherDiv.style.display = 'none';
-    if (fuOtherComment) fuOtherComment.value = '';
-    
-    const completedRootCause = document.getElementById('completedRootCause');
-    const fuRootCause = document.getElementById('fuRootCause');
-    if (completedRootCause) completedRootCause.value = '';
-    if (fuRootCause) fuRootCause.value = '';
-    
-    const confirmCompleted = document.getElementById('confirmCompletedBtn');
-    const confirmFollowUp = document.getElementById('confirmFollowUpBtn');
-    if (confirmCompleted) confirmCompleted.disabled = true;
-    if (confirmFollowUp) confirmFollowUp.disabled = true;
-    
-    removeErrorHighlights();
-  }
 
-  function prepareClosure(action) {
-    const btnFinish = document.getElementById('btnFinish');
-    const btnFollow = document.getElementById('btnFollow');
-    const btnReunify = document.getElementById('btnReunify');
-    
-    btnFinish.disabled = true;
-    btnFollow.disabled = true;
-    btnReunify.disabled = true;
-    btnFinish.style.opacity = '0.5';
-    btnFollow.style.opacity = '0.5';
-    btnReunify.style.opacity = '0.5';
-    btnFinish.style.cursor = 'not-allowed';
-    btnFollow.style.cursor = 'not-allowed';
-    btnReunify.style.cursor = 'not-allowed';
-    
-    document.getElementById('completedPanel').style.display = 'none';
-    document.getElementById('followUpPanel').style.display = 'none';
-    document.getElementById('reunifyPanel').style.display = 'none';
-    removeErrorHighlights();
-    
-    if (DB.woType === 'PREVENTIVE') {
-      if (action === 'COMPLETED') {
-        document.getElementById('completedPanel').style.display = 'block';
-        document.getElementById('confirmCompletedBtn').disabled = false;
-        document.getElementById('completedPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else if (action === 'FOLLOW_UP') {
+    function removeErrorHighlights() {
+        document.querySelectorAll('[data-required="true"]').forEach(function(field) {
+            field.classList.remove('error');
+        });
+    }
+
+    // ============================================
+    // FUNCIÓN DE LOGGING
+    // ============================================
+    async function logWOExecution(woId, action, details) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[WO] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            await window.Logger.audit('CHANGE_WO', 'WO', woId, 'Status', '', '', 
+                'Action: ' + action + ' | ' + JSON.stringify(details).substring(0, 200));
+            console.log('[WO] WO execution logged:', woId, action);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('WO', 'WO_EXECUTED', 
+                    'WO ' + woId + ' - Action: ' + action + ' - Tasks: ' + (details.tasksCompleted || 0) + '/' + (details.totalTasks || 0));
+            }
+        } catch (err) {
+            console.warn('[WO] Failed to log WO execution:', err);
+        }
+    }
+
+    // ============================================
+    // STEP NAVIGATION
+    // ============================================
+
+    function move(nextStep) {
+        if (isSubmitting) return;
+        
+        if (nextStep > currentStep && !validateCurrentStep()) {
+            return;
+        }
+        
+        document.querySelectorAll('.step').forEach(function(step) {
+            step.classList.remove('active');
+            step.style.setProperty('display', 'none', 'important');
+        });
+        
+        currentStep = nextStep;
+        var target = document.getElementById('step' + currentStep);
+        if (target) {
+            target.classList.add('active');
+            target.style.removeProperty('display');
+            target.style.setProperty('display', 'block', 'important');
+        }
+        
+        document.getElementById('stepHeader').innerText = 'Step ' + currentStep + ': ' + stepTitles[currentStep-1];
+        var backBtn = document.getElementById('btnBackHeader');
+        var nextBtn = document.getElementById('btnNextHeader');
+        if (backBtn) backBtn.style.display = currentStep === 1 ? 'none' : 'block';
+        if (nextBtn) nextBtn.style.display = currentStep === 5 ? 'none' : 'block';
+        document.getElementById('progressBar').style.width = (currentStep * 20) + '%';
+        
+        if (currentStep === 2) {
+            var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
+            if (woType !== 'PREVENTIVE') {
+                refreshAssets();
+            }
+        }
+        
+        if (currentStep === 3) {
+            setTimeout(function() {
+                renderStep3Content();
+            }, 25);
+        }
+        
+        validateStep();
+    }
+
+    function validateCurrentStep() {
+        switch(currentStep) {
+            case 1:
+                return !!DB.selectedWO;
+            case 2:
+                var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
+                if (woType === 'PREVENTIVE') return true;
+                return !!document.getElementById('assetSelect').value;
+            case 3:
+                if (DB.selectedWO && DB.selectedWO.date) {
+                    var creationDateStr = DB.selectedWO.date;
+                    var creationDate = new Date(creationDateStr);
+                    if (!isNaN(creationDate.getTime())) {
+                        var startTimeElem = document.getElementById('startTime');
+                        if (startTimeElem && startTimeElem.value) {
+                            var startDateTime = new Date(startTimeElem.value);
+                            if (startDateTime < creationDate) {
+                                showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    function validateStep() {
+        var nextBtn = document.getElementById('btnNextHeader');
+        if (!nextBtn) return;
+        
+        if (currentStep === 1) {
+            nextBtn.disabled = !DB.selectedWO;
+        } else if (currentStep === 2) {
+            if (DB.woType === 'PREVENTIVE') {
+                nextBtn.disabled = false;
+            } else {
+                var assetValue = document.getElementById('assetSelect')?.value;
+                nextBtn.disabled = !assetValue;
+            }
+        } else {
+            nextBtn.disabled = false;
+        }
+    }
+
+    // ============================================
+    // STEP 3 - RENDERIZADO DINÁMICO
+    // ============================================
+
+    function renderStep3Content() {
+        var container = document.getElementById('step3DynamicContainer');
+        if (!container) return;
+        
+        if (DB.woType === 'PREVENTIVE') {
+            if (DB.cachedTasks && DB.cachedTasks.length > 0) {
+                renderPreventiveUI(container);
+                return;
+            }
+            
+            if (!windowPmTasksLoadAttempted) {
+                windowPmTasksLoadAttempted = true;
+                container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> Loading preventative tasks...</div>';
+                setTimeout(function() {
+                    if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
+                        container.innerHTML = '<div style="padding:30px; text-align:center; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-triangle"></i> Error: The tasks could not be loaded. Please go back and select the WO again.</div>';
+                    } else {
+                        renderPreventiveUI(container);
+                    }
+                }, 2000);
+            } else {
+                container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> Waiting for tasks... select the WO again if they do not load.</div>';
+            }
+        } else {
+            renderCorrectiveUI(container);
+        }
+    }
+
+    // ============================================
+    // PREVENTIVE UI - CON "X" PARA TAREAS NO HECHAS
+    // ============================================
+    function renderPreventiveUI(container) {
+        if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
+            container.innerHTML = '<div style="padding:20px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No preventative tasks were found</div>';
+            return;
+        }
+        
+        pmTotalTasks = DB.cachedTasks.length;
+        pmTasksCompleted = 0;
+        
+        var tasksHtml = '';
+        for (var i = 0; i < DB.cachedTasks.length; i++) {
+            var task = DB.cachedTasks[i];
+            tasksHtml += 
+                '<div class="task-row">' +
+                    '<input type="checkbox" class="pm-checkbox" data-idx="' + i + '" id="pmCheck_' + i + '">' +
+                    '<div class="task-content">' +
+                        '<div class="task-equipment"><i class="fas fa-tools"></i> ' + escapeHtml(task.equipment || '') + '</div>' +
+                        '<div class="task-title">' + escapeHtml(task.task || '') + '</div>' +
+                        '<div class="task-standard"><i class="fas fa-book"></i> Standard: ' + escapeHtml(task.standard || 'N/A') + '</div>' +
+                    '</div>' +
+                    '<span class="task-status pending" id="taskStatus_' + i + '">✗</span>' +
+                '</div>';
+        }
+        
+        var htmlContent = 
+            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>' +
+            '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">' +
+                '<div style="flex:1; min-width:180px;">' +
+                    '<div class="form-group" style="margin-bottom:0;">' +
+                        '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                        '<input type="datetime-local" id="startTime" data-required="true">' +
+                    '</div>' +
+                '</div>' +
+                '<div style="flex:1; min-width:180px;">' +
+                    '<div class="form-group" style="margin-bottom:0;">' +
+                        '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                        '<input type="datetime-local" id="endTime" data-required="true">' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div id="timeWarning" class="warning-message"></div>' +
+            '<div class="pm-summary-box">' +
+                '<label><i class="fas fa-clipboard-list"></i> PREVENTIVE MAINTENANCE CHECKLIST</label>' +
+                '<div id="pmSummary" style="font-size:13px; margin-top:4px;">Progress: 0/' + pmTotalTasks + ' tasks completed</div>' +
+            '</div>' +
+            '<div id="pmTasksList" style="max-height: 300px; overflow-y: auto; border:1px solid #dadce0; border-radius:6px; margin-bottom:16px;">' +
+                tasksHtml +
+            '</div>' +
+            '<div style="margin-top:16px;">' +
+                '<div class="form-group" style="margin-bottom:0;">' +
+                    '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken</label>' +
+                    '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken..."></textarea>' +
+                '</div>' +
+            '</div>';
+        
+        container.innerHTML = htmlContent;
+        
+        var startTime = document.getElementById('startTime');
+        var endTime = document.getElementById('endTime');
+        var reportNotes = document.getElementById('reportNotesPM');
+        
+        if (startTime) startTime.addEventListener('change', calcLabourPM);
+        if (endTime) endTime.addEventListener('change', calcLabourPM);
+        if (reportNotes) reportNotes.addEventListener('input', validatePMStep);
+        
+        document.querySelectorAll('.pm-checkbox').forEach(function(cb) {
+            cb.addEventListener('change', updatePMProgress);
+        });
+        
+        updatePMProgress();
+        validatePMStep();
+    }
+
+    function calcLabourPM() {
+        var startInput = document.getElementById('startTime');
+        var endInput = document.getElementById('endTime');
+        var labourDisplay = document.getElementById('labourDisplay');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        if (startInput && endInput && startInput.value && endInput.value) {
+            var start = new Date(startInput.value);
+            var end = new Date(endInput.value);
+            
+            if (end > start) {
+                var diff = (end - start) / 3600000;
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: ' + diff.toFixed(2) + ' hours';
+                if (timeWarning) timeWarning.classList.remove('visible');
+                
+                // ⚠️ NOTIFICACIÓN DE +8 HORAS (Issue #1)
+                if (diff > 8) {
+                    if (timeWarning) {
+                        timeWarning.innerHTML = '⚠️ Warning: Working time exceeds 8 hours (' + diff.toFixed(2) + 'h). Please verify shift duration.';
+                        timeWarning.classList.add('visible');
+                    }
+                } else {
+                    if (timeWarning && timeWarning.innerHTML.includes('exceeds 8 hours')) {
+                        timeWarning.classList.remove('visible');
+                    }
+                }
+            } else {
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: 0.00 hours';
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ End time must be after start time';
+                    timeWarning.classList.add('visible');
+                }
+            }
+        }
+        validatePMStep();
+    }
+
+    function validatePMStep() {
+        var startTime = document.getElementById('startTime')?.value;
+        var endTime = document.getElementById('endTime')?.value;
+        var hasValidTime = startTime && endTime && (new Date(endTime) > new Date(startTime));
+        var hasTasks = pmTasksCompleted > 0;
+        
+        var isValid = hasValidTime && hasTasks;
+        var nextBtn = document.getElementById('btnNextHeader');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        if (startTime && DB.selectedWO && DB.selectedWO.date) {
+            var creationDateStr = DB.selectedWO.date;
+            var creationDate = new Date(creationDateStr);
+            var startDateTime = new Date(startTime);
+            
+            if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
+                isValid = false;
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
+                    timeWarning.classList.add('visible');
+                }
+            } else if (timeWarning && timeWarning.innerHTML.includes('creation date')) {
+                timeWarning.classList.remove('visible');
+            }
+        }
+        
+        if (nextBtn) nextBtn.disabled = !isValid;
+    }
+
+    function updatePMProgress() {
+        var checkboxes = document.querySelectorAll('.pm-checkbox');
+        pmTasksCompleted = 0;
+        var checkedList = [];
+        
+        checkboxes.forEach(function(cb, idx) {
+            if (cb.checked) {
+                pmTasksCompleted++;
+                checkedList.push(idx);
+                var statusEl = document.getElementById('taskStatus_' + idx);
+                if (statusEl) {
+                    statusEl.innerHTML = '✓';
+                    statusEl.className = 'task-status done';
+                }
+            } else {
+                var statusEl = document.getElementById('taskStatus_' + idx);
+                if (statusEl) {
+                    statusEl.innerHTML = '✗';
+                    statusEl.className = 'task-status pending';
+                }
+            }
+        });
+        
+        var summary = document.getElementById('pmSummary');
+        if (summary) {
+            summary.innerHTML = '<i class="fas fa-tasks"></i> Progress: ' + pmTasksCompleted + '/' + pmTotalTasks + ' tasks completed';
+        }
+        validatePMStep();
+    }
+
+    // ============================================
+    // CORRECTIVE UI
+    // ============================================
+    function renderCorrectiveUI(container) {
+        container.innerHTML = 
+            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>' +
+            '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
+                '<div style="flex:1; min-width:180px;">' +
+                    '<div class="form-group" style="margin-bottom:0;">' +
+                        '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                        '<input type="datetime-local" id="startTime" data-required="true">' +
+                    '</div>' +
+                '</div>' +
+                '<div style="flex:1; min-width:180px;">' +
+                    '<div class="form-group" style="margin-bottom:0;">' +
+                        '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                        '<input type="datetime-local" id="endTime" data-required="true">' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div id="timeWarning" class="warning-message"></div>' +
+            '<div class="form-group" style="margin-top:12px;">' +
+                '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>' +
+                '<textarea id="reportNotes" rows="5" data-required="true" placeholder="Describe what you found and how you fixed it... (min. 10 characters)"></textarea>' +
+            '</div>';
+        
+        document.getElementById('startTime')?.addEventListener('change', calcLabour);
+        document.getElementById('endTime')?.addEventListener('change', calcLabour);
+        document.getElementById('reportNotes')?.addEventListener('input', validateCorrective);
+        
+        validateCorrective();
+    }
+
+    function calcLabour() {
+        var startInput = document.getElementById('startTime');
+        var endInput = document.getElementById('endTime');
+        var labourDisplay = document.getElementById('labourDisplay');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        if (startInput && endInput && startInput.value && endInput.value) {
+            var start = new Date(startInput.value);
+            var end = new Date(endInput.value);
+            
+            if (end > start) {
+                var diff = (end - start) / 3600000;
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: ' + diff.toFixed(2) + ' hours';
+                if (timeWarning) timeWarning.classList.remove('visible');
+                
+                // ⚠️ NOTIFICACIÓN DE +8 HORAS (Issue #1)
+                if (diff > 8) {
+                    if (timeWarning) {
+                        timeWarning.innerHTML = '⚠️ Warning: Working time exceeds 8 hours (' + diff.toFixed(2) + 'h). Please verify shift duration.';
+                        timeWarning.classList.add('visible');
+                    }
+                } else {
+                    if (timeWarning && timeWarning.innerHTML.includes('exceeds 8 hours')) {
+                        timeWarning.classList.remove('visible');
+                    }
+                }
+            } else {
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: 0.00 hours';
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ End time must be after start time';
+                    timeWarning.classList.add('visible');
+                }
+            }
+        }
+        validateCorrective();
+    }
+
+    function validateCorrective() {
+        var startTime = document.getElementById('startTime')?.value;
+        var endTime = document.getElementById('endTime')?.value;
+        var notes = document.getElementById('reportNotes')?.value || '';
+        
+        var isValid = startTime && endTime && notes.length >= 10;
+        var nextBtn = document.getElementById('btnNextHeader');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        if (startTime && DB.selectedWO && DB.selectedWO.date) {
+            var creationDateStr = DB.selectedWO.date;
+            var creationDate = new Date(creationDateStr);
+            var startDateTime = new Date(startTime);
+            
+            if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
+                isValid = false;
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
+                    timeWarning.classList.add('visible');
+                }
+            }
+        }
+        
+        if (nextBtn) nextBtn.disabled = !isValid;
+        
+        if (startTime && endTime && new Date(endTime) <= new Date(startTime)) {
+            if (timeWarning) {
+                timeWarning.innerHTML = '⚠️ End time must be after start time';
+                timeWarning.classList.add('visible');
+            }
+            if (nextBtn) nextBtn.disabled = true;
+        } else if (timeWarning && timeWarning.innerHTML.includes('End time')) {
+            timeWarning.classList.remove('visible');
+        }
+    }
+
+    // ============================================
+    // DATA LOADING
+    // ============================================
+
+    async function loadInitialData() {
+        showLoading('Loading Technical Portal...');
+        
+        try {
+            var response = await callApi('WO_getInitialTechData', []);
+            var data = JSON.parse(response);
+            DB.wos = data.wos || [];
+            
+            var woSel = document.getElementById('woSelect');
+            woSel.innerHTML = '<option value="">-- Select WO --</option>';
+            DB.wos.forEach(function(w) {
+                var opt = document.createElement('option');
+                opt.value = w.folio;
+                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
+                woSel.appendChild(opt);
+            });
+            
+            var rootCausesHtml = '<option value="">-- Select Cause --</option>';
+            if (data.rootCauses) {
+                data.rootCauses.forEach(function(c) {
+                    rootCausesHtml += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+                });
+            }
+            
+            var completedRootCause = document.getElementById('completedRootCause');
+            var fuRootCause = document.getElementById('fuRootCause');
+            if (completedRootCause) completedRootCause.innerHTML = rootCausesHtml;
+            if (fuRootCause) fuRootCause.innerHTML = rootCausesHtml;
+            
+            document.getElementById('footer-status').innerText = 'Data Loaded';
+            validateStep();
+            hideLoading();
+            
+            // ✅ Issue #13: Toast de confirmación al cargar
+            showToast('Technical Portal loaded successfully ✅', 'success');
+            
+        } catch (error) {
+            hideLoading();
+            showToast('Error loading data: ' + error.message, 'error');
+            console.error('Load error:', error);
+        }
+    }
+
+    // ============================================
+    // LOAD WO CONTEXT - CON PARSING DE JSON (Issue #8)
+    // ============================================
+    async function loadWOContext() {
+        windowPmTasksLoadAttempted = false;
+        DB.cachedTasks = [];
+        resetStep5State();
+        resetCart(); // ✅ Issue #3: Resetear carrito al cambiar WO
+        
+        var val = document.getElementById('woSelect').value;
+        var wo = DB.wos.find(function(x) { return x.folio == val; });
+        
+        if (wo) {
+            DB.selectedWO = wo;
+            var woType = 'CORRECTIVE';
+            if (wo.maintType === 'Scheduled Preventive') {
+                woType = 'PREVENTIVE';
+            } else if (wo.status === 'ON HOLD') {
+                woType = 'ON_HOLD';
+            }
+            DB.woType = woType;
+            
+            updateClosureButtonsByType();
+            document.getElementById('woSelect').setAttribute('data-wo-type', woType);
+            
+            var assetSelect = document.getElementById('assetSelect');
+            var assetLabel = document.getElementById('assetLabel');
+            var assetHelpText = document.getElementById('assetHelpText');
+            
+            if (woType === 'PREVENTIVE') {
+                if (assetSelect) {
+                    assetSelect.disabled = true;
+                    assetSelect.innerHTML = '<option value="">-- No component selection needed for Preventive Maintenance --</option>';
+                }
+                if (assetLabel) assetLabel.innerHTML = 'Component Selection <span style="color:#e67e22; font-size:10px;">(Not required for PM)</span>';
+                if (assetHelpText) assetHelpText.style.display = 'none';
+                loadPreventiveTasks();
+            } else {
+                if (assetSelect) {
+                    assetSelect.disabled = false;
+                    assetSelect.innerHTML = '<option value="">-- Select Component --</option>';
+                }
+                if (assetLabel) assetLabel.innerHTML = 'Specific Component Intervened <span class="required">*</span>';
+                if (assetHelpText) assetHelpText.style.display = 'block';
+            }
+            
+            document.getElementById('woInfo').style.display = 'block';
+            document.getElementById('info-requester').innerText = wo.requester || 'N/A';
+            document.getElementById('outDate').innerText = wo.date || 'N/A';
+            document.getElementById('outMaintType').innerText = wo.maintType || 'N/A';
+            document.getElementById('info-priority').innerText = wo.priority || 'N/A';
+            document.getElementById('outArea').innerText = wo.area || 'N/A';
+            document.getElementById('outEqName').innerText = wo.eqName || 'N/A';
+            
+            if (woType === 'PREVENTIVE' && wo.desc && wo.desc.indexOf('[EAMS MASTER PM]') !== -1) {
+                var displayDesc = wo.desc;
+                var strategyMatch = wo.desc.match(/\[EAMS MASTER PM\]\s*(.+?)(?:\n|$)/);
+                if (strategyMatch) {
+                    displayDesc = '[EAMS MASTER PM] ' + strategyMatch[1].trim();
+                }
+                document.getElementById('info-description').innerText = displayDesc;
+            } else {
+                document.getElementById('info-description').innerText = wo.desc || 'No description';
+            }
+            
+            // ✅ Issue #8: Parsear JSON en Previous Shift Logs
+            var historyText = wo.history || 'No logs.';
+            try {
+                var parsedHistory = JSON.parse(historyText);
+                if (typeof parsedHistory === 'object') {
+                    var formatted = '';
+                    for (var key in parsedHistory) {
+                        if (parsedHistory.hasOwnProperty(key)) {
+                            formatted += key + ': ' + JSON.stringify(parsedHistory[key]) + '\n';
+                        }
+                    }
+                    document.getElementById('info-comments').innerText = formatted || 'No logs.';
+                } else {
+                    document.getElementById('info-comments').innerText = historyText;
+                }
+            } catch (e) {
+                document.getElementById('info-comments').innerText = historyText;
+            }
+            
+            validateStep();
+        } else {
+            document.getElementById('woInfo').style.display = 'none';
+        }
+    }
+
+    function resetCart() {
+        DB.cart = [];
+        DB.tempPart = null;
+        renderCart();
+        document.getElementById('qtyPanel').style.display = 'none';
+        document.getElementById('partSearch').value = '';
+        document.getElementById('searchResults').style.display = 'none';
+    }
+
+    function updateClosureButtonsByType() {
+        var btnReunify = document.getElementById('btnReunify');
+        if (!btnReunify) return;
+        
+        if (DB.woType === 'PREVENTIVE') {
+            btnReunify.disabled = true;
+            btnReunify.style.opacity = '0.5';
+            btnReunify.style.cursor = 'not-allowed';
+            btnReunify.title = 'Not available for Preventive Maintenance';
+        } else {
+            btnReunify.disabled = false;
+            btnReunify.style.opacity = '1';
+            btnReunify.style.cursor = 'pointer';
+            btnReunify.title = '';
+        }
+    }
+
+    async function loadPreventiveTasks() {
+        if (!DB.selectedWO) return;
+        
+        try {
+            var tasks = await callApi('WO_getPMTasksByFolio', [DB.selectedWO.folio, DB.selectedWO.tl]);
+            DB.cachedTasks = JSON.parse(tasks);
+            
+            if (currentStep === 3 && DB.woType === 'PREVENTIVE') {
+                var container = document.getElementById('step3DynamicContainer');
+                if (container) {
+                    renderPreventiveUI(container);
+                }
+            }
+        } catch (error) {
+            showToast('Error loading PM tasks: ' + error.message, 'error');
+        }
+    }
+
+    // ============================================
+    // STEP 2 - ASSETS
+    // ============================================
+
+    async function refreshAssets() {
+        var val = document.getElementById('woSelect').value;
+        var wo = DB.wos.find(function(x) { return x.folio == val; });
+        if (!wo) return;
+        
+        var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
+        if (woType === 'PREVENTIVE') return;
+        
+        var sel = document.getElementById('assetSelect');
+        sel.innerHTML = '<option value="">Loading components...</option>';
+        
+        try {
+            var assets = await callApi('WO_getSubAssets', [wo.tl]);
+            var assetList = JSON.parse(assets);
+            sel.innerHTML = '<option value="">-- Select Component --</option>';
+            if (assetList.length === 0) {
+                sel.innerHTML += '<option value="" disabled>No components found for this Technical Location</option>';
+            } else {
+                assetList.forEach(function(a) {
+                    var opt = document.createElement('option');
+                    opt.value = a.id + ' - ' + a.name;
+                    opt.textContent = a.display;
+                    sel.appendChild(opt);
+                });
+            }
+            validateStep();
+            
+            // ✅ Issue #13: Toast al cargar componentes
+            showToast('Components loaded: ' + assetList.length + ' found', 'success');
+        } catch (error) {
+            sel.innerHTML = '<option value="">Error loading components</option>';
+            showToast('Error loading components: ' + error.message, 'error');
+        }
+    }
+
+    // ============================================
+    // SPARE PARTS - CON CIERRE DE SUGERENCIAS (Issue #6)
+    // ============================================
+
+    function triggerSearch(q) {
+        var resDiv = document.getElementById('searchResults');
+        var spinner = document.getElementById('searchSpinner');
+        
+        if (searchTimeout) clearTimeout(searchTimeout);
+        
+        if (q.length < 2) {
+            resDiv.style.display = 'none';
+            spinner.style.display = 'none';
+            return;
+        }
+        
+        spinner.style.display = 'block';
+        
+        searchTimeout = setTimeout(async function() {
+            try {
+                var parts = await callApi('WO_searchParts', [q]);
+                var partList = JSON.parse(parts);
+                spinner.style.display = 'none';
+                
+                if (partList.length === 0) {
+                    resDiv.innerHTML = '<div class="search-item">No parts found</div>';
+                } else {
+                    resDiv.innerHTML = partList.map(function(p) {
+                        var displayName = p.reference ? escapeHtml(p.name) + ' [PN: ' + escapeHtml(p.reference) + ']' : escapeHtml(p.name);
+                        return '<div class="search-item" onclick=\'selectPartForQty(' + JSON.stringify(p.id) + ', ' + JSON.stringify(p.name) + ', ' + p.price + ', ' + p.stock + ')\'>' +
+                            '<span><b>' + escapeHtml(p.id) + '</b> ' + displayName + '</span>' +
+                            '<span class="stock-tag"><i class="fas fa-boxes"></i> Stock: ' + p.stock + '</span>' +
+                        '</div>';
+                    }).join('');
+                }
+                resDiv.style.display = 'block';
+            } catch (error) {
+                spinner.style.display = 'none';
+                showToast('Error searching parts: ' + error.message, 'error');
+            }
+        }, 300);
+    }
+
+    function selectPartForQty(id, name, price, stock) {
+        DB.tempPart = { id: id, name: name, price: price, stock: stock };
+        // ✅ Issue #6: Cerrar sugerencias al seleccionar
+        document.getElementById('searchResults').style.display = 'none';
+        document.getElementById('partSearch').value = '';
+        document.getElementById('selectedPartLabel').innerHTML = '<i class="fas fa-box"></i> Adding: ' + name + ' (In Stock: ' + stock + ')';
+        document.getElementById('qtyPanel').style.display = 'block';
+        document.getElementById('partQty').focus();
+    }
+
+    function confirmAddPart() {
+        var qtyInput = document.getElementById('partQty');
+        var qty = parseFloat(qtyInput.value);
+        
+        if (!DB.tempPart) {
+            showToast('Please select a part first', 'error');
+            return;
+        }
+        
+        if (qty > 0 && !isNaN(qty)) {
+            if (qty > DB.tempPart.stock) {
+                showToast('Warning: Quantity (' + qty + ') exceeds current stock (' + DB.tempPart.stock + '). Proceeding anyway.', 'error');
+            }
+            DB.cart.push({ id: DB.tempPart.id, name: DB.tempPart.name, price: DB.tempPart.price, stock: DB.tempPart.stock, qty: qty });
+            renderCart();
+            cancelAdd();
+            showToast('Added ' + qty + 'x ' + DB.tempPart.name + ' to cart', 'success');
+        } else {
+            showToast('Please enter a valid quantity', 'error');
+        }
+    }
+
+    function cancelAdd() {
+        DB.tempPart = null;
+        document.getElementById('qtyPanel').style.display = 'none';
+        document.getElementById('partQty').value = '';
+    }
+
+    function renderCart() {
+        var container = document.getElementById('materialCart');
+        if (DB.cart.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-shopping-cart"></i> No parts selected yet.</p>';
+            return;
+        }
+        container.innerHTML = DB.cart.map(function(item, idx) {
+            return '<div class="cart-item">' +
+                '<span><b>' + item.qty + 'x</b> ' + escapeHtml(item.name) + ' <small style="color:#5f6368">[' + escapeHtml(item.id) + ']</small></span>' +
+                '<span class="remove-btn" onclick="removeItem(' + idx + ')"><i class="fas fa-trash-alt"></i></span>' +
+            '</div>';
+        }).join('');
+    }
+
+    function removeItem(idx) {
+        DB.cart.splice(idx, 1);
+        renderCart();
+    }
+
+    // ============================================
+    // CLOSURE FUNCTIONS
+    // ============================================
+
+    function resetStep5State() {
+        var btnFinish = document.getElementById('btnFinish');
+        var btnFollow = document.getElementById('btnFollow');
+        var btnReunify = document.getElementById('btnReunify');
+        
+        if (btnFinish) {
+            btnFinish.disabled = false;
+            btnFinish.style.opacity = '1';
+            btnFinish.style.cursor = 'pointer';
+        }
+        if (btnFollow) {
+            btnFollow.disabled = false;
+            btnFollow.style.opacity = '1';
+            btnFollow.style.cursor = 'pointer';
+        }
+        if (btnReunify) {
+            btnReunify.disabled = false;
+            btnReunify.style.opacity = '1';
+            btnReunify.style.cursor = 'pointer';
+        }
+        
+        document.getElementById('completedPanel').style.display = 'none';
+        document.getElementById('followUpPanel').style.display = 'none';
+        document.getElementById('reunifyPanel').style.display = 'none';
+        
+        var fuSpare = document.getElementById('fuNeedsSparePartPurchase');
+        var fuService = document.getElementById('fuNeedsExternalService');
+        var fuOther = document.getElementById('fuNeedsOther');
+        var fuOtherDiv = document.getElementById('fuOtherCommentDiv');
+        var fuOtherComment = document.getElementById('fuOtherComment');
+        
+        if (fuSpare) fuSpare.checked = false;
+        if (fuService) fuService.checked = false;
+        if (fuOther) fuOther.checked = false;
+        if (fuOtherDiv) fuOtherDiv.style.display = 'none';
+        if (fuOtherComment) fuOtherComment.value = '';
+        
+        var completedRootCause = document.getElementById('completedRootCause');
+        var fuRootCause = document.getElementById('fuRootCause');
+        if (completedRootCause) completedRootCause.value = '';
+        if (fuRootCause) fuRootCause.value = '';
+        
+        var confirmCompleted = document.getElementById('confirmCompletedBtn');
+        var confirmFollowUp = document.getElementById('confirmFollowUpBtn');
+        if (confirmCompleted) confirmCompleted.disabled = true;
+        if (confirmFollowUp) confirmFollowUp.disabled = true;
+        
+        removeErrorHighlights();
+    }
+
+    function prepareClosure(action) {
+        var btnFinish = document.getElementById('btnFinish');
+        var btnFollow = document.getElementById('btnFollow');
+        var btnReunify = document.getElementById('btnReunify');
+        
+        btnFinish.disabled = true;
+        btnFollow.disabled = true;
+        btnReunify.disabled = true;
+        btnFinish.style.opacity = '0.5';
+        btnFollow.style.opacity = '0.5';
+        btnReunify.style.opacity = '0.5';
+        btnFinish.style.cursor = 'not-allowed';
+        btnFollow.style.cursor = 'not-allowed';
+        btnReunify.style.cursor = 'not-allowed';
+        
+        document.getElementById('completedPanel').style.display = 'none';
+        document.getElementById('followUpPanel').style.display = 'none';
+        document.getElementById('reunifyPanel').style.display = 'none';
+        removeErrorHighlights();
+        
+        // ✅ Issue #11: PM no pide Root Cause
+        if (DB.woType === 'PREVENTIVE') {
+            if (action === 'COMPLETED') {
+                document.getElementById('completedPanel').style.display = 'block';
+                // Ocultar Root Cause para PM
+                document.getElementById('completedRootCause').parentElement.style.display = 'none';
+                document.getElementById('confirmCompletedBtn').disabled = false;
+                document.getElementById('completedPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (action === 'FOLLOW_UP') {
+                document.getElementById('fuNeedsSparePartPurchase').checked = false;
+                document.getElementById('fuNeedsExternalService').checked = false;
+                document.getElementById('fuNeedsOther').checked = false;
+                document.getElementById('fuOtherCommentDiv').style.display = 'none';
+                document.getElementById('fuOtherComment').value = '';
+                document.getElementById('followUpPanel').style.display = 'block';
+                // Ocultar Root Cause para PM
+                document.getElementById('fuRootCause').parentElement.style.display = 'none';
+                document.getElementById('fuRootCauseRequired').style.display = 'none';
+                validateConfirmButton('FOLLOW_UP');
+                document.getElementById('followUpPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+        
+        // Corrective / On Hold
+        if (action === 'COMPLETED') {
+            document.getElementById('completedPanel').style.display = 'block';
+            document.getElementById('completedRootCause').parentElement.style.display = 'block';
+            validateConfirmButton('COMPLETED');
+            document.getElementById('completedPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (action === 'FOLLOW_UP') {
+            document.getElementById('fuNeedsSparePartPurchase').checked = false;
+            document.getElementById('fuNeedsExternalService').checked = false;
+            document.getElementById('fuNeedsOther').checked = false;
+            document.getElementById('fuOtherCommentDiv').style.display = 'none';
+            document.getElementById('fuOtherComment').value = '';
+            document.getElementById('followUpPanel').style.display = 'block';
+            document.getElementById('fuRootCause').parentElement.style.display = 'block';
+            document.getElementById('fuRootCauseRequired').style.display = 'inline';
+            validateConfirmButton('FOLLOW_UP');
+            document.getElementById('followUpPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (action === 'REUNIFY') {
+            document.getElementById('reunifyPanel').style.display = 'block';
+            document.getElementById('reunifyPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function cancelClosure() {
+        var btnFinish = document.getElementById('btnFinish');
+        var btnFollow = document.getElementById('btnFollow');
+        var btnReunify = document.getElementById('btnReunify');
+        
+        btnFinish.disabled = false;
+        btnFollow.disabled = false;
+        btnReunify.disabled = false;
+        btnFinish.style.opacity = '1';
+        btnFollow.style.opacity = '1';
+        btnReunify.style.opacity = '1';
+        btnFinish.style.cursor = 'pointer';
+        btnFollow.style.cursor = 'pointer';
+        btnReunify.style.cursor = 'pointer';
+        
+        document.getElementById('completedPanel').style.display = 'none';
+        document.getElementById('followUpPanel').style.display = 'none';
+        document.getElementById('reunifyPanel').style.display = 'none';
+        
         document.getElementById('fuNeedsSparePartPurchase').checked = false;
         document.getElementById('fuNeedsExternalService').checked = false;
         document.getElementById('fuNeedsOther').checked = false;
         document.getElementById('fuOtherCommentDiv').style.display = 'none';
         document.getElementById('fuOtherComment').value = '';
-        document.getElementById('followUpPanel').style.display = 'block';
-        validateConfirmButton('FOLLOW_UP');
-        document.getElementById('followUpPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
-    
-    if (action === 'COMPLETED') {
-      document.getElementById('completedPanel').style.display = 'block';
-      validateConfirmButton('COMPLETED');
-      document.getElementById('completedPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else if (action === 'FOLLOW_UP') {
-      document.getElementById('fuNeedsSparePartPurchase').checked = false;
-      document.getElementById('fuNeedsExternalService').checked = false;
-      document.getElementById('fuNeedsOther').checked = false;
-      document.getElementById('fuOtherCommentDiv').style.display = 'none';
-      document.getElementById('fuOtherComment').value = '';
-      document.getElementById('followUpPanel').style.display = 'block';
-      validateConfirmButton('FOLLOW_UP');
-      document.getElementById('followUpPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else if (action === 'REUNIFY') {
-      document.getElementById('reunifyPanel').style.display = 'block';
-      document.getElementById('reunifyPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }
-
-  function cancelClosure() {
-    const btnFinish = document.getElementById('btnFinish');
-    const btnFollow = document.getElementById('btnFollow');
-    const btnReunify = document.getElementById('btnReunify');
-    
-    btnFinish.disabled = false;
-    btnFollow.disabled = false;
-    btnReunify.disabled = false;
-    btnFinish.style.opacity = '1';
-    btnFollow.style.opacity = '1';
-    btnReunify.style.opacity = '1';
-    btnFinish.style.cursor = 'pointer';
-    btnFollow.style.cursor = 'pointer';
-    btnReunify.style.cursor = 'pointer';
-    
-    document.getElementById('completedPanel').style.display = 'none';
-    document.getElementById('followUpPanel').style.display = 'none';
-    document.getElementById('reunifyPanel').style.display = 'none';
-    
-    document.getElementById('fuNeedsSparePartPurchase').checked = false;
-    document.getElementById('fuNeedsExternalService').checked = false;
-    document.getElementById('fuNeedsOther').checked = false;
-    document.getElementById('fuOtherCommentDiv').style.display = 'none';
-    document.getElementById('fuOtherComment').value = '';
-    
-    const completedRootCause = document.getElementById('completedRootCause');
-    const fuRootCause = document.getElementById('fuRootCause');
-    if (completedRootCause) completedRootCause.value = '';
-    if (fuRootCause) fuRootCause.value = '';
-    
-    removeErrorHighlights();
-  }
-
-  function validateConfirmButton(action) {
-    if (DB.woType === 'PREVENTIVE') {
-      if (action === 'COMPLETED') {
-        return;
-      } else if (action === 'FOLLOW_UP') {
-        const needsOther = document.getElementById('fuNeedsOther')?.checked || false;
-        let isValid = true;
         
-        if (needsOther) {
-          const otherComment = document.getElementById('fuOtherComment')?.value.trim();
-          const warning = document.getElementById('fuOtherCommentWarning');
-          if (!otherComment || otherComment.length < 10) {
-            isValid = false;
-            if (warning) warning.style.display = 'block';
-          } else {
-            if (warning) warning.style.display = 'none';
-          }
+        var completedRootCause = document.getElementById('completedRootCause');
+        var fuRootCause = document.getElementById('fuRootCause');
+        if (completedRootCause) completedRootCause.value = '';
+        if (fuRootCause) fuRootCause.value = '';
+        
+        removeErrorHighlights();
+    }
+
+    function validateConfirmButton(action) {
+        if (DB.woType === 'PREVENTIVE') {
+            if (action === 'COMPLETED') {
+                return;
+            } else if (action === 'FOLLOW_UP') {
+                var needsOther = document.getElementById('fuNeedsOther')?.checked || false;
+                var isValid = true;
+                
+                if (needsOther) {
+                    var otherComment = document.getElementById('fuOtherComment')?.value.trim();
+                    var warning = document.getElementById('fuOtherCommentWarning');
+                    if (!otherComment || otherComment.length < 10) {
+                        isValid = false;
+                        if (warning) warning.style.display = 'block';
+                    } else {
+                        if (warning) warning.style.display = 'none';
+                    }
+                }
+                
+                var confirmBtn = document.getElementById('confirmFollowUpBtn');
+                if (confirmBtn) confirmBtn.disabled = !isValid;
+                return;
+            }
         }
         
-        const confirmBtn = document.getElementById('confirmFollowUpBtn');
-        if (confirmBtn) confirmBtn.disabled = !isValid;
-        return;
-      }
+        if (action === 'COMPLETED') {
+            var rootCause = document.getElementById('completedRootCause')?.value;
+            var isValid = rootCause && rootCause !== '';
+            var confirmBtn = document.getElementById('confirmCompletedBtn');
+            if (confirmBtn) confirmBtn.disabled = !isValid;
+        } else if (action === 'FOLLOW_UP') {
+            var rootCause = document.getElementById('fuRootCause')?.value;
+            var needsOther = document.getElementById('fuNeedsOther')?.checked || false;
+            var isValid = rootCause && rootCause !== '';
+            
+            if (needsOther) {
+                var otherComment = document.getElementById('fuOtherComment')?.value.trim();
+                var warning = document.getElementById('fuOtherCommentWarning');
+                if (!otherComment || otherComment.length < 10) {
+                    isValid = false;
+                    if (warning) warning.style.display = 'block';
+                } else {
+                    if (warning) warning.style.display = 'none';
+                }
+            }
+            
+            var confirmBtn = document.getElementById('confirmFollowUpBtn');
+            if (confirmBtn) confirmBtn.disabled = !isValid;
+        }
     }
-    
-    if (action === 'COMPLETED') {
-      const rootCause = document.getElementById('completedRootCause')?.value;
-      const isValid = rootCause && rootCause !== '';
-      const confirmBtn = document.getElementById('confirmCompletedBtn');
-      if (confirmBtn) confirmBtn.disabled = !isValid;
-    } else if (action === 'FOLLOW_UP') {
-      const rootCause = document.getElementById('fuRootCause')?.value;
-      const needsOther = document.getElementById('fuNeedsOther')?.checked || false;
-      let isValid = rootCause && rootCause !== '';
-      
-      if (needsOther) {
-        const otherComment = document.getElementById('fuOtherComment')?.value.trim();
-        const warning = document.getElementById('fuOtherCommentWarning');
-        if (!otherComment || otherComment.length < 10) {
-          isValid = false;
-          if (warning) warning.style.display = 'block';
+
+    function toggleOtherComment() {
+        var needsOther = document.getElementById('fuNeedsOther')?.checked || false;
+        var otherCommentDiv = document.getElementById('fuOtherCommentDiv');
+        var otherComment = document.getElementById('fuOtherComment');
+        
+        if (needsOther) {
+            otherCommentDiv.style.display = 'block';
+            otherComment.setAttribute('data-required', 'true');
         } else {
-          if (warning) warning.style.display = 'none';
+            otherCommentDiv.style.display = 'none';
+            otherComment.value = '';
+            otherComment.removeAttribute('data-required');
         }
-      }
-      
-      const confirmBtn = document.getElementById('confirmFollowUpBtn');
-      if (confirmBtn) confirmBtn.disabled = !isValid;
+        validateConfirmButton('FOLLOW_UP');
     }
-  }
 
-  function toggleOtherComment() {
-    const needsOther = document.getElementById('fuNeedsOther')?.checked || false;
-    const otherCommentDiv = document.getElementById('fuOtherCommentDiv');
-    const otherComment = document.getElementById('fuOtherComment');
-    
-    if (needsOther) {
-      otherCommentDiv.style.display = 'block';
-      otherComment.setAttribute('data-required', 'true');
-    } else {
-      otherCommentDiv.style.display = 'none';
-      otherComment.value = '';
-      otherComment.removeAttribute('data-required');
-    }
-    validateConfirmButton('FOLLOW_UP');
-  }
+    // ============================================
+    // SUBMIT FINAL - CON RESET COMPLETO (Issue #3)
+    // ============================================
 
-  // ============================================
-  // SUBMIT FINAL
-  // ============================================
-
-  async function submitFinal(action) {
-    if (isSubmitting) return;
-    
-    const folio = DB.selectedWO?.folio;
-    if (!folio) {
-      showToast('Please select a work order', 'error');
-      return;
-    }
-    
-    let rootCause = '';
-    let needsSparePart = false;
-    let needsExternalService = false;
-    let needsOther = false;
-    let otherCommentText = '';
-    
-    if (DB.woType === 'PREVENTIVE') {
-      if (action === 'FOLLOW_UP') {
-        needsSparePart = document.getElementById('fuNeedsSparePartPurchase')?.checked || false;
-        needsExternalService = document.getElementById('fuNeedsExternalService')?.checked || false;
-        needsOther = document.getElementById('fuNeedsOther')?.checked || false;
-        if (needsOther) {
-          otherCommentText = document.getElementById('fuOtherComment')?.value.trim() || '';
-        }
-      }
-      rootCause = 'Preventive Maintenance';
-    } else {
-      if (action === 'COMPLETED') {
-        rootCause = document.getElementById('completedRootCause')?.value || '';
-        if (!rootCause) {
-          showToast('Please select a Root Cause before closing the work order', 'error');
-          return;
-        }
-      } else if (action === 'FOLLOW_UP') {
-        rootCause = document.getElementById('fuRootCause')?.value || '';
-        if (!rootCause) {
-          showToast('Please select a Root Cause before closing the work order', 'error');
-          return;
-        }
-        needsSparePart = document.getElementById('fuNeedsSparePartPurchase')?.checked || false;
-        needsExternalService = document.getElementById('fuNeedsExternalService')?.checked || false;
-        needsOther = document.getElementById('fuNeedsOther')?.checked || false;
-        if (needsOther) {
-          otherCommentText = document.getElementById('fuOtherComment')?.value.trim() || '';
-          if (!otherCommentText || otherCommentText.length < 10) {
-            showToast('Please enter at least 10 characters for the "Other" comment', 'error');
+    async function submitFinal(action) {
+        if (isSubmitting) return;
+        
+        var folio = DB.selectedWO?.folio;
+        if (!folio) {
+            showToast('Please select a work order', 'error');
             return;
-          }
         }
-      }
-    }
-    
-    isSubmitting = true;
-    showLoading('Processing Technical Report...');
-    
-    let notes = '';
-    let start = '';
-    let end = '';
-    
-    if (DB.woType === 'PREVENTIVE') {
-      notes = sanitizeInput(document.getElementById('reportNotesPM')?.value || '');
-      start = document.getElementById('startTime')?.value || '';
-      end = document.getElementById('endTime')?.value || '';
-    } else {
-      notes = sanitizeInput(document.getElementById('reportNotes')?.value || '');
-      start = document.getElementById('startTime')?.value || '';
-      end = document.getElementById('endTime')?.value || '';
-    }
-    
-    if (start && DB.selectedWO && DB.selectedWO.date) {
-      let creationDateStr = DB.selectedWO.date;
-      let creationDate = new Date(creationDateStr);
-      let startDateTime = new Date(start);
-      
-      if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
-        showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
-        isSubmitting = false;
-        hideLoading();
-        return;
-      }
-    }
-    
-    const completedTasksList = [];
-    document.querySelectorAll('.pm-checkbox:checked').forEach(cb => {
-      const idx = parseInt(cb.dataset.idx);
-      if (DB.cachedTasks[idx]) {
-        completedTasksList.push(DB.cachedTasks[idx].task);
-      }
-    });
-    
-    const payload = {
-      action: action,
-      folio: folio,
-      assetIdFormatted: document.getElementById('assetSelect')?.value || '',
-      notes: notes,
-      start: start,
-      end: end,
-      rootCause: rootCause,
-      materialsList: DB.cart,
-      pmTasksCompleted: pmTasksCompleted,
-      pmTotalTasks: pmTotalTasks,
-      pmCompletedTasksList: completedTasksList,
-      needsSparePartPurchase: needsSparePart,
-      needsExternalService: needsExternalService,
-      needsOther: needsOther,
-      otherComment: otherCommentText
-    };
-    
-    try {
-      const result = await callApi('WO_processFinalSubmit', [payload]);
-      
-      hideLoading();
-      
-      const executionDetails = {
-        action: action,
-        tasksCompleted: pmTasksCompleted || 0,
-        totalTasks: pmTotalTasks || 0,
-        partsConsumed: DB.cart.length,
-        rootCause: rootCause || 'N/A'
-      };
-      logWOExecution(folio, action, executionDetails).catch(e => console.warn('[WO] Execution log failed:', e));
-      
-      showToast('Report processed successfully!', 'success');
-      document.getElementById('footer-status').innerText = 'Report Saved';
-      
-      const closedFolio = folio;
-      const wosIndex = DB.wos.findIndex(w => w.folio === closedFolio);
-      if (wosIndex !== -1) {
-        DB.wos.splice(wosIndex, 1);
-      }
-      
-      const woSel = document.getElementById('woSelect');
-      if (woSel) {
-        woSel.innerHTML = '<option value="">-- Select WO --</option>';
-        DB.wos.forEach(w => {
-          const opt = document.createElement('option');
-          opt.value = w.folio;
-          const maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
-          opt.textContent = `${w.folio} | ${w.eqName} | ${maintTypeShort}`;
-          woSel.appendChild(opt);
+        
+        var rootCause = '';
+        var needsSparePart = false;
+        var needsExternalService = false;
+        var needsOther = false;
+        var otherCommentText = '';
+        
+        if (DB.woType === 'PREVENTIVE') {
+            if (action === 'FOLLOW_UP') {
+                needsSparePart = document.getElementById('fuNeedsSparePartPurchase')?.checked || false;
+                needsExternalService = document.getElementById('fuNeedsExternalService')?.checked || false;
+                needsOther = document.getElementById('fuNeedsOther')?.checked || false;
+                if (needsOther) {
+                    otherCommentText = document.getElementById('fuOtherComment')?.value.trim() || '';
+                }
+            }
+            rootCause = 'Preventive Maintenance';
+        } else {
+            if (action === 'COMPLETED') {
+                rootCause = document.getElementById('completedRootCause')?.value || '';
+                if (!rootCause) {
+                    showToast('Please select a Root Cause before closing the work order', 'error');
+                    return;
+                }
+            } else if (action === 'FOLLOW_UP') {
+                rootCause = document.getElementById('fuRootCause')?.value || '';
+                if (!rootCause) {
+                    showToast('Please select a Root Cause before closing the work order', 'error');
+                    return;
+                }
+                needsSparePart = document.getElementById('fuNeedsSparePartPurchase')?.checked || false;
+                needsExternalService = document.getElementById('fuNeedsExternalService')?.checked || false;
+                needsOther = document.getElementById('fuNeedsOther')?.checked || false;
+                if (needsOther) {
+                    otherCommentText = document.getElementById('fuOtherComment')?.value.trim() || '';
+                    if (!otherCommentText || otherCommentText.length < 10) {
+                        showToast('Please enter at least 10 characters for the "Other" comment', 'error');
+                        return;
+                    }
+                }
+            }
+        }
+        
+        isSubmitting = true;
+        showLoading('Processing Technical Report...');
+        
+        var notes = '';
+        var start = '';
+        var end = '';
+        
+        if (DB.woType === 'PREVENTIVE') {
+            notes = sanitizeInput(document.getElementById('reportNotesPM')?.value || '');
+            start = document.getElementById('startTime')?.value || '';
+            end = document.getElementById('endTime')?.value || '';
+        } else {
+            notes = sanitizeInput(document.getElementById('reportNotes')?.value || '');
+            start = document.getElementById('startTime')?.value || '';
+            end = document.getElementById('endTime')?.value || '';
+        }
+        
+        if (start && DB.selectedWO && DB.selectedWO.date) {
+            var creationDateStr = DB.selectedWO.date;
+            var creationDate = new Date(creationDateStr);
+            var startDateTime = new Date(start);
+            
+            if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
+                showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
+                isSubmitting = false;
+                hideLoading();
+                return;
+            }
+        }
+        
+        var completedTasksList = [];
+        document.querySelectorAll('.pm-checkbox:checked').forEach(function(cb) {
+            var idx = parseInt(cb.dataset.idx);
+            if (DB.cachedTasks[idx]) {
+                completedTasksList.push(DB.cachedTasks[idx].task);
+            }
         });
-      }
-      
-      isSubmitting = false;
-      resetStep5State();
-      
-      document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active');
-        step.style.setProperty('display', 'none', 'important');
-      });
-      currentStep = 1;
-      const step1 = document.getElementById('step1');
-      if (step1) {
-        step1.classList.add('active');
-        step1.style.removeProperty('display');
-        step1.style.setProperty('display', 'block', 'important');
-      }
-      document.getElementById('stepHeader').innerText = `Step 1: ${stepTitles[0]}`;
-      document.getElementById('btnBackHeader').style.display = 'none';
-      document.getElementById('btnNextHeader').style.display = 'block';
-      document.getElementById('progressBar').style.width = "20%";
-      
-      document.getElementById('woInfo').style.display = 'none';
-      document.getElementById('woSelect').value = '';
-      DB.selectedWO = null;
-      
-    } catch (error) {
-      if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('WO', 'executeWorkOrder', error.message).catch(e => console.warn('[WO] Error log failed:', e));
-      }
-      
-      hideLoading();
-      showToast('Error: ' + error.message, 'error');
-      isSubmitting = false;
+        
+        var payload = {
+            action: action,
+            folio: folio,
+            assetIdFormatted: document.getElementById('assetSelect')?.value || '',
+            notes: notes,
+            start: start,
+            end: end,
+            rootCause: rootCause,
+            materialsList: DB.cart,
+            pmTasksCompleted: pmTasksCompleted,
+            pmTotalTasks: pmTotalTasks,
+            pmCompletedTasksList: completedTasksList,
+            needsSparePartPurchase: needsSparePart,
+            needsExternalService: needsExternalService,
+            needsOther: needsOther,
+            otherComment: otherCommentText
+        };
+        
+        try {
+            var result = await callApi('WO_processFinalSubmit', [payload]);
+            
+            hideLoading();
+            
+            var executionDetails = {
+                action: action,
+                tasksCompleted: pmTasksCompleted || 0,
+                totalTasks: pmTotalTasks || 0,
+                partsConsumed: DB.cart.length,
+                rootCause: rootCause || 'N/A'
+            };
+            logWOExecution(folio, action, executionDetails).catch(function(e) { console.warn('[WO] Execution log failed:', e); });
+            
+            showToast('Report processed successfully!', 'success');
+            document.getElementById('footer-status').innerText = 'Report Saved';
+            
+            // ✅ Issue #3: Reset completo después de cerrar WO
+            // Eliminar WO de la lista
+            var closedFolio = folio;
+            var wosIndex = -1;
+            for (var i = 0; i < DB.wos.length; i++) {
+                if (DB.wos[i].folio === closedFolio) {
+                    wosIndex = i;
+                    break;
+                }
+            }
+            if (wosIndex !== -1) {
+                DB.wos.splice(wosIndex, 1);
+            }
+            
+            // Resetear el selector
+            var woSel = document.getElementById('woSelect');
+            if (woSel) {
+                woSel.innerHTML = '<option value="">-- Select WO --</option>';
+                DB.wos.forEach(function(w) {
+                    var opt = document.createElement('option');
+                    opt.value = w.folio;
+                    var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                    opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
+                    woSel.appendChild(opt);
+                });
+            }
+            
+            isSubmitting = false;
+            resetStep5State();
+            resetCart(); // ✅ Resetear carrito
+            
+            // ✅ Resetear todo el wizard a Step 1
+            document.querySelectorAll('.step').forEach(function(step) {
+                step.classList.remove('active');
+                step.style.setProperty('display', 'none', 'important');
+            });
+            currentStep = 1;
+            var step1 = document.getElementById('step1');
+            if (step1) {
+                step1.classList.add('active');
+                step1.style.removeProperty('display');
+                step1.style.setProperty('display', 'block', 'important');
+            }
+            document.getElementById('stepHeader').innerText = 'Step 1: ' + stepTitles[0];
+            document.getElementById('btnBackHeader').style.display = 'none';
+            document.getElementById('btnNextHeader').style.display = 'block';
+            document.getElementById('progressBar').style.width = '20%';
+            
+            document.getElementById('woInfo').style.display = 'none';
+            document.getElementById('woSelect').value = '';
+            DB.selectedWO = null;
+            DB.cachedTasks = [];
+            windowPmTasksLoadAttempted = false;
+            
+            showToast('Ready for next work order', 'success');
+            
+        } catch (error) {
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('WO', 'executeWorkOrder', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+            }
+            
+            hideLoading();
+            showToast('Error: ' + error.message, 'error');
+            isSubmitting = false;
+        }
     }
-  }
 
-  // ============================================
-  // PRINT
-  // ============================================
+    // ============================================
+    // PRINT
+    // ============================================
 
-  async function printWorkOrder() {
-    const folio = DB.selectedWO?.folio;
-    if (!folio) {
-      showToast('Please select a work order first', 'error');
-      return;
+    async function printWorkOrder() {
+        var folio = DB.selectedWO?.folio;
+        if (!folio) {
+            showToast('Please select a work order first', 'error');
+            return;
+        }
+        
+        var btn = document.getElementById('printBtn');
+        var originalText = btn.innerText;
+        btn.innerText = 'Generating...';
+        btn.disabled = true;
+        showLoading('Generating PDF...');
+        
+        try {
+            var htmlContent = await callApi('WO_generatePrintablePDF', [folio, DB.cachedTasks]);
+            
+            hideLoading();
+            btn.innerText = originalText;
+            btn.disabled = false;
+            
+            var printWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            if (!printWindow) {
+                showToast('Popup blocked. Please allow popups for this site.', 'error');
+                return;
+            }
+            
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            setTimeout(function() {
+                printWindow.print();
+            }, 500);
+        } catch (error) {
+            hideLoading();
+            btn.innerText = originalText;
+            btn.disabled = false;
+            showToast('Error generating PDF: ' + error.message, 'error');
+        }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    function init() {
+        loadUser();
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            loadInitialData();
+        } else {
+            showToast('Please login to access EAMS', 'error');
+        }
     }
     
-    const btn = document.getElementById('printBtn');
-    const originalText = btn.innerText;
-    btn.innerText = 'Generating...';
-    btn.disabled = true;
-    showLoading('Generating PDF...');
-    
-    try {
-      const htmlContent = await callApi('WO_generatePrintablePDF', [folio, DB.cachedTasks]);
-      
-      hideLoading();
-      btn.innerText = originalText;
-      btn.disabled = false;
-      
-      const printWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
-      if (!printWindow) {
-        showToast('Popup blocked. Please allow popups for this site.', 'error');
-        return;
-      }
-      
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      
-      setTimeout(function() {
-        printWindow.print();
-      }, 500);
-    } catch (error) {
-      hideLoading();
-      btn.innerText = originalText;
-      btn.disabled = false;
-      showToast('Error generating PDF: ' + error.message, 'error');
-    }
-  }
-
-  // ============================================
-  // INITIALIZATION
-  // ============================================
-
-  window.addEventListener('DOMContentLoaded', () => {
-    loadApiUrl();
-    if (EAMS_API_URL) {
-      loadInitialData();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-      showToast('Please login to access EAMS', 'error');
+        init();
     }
-  });
 </script>
 </body>
 </html>
