@@ -962,34 +962,30 @@ async function loadUserEmail() {
     // ============================================
     // MAIN INIT
     // ============================================
-    function init() {
-        loadUser();
-        showLoading('Loading Inventory Viewer...');
-        loadApiUrl();
-        if (!EAMS_API_URL) { 
+function init() {
+    loadUser();
+    showLoading('Loading Inventory Viewer...');
+    loadApiUrl();
+    if (!EAMS_API_URL) { 
+        hideLoading();
+        showToast('Session error: missing API URL. Please login first.', 'error');
+        document.getElementById('footer-status').innerText = 'Not connected';
+        return;
+    }
+    Promise.all([loadUserEmail(), loadKPI(), loadFilters()])
+        .then(function() {
+            return refreshCatalog();
+        })
+        .then(function() {
+            document.getElementById('footer-status').innerText = 'Connected (Read Only)';
             hideLoading();
-            showToast('Session error: missing API URL. Please login first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not connected';
-            return;
-        }
-        Promise.all([loadUserEmail(), loadKPI(), loadFilters()])
-            .then(function() {
-                refreshCatalog();
-                document.getElementById('footer-status').innerText = 'Connected (Read Only)';
-                hideLoading();
-                showToast('Inventory Viewer loaded successfully ✅', 'success');
-            })
-            .catch(function(err) {
-                hideLoading();
-                showToast('Error loading data: ' + err.message, 'error');
-            });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+            showToast('Inventory Viewer loaded successfully ✅', 'success');
+        })
+        .catch(function(err) {
+            hideLoading();
+            showToast('Error loading data: ' + err.message, 'error');
+        });
+}
 </script>
 </body>
 </html>
