@@ -1948,6 +1948,7 @@ function init() {
         return;
     }
     
+    // EJECUTAR TODAS LAS PROMESAS ANTES DE OCULTAR EL SPINNER
     Promise.all([
         callApi('STK_getCurrentUserEmail'),
         callApi('STK_getProcurementHubConfig'),
@@ -1955,11 +1956,13 @@ function init() {
         callApi('STK_getExistingVendors')
     ])
     .then(function(results) {
+        // 1. Actualizar usuario
         var email = results[0];
         currentUser = email || 'User';
         var userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = currentUser;
         
+        // 2. Configurar budget areas y payment methods
         var configRaw = results[1];
         var config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
         budgetAreas = config.budgetAreas || [];
@@ -1987,10 +1990,11 @@ function init() {
             }
         }
         
+        // 3. Cargar catálogo y proveedores
         catalog = results[2] || [];
         allVendors = results[3] || [];
         
-        // Vendor suggestions
+        // 4. Configurar sugerencias de proveedores
         var vendorInput = document.getElementById('vendor');
         var vendorDiv = document.getElementById('vendorSuggestions');
         vendorInput.addEventListener('input', function() {
@@ -2019,10 +2023,14 @@ function init() {
             }
         });
         
+        // 5. Agregar item por defecto
         addReqItem();
+        
+        // 6. Cargar tracker
         return refreshTracker();
     })
     .then(function() {
+        // SOLO AQUÍ se oculta el spinner - DESPUÉS de todo
         hideLoading();
         showToast('Procurement Hub loaded successfully ✅', 'success');
         document.getElementById('footer-status').innerText = 'Ready';
