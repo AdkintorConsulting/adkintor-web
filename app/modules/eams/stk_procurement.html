@@ -1957,7 +1957,8 @@
         .then(function(results) {
             var email = results[0];
             currentUser = email || 'User';
-            document.getElementById('userDisplay').innerText = currentUser;
+            var userDisplay = document.getElementById('userDisplay');
+            if (userDisplay) userDisplay.innerText = currentUser;
             
             var configRaw = results[1];
             var config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
