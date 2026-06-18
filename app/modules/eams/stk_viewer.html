@@ -782,21 +782,21 @@
     var locationsList = [];
     var currentUser = '';
 
-    // ============================================
-    // DATA FETCH
-    // ============================================
-    async function loadUserEmail() {
-        try {
-            var email = await callApi('STK_VIEWER_getCurrentUserEmail', []);
-            currentUser = email || 'Viewer Session';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser;
-        } catch(e) { 
-            currentUser = 'Viewer';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser; 
-        }
+// ============================================
+// DATA FETCH
+// ============================================
+async function loadUserEmail() {
+    try {
+        var email = await callApi('STK_VIEWER_getCurrentUserEmail', []);
+        currentUser = email || 'Viewer Session';
+        var userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = currentUser;
+    } catch(e) { 
+        currentUser = 'Viewer';
+        var userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = currentUser; 
     }
+}
 
     async function loadKPI() {
         try {
