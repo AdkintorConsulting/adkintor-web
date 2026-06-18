@@ -3,172 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Manual PM Scheduler | Strategy Override</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Manual PM Scheduler - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
             height: 100vh;
             overflow: hidden;
-            color: #1e293b;
+            padding: 0;
             display: flex;
             flex-direction: column;
         }
-
-        /* EAMS Design System */
-        :root {
-            --eams-primary: #0f3b5c;
-            --eams-primary-dark: #0a2a42;
-            --eams-success: #10b981;
-            --eams-danger: #ef4444;
-            --eams-warning: #f59e0b;
-            --eams-info: #3b82f6;
-            --eams-border: #e2e8f0;
-            --eams-bg: #f8fafc;
-            --eams-text: #1e293b;
-            --eams-text-light: #64748b;
-            --eams-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
         }
-
-        /* EAMS Header */
-        .eams-header {
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
             background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
-
-        .eams-header h2 {
-            font-size: 1.25rem;
-            margin: 0;
-        }
-
-        .user-badge {
-            font-size: 0.8rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-
-        /* Breadcrumbs */
-        .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
-            flex-shrink: 0;
-        }
-
-        /* Main Container */
-        .app-container {
-            flex: 1;
+        
+        .header-left {
             display: flex;
-            flex-direction: column;
-            background: var(--eams-bg);
-            overflow: hidden;
+            align-items: center;
         }
-
-        /* Body */
-        .eams-body {
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-badge {
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
+        .breadcrumbs {
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
             flex: 1;
             overflow-y: auto;
-            padding: 28px;
+            padding: 16px 20px;
+            background: #f4f6f9;
         }
-
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
         .manual-layout {
             max-width: 800px;
             margin: 0 auto;
         }
 
-        /* Form Groups */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        label {
+        .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.75rem;
-            color: var(--eams-text-light);
+            font-size: 0.7rem;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .input-main {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--eams-border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
             background: white;
         }
 
         .input-main:focus {
             outline: none;
-            border-color: var(--eams-primary);
-            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
         }
 
         .input-main:disabled {
             background: #f8fafc;
-            color: var(--eams-text-light);
+            color: #64748b;
         }
 
-        /* Search Container */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
         .search-container {
             position: relative;
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         #search-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 1px solid var(--eams-border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             outline: none;
             transition: all 0.2s;
         }
 
         #search-input:focus {
-            border-color: var(--eams-primary);
-            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
         }
 
         .btn-search {
-            background: var(--eams-primary);
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 0 24px;
-            border-radius: 10px;
+            padding: 0 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .btn-search:hover {
-            background: var(--eams-primary-dark);
-            transform: translateY(-1px);
+            background: #2c2c4e;
+        }
+
+        .btn-search i {
+            margin-right: 6px;
         }
 
         #suggestions {
@@ -177,20 +318,21 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid var(--eams-border);
-            border-radius: 0 0 10px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0 0 8px 8px;
             display: none;
             z-index: 100;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .suggestion-item {
-            padding: 10px 16px;
+            padding: 8px 14px;
             cursor: pointer;
-            border-bottom: 1px solid var(--eams-border);
-            font-size: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background 0.2s;
         }
 
@@ -198,129 +340,131 @@
             background: #f1f5f9;
         }
 
-        /* Grid */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* Preview Box */
         .preview-box {
             background: #f0fdf4;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 20px 0;
-            border-left: 4px solid var(--eams-success);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 16px 0;
+            border-left: 4px solid #22c55e;
+            display: none;
         }
 
         .preview-box strong {
-            font-size: 0.85rem;
-            color: var(--eams-success);
+            font-size: 0.8rem;
+            color: #22c55e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .week-preview {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-            max-height: 120px;
+            gap: 6px;
+            margin-top: 10px;
+            max-height: 100px;
             overflow-y: auto;
         }
 
         .week-tag {
             background: white;
-            border: 1px solid var(--eams-success);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            border: 1px solid #22c55e;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: var(--eams-success);
+            gap: 4px;
+            color: #22c55e;
             font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .helper-text {
-            font-size: 0.7rem;
-            color: var(--eams-text-light);
-            margin-top: 10px;
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Footer */
-        .eams-status-bar {
-            background: #f8f9fa;
-            padding: 8px 24px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
+        .helper-text i {
+            margin-right: 4px;
         }
 
         .footer-buttons {
             display: flex;
-            gap: 12px;
+            gap: 8px;
+            align-items: center;
         }
 
         .btn-primary {
-            background: var(--eams-primary);
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 8px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
-        .btn-primary:hover {
-            background: var(--eams-primary-dark);
+        .btn-primary:hover:not(:disabled) {
+            background: #2c2c4e;
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .btn-secondary {
-            background: white;
-            border: 1px solid var(--eams-border);
-            padding: 10px 20px;
-            border-radius: 8px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
         .btn-secondary:hover {
-            background: #f8fafc;
-            border-color: var(--eams-primary);
+            background: #5a6268;
         }
 
         .btn-save {
-            background: var(--eams-danger);
+            background: #22c55e;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 8px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
         .btn-save:hover:not(:disabled) {
-            background: #dc2626;
-            transform: translateY(-1px);
+            background: #16a34a;
         }
 
         .btn-save:disabled {
-            background: var(--eams-border);
+            background: #94a3b8;
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
-        /* Modal Styles */
+        .btn-save i,
+        .btn-primary i,
+        .btn-secondary i {
+            margin-right: 4px;
+        }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -332,105 +476,51 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(2px);
         }
 
         .modal-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             width: 400px;
             max-width: 90%;
             padding: 24px;
             text-align: center;
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .modal-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
         }
 
         .modal-container h3 {
-            margin: 0 0 12px 0;
-            font-size: 1.1rem;
-            color: var(--eams-primary);
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-container p {
-            margin-bottom: 20px;
-            color: var(--eams-text-light);
+            margin-bottom: 16px;
+            color: #64748b;
             line-height: 1.5;
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-buttons {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        /* Toast Notification */
-        .toast-notification {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 12px 20px;
-            border-radius: 10px;
-            background: white;
-            box-shadow: var(--eams-shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 10001;
-            animation: slideIn 0.3s ease;
-            font-size: 0.85rem;
-            font-weight: 500;
+        .modal-buttons .btn-secondary,
+        .modal-buttons .btn-primary {
+            padding: 8px 24px;
+            font-size: 0.75rem;
         }
 
-        .toast-success { border-left: 4px solid var(--eams-success); }
-        .toast-error { border-left: 4px solid var(--eams-danger); }
-        .toast-warning { border-left: 4px solid var(--eams-warning); }
-        .toast-info { border-left: 4px solid var(--eams-info); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10002;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--eams-border);
-            border-top-color: var(--eams-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        /* Scrollbar */
         .custom-scroll::-webkit-scrollbar {
             width: 6px;
         }
@@ -444,29 +534,68 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        @media (max-width: 600px) {
+            .module-body {
+                padding: 10px 12px;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .search-container {
+                flex-direction: column;
+            }
+            .btn-search {
+                padding: 10px;
+                width: 100%;
+            }
+            .footer-buttons {
+                flex-wrap: wrap;
+            }
+            .footer-buttons .btn-primary,
+            .footer-buttons .btn-secondary,
+            .footer-buttons .btn-save {
+                flex: 1;
+                text-align: center;
+                font-size: 0.65rem;
+                padding: 6px 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-    <h2><i class="fas fa-hand-paper"></i> Manual PM Scheduler</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+</div>
+
+<!-- TOAST -->
+<div id="toastContainer"></div>
+
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Manual PM Scheduler</span>
+        </div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
+        </div>
     </div>
-</div>
-
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt;
-    <span>PREVENTIVE</span> &gt;
-    <span>Manual PM</span>
-</div>
-
-<div class="app-container">
-    <!-- Body -->
-    <div class="eams-body">
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Manual PM Scheduler</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
         <div class="manual-layout">
             <!-- Search Container -->
             <div class="search-container">
@@ -496,7 +625,7 @@
             </div>
 
             <!-- Preview Section -->
-            <div id="previewSection" class="preview-box" style="display:none;">
+            <div id="previewSection" class="preview-box">
                 <strong><i class="fas fa-chart-line"></i> Schedule Forecast</strong>
                 <div id="weeksPreview" class="week-preview"></div>
                 <p class="helper-text">
@@ -505,43 +634,94 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
-    <div class="footer-buttons">
-        <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
-        <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
-        <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="footer-version" id="eamsVersion">v1.0.0</span>
+            <span style="color: #e2e8f0; margin: 0 4px;">|</span>
+            <div class="footer-buttons">
+                <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
+                <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
+                <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
+            </div>
+        </div>
     </div>
+    
 </div>
 
 <script>
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // RECIBIR MENSAJES DEL PADRE
     // ============================================
     window.addEventListener('message', function(event) {
         const data = event.data;
-        
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-        
         if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
         }
     });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
 
     // ============================================
     // API CONFIGURATION
@@ -557,13 +737,11 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-                console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
-            console.error('No session found');
             showToast('Please log in to continue.', 'error');
         }
     }
@@ -589,49 +767,6 @@
         return result.data;
     }
 
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
-    }
-
-    // ============================================
-    // UTILITIES
-    // ============================================
-    function showToast(message, type = 'info') {
-        const existingToast = document.querySelector('.toast-notification');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = `toast-notification toast-${type}`;
-        const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'));
-        toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast) toast.remove();
-        }, 4000);
-    }
-
-    let loadingOverlay = null;
-    function showLoading(message = 'Loading...') {
-        if (loadingOverlay) hideLoading();
-        loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = `
-            <div class="loading-content">
-                <div class="loading-spinner"></div>
-                <div>${message}</div>
-            </div>
-        `;
-        document.body.appendChild(loadingOverlay);
-    }
-
-    function hideLoading() {
-        if (loadingOverlay) {
-            loadingOverlay.remove();
-            loadingOverlay = null;
-        }
-    }
-
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -643,33 +778,59 @@
     }
 
     // ============================================
+    // FUNCIÓN DE LOGGING CON USUARIO
+    // ============================================
+    async function logManualPMCreation(assetId, frequency, weeks, createdBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[PVT] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const weekList = weeks.map(function(w) { return 'W' + w.week; }).join(',');
+            const details = 'Manual PM: ' + assetId + ' | Freq: ' + frequency + ' | Weeks: ' + weekList;
+            
+            await window.Logger.audit('CREATE_MANUAL_PM', 'PVT', assetId, '', '', '', details);
+            console.log('[PVT] Manual PM creation logged:', assetId);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('PVT', 'MANUAL_PM_CREATED', 
+                    'Manual PM created for ' + assetId + ' - Freq: ' + frequency + ' - ' + weeks.length + ' weeks');
+            }
+        } catch (err) {
+            console.warn('[PVT] Failed to log manual PM creation:', err);
+        }
+    }
+
+    // ============================================
     // GLOBAL STATE
     // ============================================
     let configData = { frequencies: [], assets: [], availableYears: [] };
     let selectedAsset = null;
     let generatedWeeks = [];
     let pendingSavePayload = null;
+    let suggestionTimeout = null;
 
     // ============================================
-    // AUTOCOMPLETE
+    // AUTOCOMPLETE - SUGERENCIAS (Issue #2)
     // ============================================
-    let suggestionTimeout;
-
     async function getSuggestions(val) {
-        const suggestionsDiv = document.getElementById('suggestions');
+        var suggestionsDiv = document.getElementById('suggestions');
         if (val.length < 3) {
             suggestionsDiv.style.display = 'none';
             return;
         }
         
         if (suggestionTimeout) clearTimeout(suggestionTimeout);
-        suggestionTimeout = setTimeout(async () => {
+        suggestionTimeout = setTimeout(async function() {
             try {
-                const list = await callApi('PVT_getTLAutocompletar', [val]);
+                var list = await callApi('PVT_getTLAutocompletar', [val]);
                 if (list && list.length > 0) {
-                    suggestionsDiv.innerHTML = list.map(item => 
-                        `<div class="suggestion-item" onclick="selectTL('${escapeHtml(item)}')">${escapeHtml(item)}</div>`
-                    ).join('');
+                    var html = '';
+                    for (var i = 0; i < list.length; i++) {
+                        html += '<div class="suggestion-item" onclick="selectTL(\'' + escapeHtml(list[i]) + '\')">' + escapeHtml(list[i]) + '</div>';
+                    }
+                    suggestionsDiv.innerHTML = html;
                     suggestionsDiv.style.display = 'block';
                 } else {
                     suggestionsDiv.style.display = 'none';
@@ -686,6 +847,8 @@
     function selectTL(val) {
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
+        // Auto-trigger search
+        searchTL();
     }
 
     window.selectTL = selectTL;
@@ -694,7 +857,7 @@
     // SEARCH TL
     // ============================================
     async function searchTL() {
-        const searchValue = document.getElementById('search-input').value;
+        var searchValue = document.getElementById('search-input').value;
         if (!searchValue) {
             showToast('Please enter a Technical Location ID or Name', 'error');
             return;
@@ -703,8 +866,8 @@
         showLoading('Loading TL configuration...');
         
         try {
-            const rawResponse = await callApi('PVT_getManualPMConfig', []);
-            const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
+            var rawResponse = await callApi('PVT_getManualPMConfig', []);
+            var response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
             
             if (response.status === 'success' && response.data) {
                 configData = response.data;
@@ -714,16 +877,21 @@
                     return;
                 }
 
-                const selected = configData.assets.find(a => {
-                    if (!a || !a.id) return false;
-                    const displayMatch = a.display && a.display.toLowerCase().includes(searchValue.toLowerCase());
-                    const idMatch = a.id.toLowerCase() === searchValue.toLowerCase();
-                    return displayMatch || idMatch;
-                });
+                var selected = null;
+                for (var i = 0; i < configData.assets.length; i++) {
+                    var a = configData.assets[i];
+                    if (!a || !a.id) continue;
+                    var displayMatch = a.display && a.display.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1;
+                    var idMatch = a.id.toLowerCase() === searchValue.toLowerCase();
+                    if (displayMatch || idMatch) {
+                        selected = a;
+                        break;
+                    }
+                }
                 
                 if (selected) {
                     selectedAsset = { id: selected.id, name: selected.name };
-                    showToast(`Selected: ${selected.display}`, 'success');
+                    showToast('Selected: ' + selected.display, 'success');
                     
                     renderFreqDropdown();
                     renderYearDropdown();
@@ -757,8 +925,8 @@
         showLoading('Loading configuration...');
         
         try {
-            const rawResponse = await callApi('PVT_getManualPMConfig', []);
-            const response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
+            var rawResponse = await callApi('PVT_getManualPMConfig', []);
+            var response = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
             
             if (response.status === 'success' && response.data) {
                 configData = response.data;
@@ -781,39 +949,43 @@
     }
 
     function renderFreqDropdown() {
-        const select = document.getElementById('freqSelect');
+        var select = document.getElementById('freqSelect');
         if (!configData.frequencies || configData.frequencies.length === 0) {
             select.innerHTML = '<option value="">No manual frequencies in SETUP_PVT Col F</option>';
             return;
         }
         
-        select.innerHTML = '<option value="">-- Select Frequency --</option>' + 
-            configData.frequencies.map(f => `<option value="${escapeHtml(f.value)}" data-days="${f.days}">${escapeHtml(f.label)}</option>`).join('');
+        var html = '<option value="">-- Select Frequency --</option>';
+        for (var i = 0; i < configData.frequencies.length; i++) {
+            var f = configData.frequencies[i];
+            html += '<option value="' + escapeHtml(f.value) + '" data-days="' + f.days + '">' + escapeHtml(f.label) + '</option>';
+        }
+        select.innerHTML = html;
     }
 
     function renderYearDropdown() {
-        const select = document.getElementById('yearSelect');
+        var select = document.getElementById('yearSelect');
         select.innerHTML = '';
         
-        let years = configData.availableYears;
+        var years = configData.availableYears;
         if (!years || years.length === 0) {
-            const currentYear = new Date().getFullYear();
+            var currentYear = new Date().getFullYear();
             years = [currentYear, currentYear + 1, currentYear + 2];
         }
         
-        years.forEach(y => {
-            select.innerHTML += `<option value="${y}">${y}</option>`;
-        });
+        for (var i = 0; i < years.length; i++) {
+            select.innerHTML += '<option value="' + years[i] + '">' + years[i] + '</option>';
+        }
     }
 
     // ============================================
     // CALCULATE WEEKS
     // ============================================
     function calculateWeeks() {
-        const freqSelect = document.getElementById('freqSelect');
-        const startWeek = parseInt(document.getElementById('startWeek').value);
-        const year = parseInt(document.getElementById('yearSelect').value);
-        const selectedOption = freqSelect.options[freqSelect.selectedIndex];
+        var freqSelect = document.getElementById('freqSelect');
+        var startWeek = parseInt(document.getElementById('startWeek').value);
+        var year = parseInt(document.getElementById('yearSelect').value);
+        var selectedOption = freqSelect.options[freqSelect.selectedIndex];
         
         if (!selectedOption || !selectedOption.value) {
             document.getElementById('previewSection').style.display = 'none';
@@ -827,23 +999,23 @@
             return;
         }
 
-        const days = parseInt(selectedOption.dataset.days);
-        const weeksInterval = Math.max(1, Math.round(days / 7));
+        var days = parseInt(selectedOption.dataset.days);
+        var weeksInterval = Math.max(1, Math.round(days / 7));
         
         generatedWeeks = [];
-        let currentWeek = startWeek;
+        var currentWeek = startWeek;
         
         while (currentWeek <= 52) {
             generatedWeeks.push({ week: currentWeek, year: year });
             currentWeek += weeksInterval;
         }
 
-        const preview = document.getElementById('weeksPreview');
-        preview.innerHTML = generatedWeeks.map(w => `
-            <div class="week-tag">
-                <i class="fas fa-calendar-check"></i> W${w.week}
-            </div>
-        `).join('');
+        var preview = document.getElementById('weeksPreview');
+        var html = '';
+        for (var i = 0; i < generatedWeeks.length; i++) {
+            html += '<div class="week-tag"><i class="fas fa-calendar-check"></i> W' + generatedWeeks[i].week + '</div>';
+        }
+        preview.innerHTML = html;
 
         document.getElementById('previewSection').style.display = 'block';
         validateForm();
@@ -852,10 +1024,10 @@
     window.calculateWeeks = calculateWeeks;
 
     function validateForm() {
-        const btn = document.getElementById('saveBtn');
-        const hasAsset = selectedAsset !== null;
-        const hasFrequency = document.getElementById('freqSelect').value !== '';
-        const hasWeeks = generatedWeeks.length > 0;
+        var btn = document.getElementById('saveBtn');
+        var hasAsset = selectedAsset !== null;
+        var hasFrequency = document.getElementById('freqSelect').value !== '';
+        var hasWeeks = generatedWeeks.length > 0;
         
         if (btn) btn.disabled = !(hasAsset && hasFrequency && hasWeeks);
     }
@@ -864,7 +1036,7 @@
     // REFRESH FORM
     // ============================================
     function refreshForm() {
-        const hasChanges = selectedAsset !== null || generatedWeeks.length > 0 || document.getElementById('freqSelect').value !== '';
+        var hasChanges = selectedAsset !== null || generatedWeeks.length > 0 || document.getElementById('freqSelect').value !== '';
         if (hasChanges) {
             if (confirm('Unsaved changes will be lost. Continue?')) {
                 resetFormAndRefresh();
@@ -905,7 +1077,7 @@
             return;
         }
         
-        const payload = {
+        var payload = {
             assetId: selectedAsset.id,
             assetName: selectedAsset.name,
             frequency: document.getElementById('freqSelect').value,
@@ -918,7 +1090,7 @@
         showLoading('Checking annual plan status...');
         
         try {
-            const hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, parseInt(document.getElementById('yearSelect').value)]);
+            var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, parseInt(document.getElementById('yearSelect').value)]);
             hideLoading();
             
             if (hasPlan === true) {
@@ -938,64 +1110,62 @@
     // MODALS
     // ============================================
     function showConfirmModal() {
-        const modalHtml = `
-            <div class="modal-overlay" id="confirmModal">
-                <div class="modal-container">
-                    <div class="modal-icon" style="color: var(--eams-warning);">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3>Confirm Action</h3>
-                    <p>Save ${generatedWeeks.length} manual task(s) for ${escapeHtml(selectedAsset.name)}?</p>
-                    <div class="modal-buttons">
-                        <button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
-                        <button class="btn-primary" style="background: var(--eams-danger);" id="confirmActionBtn">Confirm</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="confirmModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-icon" style="color: #f59e0b;">' +
+                        '<i class="fas fa-question-circle"></i>' +
+                    '</div>' +
+                    '<h3>Confirm Action</h3>' +
+                    '<p>Save ' + generatedWeeks.length + ' manual task(s) for ' + escapeHtml(selectedAsset.name) + '?</p>' +
+                    '<div class="modal-buttons">' +
+                        '<button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>' +
+                        '<button class="btn-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        document.getElementById('confirmActionBtn').onclick = () => {
+        document.getElementById('confirmActionBtn').onclick = function() {
             closeConfirmModal();
             executeSave();
         };
     }
 
     function closeConfirmModal() {
-        const modal = document.getElementById('confirmModal');
+        var modal = document.getElementById('confirmModal');
         if (modal) modal.remove();
     }
 
     window.closeConfirmModal = closeConfirmModal;
 
     function showWarningModal() {
-        const modalHtml = `
-            <div class="modal-overlay" id="warningModal">
-                <div class="modal-container">
-                    <div class="modal-icon" style="color: var(--eams-warning);">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3>⚠️ No Annual Plan Found</h3>
-                    <p>No annual strategy plan found for ${escapeHtml(selectedAsset.name)} (${escapeHtml(selectedAsset.id)}) in ${document.getElementById('yearSelect').value}.<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>
-                    <div class="modal-buttons">
-                        <button class="btn-secondary" onclick="closeWarningModal()">Cancel</button>
-                        <button class="btn-primary" id="warningConfirmBtn">Continue Anyway</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="warningModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-icon" style="color: #f59e0b;">' +
+                        '<i class="fas fa-exclamation-triangle"></i>' +
+                    '</div>' +
+                    '<h3>⚠️ No Annual Plan Found</h3>' +
+                    '<p>No annual strategy plan found for ' + escapeHtml(selectedAsset.name) + ' (' + escapeHtml(selectedAsset.id) + ') in ' + document.getElementById('yearSelect').value + '.<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>' +
+                    '<div class="modal-buttons">' +
+                        '<button class="btn-secondary" onclick="closeWarningModal()">Cancel</button>' +
+                        '<button class="btn-primary" id="warningConfirmBtn">Continue Anyway</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        document.getElementById('warningConfirmBtn').onclick = () => {
+        document.getElementById('warningConfirmBtn').onclick = function() {
             closeWarningModal();
             executeSave();
         };
     }
 
     function closeWarningModal() {
-        const modal = document.getElementById('warningModal');
+        var modal = document.getElementById('warningModal');
         if (modal) modal.remove();
     }
 
@@ -1007,13 +1177,26 @@
         showLoading('Saving manual tasks...');
         
         try {
-            const response = await callApi('PVT_saveManualPMPlan', [pendingSavePayload]);
+            var response = await callApi('PVT_saveManualPMPlan', [pendingSavePayload]);
             hideLoading();
             
             if (response.status === 'success') {
+                // Obtener usuario actual para logging (Issue #1)
+                var session = localStorage.getItem('adkintor_session');
+                var currentUser = 'system';
+                if (session) {
+                    try {
+                        var sessionData = JSON.parse(session);
+                        currentUser = sessionData.email || sessionData.userName || 'system';
+                    } catch(e) {}
+                }
+                
+                logManualPMCreation(pendingSavePayload.assetId, pendingSavePayload.frequency, pendingSavePayload.weeks, currentUser)
+                    .catch(function(e) { console.warn('[PVT] Log failed:', e); });
+                
                 showToast(response.message, 'success');
                 if (response.warning) {
-                    setTimeout(() => {
+                    setTimeout(function() {
                         showToast(response.warning, 'warning');
                     }, 2000);
                 }
@@ -1028,18 +1211,45 @@
     }
 
     // ============================================
+    // EVENTOS - AUTOCOMPLETE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                getSuggestions(e.target.value);
+            });
+        }
+        
+        // Cerrar sugerencias al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            var suggestions = document.getElementById('suggestions');
+            var input = document.getElementById('search-input');
+            if (suggestions && input && !suggestions.contains(e.target) && e.target !== input) {
+                suggestions.style.display = 'none';
+            }
+        });
+    });
+
+    // ============================================
     // INITIALIZATION
     // ============================================
-    document.addEventListener('DOMContentLoaded', async function() {
+    function init() {
+        loadUser();
         loadApiUrl();
-        
         if (EAMS_API_URL) {
-            await loadConfig();
+            loadConfig();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
             document.getElementById('footer-status').innerText = 'Not Configured';
         }
-    });
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 </body>
 </html>
