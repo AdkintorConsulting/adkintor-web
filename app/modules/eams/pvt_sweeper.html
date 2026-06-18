@@ -3,123 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>System Sweeper Audit | EAMS Hygienics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>System Sweeper Audit - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
-            min-height: 100vh;
-            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
             display: flex;
             flex-direction: column;
         }
-
-        /* EAMS Design System */
-        :root {
-            --eams-primary: #0f3b5c;
-            --eams-primary-dark: #0a2a42;
-            --eams-success: #10b981;
-            --eams-danger: #ef4444;
-            --eams-warning: #f59e0b;
-            --eams-info: #3b82f6;
-            --eams-border: #e2e8f0;
-            --eams-bg: #f8fafc;
-            --eams-text: #1e293b;
-            --eams-text-light: #64748b;
-            --eams-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
         }
-
-        /* EAMS Header */
-        .eams-header {
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
             background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
-
-        .eams-header h2 {
-            font-size: 1.25rem;
-            margin: 0;
+        
+        .header-left {
+            display: flex;
+            align-items: center;
         }
-
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
         .user-badge {
-            font-size: 0.8rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
             border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Breadcrumbs */
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
         .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            background: #f4f6f9;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 24px;
-            flex: 1;
         }
 
-        /* Header Section */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 28px;
-            border-bottom: 2px solid var(--eams-border);
-            padding-bottom: 16px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
         }
 
         .header-title h1 {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--eams-text);
+            color: #1e293b;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: -0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .header-title h1 span {
-            color: var(--eams-info);
+            color: #3b82f6;
         }
 
         .header-title p {
-            font-size: 0.7rem;
-            color: var(--eams-text-light);
-            margin: 4px 0 0 0;
+            font-size: 0.65rem;
+            color: #64748b;
+            margin: 2px 0 0 0;
             text-transform: uppercase;
             font-weight: 600;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .search-panel {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: white;
-            padding: 8px 20px;
-            border-radius: 16px;
-            box-shadow: var(--eams-shadow);
+            padding: 6px 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .search-field {
@@ -128,76 +276,82 @@
         }
 
         .search-field label {
-            font-size: 0.65rem;
+            font-size: 0.55rem;
             text-transform: uppercase;
             font-weight: 700;
-            color: var(--eams-text-light);
+            color: #64748b;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .search-field input {
-            width: 80px;
+            width: 70px;
             font-weight: 700;
             border: none;
-            font-size: 1rem;
-            padding: 4px 0;
-            font-family: 'Inter', monospace;
+            font-size: 0.9rem;
+            padding: 2px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
         }
 
         .search-field input:focus {
             outline: none;
-            border-bottom: 2px solid var(--eams-info);
+            border-bottom: 2px solid #1a1a2e;
         }
 
         .divider {
             width: 1px;
-            background: var(--eams-border);
+            background: #e2e8f0;
             height: 30px;
         }
 
         .btn-search {
-            background: var(--eams-primary);
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 0 24px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-size: 0.65rem;
             font-weight: 700;
             cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
-            height: 38px;
+            height: 34px;
         }
 
         .btn-search:hover {
-            background: var(--eams-primary-dark);
+            background: #2c2c4e;
             transform: translateY(-1px);
         }
 
-        /* Stats Grid */
+        .btn-search i {
+            margin-right: 4px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: var(--eams-shadow);
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             transition: all 0.2s ease;
             border-left: 4px solid;
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .stat-card.expired { border-left-color: var(--eams-warning); }
-        .stat-card.closed { border-left-color: var(--eams-danger); }
-        .stat-card.force { border-left-color: var(--eams-info); }
+        .stat-card.expired { border-left-color: #f59e0b; }
+        .stat-card.closed { border-left-color: #dc3545; }
+        .stat-card.force { border-left-color: #3b82f6; }
 
         .stat-header {
             display: flex;
@@ -206,62 +360,65 @@
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .stat-label.expired { color: var(--eams-warning); }
-        .stat-label.closed { color: var(--eams-danger); }
+        .stat-label.expired { color: #f59e0b; }
+        .stat-label.closed { color: #dc3545; }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--eams-text);
-            margin: 8px 0 4px 0;
+            color: #1e293b;
+            margin: 4px 0 2px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .stat-icon {
-            font-size: 2rem;
+            font-size: 1.6rem;
             color: #fef3c7;
         }
 
         .stat-footer {
-            font-size: 0.65rem;
-            color: var(--eams-text-light);
-            margin-top: 8px;
+            font-size: 0.6rem;
+            color: #64748b;
+            margin-top: 4px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Force Sweep Button */
         .force-sweep-card {
-            background: linear-gradient(135deg, var(--eams-primary) 0%, var(--eams-info) 100%);
-            border-radius: 20px;
-            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #3b82f6 100%);
+            border-radius: 12px;
+            padding: 16px 18px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: var(--eams-shadow);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 4px solid #3b82f6;
         }
 
         .force-sweep-card:hover {
             transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.4);
         }
 
         .force-sweep-content {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
         .force-icon {
             background: rgba(255,255,255,0.2);
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 10px;
         }
 
         .force-icon i {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: white;
         }
 
@@ -270,59 +427,62 @@
         }
 
         .force-text p {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 700;
             color: rgba(255,255,255,0.7);
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .force-text span {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 800;
             color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Log Table */
         .log-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: var(--eams-shadow);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
         .log-header {
             background: #f8fafc;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--eams-border);
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .log-header h3 {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
-            color: var(--eams-text-light);
+            color: #64748b;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .record-badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            background: var(--eams-border);
-            padding: 4px 12px;
-            border-radius: 20px;
-            color: var(--eams-text-light);
+            background: #e2e8f0;
+            padding: 2px 12px;
+            border-radius: 16px;
+            color: #64748b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .log-table-wrapper {
-            max-height: 450px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -335,29 +495,32 @@
             position: sticky;
             top: 0;
             background: white;
-            padding: 14px 16px;
+            padding: 10px 14px;
             text-align: left;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 800;
-            color: var(--eams-text-light);
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--eams-border);
+            border-bottom: 2px solid #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .log-table td {
-            padding: 14px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 16px;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .badge-orange {
@@ -367,60 +530,21 @@
 
         .badge-red {
             background: #fef2f2;
-            color: var(--eams-danger);
+            color: #dc3545;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--eams-text-light);
+            padding: 40px 16px;
+            color: #64748b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .empty-state i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             opacity: 0.4;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             display: block;
-        }
-
-        /* EAMS Status Bar */
-        .eams-status-bar {
-            background: #f8f9fa;
-            padding: 8px 24px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        /* Toast */
-        .toast-notification {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 12px 20px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: var(--eams-shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 10001;
-            animation: slideIn 0.3s ease;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .toast-success { border-left: 4px solid var(--eams-success); }
-        .toast-error { border-left: 4px solid var(--eams-danger); }
-        .toast-warning { border-left: 4px solid var(--eams-warning); }
-        .toast-info { border-left: 4px solid var(--eams-info); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         /* Modal */
@@ -430,132 +554,105 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(4px);
         }
 
         .modal-container {
             background: white;
-            border-radius: 24px;
-            width: 380px;
+            border-radius: 12px;
+            width: 360px;
             max-width: 90%;
-            padding: 28px;
+            padding: 20px 24px;
             text-align: center;
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .modal-icon {
-            font-size: 3rem;
-            color: var(--eams-warning);
-            margin-bottom: 16px;
+            font-size: 2.5rem;
+            color: #f59e0b;
+            margin-bottom: 12px;
         }
 
         .modal-container h3 {
-            margin: 0 0 12px 0;
-            font-size: 1.1rem;
-            color: var(--eams-text);
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-container p {
-            margin-bottom: 24px;
-            color: var(--eams-text-light);
+            margin-bottom: 16px;
+            color: #64748b;
             line-height: 1.5;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-buttons {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .btn-primary {
-            background: var(--eams-primary);
+        .btn-modal-primary {
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 10px 24px;
-            border-radius: 10px;
+            padding: 8px 20px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
-        .btn-primary:hover {
-            background: var(--eams-primary-dark);
+        .btn-modal-primary:hover {
+            background: #2c2c4e;
         }
 
-        .btn-secondary {
-            background: #f1f5f9;
-            border: 1px solid var(--eams-border);
-            padding: 10px 24px;
-            border-radius: 10px;
+        .btn-modal-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
-        .btn-secondary:hover {
-            background: #e2e8f0;
+        .btn-modal-secondary:hover {
+            background: #5a6268;
         }
 
-        .btn-danger {
-            background: var(--eams-danger);
+        .btn-modal-danger {
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 10px 24px;
-            border-radius: 10px;
+            padding: 8px 20px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
         }
 
-        .btn-danger:hover {
-            background: #dc2626;
+        .btn-modal-danger:hover {
+            background: #b91c1c;
         }
 
-        /* Loading */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10002;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--eams-border);
-            border-top-color: var(--eams-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        /* Scrollbar */
         .custom-scroll::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
+            height: 5px;
         }
 
         .custom-scroll::-webkit-scrollbar-track {
@@ -567,145 +664,256 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 750px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats-grid .force-sweep-card {
+                grid-column: span 2;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-panel {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid .force-sweep-card {
+                grid-column: span 1;
+            }
+            .module-body {
+                padding: 10px 12px;
+            }
+            .search-panel {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .search-field input {
+                width: 60px;
+            }
+            .log-table th,
+            .log-table td {
+                padding: 6px 8px;
+                font-size: 0.6rem;
+            }
+            .log-table-wrapper {
+                max-height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-    <h2><i class="fas fa-broom"></i> System Sweeper Audit</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-    </div>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Sweeper configuration...</span>
 </div>
 
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt;
-    <span>PREVENTIVE</span> &gt;
-    <span>System Sweeper</span>
-</div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
 
-<div class="container">
-    <!-- Header Section -->
-    <div class="page-header">
-        <div class="header-title">
-            <h1>EAMS <span>Sweeper</span> Audit</h1>
-            <p><i class="fas fa-microchip"></i> Maintenance Hygienics Module</p>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">System Sweeper Audit</span>
         </div>
-        
-        <div class="search-panel">
-            <div class="search-field">
-                <label>Year</label>
-                <input type="number" id="yearInput" value="2026">
-            </div>
-            <div class="divider"></div>
-            <div class="search-field">
-                <label>Week</label>
-                <input type="number" id="weekInput" value="1" min="1" max="52">
-            </div>
-            <button class="btn-search" onclick="searchLogs()"><i class="fas fa-search"></i> SEARCH</button>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">System Sweeper</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="page-header">
+                <div class="header-title">
+                    <h1>EAMS <span>Sweeper</span> Audit</h1>
+                    <p><i class="fas fa-microchip"></i> Maintenance Hygienics Module</p>
+                </div>
+                
+                <div class="search-panel">
+                    <div class="search-field">
+                        <label>Year</label>
+                        <input type="number" id="yearInput" value="2026">
+                    </div>
+                    <div class="divider"></div>
+                    <div class="search-field">
+                        <label>Week</label>
+                        <input type="number" id="weekInput" value="1" min="1" max="52">
+                    </div>
+                    <button class="btn-search" onclick="searchLogs()"><i class="fas fa-search"></i> SEARCH</button>
+                </div>
+            </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card expired">
-            <div class="stat-header">
-                <div>
-                    <div class="stat-label expired">Expired Plans</div>
-                    <div class="stat-value" id="summaryExpired">0</div>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card expired">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label expired">Expired Plans</div>
+                            <div class="stat-value" id="summaryExpired">0</div>
+                        </div>
+                        <i class="fas fa-calendar-times stat-icon"></i>
+                    </div>
+                    <div class="stat-footer">Schedules not released before grace period.</div>
                 </div>
-                <i class="fas fa-calendar-times stat-icon"></i>
+                
+                <div class="stat-card closed">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label closed">Auto-Closed WOs</div>
+                            <div class="stat-value" id="summaryClosed">0</div>
+                        </div>
+                        <i class="fas fa-ghost stat-icon"></i>
+                    </div>
+                    <div class="stat-footer">Released OTs force-closed by the sweeper.</div>
+                </div>
+                
+                <div class="force-sweep-card" onclick="runManualSweep()">
+                    <div class="force-sweep-content">
+                        <div class="force-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="force-text">
+                            <p>Emergency Protocol</p>
+                            <span>FORCE SWEEP NOW</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-footer">Schedules not released before grace period.</div>
-        </div>
-        
-        <div class="stat-card closed">
-            <div class="stat-header">
-                <div>
-                    <div class="stat-label closed">Auto-Closed WOs</div>
-                    <div class="stat-value" id="summaryClosed">0</div>
+
+            <!-- Log Table -->
+            <div class="log-container">
+                <div class="log-header">
+                    <h3><i class="fas fa-clipboard-list"></i> Transaction Audit Trail</h3>
+                    <span class="record-badge" id="recordCount">0 records</span>
                 </div>
-                <i class="fas fa-ghost stat-icon"></i>
-            </div>
-            <div class="stat-footer">Released OTs force-closed by the sweeper.</div>
-        </div>
-        
-        <div class="force-sweep-card" onclick="runManualSweep()">
-            <div class="force-sweep-content">
-                <div class="force-icon">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="force-text">
-                    <p>Emergency Protocol</p>
-                    <span>FORCE SWEEP NOW</span>
+                <div class="log-table-wrapper custom-scroll">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Process Type</th>
+                                <th>ID / Folio</th>
+                                <th>Origin Status</th>
+                                <th>Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-search"></i>
+                                    Select a week to begin system audit.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Log Table -->
-    <div class="log-container">
-        <div class="log-header">
-            <h3><i class="fas fa-clipboard-list"></i> Transaction Audit Trail</h3>
-            <span class="record-badge" id="recordCount">0 records</span>
-        </div>
-        <div class="log-table-wrapper custom-scroll">
-            <table class="log-table">
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Process Type</th>
-                        <th>ID / Folio</th>
-                        <th>Origin Status</th>
-                        <th>Outcome</th>
-                    </tr>
-                </thead>
-                <tbody id="logTableBody">
-                    <tr>
-                        <td colspan="5" class="empty-state">
-                            <i class="fas fa-search"></i>
-                            Select a week to begin system audit.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
-</div>
-
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+    
 </div>
 
 <script>
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // RECIBIR MENSAJES DEL PADRE
     // ============================================
     window.addEventListener('message', function(event) {
         const data = event.data;
-        
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-        
         if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
         }
     });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
 
     // ============================================
     // API CONFIGURATION
@@ -721,18 +929,17 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-                console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
-            console.error('No session found');
             showToast('Please log in to continue.', 'error');
         }
     }
 
-    async function callApi(action, args = []) {
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
         if (!EAMS_API_URL) {
             throw new Error('API URL not configured. Please log in.');
         }
@@ -753,71 +960,6 @@
         return result.data;
     }
 
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
-    }
-
-    // ============================================
-    // UTILITIES
-    // ============================================
-    function showToast(message, type = 'info') {
-        const existingToast = document.querySelector('.toast-notification');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = `toast-notification toast-${type}`;
-        const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'));
-        toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast) toast.remove();
-        }, 4000);
-    }
-
-    let loadingOverlay = null;
-    function showLoading(message = 'Loading...') {
-        if (loadingOverlay) hideLoading();
-        loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = `
-            <div class="loading-content">
-                <div class="loading-spinner"></div>
-                <div>${message}</div>
-            </div>
-        `;
-        document.body.appendChild(loadingOverlay);
-    }
-
-    function hideLoading() {
-        if (loadingOverlay) {
-            loadingOverlay.remove();
-            loadingOverlay = null;
-        }
-    }
-
-    // ============================================
-    // FUNCIÓN DE LOGGING PARA EJECUCIÓN DE SWEEPER
-    // ============================================
-    async function logSweeperExecution(result, executedBy) {
-        if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[PVT] Logger not available, skipping log');
-            return;
-        }
-        
-        try {
-            const details = `Sweeper executed: ${result.expiredCount || 0} expired plans, ${result.closedCount || 0} WO auto-closed`;
-            await window.Logger.audit('CHANGE_STATUS', 'PVT', 'SWEEPER', '', '', '', details);
-            console.log('[PVT] Sweeper execution logged');
-            
-            if (window.Logger.foresight) {
-                await window.Logger.foresight('PVT', 'SWEEPER_EXECUTED', details);
-            }
-        } catch (err) {
-            console.warn('[PVT] Failed to log sweeper execution:', err);
-        }
-    }
-
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -834,6 +976,28 @@
     }
 
     // ============================================
+    // FUNCIÓN DE LOGGING PARA SWEEPER
+    // ============================================
+    async function logSweeperExecution(result, executedBy) {
+        if (!window.Logger || typeof window.Logger.audit !== 'function') {
+            console.warn('[PVT] Logger not available, skipping log');
+            return;
+        }
+        
+        try {
+            const details = 'Sweeper executed: ' + (result.expiredCount || 0) + ' expired plans, ' + (result.closedCount || 0) + ' WO auto-closed';
+            await window.Logger.audit('CHANGE_STATUS', 'PVT', 'SWEEPER', '', '', '', details);
+            console.log('[PVT] Sweeper execution logged');
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('PVT', 'SWEEPER_EXECUTED', details);
+            }
+        } catch (err) {
+            console.warn('[PVT] Failed to log sweeper execution:', err);
+        }
+    }
+
+    // ============================================
     // GLOBAL STATE
     // ============================================
     let currentWeek = null;
@@ -843,6 +1007,17 @@
     // ============================================
     // INITIALIZATION
     // ============================================
+    function init() {
+        loadUser();
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            loadInitialData();
+        } else {
+            showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
+        }
+    }
+
     async function loadInitialData() {
         showLoading('Loading Sweeper configuration...');
         
@@ -857,11 +1032,12 @@
                 await searchLogs();
                 
                 try {
-                    const userEmail = await callApi('getCurrentUserEmail');
+                    const userEmail = await callApi('getCurrentUserEmail', []);
                     currentUser = userEmail || 'system';
                 } catch (e) {
                     currentUser = 'system';
                 }
+                showToast('System Sweeper loaded successfully ✅', 'success');
             } else {
                 // Fallback
                 const now = new Date();
@@ -923,73 +1099,82 @@
         const tbody = document.getElementById('logTableBody');
         
         if (!summary.details || summary.details.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="empty-state">
-                        <i class="fas fa-check-circle"></i>
-                        Clean Records: No auto-expirations found.
-                    </td>
-                </tr>
-            `;
+            tbody.innerHTML = 
+                '<tr>' +
+                    '<td colspan="5" class="empty-state">' +
+                        '<i class="fas fa-check-circle"></i>' +
+                        'Clean Records: No auto-expirations found.' +
+                    '</td>' +
+                '</tr>';
             return;
         }
         
-        tbody.innerHTML = summary.details.map(log => {
-            const isExpired = log.type === 'PLANNER_EXPIRATION';
-            const badgeClass = isExpired ? 'badge-orange' : 'badge-red';
-            const typeLabel = isExpired ? 'PLANNER EXPIRATION' : 'WO AUTO CLOSE';
+        var html = '';
+        for (var i = 0; i < summary.details.length; i++) {
+            var log = summary.details[i];
+            var isExpired = log.type === 'PLANNER_EXPIRATION';
+            var badgeClass = isExpired ? 'badge-orange' : 'badge-red';
+            var typeLabel = isExpired ? 'PLANNER EXPIRATION' : 'WO AUTO CLOSE';
             
-            return `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 14px 16px; font-size: 0.7rem; font-family: monospace; color: #64748b;">${escapeHtml(log.timestamp)}</td>
-                    <td style="padding: 14px 16px;">
-                        <span class="status-badge ${badgeClass}">${escapeHtml(typeLabel)}</span>
-                    </td>
-                    <td style="padding: 14px 16px; font-weight: 700; color: var(--eams-text); font-size: 0.75rem;">${escapeHtml(log.id)}</td>
-                    <td style="padding: 14px 16px; color: #94a3b8; font-style: italic; font-size: 0.7rem;">${escapeHtml(log.prev)}</td>
-                    <td style="padding: 14px 16px;">
-                        <span style="color: var(--eams-info); font-weight: 700; font-size: 0.7rem;">
-                            <i class="fas fa-check-circle"></i> ${escapeHtml(log.result)}
-                        </span>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+            html += 
+                '<tr style="border-bottom: 1px solid #f1f5f9;">' +
+                    '<td style="padding: 10px 14px; font-size: 0.65rem; font-family: monospace; color: #64748b;">' + escapeHtml(log.timestamp) + '</td>' +
+                    '<td style="padding: 10px 14px;">' +
+                        '<span class="status-badge ' + badgeClass + '">' + escapeHtml(typeLabel) + '</span>' +
+                    '</td>' +
+                    '<td style="padding: 10px 14px; font-weight: 700; color: #1e293b; font-size: 0.7rem;">' + escapeHtml(log.id) + '</td>' +
+                    '<td style="padding: 10px 14px; color: #94a3b8; font-style: italic; font-size: 0.65rem;">' + escapeHtml(log.prev) + '</td>' +
+                    '<td style="padding: 10px 14px;">' +
+                        '<span style="color: #3b82f6; font-weight: 700; font-size: 0.65rem;">' +
+                            '<i class="fas fa-check-circle"></i> ' + escapeHtml(log.result) +
+                        '</span>' +
+                    '</td>' +
+                '</tr>';
+        }
+        tbody.innerHTML = html;
     }
 
     async function runManualSweep() {
-        const modalHtml = `
-            <div class="modal-overlay" id="sweeperConfirmModal">
-                <div class="modal-container">
-                    <div class="modal-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3>⚠️ Confirm Force Sweep</h3>
-                    <p>You are about to force a system-wide sweep.<br>All unreleased plans and old OTs will be CLOSED/EXPIRED.<br>Continue?</p>
-                    <div class="modal-buttons">
-                        <button class="btn-secondary" onclick="closeSweeperConfirmModal()">Cancel</button>
-                        <button class="btn-danger" id="confirmSweeperBtn">Continue</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="sweeperConfirmModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-icon">' +
+                        '<i class="fas fa-exclamation-triangle"></i>' +
+                    '</div>' +
+                    '<h3>⚠️ Confirm Force Sweep</h3>' +
+                    '<p>You are about to force a system-wide sweep.<br>All unreleased plans and old OTs will be CLOSED/EXPIRED.<br>Continue?</p>' +
+                    '<div class="modal-buttons">' +
+                        '<button class="btn-modal-secondary" onclick="closeSweeperConfirmModal()">Cancel</button>' +
+                        '<button class="btn-modal-danger" id="confirmSweeperBtn">Continue</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        document.getElementById('confirmSweeperBtn').onclick = async () => {
+        document.getElementById('confirmSweeperBtn').onclick = async function() {
             closeSweeperConfirmModal();
             showLoading('Executing system hygiene protocol...');
             
             try {
-                const response = await callApi('PVT_runSilentSweeper', []);
+                var response = await callApi('PVT_runSilentSweeper', []);
                 hideLoading();
                 
                 if (response.status === 'success') {
-                    const sweeperResult = {
+                    var sweeperResult = {
                         expiredCount: response.expiredCount || 0,
                         closedCount: response.closedCount || 0
                     };
-                    logSweeperExecution(sweeperResult, currentUser || 'system').catch(e => console.warn('[PVT] Sweeper log failed:', e));
+                    
+                    var session = localStorage.getItem('adkintor_session');
+                    var currentUserLog = 'system';
+                    if (session) {
+                        try {
+                            var sessionData = JSON.parse(session);
+                            currentUserLog = sessionData.email || sessionData.userName || 'system';
+                        } catch(e) {}
+                    }
+                    logSweeperExecution(sweeperResult, currentUserLog).catch(function(e) { console.warn('[PVT] Sweeper log failed:', e); });
                     
                     showToast(response.message, 'success');
                     await searchLogs();
@@ -998,7 +1183,7 @@
                 }
             } catch (e) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('PVT', 'runSweeper', e.message).catch(err => console.warn('[PVT] Error log failed:', err));
+                    window.Logger.error('PVT', 'runSweeper', e.message).catch(function(err) { console.warn('[PVT] Error log failed:', err); });
                 }
                 
                 hideLoading();
@@ -1008,7 +1193,7 @@
     }
 
     function closeSweeperConfirmModal() {
-        const modal = document.getElementById('sweeperConfirmModal');
+        var modal = document.getElementById('sweeperConfirmModal');
         if (modal) modal.remove();
     }
 
@@ -1019,16 +1204,14 @@
     window.runManualSweep = runManualSweep;
     window.closeSweeperConfirmModal = closeSweeperConfirmModal;
 
-    // Inicializar
-    document.addEventListener('DOMContentLoaded', () => {
-        loadApiUrl();
-        if (EAMS_API_URL) {
-            loadInitialData();
-        } else {
-            showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
-        }
-    });
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 </body>
 </html>
