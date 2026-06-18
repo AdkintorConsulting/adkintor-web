@@ -1127,22 +1127,22 @@
     // ============================================
     // INITIALIZATION - CON SPINNER
     // ============================================
-    function init() {
-        showLoading('Loading Activity Builder...');
-        loadUser();
-        loadApiUrl();
-        if (EAMS_API_URL) {
-            updateDashboard();
-            loadHierarchyTree();
-            hideLoading();
-            showToast('Activity Builder loaded successfully ✅', 'success');
-            document.getElementById('footer-status').innerText = 'Ready';
-        } else {
-            hideLoading();
-            showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
-        }
+function init() {
+    showLoading('Loading Activity Builder...');  // ✅ PRIMERO
+    loadUser();
+    loadApiUrl();
+    if (EAMS_API_URL) {
+        updateDashboard();
+        loadHierarchyTree();
+        hideLoading();
+        showToast('Activity Builder loaded successfully ✅', 'success');
+        document.getElementById('footer-status').innerText = 'Ready';
+    } else {
+        hideLoading();
+        showToast('API URL not configured. Please log in first.', 'error');
+        document.getElementById('footer-status').innerText = 'Not Configured';
     }
+}
 
     async function updateDashboard() {
         try {
