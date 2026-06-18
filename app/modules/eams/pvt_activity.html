@@ -3,99 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Activity Master Builder | Strategy Synchronization</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Activity Master Builder - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
             height: 100vh;
             overflow: hidden;
-            color: #1e293b;
+            padding: 0;
             display: flex;
             flex-direction: column;
         }
-
-        /* EAMS Design System */
-        :root {
-            --eams-primary: #0f3b5c;
-            --eams-primary-dark: #0a2a42;
-            --eams-success: #10b981;
-            --eams-danger: #ef4444;
-            --eams-warning: #f59e0b;
-            --eams-info: #3b82f6;
-            --eams-border: #e2e8f0;
-            --eams-bg: #f8fafc;
-            --eams-text: #1e293b;
-            --eams-text-light: #64748b;
-            --eams-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --eams-shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+        
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
         }
-
-        /* EAMS Header */
-        .eams-header {
+        
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
             background: #1a1a2e;
-            color: white;
-            padding: 16px 24px;
+            border-bottom: 2px solid #2a2f4a;
             flex-shrink: 0;
+            min-height: 56px;
         }
-
-        .eams-header h2 {
-            font-size: 1.25rem;
-            margin: 0;
+        
+        .header-left {
+            display: flex;
+            align-items: center;
         }
-
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
         .user-badge {
-            font-size: 0.8rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
             border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Breadcrumbs */
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
         .breadcrumbs {
-            padding: 12px 24px;
-            background: #eef2f5;
-            font-size: 0.8rem;
-            color: #555;
-            border-bottom: 1px solid #ddd;
-            flex-shrink: 0;
-        }
-
-        /* EAMS Status Bar */
-        .eams-status-bar {
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
             background: #f8f9fa;
-            padding: 8px 24px;
-            font-size: 0.75rem;
-            color: #6c757d;
-            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+            background: #f4f6f9;
+            display: flex;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO
+           ============================================ */
+        .module-footer {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
             flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Layout */
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
         .app-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 340px;
             background: white;
-            border-right: 1px solid var(--eams-border);
+            border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -104,26 +238,28 @@
 
         .stats-card {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-left: 4px solid var(--eams-success);
-            margin: 20px;
-            padding: 16px;
-            border-radius: 12px;
+            border-left: 4px solid #22c55e;
+            margin: 12px 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
             flex-shrink: 0;
         }
 
         .stats-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            color: var(--eams-success);
+            color: #22c55e;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .stats-numbers {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin: 8px 0;
-            color: var(--eams-primary);
+            margin: 4px 0;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .progress-bar {
@@ -131,11 +267,11 @@
             height: 6px;
             border-radius: 3px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-top: 6px;
         }
 
         .progress-fill {
-            background: var(--eams-success);
+            background: #22c55e;
             height: 100%;
             width: 0%;
             transition: width 0.6s ease;
@@ -145,30 +281,32 @@
         .tree-container {
             flex: 1;
             overflow-y: auto;
-            padding: 0 16px 16px 16px;
+            padding: 0 12px 12px 12px;
         }
 
         .tree-header {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            color: var(--eams-text-light);
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 0 0 12px 0;
+            padding: 0 0 8px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .tree-area {
             font-weight: 600;
-            color: var(--eams-primary);
-            margin-top: 8px;
+            color: #1a1a2e;
+            margin-top: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 12px;
+            padding: 8px 12px;
             background: #f1f5f9;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
@@ -178,9 +316,9 @@
 
         .tree-area::after {
             content: '▶';
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             transition: transform 0.2s;
-            color: var(--eams-text-light);
+            color: #64748b;
         }
 
         .tree-area.active::after {
@@ -189,9 +327,9 @@
 
         .tree-content {
             display: none;
-            margin-left: 12px;
-            border-left: 1px solid var(--eams-border);
-            padding-left: 12px;
+            margin-left: 10px;
+            border-left: 1px solid #e2e8f0;
+            padding-left: 10px;
         }
 
         .tree-content.show {
@@ -199,84 +337,102 @@
         }
 
         .tree-item {
-            padding: 8px 12px;
-            font-size: 0.8rem;
+            padding: 6px 10px;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
-            color: var(--eams-text-light);
-            border-radius: 6px;
-            margin: 4px 0;
+            color: #64748b;
+            border-radius: 4px;
+            margin: 3px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .tree-item:hover {
             background: #eef2ff;
-            color: var(--eams-primary);
+            color: #1a1a2e;
             font-weight: 500;
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: var(--eams-bg);
+            background: #f8fafc;
         }
 
         .top-panel {
             background: white;
-            padding: 20px 28px;
-            border-bottom: 1px solid var(--eams-border);
-            box-shadow: var(--eams-shadow);
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            flex-shrink: 0;
         }
 
         .top-panel h2 {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--eams-primary);
-            margin-bottom: 16px;
+            color: #1a1a2e;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .search-container {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             position: relative;
         }
 
         #search-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 1px solid var(--eams-border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             outline: none;
             transition: all 0.2s;
         }
 
         #search-input:focus {
-            border-color: var(--eams-primary);
-            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
+
+        #search-input:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
         }
 
         .btn-build {
-            background: var(--eams-primary);
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 0 24px;
-            border-radius: 10px;
+            padding: 0 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .btn-build:hover {
-            background: var(--eams-primary-dark);
-            transform: translateY(-1px);
+        .btn-build:hover:not(:disabled) {
+            background: #2c2c4e;
+        }
+
+        .btn-build:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-build i {
+            margin-right: 4px;
         }
 
         #suggestions {
@@ -285,141 +441,181 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid var(--eams-border);
-            border-radius: 0 0 10px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0 0 8px 8px;
             display: none;
             z-index: 100;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .suggestion-item {
-            padding: 10px 16px;
+            padding: 8px 14px;
             cursor: pointer;
-            border-bottom: 1px solid var(--eams-border);
-            font-size: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.2s;
         }
 
         .suggestion-item:hover {
             background: #f1f5f9;
         }
 
-        /* Results Panel */
         .bottom-panel {
             flex: 1;
             overflow-y: auto;
-            padding: 24px 28px;
+            padding: 16px 20px;
         }
 
         .results-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: var(--eams-shadow);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
         .results-table {
             width: 100%;
             border-collapse: collapse;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .results-table th {
             background: #f8fafc;
-            padding: 14px 16px;
+            padding: 10px 14px;
             text-align: left;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
-            color: var(--eams-text-light);
-            border-bottom: 1px solid var(--eams-border);
+            color: #64748b;
+            border-bottom: 2px solid #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .results-table td {
-            padding: 14px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .results-table tr:hover {
             background: #f8fafc;
         }
 
-        /* Buttons */
         .btn-primary {
-            background: var(--eams-primary);
+            background: #1a1a2e;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 6px 16px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
         .btn-primary:hover {
-            background: var(--eams-primary-dark);
+            background: #2c2c4e;
         }
 
         .btn-secondary {
-            background: white;
-            border: 1px solid var(--eams-border);
-            padding: 10px 20px;
-            border-radius: 8px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
         .btn-secondary:hover {
-            background: #f8fafc;
-            border-color: var(--eams-primary);
+            background: #5a6268;
         }
 
         .btn-danger {
-            background: var(--eams-danger);
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 6px 16px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
         }
 
         .btn-danger:hover {
-            background: #dc2626;
+            background: #b91c1c;
+        }
+
+        .btn-primary i,
+        .btn-secondary i,
+        .btn-danger i {
+            margin-right: 4px;
         }
 
         .icon-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
-            padding: 6px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
             transition: all 0.2s;
         }
 
         .icon-btn-edit:hover {
             background: #eef2ff;
-            color: var(--eams-primary);
+            color: #1a1a2e;
         }
 
         .icon-btn-delete:hover {
             background: #fef2f2;
-            color: var(--eams-danger);
+            color: #dc3545;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--eams-text-light);
+            padding: 40px 16px;
+            color: #64748b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Modal Styles */
+        .empty-state i {
+            opacity: 0.3;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 2rem;
+        }
+
+        .info-card {
+            background: #eef2ff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #1a1a2e;
+            margin: 12px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .info-card div {
+            margin: 2px 0;
+        }
+
+        .info-card i {
+            width: 18px;
+            color: #1a1a2e;
+        }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -431,22 +627,21 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(2px);
         }
 
         .modal-container {
             background: white;
-            border-radius: 20px;
-            width: 600px;
-            max-width: 90%;
+            border-radius: 12px;
+            width: 560px;
+            max-width: 92%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: var(--eams-shadow-lg);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--eams-border);
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -454,63 +649,66 @@
             top: 0;
             background: white;
             z-index: 1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-header h3 {
             margin: 0;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            color: var(--eams-primary);
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .modal-close {
             cursor: pointer;
-            font-size: 1.5rem;
-            color: var(--eams-text-light);
-            padding: 0 8px;
+            font-size: 1.3rem;
+            color: #64748b;
+            padding: 0 4px;
             transition: color 0.2s;
         }
 
         .modal-close:hover {
-            color: var(--eams-danger);
+            color: #dc3545;
         }
 
         .modal-body {
-            padding: 24px;
+            padding: 16px 20px;
         }
 
         .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--eams-border);
+            padding: 12px 20px;
+            border-top: 1px solid #e2e8f0;
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 10px;
             background: white;
             position: sticky;
             bottom: 0;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--eams-text);
+            font-size: 0.7rem;
+            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .form-group input, 
-        .form-group select, 
+        .form-group input,
+        .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--eams-border);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-family: 'Inter', sans-serif;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.2s;
         }
 
@@ -518,139 +716,91 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--eams-primary);
-            box-shadow: 0 0 0 3px rgba(15, 59, 92, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
         }
 
         .clone-section {
             background: #fffbeb;
             border: 1px solid #fcd34d;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 16px 0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 12px 0;
         }
 
         .clone-section h4 {
-            margin: 0 0 12px 0;
-            font-size: 0.85rem;
+            margin: 0 0 8px 0;
+            font-size: 0.8rem;
             color: #b45309;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .clone-group {
-            margin-bottom: 16px;
+            margin-bottom: 10px;
         }
 
         .clone-group-title {
             font-weight: 600;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-            padding-left: 8px;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            padding-left: 6px;
             border-left: 3px solid #fcd34d;
             color: #92400e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .clone-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 0 8px 16px;
+            gap: 10px;
+            padding: 4px 0 4px 12px;
         }
 
         .clone-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             margin: 0;
             cursor: pointer;
+            accent-color: #1a1a2e;
+            flex-shrink: 0;
         }
 
         .clone-item span {
             flex: 1;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .summary-badge {
             background: #eef2ff;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-top: 16px;
+            margin-top: 12px;
             text-align: center;
-            color: var(--eams-primary);
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: none;
         }
 
-        /* Toast Notification */
-        .toast-notification {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 12px 20px;
-            border-radius: 10px;
-            background: white;
-            box-shadow: var(--eams-shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 10001;
-            animation: slideIn 0.3s ease;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .toast-success { border-left: 4px solid var(--eams-success); }
-        .toast-error { border-left: 4px solid var(--eams-danger); }
-        .toast-info { border-left: 4px solid var(--eams-info); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10002;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 24px 32px;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--eams-border);
-            border-top-color: var(--eams-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .info-card {
-            background: #eef2ff;
+        .loading-clones {
             padding: 16px;
-            border-radius: 12px;
-            border-left: 4px solid var(--eams-primary);
-            margin: 20px 0;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            color: #64748b;
         }
 
+        /* Scrollbar */
         .custom-scroll::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
+            height: 5px;
         }
 
         .custom-scroll::-webkit-scrollbar-track {
@@ -662,138 +812,243 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 260px;
+            }
+            .modal-container {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .top-panel {
+                padding: 10px 14px;
+            }
+            .top-panel h2 {
+                font-size: 0.85rem;
+            }
+            .bottom-panel {
+                padding: 10px 14px;
+            }
+            .search-container {
+                flex-direction: column;
+            }
+            .btn-build {
+                padding: 8px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- EAMS STANDARD HEADER -->
-<div class="eams-header">
-    <h2><i class="fas fa-tools"></i> Activity Master Builder</h2>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="user-badge" id="userDisplay">Loading...</div>
-        <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-    </div>
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Activity Builder...</span>
 </div>
 
-<!-- EAMS STANDARD BREADCRUMBS -->
-<div class="breadcrumbs">
-    <span>🏠 Home</span> &gt;
-    <span>PREVENTIVE</span> &gt;
-    <span>Activity Builder</span>
-</div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
 
-<div class="app-container">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="stats-card">
-            <div class="stats-label"><i class="fas fa-chart-line"></i> Strategy Progress</div>
-            <div class="stats-numbers"><span id="stat-done">0</span> / <span id="stat-total">0</span></div>
-            <div class="progress-bar"><div id="stat-bar" class="progress-fill"></div></div>
-            <div style="font-size: 0.75rem; margin-top: 8px;"><span id="stat-perc">0</span>% Complete</div>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+    
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Activity Master Builder</span>
         </div>
-        
-        <div class="tree-container custom-scroll">
-            <div class="tree-header"><i class="fas fa-sitemap"></i> Asset Hierarchy</div>
-            <div id="hierarchy-tree"></div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-panel">
-            <h2><i class="fas fa-tools"></i> Activity Master Builder | Strategy Synchronization</h2>
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
-                <button class="btn-build" onclick="executeSearch()"><i class="fas fa-search"></i> Search</button>
-                <div id="suggestions" class="custom-scroll"></div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Activity Builder</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="stats-card">
+                    <div class="stats-label"><i class="fas fa-chart-line"></i> Strategy Progress</div>
+                    <div class="stats-numbers"><span id="stat-done">0</span> / <span id="stat-total">0</span></div>
+                    <div class="progress-bar"><div id="stat-bar" class="progress-fill"></div></div>
+                    <div style="font-size: 0.7rem; margin-top: 4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><span id="stat-perc">0</span>% Complete</div>
+                </div>
+                
+                <div class="tree-container custom-scroll">
+                    <div class="tree-header"><i class="fas fa-sitemap"></i> Asset Hierarchy</div>
+                    <div id="hierarchy-tree"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="bottom-panel">
-            <!-- Results View -->
-            <div id="resultsView">
-                <div class="results-card">
-                    <table class="results-table" id="resultsTable" style="display: none;">
-                        <thead>
-                            <tr><th>Asset ID</th><th>Technical Location</th><th>Strategy ID</th><th>Frequency</th><th></th></tr>
-                        </thead>
-                        <tbody id="resultsBody"></tbody>
-                    </table>
-                    <div id="noResultsMsg" class="empty-state" style="display: none;">
-                        <i class="fas fa-search fa-3x" style="margin-bottom: 16px; opacity: 0.4;"></i>
-                        <p>No strategies found for this Technical Location.</p>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="top-panel">
+                    <h2><i class="fas fa-tools"></i> Activity Master Builder</h2>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
+                        <button class="btn-build" onclick="executeSearch()"><i class="fas fa-search"></i> Search</button>
+                        <div id="suggestions" class="custom-scroll"></div>
+                    </div>
+                </div>
+                
+                <div class="bottom-panel">
+                    <!-- Results View -->
+                    <div id="resultsView">
+                        <div class="results-card">
+                            <table class="results-table" id="resultsTable" style="display: none;">
+                                <thead>
+                                    <tr><th>Asset ID</th><th>Technical Location</th><th>Strategy ID</th><th>Frequency</th><th></th></tr>
+                                </thead>
+                                <tbody id="resultsBody"></tbody>
+                            </table>
+                            <div id="noResultsMsg" class="empty-state" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                <p>No strategies found for this Technical Location.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Editor View -->
+                    <div id="editorView" style="display: none;">
+                        <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 16px 20px;">
+                            <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
+                            
+                            <div class="info-card">
+                                <div><i class="fas fa-fingerprint"></i> <strong>ID:</strong> <span id="head-id"></span></div>
+                                <div><i class="fas fa-tag"></i> <strong>Name:</strong> <span id="head-name"></span></div>
+                                <div><i class="fas fa-clock"></i> <strong>Frequency:</strong> <span id="head-freq"></span></div>
+                            </div>
+                            
+                            <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <h3 style="margin: 0; font-size: 0.9rem; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-list"></i> Existing Activities</h3>
+                                <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
+                            </div>
+                            
+                            <div id="activitiesTableContainer" style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                                    <thead>
+                                        <tr style="background: #f8fafc; border-bottom: 2px solid #1a1a2e;">
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Equipment</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Instruction</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Standard</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Hours</th>
+                                            <th style="padding: 8px 12px; text-align: center; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activitiesTableBody">
+                                        <tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Editor View -->
-            <div id="editorView" style="display: none;">
-                <div style="background: white; border-radius: 16px; box-shadow: var(--eams-shadow); padding: 24px;">
-                    <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
-                    
-                    <div class="info-card">
-                        <div><i class="fas fa-fingerprint"></i> <strong>ID:</strong> <span id="head-id"></span></div>
-                        <div><i class="fas fa-tag"></i> <strong>Name:</strong> <span id="head-name"></span></div>
-                        <div><i class="fas fa-clock"></i> <strong>Frequency:</strong> <span id="head-freq"></span></div>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                        <h3 style="margin: 0; font-size: 1rem;"><i class="fas fa-list"></i> Existing Activities</h3>
-                        <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
-                    </div>
-                    
-                    <div id="activitiesTableContainer" style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background: #f8fafc; border-bottom: 1px solid var(--eams-border);">
-                                    <th style="padding: 12px; text-align: left;">Equipment</th>
-                                    <th style="padding: 12px; text-align: left;">Instruction</th>
-                                    <th style="padding: 12px; text-align: left;">Standard</th>
-                                    <th style="padding: 12px; text-align: left;">Hours</th>
-                                    <th style="padding: 12px; text-align: center;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="activitiesTableBody">
-                                <tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-</div>
-
-<!-- EAMS STANDARD FOOTER -->
-<div class="eams-status-bar">
-    <span>System Status: <strong id="footer-status">Ready</strong></span>
-    <span>EAMS <span id="eamsVersion">v2.0</span></span>
+    
+    <!-- FOOTER -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
 </div>
 
 <script>
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE (logo y versión)
+    // RECIBIR MENSAJES DEL PADRE
     // ============================================
     window.addEventListener('message', function(event) {
         const data = event.data;
-        
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const logoImg = document.getElementById('companyLogo');
-            if (logoImg) {
-                logoImg.src = data.logoUrl;
-                logoImg.style.display = 'block';
-                console.log('[iframe] Logo loaded from parent');
-            }
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
         }
-        
         if (data.type === 'SET_VERSION' && data.version) {
-            const versionSpan = document.getElementById('eamsVersion');
-            if (versionSpan) {
-                versionSpan.innerText = data.version;
-                console.log('[iframe] Version set to:', data.version);
-            }
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
         }
     });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
+    }
+    
+    // ============================================
+    // TOAST (usa ModuleBase si existe)
+    // ============================================
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
+    
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
 
     // ============================================
     // API CONFIGURATION
@@ -809,18 +1064,17 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-                console.log('API URL loaded:', EAMS_API_URL);
             } catch(e) {
                 console.error('Error parsing session:', e);
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
-            console.error('No session found');
             showToast('Please log in to continue.', 'error');
         }
     }
 
-    async function callApi(action, args = []) {
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
         if (!EAMS_API_URL) {
             throw new Error('API URL not configured. Please log in.');
         }
@@ -839,49 +1093,6 @@
             throw new Error(result.error || 'Unknown error');
         }
         return result.data;
-    }
-
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
-    }
-
-    // ============================================
-    // UTILITIES
-    // ============================================
-    function showToast(message, type = 'info') {
-        const existingToast = document.querySelector('.toast-notification');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = `toast-notification toast-${type}`;
-        const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-        toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast) toast.remove();
-        }, 4000);
-    }
-
-    let loadingOverlay = null;
-    function showLoading(message = 'Loading...') {
-        if (loadingOverlay) hideLoading();
-        loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = `
-            <div class="loading-content">
-                <div class="loading-spinner"></div>
-                <div>${message}</div>
-            </div>
-        `;
-        document.body.appendChild(loadingOverlay);
-    }
-
-    function hideLoading() {
-        if (loadingOverlay) {
-            loadingOverlay.remove();
-            loadingOverlay = null;
-        }
     }
 
     function escapeHtml(str) {
@@ -911,19 +1122,22 @@
     let currentDeleteTask = null;
     let currentDeleteCloneTargets = [];
     let isInEditorMode = false;
+    let suggestionTimeout = null;
 
     // ============================================
     // INITIALIZATION
     // ============================================
-    window.onload = function() {
+    function init() {
+        loadUser();
         loadApiUrl();
         if (EAMS_API_URL) {
             updateDashboard();
             loadHierarchyTree();
+            showToast('Activity Builder loaded successfully ✅', 'success');
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
         }
-    };
+    }
 
     async function updateDashboard() {
         try {
@@ -943,24 +1157,27 @@
         try {
             const tree = await callApi('PVT_getHierarchyTree', []);
             let html = '';
-            for (let area in tree) {
-                html += `<div class="tree-area" onclick="toggleArea(this)">${escapeHtml(area)}</div>`;
-                html += `<div class="tree-content">`;
-                tree[area].forEach(item => {
-                    html += `<div class="tree-item" onclick="selectFromTree('${escapeHtml(item.id)}')">${escapeHtml(item.label)}</div>`;
-                });
-                html += `</div>`;
+            var areaKeys = Object.keys(tree);
+            for (var i = 0; i < areaKeys.length; i++) {
+                var area = areaKeys[i];
+                html += '<div class="tree-area" onclick="toggleArea(this)">' + escapeHtml(area) + '</div>';
+                html += '<div class="tree-content">';
+                for (var j = 0; j < tree[area].length; j++) {
+                    var item = tree[area][j];
+                    html += '<div class="tree-item" onclick="selectFromTree(\'' + escapeHtml(item.id) + '\')">' + escapeHtml(item.label) + '</div>';
+                }
+                html += '</div>';
             }
-            document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#666;">No active Technical Locations found.</div>';
+            document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No active Technical Locations found.</div>';
         } catch (e) {
             console.error('Error loading hierarchy:', e);
-            document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:red;">Error loading hierarchy</div>';
+            document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading hierarchy</div>';
         }
     }
 
     function toggleArea(el) {
         el.classList.toggle('active');
-        const content = el.nextElementSibling;
+        var content = el.nextElementSibling;
         if (content) content.classList.toggle('show');
     }
 
@@ -968,20 +1185,26 @@
         document.getElementById('search-input').value = assetId;
     }
 
-    let suggestionTimeout;
+    // ============================================
+    // AUTOCOMPLETE
+    // ============================================
     async function getSuggestions(val) {
-        const suggestionsDiv = document.getElementById('suggestions');
+        var suggestionsDiv = document.getElementById('suggestions');
         if (val.length < 3) {
             suggestionsDiv.style.display = 'none';
             return;
         }
         
         if (suggestionTimeout) clearTimeout(suggestionTimeout);
-        suggestionTimeout = setTimeout(async () => {
+        suggestionTimeout = setTimeout(async function() {
             try {
-                const list = await callApi('PVT_getTLAutocompletar', [val]);
+                var list = await callApi('PVT_getTLAutocompletar', [val]);
                 if (list && list.length > 0) {
-                    suggestionsDiv.innerHTML = list.map(item => `<div class="suggestion-item" onclick="selectTL('${escapeHtml(item)}')">${escapeHtml(item)}</div>`).join('');
+                    var html = '';
+                    for (var i = 0; i < list.length; i++) {
+                        html += '<div class="suggestion-item" onclick="selectTL(\'' + escapeHtml(list[i]) + '\')">' + escapeHtml(list[i]) + '</div>';
+                    }
+                    suggestionsDiv.innerHTML = html;
                     suggestionsDiv.style.display = 'block';
                 } else {
                     suggestionsDiv.style.display = 'none';
@@ -993,40 +1216,45 @@
         }, 300);
     }
 
-    window.getSuggestions = getSuggestions;
-
     function selectTL(val) {
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
+        executeSearch();
     }
 
+    // ============================================
+    // SEARCH
+    // ============================================
     async function executeSearch() {
-        const val = document.getElementById('search-input').value;
+        var val = document.getElementById('search-input').value;
         if (!val) return;
         
         showLoading('Searching strategies...');
         try {
-            const res = await callApi('PVT_searchUniqueStrategies', [val]);
+            var res = await callApi('PVT_searchUniqueStrategies', [val]);
             hideLoading();
             
-            const tbody = document.getElementById('resultsBody');
-            const table = document.getElementById('resultsTable');
-            const noResults = document.getElementById('noResultsMsg');
+            var tbody = document.getElementById('resultsBody');
+            var table = document.getElementById('resultsTable');
+            var noResults = document.getElementById('noResultsMsg');
             tbody.innerHTML = '';
             
             if (res.status === 'success' && res.data && res.data.length > 0) {
                 table.style.display = 'table';
                 noResults.style.display = 'none';
-                res.data.forEach(row => {
-                    tbody.innerHTML += `<tr>
-                        <td>${escapeHtml(row.assetId)}</td>
-                        <td>${escapeHtml(row.tlName)}</td>
-                        <td><strong>${escapeHtml(row.strategyId)}</strong></td>
-                        <td>${escapeHtml(row.frequency)}</td>
-                        <td><button class="btn-build" onclick="loadStrategy('${escapeHtml(row.strategyId)}','${escapeHtml(row.assetId)}','${escapeHtml(row.frequency)}','${escapeHtml(row.tlName)}')">BUILD</button></td>
-                    </tr>`;
-                });
-                showToast(`Found ${res.data.length} strategies`, 'success');
+                var html = '';
+                for (var i = 0; i < res.data.length; i++) {
+                    var row = res.data[i];
+                    html += '<tr>' +
+                        '<td>' + escapeHtml(row.assetId) + '</td>' +
+                        '<td>' + escapeHtml(row.tlName) + '</td>' +
+                        '<td><strong>' + escapeHtml(row.strategyId) + '</strong></td>' +
+                        '<td>' + escapeHtml(row.frequency) + '</td>' +
+                        '<td><button class="btn-build" onclick="loadStrategy(\'' + escapeHtml(row.strategyId) + '\',\'' + escapeHtml(row.assetId) + '\',\'' + escapeHtml(row.frequency) + '\',\'' + escapeHtml(row.tlName) + '\')">BUILD</button></td>' +
+                    '</tr>';
+                }
+                tbody.innerHTML = html;
+                showToast('Found ' + res.data.length + ' strategies', 'success');
             } else {
                 table.style.display = 'none';
                 noResults.style.display = 'block';
@@ -1038,8 +1266,9 @@
         }
     }
 
-    window.executeSearch = executeSearch;
-
+    // ============================================
+    // LOAD STRATEGY
+    // ============================================
     async function loadStrategy(sid, aid, freq, name) {
         showLoading('Loading strategy...');
         currentContext = { strategyId: sid, assetId: aid, frequency: freq, tlName: name };
@@ -1048,7 +1277,7 @@
         document.getElementById('head-freq').innerText = freq;
         
         try {
-            const res = await callApi('PVT_getStrategyContent', [sid, aid]);
+            var res = await callApi('PVT_getStrategyContent', [sid, aid]);
             hideLoading();
             
             if (res.status === 'success') {
@@ -1074,37 +1303,32 @@
         }
     }
 
-    window.loadStrategy = loadStrategy;
-
     function renderActivitiesTable() {
-        const tbody = document.getElementById('activitiesTableBody');
+        var tbody = document.getElementById('activitiesTableBody');
         if (!tbody) return;
         
         if (!existingTasks || existingTasks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.32</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>';
             return;
         }
         
-        tbody.innerHTML = '';
-        for (let i = 0; i < existingTasks.length; i++) {
-            const task = existingTasks[i];
-            const row = document.createElement('tr');
-            row.style.borderBottom = "1px solid var(--eams-border)";
-            
-            row.innerHTML = `
-                <td style="padding: 12px;">${escapeHtml(task.equipment || '')}</td>
-                <td style="padding: 12px;">${escapeHtml(task.instruction || '')}</td>
-                <td style="padding: 12px;">${escapeHtml(task.standard || '')}</td>
-                <td style="padding: 12px;">${task.timeHr || ''}</td>
-                <td style="padding: 12px; text-align: center;">
-                    <div style="display: flex; gap: 8px; justify-content: center;">
-                        <button class="icon-btn icon-btn-edit" onclick='openEditModal(${JSON.stringify(task).replace(/'/g, "&#39;")})' title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="icon-btn icon-btn-delete" onclick='openDeleteModal(${JSON.stringify(task).replace(/'/g, "&#39;")})' title="Delete"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
+        var html = '';
+        for (var i = 0; i < existingTasks.length; i++) {
+            var task = existingTasks[i];
+            html += '<tr style="border-bottom: 1px solid #e2e8f0;">' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.equipment || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.instruction || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.standard || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
+                '<td style="padding: 8px 12px; text-align: center;">' +
+                    '<div style="display: flex; gap: 6px; justify-content: center;">' +
+                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
         }
+        tbody.innerHTML = html;
     }
 
     function backToResults() {
@@ -1120,137 +1344,136 @@
         document.querySelector('.search-container button').disabled = false;
     }
 
-    window.backToResults = backToResults;
-
     // ============================================
     // CREATE MODAL
     // ============================================
     function openCreateModal() {
         currentCloneTargets = [];
         
-        const equipOptions = equipmentList.map(e => `<option value="${escapeHtml(e.id)}" data-name="${escapeHtml(e.name)}">${escapeHtml(e.name)}</option>`).join('');
+        var equipOptions = '';
+        for (var i = 0; i < equipmentList.length; i++) {
+            var e = equipmentList[i];
+            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '">' + escapeHtml(e.name) + '</option>';
+        }
         
-        const modalHtml = `
-            <div class="modal-overlay" id="createModal">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-plus-circle"></i> Create New Activity</h3>
-                        <span class="modal-close" onclick="closeCreateModal()">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Equipment *</label>
-                            <select id="create-equipment" onchange="onCreateEquipmentChange()">
-                                <option value="">Select equipment...</option>
-                                ${equipOptions}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Instruction *</label>
-                            <textarea id="create-instruction" rows="2" placeholder="Describe the activity..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Acceptance Standard</label>
-                            <textarea id="create-standard" rows="2" placeholder="What does success look like?"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Est. Time (Hours) *</label>
-                            <input type="number" id="create-time" step="0.25" min="0.25" max="24" value="0.5">
-                        </div>
-                        <div id="create-clone-section" class="clone-section" style="display: none;">
-                            <h4><i class="fas fa-copy"></i> Clone this activity to:</h4>
-                            <div id="create-clone-list"></div>
-                        </div>
-                        <div id="create-summary" class="summary-badge" style="display: none;"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
-                        <button class="btn-primary" onclick="submitCreate()">Create Activity</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="createModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-plus-circle"></i> Create New Activity</h3>' +
+                        '<span class="modal-close" onclick="closeCreateModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div class="form-group">' +
+                            '<label>Equipment *</label>' +
+                            '<select id="create-equipment" onchange="onCreateEquipmentChange()">' +
+                                '<option value="">Select equipment...</option>' +
+                                equipOptions +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Instruction *</label>' +
+                            '<textarea id="create-instruction" rows="2" placeholder="Describe the activity..."></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Acceptance Standard</label>' +
+                            '<textarea id="create-standard" rows="2" placeholder="What does success look like?"></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Est. Time (Hours) *</label>' +
+                            '<input type="number" id="create-time" step="0.25" min="0.25" max="24" value="0.5">' +
+                        '</div>' +
+                        '<div id="create-clone-section" class="clone-section" style="display: none;">' +
+                            '<h4><i class="fas fa-copy"></i> Clone this activity to:</h4>' +
+                            '<div id="create-clone-list"></div>' +
+                        '</div>' +
+                        '<div id="create-summary" class="summary-badge"></div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>' +
+                        '<button class="btn-primary" onclick="submitCreate()">Create Activity</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
 
-    window.openCreateModal = openCreateModal;
-
     async function onCreateEquipmentChange() {
-        const select = document.getElementById('create-equipment');
-        const selectedId = select.value;
-        const selectedOption = select.options[select.selectedIndex];
-        const selectedName = selectedOption?.getAttribute('data-name') || selectedId;
+        var select = document.getElementById('create-equipment');
+        var selectedId = select.value;
+        var selectedOption = select.options[select.selectedIndex];
+        var selectedName = selectedOption?.getAttribute('data-name') || selectedId;
         
         if (!selectedId) {
             document.getElementById('create-clone-section').style.display = 'none';
             return;
         }
         
-        const cloneDiv = document.getElementById('create-clone-list');
-        cloneDiv.innerHTML = '<div class="loading-clones" style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        var cloneDiv = document.getElementById('create-clone-list');
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
         document.getElementById('create-clone-section').style.display = 'block';
         
         try {
-            const results = await callApi('PVT_getSimilarAssetsWithContext', [selectedName, currentContext.frequency, selectedId]);
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [selectedName, currentContext.frequency, selectedId]);
             currentCloneTargets = results || [];
-            if (currentCloneTargets.length === 0) {
-                cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #666;">No similar equipment found.</div>';
-            } else {
-                renderCloneList('create-clone-list', currentCloneTargets, 'create');
-            }
+            renderCloneList('create-clone-list', currentCloneTargets, 'create');
             updateCreateSummary();
         } catch (e) {
             console.error('Error loading clones:', e);
-            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: red;">Error loading clones.</div>';
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
 
-    window.onCreateEquipmentChange = onCreateEquipmentChange;
-
     function renderCloneList(containerId, targets, mode) {
-        const container = document.getElementById(containerId);
+        var container = document.getElementById(containerId);
         if (!targets || targets.length === 0) {
-            container.innerHTML = '<div style="padding: 15px; text-align: center; color: #666;">No similar equipment found.</div>';
+            container.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No similar equipment found.</div>';
             return;
         }
         
-        const sameTL = targets.filter(t => t.isSameTL);
-        const otherTLs = targets.filter(t => !t.isSameTL);
+        var sameTL = targets.filter(function(t) { return t.isSameTL; });
+        var otherTLs = targets.filter(function(t) { return !t.isSameTL; });
         
-        let html = '';
+        var html = '';
         
         if (sameTL.length > 0) {
-            html += `<div class="clone-group">
-                <div class="clone-group-title">📌 Same TL (${currentContext.assetId})</div>`;
-            sameTL.forEach((t, idx) => {
-                const globalIdx = targets.indexOf(t);
-                html += `<div class="clone-item">
-                    <input type="checkbox" class="${mode}-clone-check" data-index="${globalIdx}" data-asset-id="${escapeHtml(t.id)}" data-tl-id="${escapeHtml(t.tlId)}" data-strategy="${escapeHtml(t.strategyId)}" data-equip="${escapeHtml(t.name)}" onchange="updateCreateSummary()">
-                    <span>${escapeHtml(t.name)}</span>
-                </div>`;
-            });
-            html += `</div>`;
+            html += '<div class="clone-group">' +
+                '<div class="clone-group-title">📌 Same TL (' + escapeHtml(currentContext.assetId) + ')</div>';
+            for (var i = 0; i < sameTL.length; i++) {
+                var t = sameTL[i];
+                var globalIdx = targets.indexOf(t);
+                html += '<div class="clone-item">' +
+                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="updateCreateSummary()">' +
+                    '<span>' + escapeHtml(t.name) + '</span>' +
+                '</div>';
+            }
+            html += '</div>';
         }
         
         if (otherTLs.length > 0) {
-            const tlGroups = {};
-            otherTLs.forEach(t => {
+            var tlGroups = {};
+            for (var i = 0; i < otherTLs.length; i++) {
+                var t = otherTLs[i];
                 if (!tlGroups[t.tlId]) tlGroups[t.tlId] = { tlName: t.tlName, equipments: [] };
                 tlGroups[t.tlId].equipments.push(t);
-            });
+            }
             
-            for (const [tlId, group] of Object.entries(tlGroups)) {
-                html += `<div class="clone-group">
-                    <div class="clone-group-title">🏭 ${escapeHtml(group.tlName)} (${escapeHtml(tlId)})</div>`;
-                group.equipments.forEach(t => {
-                    const globalIdx = targets.indexOf(t);
-                    html += `<div class="clone-item">
-                        <input type="checkbox" class="${mode}-clone-check" data-index="${globalIdx}" data-asset-id="${escapeHtml(t.id)}" data-tl-id="${escapeHtml(t.tlId)}" data-strategy="${escapeHtml(t.strategyId)}" data-equip="${escapeHtml(t.name)}" onchange="updateCreateSummary()">
-                        <span>${escapeHtml(t.name)}</span>
-                    </div>`;
-                });
-                html += `</div>`;
+            var tlKeys = Object.keys(tlGroups);
+            for (var i = 0; i < tlKeys.length; i++) {
+                var tlId = tlKeys[i];
+                var group = tlGroups[tlId];
+                html += '<div class="clone-group">' +
+                    '<div class="clone-group-title">🏭 ' + escapeHtml(group.tlName) + ' (' + escapeHtml(tlId) + ')</div>';
+                for (var j = 0; j < group.equipments.length; j++) {
+                    var t = group.equipments[j];
+                    var globalIdx = targets.indexOf(t);
+                    html += '<div class="clone-item">' +
+                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="updateCreateSummary()">' +
+                        '<span>' + escapeHtml(t.name) + '</span>' +
+                    '</div>';
+                }
+                html += '</div>';
             }
         }
         
@@ -1258,50 +1481,57 @@
     }
 
     function updateCreateSummary() {
-        const checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
-        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-        const summary = document.getElementById('create-summary');
+        var checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
+        var selectedCount = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) selectedCount++;
+        }
+        var summary = document.getElementById('create-summary');
         
         if (selectedCount > 0) {
             summary.style.display = 'block';
-            summary.innerHTML = `📊 Summary: Will create 1 original + ${selectedCount} clone${selectedCount !== 1 ? 's' : ''}`;
+            summary.innerHTML = '📊 Summary: Will create 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
         } else {
             summary.style.display = 'none';
         }
     }
 
-    window.updateCreateSummary = updateCreateSummary;
-
     async function submitCreate() {
-        const equipmentSelect = document.getElementById('create-equipment');
-        const selectedEquipmentId = equipmentSelect.value;
-        const selectedOption = equipmentSelect.options[equipmentSelect.selectedIndex];
-        const selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
-        const instruction = sanitizeInput(document.getElementById('create-instruction').value);
-        const standard = sanitizeInput(document.getElementById('create-standard').value);
-        const timeHr = document.getElementById('create-time').value;
+        var equipmentSelect = document.getElementById('create-equipment');
+        var selectedEquipmentId = equipmentSelect.value;
+        var selectedOption = equipmentSelect.options[equipmentSelect.selectedIndex];
+        var selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
+        var instruction = sanitizeInput(document.getElementById('create-instruction').value);
+        var standard = sanitizeInput(document.getElementById('create-standard').value);
+        var timeHr = document.getElementById('create-time').value;
         
         if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
         if (!instruction) { showToast('Please enter instruction', 'error'); return; }
         if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
         
-        const selectedEquipment = equipmentList.find(e => e.id === selectedEquipmentId);
-        const selectedAssetId = selectedEquipment ? selectedEquipment.id : currentContext.assetId;
+        var selectedEquipment = null;
+        for (var i = 0; i < equipmentList.length; i++) {
+            if (equipmentList[i].id === selectedEquipmentId) {
+                selectedEquipment = equipmentList[i];
+                break;
+            }
+        }
+        var selectedAssetId = selectedEquipment ? selectedEquipment.id : currentContext.assetId;
         
-        const checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
-        const cloneTo = [];
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
+        var checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
+        var cloneTo = [];
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
                 cloneTo.push({
-                    assetId: cb.dataset.assetId,
-                    tlId: cb.dataset.tlId,
-                    strategyId: cb.dataset.strategy,
-                    equipment: sanitizeInput(cb.dataset.equip)
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
                 });
             }
-        });
+        }
         
-        const payload = {
+        var payload = {
             assetId: selectedAssetId,
             strategyId: currentContext.strategyId,
             frequency: currentContext.frequency,
@@ -1314,7 +1544,7 @@
         
         showLoading('Creating activity...');
         try {
-            const res = await callApi('PVT_createActivity', [payload]);
+            var res = await callApi('PVT_createActivity', [payload]);
             hideLoading();
             if (res.status === 'success') {
                 showToast(res.message, 'success');
@@ -1329,14 +1559,10 @@
         }
     }
 
-    window.submitCreate = submitCreate;
-
     function closeCreateModal() {
-        const modal = document.getElementById('createModal');
+        var modal = document.getElementById('createModal');
         if (modal) modal.remove();
     }
-
-    window.closeCreateModal = closeCreateModal;
 
     // ============================================
     // EDIT MODAL
@@ -1345,123 +1571,124 @@
         currentEditTask = task;
         currentEditCloneTargets = [];
         
-        const equipOptions = equipmentList.map(e => `<option value="${escapeHtml(e.id)}" data-name="${escapeHtml(e.name)}" ${e.name === task.equipment ? 'selected' : ''}>${escapeHtml(e.name)}</option>`).join('');
+        var equipOptions = '';
+        for (var i = 0; i < equipmentList.length; i++) {
+            var e = equipmentList[i];
+            var selected = e.name === task.equipment ? 'selected' : '';
+            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '" ' + selected + '>' + escapeHtml(e.name) + '</option>';
+        }
         
-        const modalHtml = `
-            <div class="modal-overlay" id="editModal">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-edit"></i> Edit Activity</h3>
-                        <span class="modal-close" onclick="closeEditModal()">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Equipment *</label>
-                            <select id="edit-equipment" onchange="onEditEquipmentChange()">
-                                ${equipOptions}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Instruction *</label>
-                            <textarea id="edit-instruction" rows="2">${escapeHtml(task.instruction)}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Acceptance Standard</label>
-                            <textarea id="edit-standard" rows="2">${escapeHtml(task.standard || '')}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Est. Time (Hours) *</label>
-                            <input type="number" id="edit-time" step="0.25" min="0.25" max="24" value="${task.timeHr}">
-                        </div>
-                        <div id="edit-clone-section" class="clone-section" style="display: none;">
-                            <h4><i class="fas fa-copy"></i> Propagate this change to:</h4>
-                            <div id="edit-clone-list"></div>
-                        </div>
-                        <div id="edit-summary" class="summary-badge" style="display: none;"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-                        <button class="btn-primary" onclick="submitEdit()">Save Changes</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="editModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-edit"></i> Edit Activity</h3>' +
+                        '<span class="modal-close" onclick="closeEditModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div class="form-group">' +
+                            '<label>Equipment *</label>' +
+                            '<select id="edit-equipment" onchange="onEditEquipmentChange()">' +
+                                equipOptions +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Instruction *</label>' +
+                            '<textarea id="edit-instruction" rows="2">' + escapeHtml(task.instruction) + '</textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Acceptance Standard</label>' +
+                            '<textarea id="edit-standard" rows="2">' + escapeHtml(task.standard || '') + '</textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Est. Time (Hours) *</label>' +
+                            '<input type="number" id="edit-time" step="0.25" min="0.25" max="24" value="' + task.timeHr + '">' +
+                        '</div>' +
+                        '<div id="edit-clone-section" class="clone-section" style="display: none;">' +
+                            '<h4><i class="fas fa-copy"></i> Propagate this change to:</h4>' +
+                            '<div id="edit-clone-list"></div>' +
+                        '</div>' +
+                        '<div id="edit-summary" class="summary-badge"></div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeEditModal()">Cancel</button>' +
+                        '<button class="btn-primary" onclick="submitEdit()">Save Changes</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-        setTimeout(() => onEditEquipmentChange(), 100);
+        setTimeout(function() { onEditEquipmentChange(); }, 100);
     }
 
-    window.openEditModal = openEditModal;
-
     async function onEditEquipmentChange() {
-        const select = document.getElementById('edit-equipment');
-        const selectedOption = select.options[select.selectedIndex];
-        const equipment = selectedOption?.getAttribute('data-name') || select.value;
+        var select = document.getElementById('edit-equipment');
+        var selectedOption = select.options[select.selectedIndex];
+        var equipment = selectedOption?.getAttribute('data-name') || select.value;
         
         if (!equipment) {
             document.getElementById('edit-clone-section').style.display = 'none';
             return;
         }
         
-        const cloneDiv = document.getElementById('edit-clone-list');
-        cloneDiv.innerHTML = '<div class="loading-clones" style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        var cloneDiv = document.getElementById('edit-clone-list');
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
-            const results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentContext.assetId]);
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentContext.assetId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
         } catch (e) {
             console.error('Error loading clones:', e);
-            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: red;">Error loading clones.</div>';
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
 
-    window.onEditEquipmentChange = onEditEquipmentChange;
-
     function updateEditSummary() {
-        const checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
-        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-        const summary = document.getElementById('edit-summary');
+        var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
+        var selectedCount = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) selectedCount++;
+        }
+        var summary = document.getElementById('edit-summary');
         
         if (selectedCount > 0) {
             summary.style.display = 'block';
-            summary.innerHTML = `📊 Summary: Will update 1 original + ${selectedCount} clone${selectedCount !== 1 ? 's' : ''}`;
+            summary.innerHTML = '📊 Summary: Will update 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
         } else {
             summary.style.display = 'none';
         }
     }
 
-    window.updateEditSummary = updateEditSummary;
-
     async function submitEdit() {
-        const select = document.getElementById('edit-equipment');
-        const selectedEquipmentId = select.value;
-        const selectedOption = select.options[select.selectedIndex];
-        const selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
-        const instruction = sanitizeInput(document.getElementById('edit-instruction').value);
-        const standard = sanitizeInput(document.getElementById('edit-standard').value);
-        const timeHr = document.getElementById('edit-time').value;
+        var select = document.getElementById('edit-equipment');
+        var selectedEquipmentId = select.value;
+        var selectedOption = select.options[select.selectedIndex];
+        var selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
+        var instruction = sanitizeInput(document.getElementById('edit-instruction').value);
+        var standard = sanitizeInput(document.getElementById('edit-standard').value);
+        var timeHr = document.getElementById('edit-time').value;
         
         if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
         if (!instruction) { showToast('Please enter instruction', 'error'); return; }
         if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
         
-        const propagateTo = [];
-        const checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
+        var propagateTo = [];
+        var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
                 propagateTo.push({
-                    assetId: cb.dataset.assetId,
-                    tlId: cb.dataset.tlId,
-                    strategyId: cb.dataset.strategy,
-                    equipment: sanitizeInput(cb.dataset.equip)
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
                 });
             }
-        });
+        }
         
-        const payload = {
+        var payload = {
             originalAssetId: currentContext.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentEditTask.equipment,
@@ -1478,7 +1705,7 @@
         
         showLoading('Updating activity...');
         try {
-            const res = await callApi('PVT_updateActivity', [payload]);
+            var res = await callApi('PVT_updateActivity', [payload]);
             hideLoading();
             if (res.status === 'success') {
                 showToast(res.message, 'success');
@@ -1493,14 +1720,10 @@
         }
     }
 
-    window.submitEdit = submitEdit;
-
     function closeEditModal() {
-        const modal = document.getElementById('editModal');
+        var modal = document.getElementById('editModal');
         if (modal) modal.remove();
     }
-
-    window.closeEditModal = closeEditModal;
 
     // ============================================
     // DELETE MODAL
@@ -1509,64 +1732,60 @@
         currentDeleteTask = task;
         currentDeleteCloneTargets = [];
         
-        const modalHtml = `
-            <div class="modal-overlay" id="deleteModal">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-trash-alt" style="color: var(--eams-danger);"></i> Delete Activity</h3>
-                        <span class="modal-close" onclick="closeDeleteModal()">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div style="background: #fef2f2; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--eams-danger);"></i>
-                            Are you sure you want to delete:<br>
-                            <strong>${escapeHtml(task.equipment)} | ${escapeHtml(task.instruction)} | ${task.timeHr} hrs</strong>
-                        </div>
-                        <div id="delete-clone-section" class="clone-section">
-                            <h4><i class="fas fa-copy"></i> Also delete from:</h4>
-                            <div id="delete-clone-list"><div style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                        <button class="btn-danger" onclick="submitDelete()">Delete Activity</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        var modalHtml = 
+            '<div class="modal-overlay" id="deleteModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-trash-alt" style="color: #dc3545;"></i> Delete Activity</h3>' +
+                        '<span class="modal-close" onclick="closeDeleteModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div style="background: #fef2f2; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif; font-size:0.8rem;">' +
+                            '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Are you sure you want to delete:<br>' +
+                            '<strong>' + escapeHtml(task.equipment) + ' | ' + escapeHtml(task.instruction) + ' | ' + task.timeHr + ' hrs</strong>' +
+                        '</div>' +
+                        '<div id="delete-clone-section" class="clone-section">' +
+                            '<h4><i class="fas fa-copy"></i> Also delete from:</h4>' +
+                            '<div id="delete-clone-list"><div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>' +
+                        '<button class="btn-danger" onclick="submitDelete()">Delete Activity</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
-        (async () => {
+        (async function() {
             try {
-                const results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, currentContext.assetId]);
+                var results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, currentContext.assetId]);
                 currentDeleteCloneTargets = results || [];
                 renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
             } catch (e) {
                 console.error('Error loading clones for delete:', e);
-                const container = document.getElementById('delete-clone-list');
-                if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: red;">Error loading clones.</div>';
+                var container = document.getElementById('delete-clone-list');
+                if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
             }
         })();
     }
 
-    window.openDeleteModal = openDeleteModal;
-
     async function submitDelete() {
-        const deleteFrom = [];
-        const checkboxes = document.querySelectorAll('#delete-clone-list input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
+        var deleteFrom = [];
+        var checkboxes = document.querySelectorAll('#delete-clone-list input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
                 deleteFrom.push({
-                    assetId: cb.dataset.assetId,
-                    tlId: cb.dataset.tlId,
-                    strategyId: cb.dataset.strategy,
-                    equipment: sanitizeInput(cb.dataset.equip)
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
                 });
             }
-        });
+        }
         
-        const payload = {
+        var payload = {
             originalAssetId: currentContext.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentDeleteTask.equipment,
@@ -1576,7 +1795,7 @@
         
         showLoading('Deleting activity...');
         try {
-            const res = await callApi('PVT_deleteActivity', [payload]);
+            var res = await callApi('PVT_deleteActivity', [payload]);
             hideLoading();
             if (res.status === 'success') {
                 showToast(res.message, 'success');
@@ -1591,21 +1810,63 @@
         }
     }
 
-    window.submitDelete = submitDelete;
-
     function closeDeleteModal() {
-        const modal = document.getElementById('deleteModal');
+        var modal = document.getElementById('deleteModal');
         if (modal) modal.remove();
     }
 
-    window.closeDeleteModal = closeDeleteModal;
-
-    // Export functions to global scope for onclick handlers
+    // ============================================
+    // EXPORT GLOBAL FUNCTIONS
+    // ============================================
     window.selectTL = selectTL;
     window.toggleArea = toggleArea;
     window.selectFromTree = selectFromTree;
     window.renderCloneList = renderCloneList;
+    window.updateCreateSummary = updateCreateSummary;
     window.updateEditSummary = updateEditSummary;
+    window.executeSearch = executeSearch;
+    window.loadStrategy = loadStrategy;
+    window.backToResults = backToResults;
+    window.openCreateModal = openCreateModal;
+    window.onCreateEquipmentChange = onCreateEquipmentChange;
+    window.submitCreate = submitCreate;
+    window.closeCreateModal = closeCreateModal;
+    window.openEditModal = openEditModal;
+    window.onEditEquipmentChange = onEditEquipmentChange;
+    window.submitEdit = submitEdit;
+    window.closeEditModal = closeEditModal;
+    window.openDeleteModal = openDeleteModal;
+    window.submitDelete = submitDelete;
+    window.closeDeleteModal = closeDeleteModal;
+
+    // ============================================
+    // EVENTOS - AUTOCOMPLETE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                getSuggestions(e.target.value);
+            });
+        }
+        
+        document.addEventListener('click', function(e) {
+            var suggestions = document.getElementById('suggestions');
+            var input = document.getElementById('search-input');
+            if (suggestions && input && !suggestions.contains(e.target) && e.target !== input) {
+                suggestions.style.display = 'none';
+            }
+        });
+    });
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 </body>
 </html>
