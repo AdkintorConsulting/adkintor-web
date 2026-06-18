@@ -826,15 +826,14 @@ async function loadUserEmail() {
     }
 
 async function refreshCatalog() {
-    showLoading('Loading inventory...');
+    // showLoading('Loading inventory...');  ← ELIMINA ESTA LÍNEA
     try {
         var response = await callApi('STK_VIEWER_getFullCatalog', []);
         catalogData = response.data || [];
         filterAndRender();
-        // No ocultar aquí - se oculta en init()
         return true;
     } catch(err) {
-        hideLoading();
+        // hideLoading();  ← ELIMINA ESTA LÍNEA
         showToast('Failed to load catalog: ' + err.message, 'error');
         throw err;
     }
@@ -967,35 +966,45 @@ async function refreshCatalog() {
 function init() {
     loadUser();
     showLoading('Loading Inventory Viewer...');
+    
+    // Primero cargar API URL y validar
     loadApiUrl();
-    if (!EAMS_API_URL) { 
+    
+    if (!EAMS_API_URL) {
         hideLoading();
         showToast('Session error: missing API URL. Please login first.', 'error');
         document.getElementById('footer-status').innerText = 'Not connected';
         return;
     }
     
-    // EJECUTAR TODAS LAS PROMESAS EN CADENA
-    loadUserEmail()
-        .then(function() {
-            return loadKPI();
-        })
-        .then(function() {
-            return loadFilters();
-        })
-        .then(function() {
-            return refreshCatalog();
-        })
-        .then(function() {
-            document.getElementById('footer-status').innerText = 'Connected (Read Only)';
-            // SOLO AQUÍ se oculta el spinner
-            hideLoading();
-            showToast('Inventory Viewer loaded successfully ✅', 'success');
-        })
-        .catch(function(err) {
-            hideLoading();
-            showToast('Error loading data: ' + err.message, 'error');
-        });
+    // Ahora sí, cargar datos
+    loadAllViewerData();
+}
+
+async function loadAllViewerData() {
+    try {
+        // Cargar email
+        await loadUserEmail();
+        
+        // Cargar KPI
+        await loadKPI();
+        
+        // Cargar filtros
+        await loadFilters();
+        
+        // Cargar catálogo
+        await refreshCatalog();
+        
+        // TODO OK - ocultar spinner
+        document.getElementById('footer-status').innerText = 'Connected (Read Only)';
+        hideLoading();
+        showToast('Inventory Viewer loaded successfully ✅', 'success');
+        
+    } catch(err) {
+        hideLoading();
+        showToast('Error loading data: ' + err.message, 'error');
+        console.error('Init error:', err);
+    }
 }
 </script>
 </body>
