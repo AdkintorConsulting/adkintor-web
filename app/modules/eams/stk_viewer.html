@@ -825,18 +825,20 @@ async function loadUserEmail() {
         } catch(e) { showToast('Error loading filters', 'error'); }
     }
 
-    async function refreshCatalog() {
-        showLoading('Loading inventory...');
-        try {
-            var response = await callApi('STK_VIEWER_getFullCatalog', []);
-            catalogData = response.data || [];
-            filterAndRender();
-            hideLoading();
-        } catch(err) {
-            hideLoading();
-            showToast('Failed to load catalog: ' + err.message, 'error');
-        }
+async function refreshCatalog() {
+    showLoading('Loading inventory...');
+    try {
+        var response = await callApi('STK_VIEWER_getFullCatalog', []);
+        catalogData = response.data || [];
+        filterAndRender();
+        // No ocultar aquí - se oculta en init()
+        return true;
+    } catch(err) {
+        hideLoading();
+        showToast('Failed to load catalog: ' + err.message, 'error');
+        throw err;
     }
+}
 
     function filterAndRender() {
         var searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -972,12 +974,21 @@ function init() {
         document.getElementById('footer-status').innerText = 'Not connected';
         return;
     }
-    Promise.all([loadUserEmail(), loadKPI(), loadFilters()])
+    
+    // EJECUTAR TODAS LAS PROMESAS EN CADENA
+    loadUserEmail()
+        .then(function() {
+            return loadKPI();
+        })
+        .then(function() {
+            return loadFilters();
+        })
         .then(function() {
             return refreshCatalog();
         })
         .then(function() {
             document.getElementById('footer-status').innerText = 'Connected (Read Only)';
+            // SOLO AQUÍ se oculta el spinner
             hideLoading();
             showToast('Inventory Viewer loaded successfully ✅', 'success');
         })
