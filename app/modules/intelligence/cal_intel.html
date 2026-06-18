@@ -3,187 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - CAL Intelligence</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
+  <title>CAL Intelligence - ADKINTOR FORESIGHT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* FORESIGHT Dark Mode Theme */
-    :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #111827;
-      --bg-card: #1a1a2e;
-      --bg-hover: #1f2937;
-      --border-color: #2d2d44;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --accent-color: #00e5ff;
-      --accent-glow: rgba(0, 229, 255, 0.2);
-      --success: #00e676;
-      --warning: #ffb74d;
-      --danger: #ff5252;
-      --info: #00e5ff;
-      --gray: #64748b;
-      --border-radius-sm: 8px;
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ============================================
+       BASE - ESTÁNDAR ADKINTOR
+       ============================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
       height: 100vh;
       overflow: hidden;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
     }
     
-    /* Toast Container */
-    #toastContainer {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      z-index: 10000;
+    /* ============================================
+       WRAPPER
+       ============================================ */
+    .module-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #f4f6f9;
     }
     
-    .toast {
+    /* ============================================
+       CABECERA - AZUL OSCURO (ESTÁNDAR)
+       ============================================ */
+    .module-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #1a1a2e;
+      border-bottom: 2px solid #2a2f4a;
+      flex-shrink: 0;
+      min-height: 56px;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .module-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .module-title i {
+      margin-right: 8px;
+      color: #00e5ff;
+    }
+    
+    .header-right {
       display: flex;
       align-items: center;
       gap: 12px;
-      background: var(--bg-card);
-      border-left: 4px solid var(--info);
-      padding: 12px 20px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      animation: slideIn 0.3s ease;
-      color: var(--text-primary);
-      font-size: 14px;
     }
     
-    .toast.success { border-left-color: var(--success); }
-    .toast.error { border-left-color: var(--danger); }
-    .toast.warning { border-left-color: var(--warning); }
-    
-    .toast-close {
-      cursor: pointer;
-      margin-left: auto;
-      opacity: 0.7;
-      transition: opacity 0.2s;
+    .user-badge {
+      font-size: 12px;
+      color: #e0e0e0;
+      background: rgba(255,255,255,0.15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-    .toast-close:hover { opacity: 1; }
-    
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .company-logo {
+      height: 32px;
+      width: auto;
+      display: none;
     }
     
-    /* Loading Overlay */
+    /* ============================================
+       BREADCRUMBS (ESTÁNDAR)
+       ============================================ */
+    .breadcrumbs {
+      padding: 8px 20px;
+      font-size: 12px;
+      color: #888;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .breadcrumbs .current {
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+    
+    .breadcrumbs .foresight-tag {
+      color: #00e5ff;
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       CUERPO (ESTÁNDAR CON FONDO CLARO)
+       ============================================ */
+    .module-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      background: #f4f6f9;
+    }
+    
+    /* ============================================
+       FOOTER - BLANCO (ESTÁNDAR)
+       ============================================ */
+    .module-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 20px;
+      background: #ffffff;
+      border-top: 1px solid #eee;
+      font-size: 11px;
+      color: #999;
+      flex-shrink: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    
+    .status-dot.connected {
+      background: #22c55e;
+    }
+    
+    .footer-version {
+      color: #4a6cf7;
+      font-weight: 500;
+    }
+    
+    /* ============================================
+       LOADING OVERLAY (ESTÁNDAR)
+       ============================================ */
     #loadingOverlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(4px);
+      background: rgba(244, 246, 249, 0.95);
       display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      gap: 12px;
     }
     
-    .loading-content {
-      text-align: center;
-      background: var(--bg-card);
-      padding: 30px 40px;
-      border-radius: 16px;
-      border: 1px solid var(--accent-color);
-      box-shadow: 0 0 20px var(--accent-glow);
+    #loadingOverlay.visible {
+      display: flex;
     }
     
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border-color);
-      border-top-color: var(--accent-color);
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #1a1a2e;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 15px;
     }
     
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     
-    /* EAMS Unified Header */
-    .eams-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
-      background: var(--bg-card);
-      border-bottom: 2px solid var(--accent-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    
-    .eams-header h2 {
-      font-size: 18px;
-      color: var(--accent-color);
-      margin: 0;
-    }
-    
-    .eams-header h2 i {
-      margin-right: 8px;
-    }
-    
-    .user-badge {
-      background: rgba(0, 229, 255, 0.15);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent-color);
-    }
-    
-    /* Breadcrumbs */
-    .breadcrumbs {
-      padding: 10px 24px;
-      background: var(--bg-secondary);
-      font-size: 12px;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .breadcrumbs span:last-child {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
-    
-    /* EAMS Status Bar (Footer) */
-    .eams-status-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 24px;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border-color);
-      font-size: 11px;
-      color: var(--text-secondary);
-      position: sticky;
-      bottom: 0;
-      z-index: 1000;
-    }
-    
-    /* Dashboard Container */
-    .dashboard-container {
+    /* ============================================
+       TOAST - ARRIBA DERECHA (ESTÁNDAR)
+       ============================================ */
+    #toastContainer {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 115px);
-      padding: 20px;
-      background: var(--bg-primary);
+      gap: 6px;
+      max-width: 360px;
+      pointer-events: none;
+    }
+    
+    #toastContainer .toast {
+      pointer-events: auto;
+      padding: 10px 16px;
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: toastSlideIn 0.3s ease-out;
+    }
+    
+    #toastContainer .toast-success { background: #22c55e; }
+    #toastContainer .toast-error { background: #dc3545; }
+    #toastContainer .toast-warning { background: #f59e0b; }
+    #toastContainer .toast-info { background: #1a1a2e; }
+    
+    @keyframes toastSlideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes toastSlideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    /* ============================================
+       ESTILOS ESPECÍFICOS DEL MÓDULO (FORESIGHT)
+       ============================================ */
+    .dashboard-container {
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -194,18 +240,22 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #1a1a2e;
     }
     
     .logo-area h1 { 
       font-size: 20px; 
-      color: var(--accent-color); 
+      color: #1a1a2e; 
       margin-bottom: 4px; 
     }
     
+    .logo-area h1 i {
+      color: #00e5ff;
+    }
+    
     .logo-area p { 
-      font-size: 11px; 
-      color: var(--text-secondary); 
+      font-size: 12px; 
+      color: #64748b; 
     }
     
     /* Tabs */
@@ -213,7 +263,7 @@
       display: flex;
       gap: 4px;
       margin-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #e2e8f0;
       flex-wrap: wrap;
     }
     
@@ -223,21 +273,22 @@
       border-radius: 8px 8px 0 0;
       font-weight: 600;
       font-size: 13px;
-      color: var(--text-secondary);
+      color: #64748b;
       transition: all 0.2s;
       background: transparent;
       border: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .tab-btn:hover { 
-      background: var(--bg-hover); 
-      color: white; 
+      background: #e2e8f0; 
+      color: #1a1a2e; 
     }
     
     .tab-btn.active { 
-      background: var(--bg-hover); 
-      color: var(--accent-color); 
-      border-bottom: 2px solid var(--accent-color); 
+      background: #1a1a2e; 
+      color: white; 
+      border-bottom: 3px solid #00e5ff; 
     }
     
     .content-panel {
@@ -269,40 +320,49 @@
     }
     
     .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
       padding: 20px;
       text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .stat-value {
       font-size: 32px;
       font-weight: 800;
-      color: var(--accent-color);
+      color: #1a1a2e;
     }
+    
+    .stat-value.danger { color: #dc3545; }
+    .stat-value.warning { color: #f59e0b; }
+    .stat-value.purple { color: #8b5cf6; }
     
     .stat-label {
       font-size: 12px;
-      color: var(--text-secondary);
+      color: #64748b;
       margin-top: 4px;
+      font-weight: 600;
     }
     
     /* Cards */
     .adk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
       margin-bottom: 20px;
       overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .card-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
+      padding: 14px 20px;
+      border-bottom: 1px solid #e2e8f0;
       font-weight: 600;
-      font-size: 16px;
-      background: rgba(0,0,0,0.2);
+      font-size: 15px;
+      background: #f8fafc;
+      color: #1a1a2e;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .card-body {
@@ -312,16 +372,17 @@
     /* Alerts */
     .alert {
       padding: 12px 16px;
-      border-radius: 10px;
+      border-radius: 8px;
       margin-bottom: 10px;
       border-left: 4px solid;
       font-size: 13px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-    .alert-critical { background: rgba(255,82,82,0.15); border-left-color: var(--danger); }
-    .alert-warning { background: rgba(255,183,77,0.15); border-left-color: var(--warning); }
-    .alert-failed { background: rgba(168, 85, 247, 0.15); border-left-color: #a855f7; }
-    .alert-safe { background: rgba(0,230,118,0.15); border-left-color: var(--success); }
+    .alert-critical { background: #fef2f2; border-left-color: #dc3545; }
+    .alert-warning { background: #fffbeb; border-left-color: #f59e0b; }
+    .alert-failed { background: #f5f3ff; border-left-color: #8b5cf6; }
+    .alert-safe { background: #f0fdf4; border-left-color: #22c55e; }
     
     /* Tables */
     .table-wrapper {
@@ -333,45 +394,49 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     th {
       text-align: left;
-      padding: 12px;
-      background: rgba(0,0,0,0.2);
-      font-weight: 600;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
+      padding: 10px 12px;
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475569;
+      border-bottom: 2px solid #1a1a2e;
+      font-size: 11px;
+      text-transform: uppercase;
     }
     
     td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
       vertical-align: middle;
     }
     
-    tr:hover {
-      background: rgba(0, 229, 255, 0.05);
+    tr:hover td {
+      background: #f8fafc;
     }
     
     .overdue-row td:first-child,
-    .overdue-row td:nth-child(4) {
-      color: var(--danger);
-      font-weight: 500;
+    .overdue-row td:nth-child(3) {
+      color: #dc3545;
+      font-weight: 600;
     }
     
     /* Badges */
     .badge {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 3px 10px;
       border-radius: 20px;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-    .badge-overdue { background: var(--danger); color: white; }
-    .badge-urgent { background: #f97316; color: white; }
-    .badge-due { background: var(--warning); color: #0a0a0f; }
+    .badge-overdue { background: #fee2e2; color: #991b1b; }
+    .badge-urgent { background: #fef3c7; color: #92400e; }
+    .badge-due { background: #fef3c7; color: #92400e; }
     
     /* Filters */
     .filters {
@@ -384,122 +449,235 @@
     
     select, button {
       padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: var(--bg-secondary);
-      color: var(--text-primary);
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #1e293b;
       cursor: pointer;
       font-size: 13px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     select:focus, button:focus {
       outline: none;
-      border-color: var(--accent-color);
+      border-color: #1a1a2e;
+      box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
     }
     
     .adk-btn {
       padding: 8px 16px;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       border: none;
       transition: all 0.2s;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .adk-btn-primary {
-      background: var(--accent-color);
-      color: var(--bg-primary);
+      background: #1a1a2e;
+      color: white;
     }
     
     .adk-btn-primary:hover {
-      opacity: 0.9;
+      background: #2c2c4e;
       transform: scale(1.02);
-      box-shadow: 0 0 10px var(--accent-glow);
     }
     
     .trend-deviation {
       font-family: monospace;
     }
     
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    ul {
+      margin-left: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    ul li {
+      margin-bottom: 6px;
+    }
+    
+    /* Scrollbar */
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .module-body {
+        padding: 12px 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .tabs .tab-btn {
+        padding: 8px 14px;
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
 
-<!-- Toast Container -->
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <span style="color: #666; font-size: 13px;">Loading calibration data...</span>
+</div>
+
+<!-- TOAST -->
 <div id="toastContainer"></div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay">
-  <div class="loading-content">
-    <div class="loading-spinner"></div>
-    <div id="loadingMessage">Loading calibration data...</div>
-  </div>
-</div>
-
-<!-- EAMS Unified Header (FORESIGHT Dark Mode) -->
-<div class="eams-header">
-  <h2><i class="fas fa-microscope"></i> Calibration Intelligence Dashboard</h2>
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <div class="user-badge" id="userDisplay">Loading...</div>
-    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-  </div>
-</div>
-
-<!-- Breadcrumbs in English with Home -->
-<div class="breadcrumbs">
-  <span>🏠 Home</span> &gt;
-  <span>FORESIGHT</span> &gt;
-  <span>CAL Intelligence</span>
-</div>
-
-<div class="dashboard-container">
-  <div class="header">
-    <div class="logo-area">
-      <h1>🔧 CAL Intelligence</h1>
-      <p>Calibration Management Dashboard</p>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
+  
+  <!-- CABECERA -->
+  <div class="module-header">
+    <div class="header-left">
+      <span class="module-title"><i class="fas fa-microscope"></i> CAL Intelligence</span>
     </div>
-    <div><button id="exportBtn" class="adk-btn adk-btn-primary">📑 AUDIT PDF</button></div>
+    <div class="header-right">
+      <span class="user-badge" id="userDisplay">Loading...</span>
+      <img class="company-logo" id="companyLogo" src="" alt="Logo">
+    </div>
   </div>
   
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
-    <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
-    <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
+  <!-- BREADCRUMBS -->
+  <div class="breadcrumbs">
+    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">CAL Intelligence</span>
   </div>
   
-  <div class="content-panel">
-    <div id="dashboard-tab" class="tab-pane active">
-      <div id="dashboardContent"></div>
-    </div>
-    <div id="overdue-tab" class="tab-pane">
-      <div id="overdueContent"></div>
-    </div>
-    <div id="trends-tab" class="tab-pane">
-      <div id="trendsContent"></div>
+  <!-- CUERPO -->
+  <div class="module-body custom-scroll">
+    <div class="dashboard-container">
+      <div class="header">
+        <div class="logo-area">
+          <h1><i class="fas fa-microscope"></i> CAL Intelligence</h1>
+          <p>Calibration Management Dashboard</p>
+        </div>
+        <div>
+          <button id="exportBtn" class="adk-btn adk-btn-primary"><i class="fas fa-file-pdf"></i> AUDIT PDF</button>
+        </div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
+        <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
+        <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
+      </div>
+      
+      <div class="content-panel">
+        <div id="dashboard-tab" class="tab-pane active">
+          <div id="dashboardContent"></div>
+        </div>
+        <div id="overdue-tab" class="tab-pane">
+          <div id="overdueContent"></div>
+        </div>
+        <div id="trends-tab" class="tab-pane">
+          <div id="trendsContent"></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- EAMS Status Bar (Footer) -->
-<div class="eams-status-bar">
-  <span>System Status: <strong id="footer-status">Ready</strong></span>
-  <span>EAMS <span id="eamsVersion">v2.0</span></span>
+  
+  <!-- FOOTER -->
+  <div class="module-footer">
+    <span>
+      <span class="status-dot connected"></span>
+      <span>Connected</span>
+    </span>
+    <span class="footer-version" id="eamsVersion">v1.0.0</span>
+  </div>
+  
 </div>
 
 <script>
   // ============================================
-  // GLOBAL VARIABLES
+  // RECIBIR MENSAJES DEL PADRE
   // ============================================
-  let EAMS_API_URL = null;
-  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  window.addEventListener('message', function(event) {
+    const data = event.data;
+    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+      const img = document.getElementById('companyLogo');
+      if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+    }
+    if (data.type === 'SET_VERSION' && data.version) {
+      const el = document.getElementById('eamsVersion');
+      if (el) el.innerText = data.version;
+    }
+  });
   
   // ============================================
-  // LOAD API URL FROM SESSION
+  // CARGAR USUARIO (email)
   // ============================================
+  function loadUser() {
+    try {
+      const session = JSON.parse(localStorage.getItem('adkintor_session'));
+      if (session && session.email) {
+        document.getElementById('userDisplay').innerText = session.email;
+      }
+    } catch(e) {}
+  }
+  
+  // ============================================
+  // TOAST (usa ModuleBase si existe)
+  // ============================================
+  function showToast(message, type = 'info') {
+    if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+      ModuleBase.showToast(message, type);
+      return;
+    }
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+      setTimeout(() => toast.remove(), 350);
+    }, 4000);
+  }
+  
+  // ============================================
+  // LOADING
+  // ============================================
+  function showLoading(msg) {
+    const overlay = document.getElementById('loadingOverlay');
+    const span = overlay.querySelector('span');
+    if (span) span.innerText = msg || 'Loading...';
+    overlay.classList.add('visible');
+  }
+  
+  function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('visible');
+  }
+  
+  // ============================================
+  // CERRAR MODAL
+  // ============================================
+  function closeModal() {
+    window.parent.postMessage('closeIframe', '*');
+  }
+  
+  // ============================================
+  // API CONFIGURATION
+  // ============================================
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  let EAMS_API_URL = null;
+  
   function loadApiUrl() {
     const session = localStorage.getItem('adkintor_session');
     if (session) {
@@ -508,7 +686,7 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
         }
         console.log('[CAL] API URL loaded:', EAMS_API_URL);
       } catch(e) { 
@@ -523,9 +701,6 @@
     }
   }
   
-  // ============================================
-  // API CALL FUNCTION (via Proxy)
-  // ============================================
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
       throw new Error('API URL not configured. Please check your session.');
@@ -543,7 +718,7 @@
     });
     
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
     }
     
     const result = await response.json();
@@ -557,93 +732,32 @@
   }
   
   // ============================================
-  // TOAST NOTIFICATION SYSTEM
-  // ============================================
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
-    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
-    
-    container.appendChild(toast);
-    
-    const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.addEventListener('click', () => toast.remove());
-    
-    setTimeout(() => {
-      if (toast.parentNode) toast.remove();
-    }, 4000);
-  }
-  
-  // ============================================
-  // LOADING OVERLAY FUNCTIONS
-  // ============================================
-  function showLoading(message = 'Processing...') {
-    const overlay = document.getElementById('loadingOverlay');
-    const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = message;
-    if (overlay) overlay.style.display = 'flex';
-  }
-  
-  function hideLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = 'none';
-  }
-  
-  // ============================================
-  // LOGGING FUNCTIONS (using global Logger)
+  // LOGGING FUNCTIONS
   // ============================================
   async function logForesight(module, action, details) {
-    if (window.Logger && typeof window.Logger.foresight === 'function') {
+    if (window.Logger && typeof Logger.foresight === 'function') {
       try {
-        await window.Logger.foresight(module, action, details);
-        console.log(`[CAL] Logged: ${module}/${action}`);
+        await Logger.foresight(module, action, details);
+        console.log('[CAL] Logged:', module + '/' + action);
       } catch (err) {
         console.warn('[CAL] Logger error:', err);
       }
     } else {
-      console.log(`[CAL] Log (Logger not available): ${module}/${action} - ${details}`);
+      console.log('[CAL] Log (Logger not available):', module + '/' + action + ' - ' + details);
     }
   }
-  
-  // ============================================
-  // LISTENER FOR LOGO AND VERSION FROM PARENT
-  // ============================================
-  window.addEventListener('message', function(event) {
-    const data = event.data;
-    
-    if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-      const logoImg = document.getElementById('companyLogo');
-      if (logoImg) {
-        logoImg.src = data.logoUrl;
-        logoImg.style.display = 'block';
-        console.log('[CAL] Logo set from parent');
-      }
-    }
-    
-    if (data.type === 'SET_VERSION' && data.version) {
-      const versionSpan = document.getElementById('eamsVersion');
-      if (versionSpan) {
-        versionSpan.innerText = data.version;
-        console.log('[CAL] Version set from parent:', data.version);
-      }
-    }
-  });
   
   // ============================================
   // TAB FUNCTION
   // ============================================
   function showTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
     
-    const clickedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
     if (clickedBtn) clickedBtn.classList.add('active');
     
-    const targetPane = document.getElementById(`${tabId}-tab`);
+    var targetPane = document.getElementById(tabId + '-tab');
     if (targetPane) targetPane.classList.add('active');
     
     if (tabId === 'dashboard') {
@@ -661,51 +775,52 @@
   async function loadDashboard() {
     showLoading('Loading dashboard...');
     try {
-      const data = await callApi('getCALDashboardData', []);
+      var data = await callApi('getCALDashboardData', []);
       if (data && data.success) {
         renderDashboard(data);
-        await logForesight('CAL', 'DASHBOARD_LOADED', `Total: ${data.summary?.total}, Overdue: ${data.summary?.overdue}`);
+        await logForesight('CAL', 'DASHBOARD_LOADED', 'Total: ' + data.summary?.total + ', Overdue: ' + data.summary?.overdue);
       } else {
-        document.getElementById('dashboardContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">Error: ${data?.error || 'Unknown error'}</div>`;
+        document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + (data?.error || 'Unknown error') + '</div>';
         showToast(data?.error || 'Failed to load dashboard', 'error');
       }
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('dashboardContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">Connection error: ${error.message}</div>`;
+      document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Connection error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
   
   function renderDashboard(data) {
-    const s = data.summary;
-    const audit = data.audit;
+    var s = data.summary;
+    var audit = data.audit;
     
-    let html = `
+    var html = '
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value">${s.total}</div><div class="stat-label">Total Instruments</div></div>
-        <div class="stat-card"><div class="stat-value" style="color:var(--danger);">${s.overdue}</div><div class="stat-label">🔴 Overdue</div></div>
-        <div class="stat-card"><div class="stat-value" style="color:var(--warning);">${s.urgent}</div><div class="stat-label">🟡 Due ≤30d</div></div>
-        <div class="stat-card"><div class="stat-value" style="color:#a855f7;">${s.failed}</div><div class="stat-label">❌ Failed Last Cal</div></div>
+        <div class="stat-card"><div class="stat-value">' + s.total + '</div><div class="stat-label">Total Instruments</div></div>
+        <div class="stat-card"><div class="stat-value danger">' + s.overdue + '</div><div class="stat-label">🔴 Overdue</div></div>
+        <div class="stat-card"><div class="stat-value warning">' + s.urgent + '</div><div class="stat-label">🟡 Due ≤30d</div></div>
+        <div class="stat-card"><div class="stat-value purple">' + s.failed + '</div><div class="stat-label">❌ Failed Last Cal</div></div>
       </div>
-    `;
+    ';
     
     if (data.failedAlerts && data.failedAlerts.length > 0) {
-      html += `<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">`;
-      for (const alert of data.failedAlerts) {
-        html += `<div class="alert alert-failed"><strong>${escapeHtml(alert.tagId)}</strong> - ${escapeHtml(alert.name)}<br>Result: ${escapeHtml(alert.lastResult)}</div>`;
+      html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
+      for (var i = 0; i < data.failedAlerts.length; i++) {
+        var alert = data.failedAlerts[i];
+        html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
       }
-      html += `</div></div>`;
+      html += '</div></div>';
     }
     
-    html += `
+    html += '
       <div class="adk-card">
         <div class="card-header">📋 AUDIT RECOMMENDATIONS</div>
         <div class="card-body">
-          <ul style="margin-left: 20px;">${audit.recommendations.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+          <ul>' + audit.recommendations.map(function(r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul>
         </div>
       </div>
-    `;
+    ';
     
     document.getElementById('dashboardContent').innerHTML = html;
   }
@@ -716,12 +831,12 @@
   async function loadOverdueList() {
     showLoading('Loading overdue list...');
     try {
-      const list = await callApi('getOverdueAndDueList', []);
+      var list = await callApi('getOverdueAndDueList', []);
       renderOverdueList(list);
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('overdueContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">Error: ${error.message}</div>`;
+      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -732,39 +847,39 @@
       return;
     }
     
-    let html = `<div class="adk-card"><div class="card-header">📋 INSTRUMENTS (Overdue + Next 30 days)</div>
-      <div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>`;
+    var html = '<div class="adk-card"><div class="card-header">📋 INSTRUMENTS (Overdue + Next 30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
     
-    for (const item of list) {
-      const isOverdue = item.daysToExpiry < 0;
-      const status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
-      const rowClass = isOverdue ? 'overdue-row' : '';
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i];
+      var isOverdue = item.daysToExpiry < 0;
+      var status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
+      var rowClass = isOverdue ? 'overdue-row' : '';
       
-      html += `<tr class="${rowClass}">
-        <td><strong>${escapeHtml(item.tagId)}</strong></td>
-        <td>${escapeHtml(item.name)}</td>
-        <td>${new Date(item.nextCalibration).toLocaleDateString()}</td>
-        <td>${item.daysToExpiry}</td>
-        <td>${status}</td>
-      </tr>`;
+      html += '<tr class="' + rowClass + '">
+        <td><strong>' + escapeHtml(item.tagId) + '</strong></td>
+        <td>' + escapeHtml(item.name) + '</td>
+        <td>' + new Date(item.nextCalibration).toLocaleDateString() + '</td>
+        <td>' + item.daysToExpiry + '</td>
+        <td>' + status + '</td>
+      </tr>';
     }
     
-    html += `</tbody>}</div></div>`;
+    html += '</tbody></table></div></div>';
     document.getElementById('overdueContent').innerHTML = html;
   }
   
   // ============================================
-  // TAB 3: DRIFTING TRENDS (≥2 CALIBRATIONS)
+  // TAB 3: DRIFTING TRENDS
   // ============================================
   async function loadTrends() {
     showLoading('Loading instruments...');
     try {
-      const instruments = await callApi('getInstrumentsForTrend', []);
+      var instruments = await callApi('getInstrumentsForTrend', []);
       renderTrendSelector(instruments);
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('trendsContent').innerHTML = `<div class="adk-card" style="color: var(--danger);">Error: ${error.message}</div>`;
+      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -775,32 +890,28 @@
       return;
     }
     
-    let html = `<div class="adk-card"><div class="card-header">📈 DRIFTING TRENDS ANALYSIS</div>
-      <div class="card-body">
-        <div class="filters">
-          <select id="trendSelect" style="min-width: 300px;">
-            <option value="">-- Select an instrument (min 2 calibrations) --</option>
-            ${instruments.map(i => `<option value="${escapeHtml(i.tagId)}">${escapeHtml(i.tagId)} - ${escapeHtml(i.name)} (${i.historyCount} cal)</option>`).join('')}
-          </select>
-          <button id="analyzeTrendBtn" class="adk-btn adk-btn-primary">🔍 Analyze Trend</button>
-        </div>
-        <div id="trendResult" style="margin-top: 20px;"></div>
-      </div>
-    </div>`;
+    var html = '<div class="adk-card"><div class="card-header">📈 DRIFTING TRENDS ANALYSIS</div><div class="card-body"><div class="filters"><select id="trendSelect" style="min-width: 300px;"><option value="">-- Select an instrument (min 2 calibrations) --</option>';
+    
+    for (var i = 0; i < instruments.length; i++) {
+      var instr = instruments[i];
+      html += '<option value="' + escapeHtml(instr.tagId) + '">' + escapeHtml(instr.tagId) + ' - ' + escapeHtml(instr.name) + ' (' + instr.historyCount + ' cal)</option>';
+    }
+    
+    html += '</select><button id="analyzeTrendBtn" class="adk-btn adk-btn-primary"><i class="fas fa-search"></i> Analyze Trend</button></div><div id="trendResult" style="margin-top: 20px;"></div></div></div>';
     
     document.getElementById('trendsContent').innerHTML = html;
     
-    const analyzeBtn = document.getElementById('analyzeTrendBtn');
+    var analyzeBtn = document.getElementById('analyzeTrendBtn');
     if (analyzeBtn) {
-      analyzeBtn.addEventListener('click', () => loadTrendData());
+      analyzeBtn.addEventListener('click', function() { loadTrendData(); });
     }
   }
   
   async function loadTrendData() {
-    const select = document.getElementById('trendSelect');
+    var select = document.getElementById('trendSelect');
     if (!select) return;
     
-    const tagId = select.value;
+    var tagId = select.value;
     if (!tagId) {
       showToast('Please select an instrument', 'warning');
       return;
@@ -808,44 +919,37 @@
     
     showLoading('Analyzing trend...');
     try {
-      const trend = await callApi('getCALTrendData', [tagId]);
+      var trend = await callApi('getCALTrendData', [tagId]);
       
-      await logForesight('CAL', 'TREND_ANALYZED', `Instrument: ${tagId}, Trend: ${trend.trend}`);
+      await logForesight('CAL', 'TREND_ANALYZED', 'Instrument: ' + tagId + ', Trend: ' + trend.trend);
       
       if (trend.error) {
-        document.getElementById('trendResult').innerHTML = `<div class="adk-card" style="color: var(--danger);">${trend.error}</div>`;
+        document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">' + trend.error + '</div>';
         hideLoading();
         return;
       }
       
-      let html = `<div class="adk-card" style="margin-top:0;">
-        <div class="card-body">
-          <p><strong>${escapeHtml(trend.name)}</strong> (${escapeHtml(trend.tagId)})</p>
-          <p>📆 Frequency: ${trend.frequency} months | 📏 Tolerance: ${escapeHtml(trend.tolerance)}</p>`;
+      var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body"><p><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p><p>📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>';
       
       if (trend.deviations && trend.deviations.length > 0) {
-        html += `<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr><th>Date</th><th>Deviation</th><th>Result</th></tr></thead><tbody>`;
-        for (const d of trend.deviations) {
-          html += `<tr>
-            <td>${new Date(d.date).toLocaleDateString()}</td>
-            <td class="trend-deviation">${d.deviation}</td>
-            <td>${escapeHtml(d.result) || '—'}</td>
-          </tr>`;
+        html += '<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr><th>Date</th><th>Deviation</th><th>Result</th></tr></thead><tbody>';
+        for (var i = 0; i < trend.deviations.length; i++) {
+          var d = trend.deviations[i];
+          html += '<tr><td>' + new Date(d.date).toLocaleDateString() + '</td><td class="trend-deviation">' + d.deviation + '</td><td>' + escapeHtml(d.result || '—') + '</td></tr>';
         }
-        html += `</tbody>}</div>`;
+        html += '</tbody></table></div>';
       } else {
-        html += `<p>📊 No deviation data available for this instrument.</p>`;
+        html += '<p>📊 No deviation data available for this instrument.</p>';
       }
       
-      const alertClass = trend.trend === 'drifting' ? 'alert-critical' : (trend.trend === 'stable' ? 'alert-safe' : 'alert-warning');
-      html += `<div class="alert ${alertClass}" style="margin-top: 16px;">${escapeHtml(trend.suggestion)}</div>`;
-      html += `</div></div>`;
+      var alertClass = trend.trend === 'drifting' ? 'alert-critical' : (trend.trend === 'stable' ? 'alert-safe' : 'alert-warning');
+      html += '<div class="alert ' + alertClass + '" style="margin-top: 16px;">' + escapeHtml(trend.suggestion) + '</div></div></div>';
       
       document.getElementById('trendResult').innerHTML = html;
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('trendResult').innerHTML = `<div class="adk-card" style="color: var(--danger);">Error: ${error.message}</div>`;
+      document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -858,8 +962,8 @@
     
     showLoading('Generating PDF...');
     try {
-      const htmlContent = await callApi('generateAuditPDF', []);
-      const win = window.open('', '_blank');
+      var htmlContent = await callApi('generateAuditPDF', []);
+      var win = window.open('', '_blank');
       if (!win) {
         showToast('Popup blocked. Please allow popups.', 'error');
         hideLoading();
@@ -889,44 +993,68 @@
   }
   
   // ============================================
-  // EVENT LISTENERS & INITIALIZATION
+  // MAIN INIT
   // ============================================
-  document.addEventListener('DOMContentLoaded', function() {
-    const exportBtn = document.getElementById('exportBtn');
-    
-    // Log dashboard open
-    logForesight('CAL', 'OPEN_DASHBOARD', 'User accessed CAL Intelligence Dashboard');
-    
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => exportPDF());
-    }
-    
-    // Tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const tabId = this.getAttribute('data-tab');
-        const tabNames = {
-          'dashboard': 'Dashboard & Audit',
-          'overdue': 'Overdue & Due',
-          'trends': 'Drifting Trends'
-        };
-        logForesight('CAL', 'CHANGE_TAB', `User switched to: ${tabNames[tabId] || tabId}`);
-        showTab(tabId);
-      });
-    });
-    
-    // Load API URL and initialize
+  async function init() {
+    loadUser();
+    showLoading('Loading calibration data...');
     loadApiUrl();
     
-    // Request logo and version from parent
-    if (window.parent !== window) {
-      window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
-      window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+    if (!EAMS_API_URL) {
+      hideLoading();
+      showToast('API URL not configured. Please login.', 'error');
+      return;
     }
     
-    // Initial load
-    loadDashboard();
-  });
+    try {
+      // Log dashboard open
+      await logForesight('CAL', 'OPEN_DASHBOARD', 'User accessed CAL Intelligence Dashboard');
+      
+      // Setup export button
+      var exportBtn = document.getElementById('exportBtn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() { exportPDF(); });
+      }
+      
+      // Setup tabs
+      document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tabId = this.getAttribute('data-tab');
+          var tabNames = {
+            'dashboard': 'Dashboard & Audit',
+            'overdue': 'Overdue & Due',
+            'trends': 'Drifting Trends'
+          };
+          logForesight('CAL', 'CHANGE_TAB', 'User switched to: ' + (tabNames[tabId] || tabId));
+          showTab(tabId);
+        });
+      });
+      
+      // Request logo and version from parent
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+        window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+      }
+      
+      // Initial load
+      await loadDashboard();
+      
+      hideLoading();
+      showToast('CAL Intelligence loaded successfully ✅', 'success');
+      document.getElementById('footer-status').innerText = 'Ready';
+      
+    } catch(err) {
+      hideLoading();
+      showToast('Error loading data: ' + err.message, 'error');
+    }
+  }
+  
+  // Iniciar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 </script>
 </body>
 </html>
