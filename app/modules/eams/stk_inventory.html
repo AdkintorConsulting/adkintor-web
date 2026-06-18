@@ -161,9 +161,7 @@
             display: flex;
         }
 
-	<!-- TOAST -->
-	<div id="toastContainer"></div>
-        
+     
         .spinner {
             width: 36px;
             height: 36px;
@@ -176,10 +174,17 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+	<!-- LOADING -->
+	<div id="loadingOverlay">
+	    <div class="spinner"></div>
+	    <span style="color: #666; font-size: 13px;">Loading Inventory Hub...</span>
+	</div>
+
+	<!-- TOAST -->
+	<div id="toastContainer"></div>
         
-        /* ============================================
-           TOAST - ARRIBA DERECHA
-           ============================================ */
+
 	/* ============================================
 	   TOAST - ARRIBA DERECHA (FALTANTE)
 	   ============================================ */
