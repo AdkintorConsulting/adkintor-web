@@ -107,7 +107,7 @@
         }
         
         /* ============================================
-           FOOTER - BLANCO
+           FOOTER - BLANCO (SOLO CONNECTED + VERSIÓN)
            ============================================ */
         .module-footer {
             display: flex;
@@ -309,7 +309,7 @@
         }
 
         .btn-search i {
-            margin-right: 6px;
+            margin-right: 4px;
         }
 
         #suggestions {
@@ -389,33 +389,12 @@
             margin-right: 4px;
         }
 
-        .footer-buttons {
+        /* Botones dentro del body */
+        .action-buttons {
             display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: #1a1a2e;
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.7rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #2c2c4e;
-        }
-
-        .btn-primary:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-            opacity: 0.7;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: flex-end;
         }
 
         .btn-secondary {
@@ -458,9 +437,8 @@
             opacity: 0.7;
         }
 
-        .btn-save i,
-        .btn-primary i,
-        .btn-secondary i {
+        .btn-secondary i,
+        .btn-save i {
             margin-right: 4px;
         }
 
@@ -514,10 +492,36 @@
             gap: 10px;
         }
 
-        .modal-buttons .btn-secondary,
-        .modal-buttons .btn-primary {
-            padding: 8px 24px;
-            font-size: 0.75rem;
+        .btn-modal-primary {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-modal-primary:hover {
+            background: #2c2c4e;
+        }
+
+        .btn-modal-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-modal-secondary:hover {
+            background: #5a6268;
         }
 
         /* Scrollbar */
@@ -550,16 +554,13 @@
                 padding: 10px;
                 width: 100%;
             }
-            .footer-buttons {
-                flex-wrap: wrap;
+            .action-buttons {
+                flex-direction: column;
             }
-            .footer-buttons .btn-primary,
-            .footer-buttons .btn-secondary,
-            .footer-buttons .btn-save {
-                flex: 1;
+            .action-buttons .btn-secondary,
+            .action-buttons .btn-save {
+                width: 100%;
                 text-align: center;
-                font-size: 0.65rem;
-                padding: 6px 12px;
             }
         }
     </style>
@@ -632,24 +633,22 @@
                     <i class="fas fa-info-circle"></i> Tasks will be tagged as <strong>MANUAL</strong> in MAINT_PLANNER
                 </p>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
+                <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
+            </div>
         </div>
     </div>
     
-    <!-- FOOTER -->
+    <!-- FOOTER - SOLO CONNECTED + VERSIÓN -->
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
             <span>Connected</span>
         </span>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="footer-version" id="eamsVersion">v1.0.0</span>
-            <span style="color: #e2e8f0; margin: 0 4px;">|</span>
-            <div class="footer-buttons">
-                <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
-                <button class="btn-secondary" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
-                <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
-            </div>
-        </div>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
     
 </div>
@@ -746,7 +745,8 @@
         }
     }
 
-    async function callApi(action, args = []) {
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
         if (!EAMS_API_URL) {
             throw new Error('API URL not configured. Please log in.');
         }
@@ -787,8 +787,8 @@
         }
         
         try {
-            const weekList = weeks.map(function(w) { return 'W' + w.week; }).join(',');
-            const details = 'Manual PM: ' + assetId + ' | Freq: ' + frequency + ' | Weeks: ' + weekList;
+            var weekList = weeks.map(function(w) { return 'W' + w.week; }).join(',');
+            var details = 'Manual PM: ' + assetId + ' | Freq: ' + frequency + ' | Weeks: ' + weekList;
             
             await window.Logger.audit('CREATE_MANUAL_PM', 'PVT', assetId, '', '', '', details);
             console.log('[PVT] Manual PM creation logged:', assetId);
@@ -805,14 +805,14 @@
     // ============================================
     // GLOBAL STATE
     // ============================================
-    let configData = { frequencies: [], assets: [], availableYears: [] };
-    let selectedAsset = null;
-    let generatedWeeks = [];
-    let pendingSavePayload = null;
-    let suggestionTimeout = null;
+    var configData = { frequencies: [], assets: [], availableYears: [] };
+    var selectedAsset = null;
+    var generatedWeeks = [];
+    var pendingSavePayload = null;
+    var suggestionTimeout = null;
 
     // ============================================
-    // AUTOCOMPLETE - SUGERENCIAS (Issue #2)
+    // AUTOCOMPLETE - SUGERENCIAS
     // ============================================
     async function getSuggestions(val) {
         var suggestionsDiv = document.getElementById('suggestions');
@@ -842,16 +842,11 @@
         }, 300);
     }
 
-    window.getSuggestions = getSuggestions;
-
     function selectTL(val) {
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
-        // Auto-trigger search
         searchTL();
     }
-
-    window.selectTL = selectTL;
 
     // ============================================
     // SEARCH TL
@@ -915,8 +910,6 @@
             hideLoading();
         }
     }
-
-    window.searchTL = searchTL;
 
     // ============================================
     // LOAD CONFIGURATION
@@ -1021,8 +1014,6 @@
         validateForm();
     }
 
-    window.calculateWeeks = calculateWeeks;
-
     function validateForm() {
         var btn = document.getElementById('saveBtn');
         var hasAsset = selectedAsset !== null;
@@ -1045,8 +1036,6 @@
             resetFormAndRefresh();
         }
     }
-
-    window.refreshForm = refreshForm;
 
     function resetFormAndRefresh() {
         document.getElementById('search-input').value = '';
@@ -1104,8 +1093,6 @@
         }
     }
 
-    window.saveManualPlan = saveManualPlan;
-
     // ============================================
     // MODALS
     // ============================================
@@ -1119,8 +1106,8 @@
                     '<h3>Confirm Action</h3>' +
                     '<p>Save ' + generatedWeeks.length + ' manual task(s) for ' + escapeHtml(selectedAsset.name) + '?</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>' +
-                        '<button class="btn-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">Cancel</button>' +
+                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1138,8 +1125,6 @@
         if (modal) modal.remove();
     }
 
-    window.closeConfirmModal = closeConfirmModal;
-
     function showWarningModal() {
         var modalHtml = 
             '<div class="modal-overlay" id="warningModal">' +
@@ -1150,8 +1135,8 @@
                     '<h3>⚠️ No Annual Plan Found</h3>' +
                     '<p>No annual strategy plan found for ' + escapeHtml(selectedAsset.name) + ' (' + escapeHtml(selectedAsset.id) + ') in ' + document.getElementById('yearSelect').value + '.<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-secondary" onclick="closeWarningModal()">Cancel</button>' +
-                        '<button class="btn-primary" id="warningConfirmBtn">Continue Anyway</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeWarningModal()">Cancel</button>' +
+                        '<button class="btn-modal-primary" id="warningConfirmBtn">Continue Anyway</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1169,8 +1154,6 @@
         if (modal) modal.remove();
     }
 
-    window.closeWarningModal = closeWarningModal;
-
     async function executeSave() {
         if (!pendingSavePayload) return;
         
@@ -1181,7 +1164,6 @@
             hideLoading();
             
             if (response.status === 'success') {
-                // Obtener usuario actual para logging (Issue #1)
                 var session = localStorage.getItem('adkintor_session');
                 var currentUser = 'system';
                 if (session) {
@@ -1221,7 +1203,6 @@
             });
         }
         
-        // Cerrar sugerencias al hacer clic fuera
         document.addEventListener('click', function(e) {
             var suggestions = document.getElementById('suggestions');
             var input = document.getElementById('search-input');
