@@ -1938,106 +1938,100 @@
     // ============================================
     // MAIN INIT
     // ============================================
-    function init() {
-        loadUser();
-        showLoading('Loading Procurement Hub...');
-        loadApiUrl();
-        if (!EAMS_API_URL) {
-            hideLoading();
-            showToast('API URL not configured. Please login.', 'error');
-            return;
+function init() {
+    loadUser();
+    showLoading('Loading Procurement Hub...');
+    loadApiUrl();
+    if (!EAMS_API_URL) {
+        hideLoading();
+        showToast('API URL not configured. Please login.', 'error');
+        return;
+    }
+    
+    Promise.all([
+        callApi('STK_getCurrentUserEmail'),
+        callApi('STK_getProcurementHubConfig'),
+        callApi('STK_getFullCatalog'),
+        callApi('STK_getExistingVendors')
+    ])
+    .then(function(results) {
+        var email = results[0];
+        currentUser = email || 'User';
+        var userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = currentUser;
+        
+        var configRaw = results[1];
+        var config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
+        budgetAreas = config.budgetAreas || [];
+        
+        var paymentSelect = document.getElementById('paymentMethod');
+        if (config.paymentMethods) {
+            for (var i = 0; i < config.paymentMethods.length; i++) {
+                paymentSelect.innerHTML += '<option value="' + escapeHtml(config.paymentMethods[i]) + '">' + escapeHtml(config.paymentMethods[i]) + '</option>';
+            }
         }
         
-        Promise.all([
-            callApi('STK_getCurrentUserEmail'),
-            callApi('STK_getProcurementHubConfig'),
-            callApi('STK_getFullCatalog'),
-            callApi('STK_getExistingVendors')
-        ])
-        .then(function(results) {
-            var email = results[0];
-            currentUser = email || 'User';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser;
-            
-            var configRaw = results[1];
-            var config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
-            budgetAreas = config.budgetAreas || [];
-            
-            var paymentSelect = document.getElementById('paymentMethod');
-            if (config.paymentMethods) {
-                for (var i = 0; i < config.paymentMethods.length; i++) {
-                    paymentSelect.innerHTML += '<option value="' + escapeHtml(config.paymentMethods[i]) + '">' + escapeHtml(config.paymentMethods[i]) + '</option>';
+        var budgetSelect = document.getElementById('budgetArea');
+        for (var i = 0; i < budgetAreas.length; i++) {
+            budgetSelect.innerHTML += '<option value="' + escapeHtml(budgetAreas[i].name) + '" data-code="' + escapeHtml(budgetAreas[i].code) + '">' + escapeHtml(budgetAreas[i].name) + '</option>';
+        }
+        budgetSelect.onchange = function() {
+            var opt = budgetSelect.options[budgetSelect.selectedIndex];
+            document.getElementById('budgetCode').value = opt?.getAttribute('data-code') || '';
+        };
+        
+        var statusFilter = document.getElementById('statusFilter');
+        if (config.statuses) {
+            for (var i = 0; i < config.statuses.length; i++) {
+                statusFilter.innerHTML += '<option value="' + escapeHtml(config.statuses[i]) + '">' + escapeHtml(config.statuses[i]) + '</option>';
+            }
+        }
+        
+        catalog = results[2] || [];
+        allVendors = results[3] || [];
+        
+        // Vendor suggestions
+        var vendorInput = document.getElementById('vendor');
+        var vendorDiv = document.getElementById('vendorSuggestions');
+        vendorInput.addEventListener('input', function() {
+            var term = vendorInput.value.trim().toLowerCase();
+            if (term.length < 2) { vendorDiv.style.display = 'none'; return; }
+            var matches = [];
+            for (var i = 0; i < allVendors.length; i++) {
+                if (allVendors[i].toLowerCase().indexOf(term) !== -1) {
+                    matches.push(allVendors[i]);
                 }
             }
-            
-            var budgetSelect = document.getElementById('budgetArea');
-            for (var i = 0; i < budgetAreas.length; i++) {
-                budgetSelect.innerHTML += '<option value="' + escapeHtml(budgetAreas[i].name) + '" data-code="' + escapeHtml(budgetAreas[i].code) + '">' + escapeHtml(budgetAreas[i].name) + '</option>';
+            if (matches.length) {
+                var html = '';
+                for (var i = 0; i < matches.length; i++) {
+                    html += '<div onclick="document.getElementById(\'vendor\').value=\'' + escapeHtml(matches[i]) + '\'; this.parentElement.style.display=\'none\';">' + escapeHtml(matches[i]) + '</div>';
+                }
+                vendorDiv.innerHTML = html;
+                vendorDiv.style.display = 'block';
+            } else {
+                vendorDiv.style.display = 'none';
             }
-            budgetSelect.onchange = function() {
-                var opt = budgetSelect.options[budgetSelect.selectedIndex];
-                document.getElementById('budgetCode').value = opt?.getAttribute('data-code') || '';
-            };
-            
-            var statusFilter = document.getElementById('statusFilter');
-            if (config.statuses) {
-                for (var i = 0; i < config.statuses.length; i++) {
-                    statusFilter.innerHTML += '<option value="' + escapeHtml(config.statuses[i]) + '">' + escapeHtml(config.statuses[i]) + '</option>';
-                }
-            }
-            
-            catalog = results[2] || [];
-            allVendors = results[3] || [];
-            
-            // Vendor suggestions
-            var vendorInput = document.getElementById('vendor');
-            var vendorDiv = document.getElementById('vendorSuggestions');
-            vendorInput.addEventListener('input', function() {
-                var term = vendorInput.value.trim().toLowerCase();
-                if (term.length < 2) { vendorDiv.style.display = 'none'; return; }
-                var matches = [];
-                for (var i = 0; i < allVendors.length; i++) {
-                    if (allVendors[i].toLowerCase().indexOf(term) !== -1) {
-                        matches.push(allVendors[i]);
-                    }
-                }
-                if (matches.length) {
-                    var html = '';
-                    for (var i = 0; i < matches.length; i++) {
-                        html += '<div onclick="document.getElementById(\'vendor\').value=\'' + escapeHtml(matches[i]) + '\'; this.parentElement.style.display=\'none\';">' + escapeHtml(matches[i]) + '</div>';
-                    }
-                    vendorDiv.innerHTML = html;
-                    vendorDiv.style.display = 'block';
-                } else {
-                    vendorDiv.style.display = 'none';
-                }
-            });
-            document.addEventListener('click', function(e) {
-                if (vendorInput && !vendorInput.contains(e.target) && !vendorDiv.contains(e.target)) {
-                    vendorDiv.style.display = 'none';
-                }
-            });
-            
-            addReqItem();
-            return refreshTracker();
-        })
-        .then(function() {
-            hideLoading();
-            showToast('Procurement Hub loaded successfully ✅', 'success');
-            document.getElementById('footer-status').innerText = 'Ready';
-        })
-        .catch(function(err) {
-            hideLoading();
-            showToast('Init error: ' + err.message, 'error');
         });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+        document.addEventListener('click', function(e) {
+            if (vendorInput && !vendorInput.contains(e.target) && !vendorDiv.contains(e.target)) {
+                vendorDiv.style.display = 'none';
+            }
+        });
+        
+        addReqItem();
+        return refreshTracker();
+    })
+    .then(function() {
+        hideLoading();
+        showToast('Procurement Hub loaded successfully ✅', 'success');
+        document.getElementById('footer-status').innerText = 'Ready';
+    })
+    .catch(function(err) {
+        hideLoading();
+        showToast('Init error: ' + err.message, 'error');
+    });
+}
 </script>
 </body>
 </html>
