@@ -1127,41 +1127,40 @@
     // ============================================
     // INITIALIZATION - CON SPINNER
     // ============================================
-function init() {
-    // ✅ PRIMERO: Mostrar el spinner ANTES de cualquier otra cosa
+async function init() {
+    // ✅ PRIMERO: Mostrar el spinner
     showLoading('Loading Activity Builder...');
     
-    // ✅ Forzar un pequeño retraso para asegurar que el DOM se actualice
-    setTimeout(function() {
-        loadUser();
-        loadApiUrl();
-        if (EAMS_API_URL) {
-            updateDashboard();
-            loadHierarchyTree();
-            hideLoading();
-            showToast('Activity Builder loaded successfully ✅', 'success');
-            document.getElementById('footer-status').innerText = 'Ready';
-        } else {
-            hideLoading();
-            showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
-        }
-    }, 50);
+    // ✅ Cargar todo antes de ocultar el spinner
+    loadUser();
+    loadApiUrl();
+    
+    if (EAMS_API_URL) {
+        await updateDashboard();      // ✅ Espera a que termine
+        await loadHierarchyTree();    // ✅ Espera a que termine
+        hideLoading();                // ✅ Ahora sí, se oculta al final
+        showToast('Activity Builder loaded successfully ✅', 'success');
+        document.getElementById('footer-status').innerText = 'Ready';
+    } else {
+        hideLoading();
+        showToast('API URL not configured. Please log in first.', 'error');
+        document.getElementById('footer-status').innerText = 'Not Configured';
+    }
 }
 
-    async function updateDashboard() {
-        try {
-            var stats = await callApi('PVT_getProgressStats', []);
-            if (stats) {
-                document.getElementById('stat-total').innerText = stats.total || 0;
-                document.getElementById('stat-done').innerText = stats.done || 0;
-                document.getElementById('stat-perc').innerText = stats.percent || 0;
-                document.getElementById('stat-bar').style.width = (stats.percent || 0) + '%';
-            }
-        } catch (e) {
-            console.error('Error loading stats:', e);
+async function updateDashboard() {
+    try {
+        var stats = await callApi('PVT_getProgressStats', []);
+        if (stats) {
+            document.getElementById('stat-total').innerText = stats.total || 0;
+            document.getElementById('stat-done').innerText = stats.done || 0;
+            document.getElementById('stat-perc').innerText = stats.percent || 0;
+            document.getElementById('stat-bar').style.width = (stats.percent || 0) + '%';
         }
+    } catch (e) {
+        console.error('Error loading stats:', e);
     }
+}
 
     async function loadHierarchyTree() {
         try {
