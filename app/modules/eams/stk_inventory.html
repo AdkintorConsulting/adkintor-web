@@ -1514,34 +1514,30 @@ async function loadUserEmail() {
     // ============================================
     // MAIN INIT
     // ============================================
-    function init() {
-        loadUser();
-        showLoading('Loading Inventory Hub...');
-        loadApiUrl();
-        if (!EAMS_API_URL) {
+function init() {
+    loadUser();
+    showLoading('Loading Inventory Hub...');
+    loadApiUrl();
+    if (!EAMS_API_URL) {
+        hideLoading();
+        showToast('Session error: missing API URL. Please login first.', 'error');
+        return;
+    }
+    Promise.all([loadUserEmail(), loadKPI(), loadFilters(), loadAdjustmentReasons(), loadUnits(), loadCurrencies()])
+        .then(function() {
+            return refreshCatalog(false);
+        })
+        .then(function() {
+            document.getElementById('footer-status').innerText = 'Connected';
             hideLoading();
-            showToast('Session error: missing API URL. Please login first.', 'error');
-            return;
-        }
-        Promise.all([loadUserEmail(), loadKPI(), loadFilters(), loadAdjustmentReasons(), loadUnits(), loadCurrencies()])
-            .then(function() {
-                refreshCatalog(false);
-                document.getElementById('footer-status').innerText = 'Connected';
-                hideLoading();
-                showToast('Inventory Hub loaded successfully ✅', 'success');
-                setupAssetSuggestions();
-            })
-            .catch(function(err) {
-                hideLoading();
-                showToast('Error loading data: ' + err.message, 'error');
-            });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+            showToast('Inventory Hub loaded successfully ✅', 'success');
+            setupAssetSuggestions();
+        })
+        .catch(function(err) {
+            hideLoading();
+            showToast('Error loading data: ' + err.message, 'error');
+        });
+}
 </script>
 </body>
 </html>
