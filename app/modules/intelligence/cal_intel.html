@@ -3,189 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAL Intelligence - ADKINTOR FORESIGHT</title>
+  <title>FORESIGHT - CAL Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     /* ============================================
-       BASE - ESTÁNDAR ADKINTOR
+       FORESIGHT DARK MODE THEME (ORIGINAL)
        ============================================ */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111827;
+      --bg-card: #1a1a2e;
+      --bg-hover: #1f2937;
+      --border-color: #2d2d44;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-color: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.2);
+      --success: #00e676;
+      --warning: #ffb74d;
+      --danger: #ff5252;
+      --info: #00e5ff;
+      --gray: #64748b;
+      --border-radius-sm: 8px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f9;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       height: 100vh;
       overflow: hidden;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
     }
     
     /* ============================================
-       WRAPPER
-       ============================================ */
-    .module-wrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background: #f4f6f9;
-    }
-    
-    /* ============================================
-       CABECERA - AZUL OSCURO (ESTÁNDAR)
-       ============================================ */
-    .module-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: #1a1a2e;
-      border-bottom: 2px solid #2a2f4a;
-      flex-shrink: 0;
-      min-height: 56px;
-    }
-    
-    .header-left {
-      display: flex;
-      align-items: center;
-    }
-    
-    .module-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .module-title i {
-      margin-right: 8px;
-      color: #00e5ff;
-    }
-    
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .user-badge {
-      font-size: 12px;
-      color: #e0e0e0;
-      background: rgba(255,255,255,0.15);
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .company-logo {
-      height: 32px;
-      width: auto;
-      display: none;
-    }
-    
-    /* ============================================
-       BREADCRUMBS (ESTÁNDAR)
-       ============================================ */
-    .breadcrumbs {
-      padding: 8px 20px;
-      font-size: 12px;
-      color: #888;
-      background: #f8f9fa;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .breadcrumbs .current {
-      color: #1a1a2e;
-      font-weight: 600;
-    }
-    
-    .breadcrumbs .foresight-tag {
-      color: #00e5ff;
-      font-weight: 600;
-    }
-    
-    /* ============================================
-       CUERPO (ESTÁNDAR CON FONDO CLARO)
-       ============================================ */
-    .module-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
-      background: #f4f6f9;
-    }
-    
-    /* ============================================
-       FOOTER - BLANCO (ESTÁNDAR)
-       ============================================ */
-    .module-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 20px;
-      background: #ffffff;
-      border-top: 1px solid #eee;
-      font-size: 11px;
-      color: #999;
-      flex-shrink: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .status-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
-    
-    .status-dot.connected {
-      background: #22c55e;
-    }
-    
-    .footer-version {
-      color: #4a6cf7;
-      font-weight: 500;
-    }
-    
-    /* ============================================
-       LOADING OVERLAY (ESTÁNDAR)
-       ============================================ */
-    #loadingOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(244, 246, 249, 0.95);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      gap: 12px;
-    }
-    
-    #loadingOverlay.visible {
-      display: flex;
-    }
-    
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid #e0e0e0;
-      border-top-color: #1a1a2e;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* ============================================
-       TOAST - ARRIBA DERECHA (ESTÁNDAR)
+       TOAST - ESTÁNDAR ADKINTOR (DARK)
        ============================================ */
     #toastContainer {
       position: fixed;
@@ -201,35 +56,192 @@
     
     #toastContainer .toast {
       pointer-events: auto;
-      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border-left: 4px solid var(--info);
+      padding: 12px 16px;
       border-radius: 6px;
-      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      color: var(--text-primary);
       font-size: 13px;
       font-weight: 500;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: toastSlideIn 0.3s ease-out;
+      font-family: 'Inter', sans-serif;
     }
     
-    #toastContainer .toast-success { background: #22c55e; }
-    #toastContainer .toast-error { background: #dc3545; }
-    #toastContainer .toast-warning { background: #f59e0b; }
-    #toastContainer .toast-info { background: #1a1a2e; }
+    #toastContainer .toast-success { border-left-color: var(--success); }
+    #toastContainer .toast-error { border-left-color: var(--danger); }
+    #toastContainer .toast-warning { border-left-color: var(--warning); }
+    #toastContainer .toast-info { border-left-color: var(--info); }
     
-    @keyframes toastSlideIn {
+    .toast-close {
+      cursor: pointer;
+      margin-left: auto;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .toast-close:hover { opacity: 1; }
+    
+    @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     
-    @keyframes toastSlideOut {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(100%); opacity: 0; }
+    /* ============================================
+       LOADING OVERLAY - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(4px);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      gap: 12px;
+    }
+    
+    #loadingOverlay.visible {
+      display: flex;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
     
     /* ============================================
-       ESTILOS ESPECÍFICOS DEL MÓDULO (FORESIGHT)
+       HEADER - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    .eams-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 24px;
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      min-height: 56px;
+    }
+    
+    .eams-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent-color);
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .eams-header h2 i {
+      margin-right: 8px;
+    }
+    
+    .user-badge {
+      font-size: 12px;
+      color: var(--text-primary);
+      background: rgba(0, 229, 255, 0.15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .company-logo {
+      height: 32px;
+      width: auto;
+      display: none;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    /* ============================================
+       BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    .breadcrumbs {
+      padding: 8px 24px;
+      background: var(--bg-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .breadcrumbs .foresight-tag {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    .breadcrumbs .current {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       FOOTER - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    .eams-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 24px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-secondary);
+      position: sticky;
+      bottom: 0;
+      z-index: 1000;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    
+    .status-dot.connected {
+      background: var(--success);
+    }
+    
+    .footer-version {
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+    
+    /* ============================================
+       DASHBOARD CONTAINER (ORIGINAL)
        ============================================ */
     .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 115px);
+      padding: 20px;
+      background: var(--bg-primary);
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -240,22 +252,20 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 16px;
-      border-bottom: 2px solid #1a1a2e;
+      border-bottom: 1px solid var(--border-color);
     }
     
     .logo-area h1 { 
       font-size: 20px; 
-      color: #1a1a2e; 
+      color: var(--accent-color); 
       margin-bottom: 4px; 
-    }
-    
-    .logo-area h1 i {
-      color: #00e5ff;
+      font-family: 'Inter', sans-serif;
     }
     
     .logo-area p { 
-      font-size: 12px; 
-      color: #64748b; 
+      font-size: 11px; 
+      color: var(--text-secondary); 
+      font-family: 'Inter', sans-serif;
     }
     
     /* Tabs */
@@ -263,7 +273,7 @@
       display: flex;
       gap: 4px;
       margin-bottom: 20px;
-      border-bottom: 2px solid #e2e8f0;
+      border-bottom: 1px solid var(--border-color);
       flex-wrap: wrap;
     }
     
@@ -273,22 +283,22 @@
       border-radius: 8px 8px 0 0;
       font-weight: 600;
       font-size: 13px;
-      color: #64748b;
+      color: var(--text-secondary);
       transition: all 0.2s;
       background: transparent;
       border: none;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     
     .tab-btn:hover { 
-      background: #e2e8f0; 
-      color: #1a1a2e; 
+      background: var(--bg-hover); 
+      color: white; 
     }
     
     .tab-btn.active { 
-      background: #1a1a2e; 
-      color: white; 
-      border-bottom: 3px solid #00e5ff; 
+      background: var(--bg-hover); 
+      color: var(--accent-color); 
+      border-bottom: 2px solid var(--accent-color); 
     }
     
     .content-panel {
@@ -320,49 +330,43 @@
     }
     
     .stat-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
       padding: 20px;
       text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .stat-value {
       font-size: 32px;
       font-weight: 800;
-      color: #1a1a2e;
+      color: var(--accent-color);
+      font-family: 'Inter', sans-serif;
     }
-    
-    .stat-value.danger { color: #dc3545; }
-    .stat-value.warning { color: #f59e0b; }
-    .stat-value.purple { color: #8b5cf6; }
     
     .stat-label {
       font-size: 12px;
-      color: #64748b;
+      color: var(--text-secondary);
       margin-top: 4px;
-      font-weight: 600;
+      font-family: 'Inter', sans-serif;
     }
     
     /* Cards */
     .adk-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
       margin-bottom: 20px;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .card-header {
-      padding: 14px 20px;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
       font-weight: 600;
-      font-size: 15px;
-      background: #f8fafc;
-      color: #1a1a2e;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 16px;
+      background: rgba(0,0,0,0.2);
+      font-family: 'Inter', sans-serif;
     }
     
     .card-body {
@@ -372,17 +376,17 @@
     /* Alerts */
     .alert {
       padding: 12px 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       margin-bottom: 10px;
       border-left: 4px solid;
       font-size: 13px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     
-    .alert-critical { background: #fef2f2; border-left-color: #dc3545; }
-    .alert-warning { background: #fffbeb; border-left-color: #f59e0b; }
-    .alert-failed { background: #f5f3ff; border-left-color: #8b5cf6; }
-    .alert-safe { background: #f0fdf4; border-left-color: #22c55e; }
+    .alert-critical { background: rgba(255,82,82,0.15); border-left-color: var(--danger); }
+    .alert-warning { background: rgba(255,183,77,0.15); border-left-color: var(--warning); }
+    .alert-failed { background: rgba(168, 85, 247, 0.15); border-left-color: #a855f7; }
+    .alert-safe { background: rgba(0,230,118,0.15); border-left-color: var(--success); }
     
     /* Tables */
     .table-wrapper {
@@ -394,49 +398,47 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     
     th {
       text-align: left;
-      padding: 10px 12px;
-      background: #f8fafc;
-      font-weight: 700;
-      color: #475569;
-      border-bottom: 2px solid #1a1a2e;
-      font-size: 11px;
-      text-transform: uppercase;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
     }
     
     td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
       vertical-align: middle;
     }
     
-    tr:hover td {
-      background: #f8fafc;
+    tr:hover {
+      background: rgba(0, 229, 255, 0.05);
     }
     
     .overdue-row td:first-child,
-    .overdue-row td:nth-child(3) {
-      color: #dc3545;
-      font-weight: 600;
+    .overdue-row td:nth-child(4) {
+      color: var(--danger);
+      font-weight: 500;
     }
     
     /* Badges */
     .badge {
       display: inline-block;
-      padding: 3px 10px;
+      padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
-      font-weight: 600;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
     }
     
-    .badge-overdue { background: #fee2e2; color: #991b1b; }
-    .badge-urgent { background: #fef3c7; color: #92400e; }
-    .badge-due { background: #fef3c7; color: #92400e; }
+    .badge-overdue { background: var(--danger); color: white; }
+    .badge-urgent { background: #f97316; color: white; }
+    .badge-due { background: var(--warning); color: #0a0a0f; }
     
     /* Filters */
     .filters {
@@ -449,158 +451,113 @@
     
     select, button {
       padding: 8px 16px;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      color: #1e293b;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
       cursor: pointer;
       font-size: 13px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     
     select:focus, button:focus {
       outline: none;
-      border-color: #1a1a2e;
-      box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+      border-color: var(--accent-color);
     }
     
     .adk-btn {
       padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       border: none;
       transition: all 0.2s;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     
     .adk-btn-primary {
-      background: #1a1a2e;
-      color: white;
+      background: var(--accent-color);
+      color: var(--bg-primary);
     }
     
     .adk-btn-primary:hover {
-      background: #2c2c4e;
+      opacity: 0.9;
       transform: scale(1.02);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
     
     .trend-deviation {
       font-family: monospace;
     }
     
-    ul {
-      margin-left: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    ul li {
-      margin-bottom: 6px;
-    }
-    
-    /* Scrollbar */
-    .custom-scroll::-webkit-scrollbar { width: 5px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    
-    @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      .module-body {
-        padding: 12px 16px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      .header {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
-      }
-      .tabs .tab-btn {
-        padding: 8px 14px;
-        font-size: 11px;
-      }
-    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
   </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-  <span style="color: #666; font-size: 13px;">Loading calibration data...</span>
-</div>
-
-<!-- TOAST -->
+<!-- Toast Container -->
 <div id="toastContainer"></div>
 
-<!-- CONTENIDO -->
-<div class="module-wrapper">
-  
-  <!-- CABECERA -->
-  <div class="module-header">
-    <div class="header-left">
-      <span class="module-title"><i class="fas fa-microscope"></i> CAL Intelligence</span>
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="loading-content" style="text-align:center; background: var(--bg-card); padding: 30px 40px; border-radius: 16px; border: 1px solid var(--accent-color); box-shadow: 0 0 20px var(--accent-glow);">
+    <div class="loading-spinner"></div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading calibration data...</div>
+  </div>
+</div>
+
+<!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
+<div class="eams-header">
+  <h2><i class="fas fa-microscope"></i> Calibration Intelligence Dashboard</h2>
+  <div class="header-right">
+    <div class="user-badge" id="userDisplay">Loading...</div>
+    <img class="company-logo" id="companyLogo" src="" alt="Company Logo">
+  </div>
+</div>
+
+<!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
+<div class="breadcrumbs">
+  <span>🏠 Home</span> &gt;
+  <span class="foresight-tag">FORESIGHT</span> &gt;
+  <span class="current">CAL Intelligence</span>
+</div>
+
+<div class="dashboard-container">
+  <div class="header">
+    <div class="logo-area">
+      <h1>🔧 CAL Intelligence</h1>
+      <p>Calibration Management Dashboard</p>
     </div>
-    <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
-      <img class="company-logo" id="companyLogo" src="" alt="Logo">
+    <div><button id="exportBtn" class="adk-btn adk-btn-primary">📑 AUDIT PDF</button></div>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
+    <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
+    <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
+  </div>
+  
+  <div class="content-panel">
+    <div id="dashboard-tab" class="tab-pane active">
+      <div id="dashboardContent"></div>
+    </div>
+    <div id="overdue-tab" class="tab-pane">
+      <div id="overdueContent"></div>
+    </div>
+    <div id="trends-tab" class="tab-pane">
+      <div id="trendsContent"></div>
     </div>
   </div>
-  
-  <!-- BREADCRUMBS -->
-  <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">CAL Intelligence</span>
-  </div>
-  
-  <!-- CUERPO -->
-  <div class="module-body custom-scroll">
-    <div class="dashboard-container">
-      <div class="header">
-        <div class="logo-area">
-          <h1><i class="fas fa-microscope"></i> CAL Intelligence</h1>
-          <p>Calibration Management Dashboard</p>
-        </div>
-        <div>
-          <button id="exportBtn" class="adk-btn adk-btn-primary"><i class="fas fa-file-pdf"></i> AUDIT PDF</button>
-        </div>
-      </div>
-      
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
-        <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
-        <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
-      </div>
-      
-      <div class="content-panel">
-        <div id="dashboard-tab" class="tab-pane active">
-          <div id="dashboardContent"></div>
-        </div>
-        <div id="overdue-tab" class="tab-pane">
-          <div id="overdueContent"></div>
-        </div>
-        <div id="trends-tab" class="tab-pane">
-          <div id="trendsContent"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- FOOTER -->
-  <div class="module-footer">
-    <span>
-      <span class="status-dot connected"></span>
-      <span>Connected</span>
-    </span>
-    <span class="footer-version" id="eamsVersion">v1.0.0</span>
-  </div>
-  
+</div>
+
+<!-- FOOTER - ESTÁNDAR ADKINTOR (DARK) -->
+<div class="eams-status-bar">
+  <span><span class="status-dot connected"></span> Connected</span>
+  <span>EAMS <span id="eamsVersion">v2.0</span></span>
 </div>
 
 <script>
@@ -609,13 +566,22 @@
   // ============================================
   window.addEventListener('message', function(event) {
     const data = event.data;
+    
     if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-      const img = document.getElementById('companyLogo');
-      if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+      const logoImg = document.getElementById('companyLogo');
+      if (logoImg) {
+        logoImg.src = data.logoUrl;
+        logoImg.style.display = 'block';
+        console.log('[CAL] Logo set from parent');
+      }
     }
+    
     if (data.type === 'SET_VERSION' && data.version) {
-      const el = document.getElementById('eamsVersion');
-      if (el) el.innerText = data.version;
+      const versionSpan = document.getElementById('eamsVersion');
+      if (versionSpan) {
+        versionSpan.innerText = data.version;
+        console.log('[CAL] Version set from parent:', data.version);
+      }
     }
   });
   
@@ -643,11 +609,13 @@
     if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast toast-' + type;
-    toast.textContent = message;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
     container.appendChild(toast);
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => toast.remove());
     setTimeout(() => {
-      toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
-      setTimeout(() => toast.remove(), 350);
+      if (toast.parentNode) toast.remove();
     }, 4000);
   }
   
@@ -656,8 +624,8 @@
   // ============================================
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
-    const span = overlay.querySelector('span');
-    if (span) span.innerText = msg || 'Loading...';
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
     overlay.classList.add('visible');
   }
   
@@ -686,7 +654,7 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
         console.log('[CAL] API URL loaded:', EAMS_API_URL);
       } catch(e) { 
@@ -780,13 +748,13 @@
         renderDashboard(data);
         await logForesight('CAL', 'DASHBOARD_LOADED', 'Total: ' + data.summary?.total + ', Overdue: ' + data.summary?.overdue);
       } else {
-        document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + (data?.error || 'Unknown error') + '</div>';
+        document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + (data?.error || 'Unknown error') + '</div>';
         showToast(data?.error || 'Failed to load dashboard', 'error');
       }
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Connection error: ' + error.message + '</div>';
+      document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Connection error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -795,14 +763,12 @@
     var s = data.summary;
     var audit = data.audit;
     
-    var html = '
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value">' + s.total + '</div><div class="stat-label">Total Instruments</div></div>
-        <div class="stat-card"><div class="stat-value danger">' + s.overdue + '</div><div class="stat-label">🔴 Overdue</div></div>
-        <div class="stat-card"><div class="stat-value warning">' + s.urgent + '</div><div class="stat-label">🟡 Due ≤30d</div></div>
-        <div class="stat-card"><div class="stat-value purple">' + s.failed + '</div><div class="stat-label">❌ Failed Last Cal</div></div>
-      </div>
-    ';
+    var html = '<div class="stats-grid">' +
+      '<div class="stat-card"><div class="stat-value">' + s.total + '</div><div class="stat-label">Total Instruments</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:var(--danger);">' + s.overdue + '</div><div class="stat-label">🔴 Overdue</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:var(--warning);">' + s.urgent + '</div><div class="stat-label">🟡 Due ≤30d</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#a855f7;">' + s.failed + '</div><div class="stat-label">❌ Failed Last Cal</div></div>' +
+      '</div>';
     
     if (data.failedAlerts && data.failedAlerts.length > 0) {
       html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
@@ -813,14 +779,11 @@
       html += '</div></div>';
     }
     
-    html += '
-      <div class="adk-card">
-        <div class="card-header">📋 AUDIT RECOMMENDATIONS</div>
-        <div class="card-body">
-          <ul>' + audit.recommendations.map(function(r) { return '<li>' + escapeHtml(r) + '</li>'; }).join('') + '</ul>
-        </div>
-      </div>
-    ';
+    html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body"><ul style="margin-left: 20px;">';
+    for (var i = 0; i < audit.recommendations.length; i++) {
+      html += '<li>' + escapeHtml(audit.recommendations[i]) + '</li>';
+    }
+    html += '</ul></div></div>';
     
     document.getElementById('dashboardContent').innerHTML = html;
   }
@@ -836,14 +799,14 @@
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
   
   function renderOverdueList(list) {
     if (!list || list.length === 0) {
-      document.getElementById('overdueContent').innerHTML = '<div class="adk-card"><div class="card-body"><p>✅ No instruments overdue or due in the next 30 days.</p></div></div>';
+      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="padding:20px;">✅ No instruments overdue or due in the next 30 days.</div>';
       return;
     }
     
@@ -855,13 +818,7 @@
       var status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
       var rowClass = isOverdue ? 'overdue-row' : '';
       
-      html += '<tr class="' + rowClass + '">
-        <td><strong>' + escapeHtml(item.tagId) + '</strong></td>
-        <td>' + escapeHtml(item.name) + '</td>
-        <td>' + new Date(item.nextCalibration).toLocaleDateString() + '</td>
-        <td>' + item.daysToExpiry + '</td>
-        <td>' + status + '</td>
-      </tr>';
+      html += '<tr class="' + rowClass + '"><td><strong>' + escapeHtml(item.tagId) + '</strong></td><td>' + escapeHtml(item.name) + '</td><td>' + new Date(item.nextCalibration).toLocaleDateString() + '</td><td>' + item.daysToExpiry + '</td><td>' + status + '</td></tr>';
     }
     
     html += '</tbody></table></div></div>';
@@ -879,14 +836,14 @@
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
   
   function renderTrendSelector(instruments) {
     if (!instruments || instruments.length === 0) {
-      document.getElementById('trendsContent').innerHTML = '<div class="adk-card"><div class="card-body"><p>📊 No instruments with 2+ calibrations found.</p></div></div>';
+      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="padding:20px;">📊 No instruments with 2+ calibrations found.</div>';
       return;
     }
     
@@ -897,7 +854,7 @@
       html += '<option value="' + escapeHtml(instr.tagId) + '">' + escapeHtml(instr.tagId) + ' - ' + escapeHtml(instr.name) + ' (' + instr.historyCount + ' cal)</option>';
     }
     
-    html += '</select><button id="analyzeTrendBtn" class="adk-btn adk-btn-primary"><i class="fas fa-search"></i> Analyze Trend</button></div><div id="trendResult" style="margin-top: 20px;"></div></div></div>';
+    html += '</select><button id="analyzeTrendBtn" class="adk-btn adk-btn-primary">🔍 Analyze Trend</button></div><div id="trendResult" style="margin-top: 20px;"></div></div></div>';
     
     document.getElementById('trendsContent').innerHTML = html;
     
@@ -924,7 +881,7 @@
       await logForesight('CAL', 'TREND_ANALYZED', 'Instrument: ' + tagId + ', Trend: ' + trend.trend);
       
       if (trend.error) {
-        document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">' + trend.error + '</div>';
+        document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + trend.error + '</div>';
         hideLoading();
         return;
       }
@@ -949,7 +906,7 @@
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: #dc3545; padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
