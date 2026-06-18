@@ -1941,40 +1941,45 @@
 function init() {
     loadUser();
     showLoading('Loading Procurement Hub...');
+    
+    // Primero cargar API URL y validar
     loadApiUrl();
+    
     if (!EAMS_API_URL) {
         hideLoading();
         showToast('API URL not configured. Please login.', 'error');
         return;
     }
     
-    // EJECUTAR TODAS LAS PROMESAS ANTES DE OCULTAR EL SPINNER
-    Promise.all([
-        callApi('STK_getCurrentUserEmail'),
-        callApi('STK_getProcurementHubConfig'),
-        callApi('STK_getFullCatalog'),
-        callApi('STK_getExistingVendors')
-    ])
-    .then(function(results) {
-        // 1. Actualizar usuario
-        var email = results[0];
+    // Ahora sí, cargar datos
+    loadAllProcurementData();
+}
+
+async function loadAllProcurementData() {
+    try {
+        // Obtener email del usuario
+        var email = await callApi('STK_getCurrentUserEmail', []);
         currentUser = email || 'User';
         var userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = currentUser;
         
-        // 2. Configurar budget areas y payment methods
-        var configRaw = results[1];
+        // Obtener configuración
+        var configRaw = await callApi('STK_getProcurementHubConfig', []);
         var config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
         budgetAreas = config.budgetAreas || [];
         
+        // Configurar payment methods
         var paymentSelect = document.getElementById('paymentMethod');
         if (config.paymentMethods) {
+            paymentSelect.innerHTML = '<option value="">-- Select one --</option>';
             for (var i = 0; i < config.paymentMethods.length; i++) {
                 paymentSelect.innerHTML += '<option value="' + escapeHtml(config.paymentMethods[i]) + '">' + escapeHtml(config.paymentMethods[i]) + '</option>';
             }
         }
         
+        // Configurar budget areas
         var budgetSelect = document.getElementById('budgetArea');
+        budgetSelect.innerHTML = '<option value="">-- Select area --</option>';
         for (var i = 0; i < budgetAreas.length; i++) {
             budgetSelect.innerHTML += '<option value="' + escapeHtml(budgetAreas[i].name) + '" data-code="' + escapeHtml(budgetAreas[i].code) + '">' + escapeHtml(budgetAreas[i].name) + '</option>';
         }
@@ -1983,18 +1988,22 @@ function init() {
             document.getElementById('budgetCode').value = opt?.getAttribute('data-code') || '';
         };
         
+        // Configurar status filter
         var statusFilter = document.getElementById('statusFilter');
+        statusFilter.innerHTML = '<option value="ALL">All Status</option>';
         if (config.statuses) {
             for (var i = 0; i < config.statuses.length; i++) {
                 statusFilter.innerHTML += '<option value="' + escapeHtml(config.statuses[i]) + '">' + escapeHtml(config.statuses[i]) + '</option>';
             }
         }
         
-        // 3. Cargar catálogo y proveedores
-        catalog = results[2] || [];
-        allVendors = results[3] || [];
+        // Cargar catálogo
+        catalog = await callApi('STK_getFullCatalog', []);
         
-        // 4. Configurar sugerencias de proveedores
+        // Cargar proveedores
+        allVendors = await callApi('STK_getExistingVendors', []);
+        
+        // Configurar sugerencias de proveedores
         var vendorInput = document.getElementById('vendor');
         var vendorDiv = document.getElementById('vendorSuggestions');
         vendorInput.addEventListener('input', function() {
@@ -2023,23 +2032,24 @@ function init() {
             }
         });
         
-        // 5. Agregar item por defecto
+        // Agregar item por defecto
         addReqItem();
         
-        // 6. Cargar tracker
-        return refreshTracker();
-    })
-    .then(function() {
-        // SOLO AQUÍ se oculta el spinner - DESPUÉS de todo
+        // Cargar tracker
+        await refreshTracker();
+        
+        // TODO OK - ocultar spinner
         hideLoading();
         showToast('Procurement Hub loaded successfully ✅', 'success');
         document.getElementById('footer-status').innerText = 'Ready';
-    })
-    .catch(function(err) {
+        
+    } catch(err) {
         hideLoading();
-        showToast('Init error: ' + err.message, 'error');
-    });
+        showToast('Error loading data: ' + err.message, 'error');
+        console.error('Init error:', err);
+    }
 }
+
 </script>
 </body>
 </html>
