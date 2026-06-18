@@ -1128,20 +1128,25 @@
     // INITIALIZATION - CON SPINNER
     // ============================================
 function init() {
-    showLoading('Loading Activity Builder...');  // ✅ PRIMERO
-    loadUser();
-    loadApiUrl();
-    if (EAMS_API_URL) {
-        updateDashboard();
-        loadHierarchyTree();
-        hideLoading();
-        showToast('Activity Builder loaded successfully ✅', 'success');
-        document.getElementById('footer-status').innerText = 'Ready';
-    } else {
-        hideLoading();
-        showToast('API URL not configured. Please log in first.', 'error');
-        document.getElementById('footer-status').innerText = 'Not Configured';
-    }
+    // ✅ PRIMERO: Mostrar el spinner ANTES de cualquier otra cosa
+    showLoading('Loading Activity Builder...');
+    
+    // ✅ Forzar un pequeño retraso para asegurar que el DOM se actualice
+    setTimeout(function() {
+        loadUser();
+        loadApiUrl();
+        if (EAMS_API_URL) {
+            updateDashboard();
+            loadHierarchyTree();
+            hideLoading();
+            showToast('Activity Builder loaded successfully ✅', 'success');
+            document.getElementById('footer-status').innerText = 'Ready';
+        } else {
+            hideLoading();
+            showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
+        }
+    }, 50);
 }
 
     async function updateDashboard() {
