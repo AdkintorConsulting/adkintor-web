@@ -108,7 +108,7 @@
         }
         
         /* ============================================
-           FOOTER - BLANCO
+           FOOTER - BLANCO (SOLO CONNECTED + VERSIÓN)
            ============================================ */
         .module-footer {
             display: flex;
@@ -970,7 +970,7 @@
         </div>
     </div>
     
-    <!-- FOOTER -->
+    <!-- FOOTER - SOLO CONNECTED + VERSIÓN -->
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
@@ -1113,35 +1113,40 @@
     // ============================================
     // GLOBAL STATE
     // ============================================
-    let currentContext = {};
-    let equipmentList = [];
-    let existingTasks = [];
-    let currentCloneTargets = [];
-    let currentEditTask = null;
-    let currentEditCloneTargets = [];
-    let currentDeleteTask = null;
-    let currentDeleteCloneTargets = [];
-    let isInEditorMode = false;
-    let suggestionTimeout = null;
+    var currentContext = {};
+    var equipmentList = [];
+    var existingTasks = [];
+    var currentCloneTargets = [];
+    var currentEditTask = null;
+    var currentEditCloneTargets = [];
+    var currentDeleteTask = null;
+    var currentDeleteCloneTargets = [];
+    var isInEditorMode = false;
+    var suggestionTimeout = null;
 
     // ============================================
-    // INITIALIZATION
+    // INITIALIZATION - CON SPINNER
     // ============================================
     function init() {
+        showLoading('Loading Activity Builder...');
         loadUser();
         loadApiUrl();
         if (EAMS_API_URL) {
             updateDashboard();
             loadHierarchyTree();
+            hideLoading();
             showToast('Activity Builder loaded successfully ✅', 'success');
+            document.getElementById('footer-status').innerText = 'Ready';
         } else {
+            hideLoading();
             showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
         }
     }
 
     async function updateDashboard() {
         try {
-            const stats = await callApi('PVT_getProgressStats', []);
+            var stats = await callApi('PVT_getProgressStats', []);
             if (stats) {
                 document.getElementById('stat-total').innerText = stats.total || 0;
                 document.getElementById('stat-done').innerText = stats.done || 0;
@@ -1155,8 +1160,8 @@
 
     async function loadHierarchyTree() {
         try {
-            const tree = await callApi('PVT_getHierarchyTree', []);
-            let html = '';
+            var tree = await callApi('PVT_getHierarchyTree', []);
+            var html = '';
             var areaKeys = Object.keys(tree);
             for (var i = 0; i < areaKeys.length; i++) {
                 var area = areaKeys[i];
