@@ -1539,7 +1539,9 @@
         }
         
         try {
-            await loadUserEmail();
+            // ELIMINA loadUserEmail() - YA TIENE EL EMAIL DE loadUser() y loadApiUrl()
+            // await loadUserEmail();  ← ELIMINA ESTA LÍNEA
+            
             await loadKPI();
             await loadFilters();
             await loadAdjustmentReasons();
@@ -1555,13 +1557,6 @@
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
         }
-    }
-
-    // Iniciar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
     }
 </script>
 </body>
