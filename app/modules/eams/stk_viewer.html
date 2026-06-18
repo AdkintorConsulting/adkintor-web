@@ -785,19 +785,6 @@
     // ============================================
     // DATA FETCH
     // ============================================
-    async function loadUserEmail() {
-        try {
-            var email = await callApi('STK_VIEWER_getCurrentUserEmail', []);
-            currentUser = email || 'Viewer Session';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser;
-        } catch(e) { 
-            currentUser = 'Viewer';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser; 
-        }
-    }
-
     async function loadKPI() {
         try {
             var kpi = await callApi('STK_VIEWER_getInventoryKPI', []);
@@ -963,9 +950,26 @@
     // MAIN INIT
     // ============================================
     async function init() {
-        loadUser();
+        // 1. CARGAR USUARIO DESDE localStorage
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+                currentUser = session.email;
+            } else {
+                document.getElementById('userDisplay').innerText = 'No Session';
+            }
+        } catch(e) {
+            document.getElementById('userDisplay').innerText = 'Error';
+        }
+        
+        // 2. MOSTRAR SPINNER
         showLoading('Loading Inventory Viewer...');
+        
+        // 3. CARGAR API URL
         loadApiUrl();
+        
+        // 4. VALIDAR
         if (!EAMS_API_URL) { 
             hideLoading();
             showToast('Session error: missing API URL. Please login first.', 'error');
@@ -973,10 +977,8 @@
             return;
         }
         
+        // 5. CARGAR DATOS (SIN loadUserEmail)
         try {
-            // ELIMINA loadUserEmail() - YA TIENE EL EMAIL
-            // await loadUserEmail();  ← ELIMINA ESTA LÍNEA
-            
             await loadKPI();
             await loadFilters();
             await refreshCatalog();
@@ -988,6 +990,13 @@
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
         }
+    }
+    
+    // Iniciar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 </script>
 </body>
