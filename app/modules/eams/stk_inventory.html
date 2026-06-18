@@ -189,22 +189,9 @@
             pointer-events: none;
         }
         
-        #toastContainer .toast {
-            pointer-events: auto;
-            padding: 10px 16px;
-            border-radius: 6px;
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: toastSlideIn 0.3s ease-out;
+
         }
         
-        #toastContainer .toast-success { background: #22c55e; }
-        #toastContainer .toast-error { background: #dc3545; }
-        #toastContainer .toast-warning { background: #f59e0b; }
-        #toastContainer .toast-info { background: #1a1a2e; }
         
         @keyframes toastSlideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -723,7 +710,7 @@
 </div>
 
 <!-- TOAST -->
-<div id="toastContainer"></div>
+
 
 <!-- CONTENIDO -->
 <div class="module-wrapper">
@@ -938,34 +925,33 @@
     // ============================================
     // CARGAR USUARIO (email)
     // ============================================
-    function loadUser() {
-        try {
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            if (session && session.email) {
-                document.getElementById('userDisplay').innerText = session.email;
-            }
-        } catch(e) {}
-    }
-    
-    // ============================================
-    // TOAST (usa ModuleBase si existe)
-    // ============================================
-    function showToast(message, type = 'info') {
-        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-            ModuleBase.showToast(message, type);
-            return;
+function loadUser() {
+    try {
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        if (session && session.email) {
+            document.getElementById('userDisplay').innerText = session.email;
         }
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = 'toast toast-' + type;
-        toast.textContent = message;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
-            setTimeout(() => toast.remove(), 350);
-        }, 4000);
+    } catch(e) {}
+}
+// ============================================
+// TOAST (usa ModuleBase si existe)
+// ============================================
+function showToast(message, type = 'info') {
+    if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+        ModuleBase.showToast(message, type);
+        return;
     }
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+        setTimeout(() => toast.remove(), 350);
+    }, 4000);
+}
     
     // ============================================
     // LOADING
@@ -1100,18 +1086,18 @@
     // ============================================
     // DATA FETCH
     // ============================================
-    async function loadUserEmail() {
-        try {
-            var email = await callApi('STK_getCurrentUserEmail', []);
-            currentUser = email || 'Active Session';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser;
-        } catch(e) { 
-            currentUser = 'User';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser; 
-        }
+async function loadUserEmail() {
+    try {
+        var email = await callApi('STK_getCurrentUserEmail', []);
+        currentUser = email || 'Active Session';
+        var userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = currentUser;
+    } catch(e) { 
+        currentUser = 'User';
+        var userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = currentUser; 
     }
+}
 
     async function loadKPI() {
         try {
