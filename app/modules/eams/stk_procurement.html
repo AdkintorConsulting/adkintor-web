@@ -1949,11 +1949,17 @@
         }
         
         try {
-            // Obtener email del usuario
-            var email = await callApi('STK_getCurrentUserEmail', []);
-            currentUser = email || 'User';
-            var userDisplay = document.getElementById('userDisplay');
-            if (userDisplay) userDisplay.innerText = currentUser;
+            // ELIMINA esta llamada - YA TIENE EL EMAIL
+            // var email = await callApi('STK_getCurrentUserEmail', []);
+            // currentUser = email || 'User';
+            // document.getElementById('userDisplay').innerText = currentUser;
+            
+            // En su lugar, usa el email que ya está cargado
+            var session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                currentUser = session.email;
+                document.getElementById('userDisplay').innerText = currentUser;
+            }
             
             // Obtener configuración
             var configRaw = await callApi('STK_getProcurementHubConfig', []);
