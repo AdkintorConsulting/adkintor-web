@@ -160,6 +160,9 @@
         #loadingOverlay.visible {
             display: flex;
         }
+
+	<!-- TOAST -->
+	<div id="toastContainer"></div>
         
         .spinner {
             width: 36px;
@@ -177,20 +180,37 @@
         /* ============================================
            TOAST - ARRIBA DERECHA
            ============================================ */
-        #toastContainer {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 360px;
-            pointer-events: none;
-        }
-        
+	/* ============================================
+	   TOAST - ARRIBA DERECHA (FALTANTE)
+	   ============================================ */
+	#toastContainer {
+	    position: fixed;
+	    top: 16px;
+	    right: 16px;
+	    z-index: 10000;
+	    display: flex;
+	    flex-direction: column;
+	    gap: 6px;
+	    max-width: 360px;
+	    pointer-events: none;
+	}
 
-        }
+	#toastContainer .toast {
+	    pointer-events: auto;
+	    padding: 10px 16px;
+	    border-radius: 6px;
+	    color: white;
+	    font-size: 13px;
+	    font-weight: 500;
+	    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	    animation: toastSlideIn 0.3s ease-out;
+	}
+
+	#toastContainer .toast-success { background: #22c55e; }
+	#toastContainer .toast-error { background: #dc3545; }
+	#toastContainer .toast-warning { background: #f59e0b; }
+	#toastContainer .toast-info { background: #1a1a2e; }
         
         
         @keyframes toastSlideIn {
@@ -1168,28 +1188,28 @@ async function loadUserEmail() {
         } catch(e) { console.error(e); }
     }
 
-    async function refreshCatalog(showAll) {
-        if (showAll === undefined) showAll = false;
-        var action = showAll ? 'STK_getFullCatalogDynamic' : 'STK_getCatalogCurrentMonth';
-        showLoading('Loading inventory...');
-        try {
-            var response = await callApi(action, []);
-            if (response.mode === 'empty' && response.message) {
-                catalogData = [];
-                renderTable([]);
-                document.getElementById('resultCount').innerText = '0';
-                showToast(response.message + ' Click "Show All"', 'warning');
-                hideLoading(); return;
-            }
-            catalogData = response.data;
-            if (response.mode === 'month') showToast('📊 Showing ' + response.count + ' SKUs with activity this month', 'info');
-            filterAndRender();
-            hideLoading();
-        } catch(err) {
-            hideLoading();
-            showToast('Failed to load catalog: ' + err.message, 'error');
+async function refreshCatalog(showAll) {
+    if (showAll === undefined) showAll = false;
+    var action = showAll ? 'STK_getFullCatalogDynamic' : 'STK_getCatalogCurrentMonth';
+    // No mostrar loading aquí porque ya se muestra en init()
+    try {
+        var response = await callApi(action, []);
+        if (response.mode === 'empty' && response.message) {
+            catalogData = [];
+            renderTable([]);
+            document.getElementById('resultCount').innerText = '0';
+            showToast(response.message + ' Click "Show All"', 'warning');
+            return true;
         }
+        catalogData = response.data;
+        if (response.mode === 'month') showToast('📊 Showing ' + response.count + ' SKUs with activity this month', 'info');
+        filterAndRender();
+        return true;
+    } catch(err) {
+        showToast('Failed to load catalog: ' + err.message, 'error');
+        throw err;
     }
+}
 
     function filterAndRender() {
         var searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -1523,12 +1543,30 @@ function init() {
         showToast('Session error: missing API URL. Please login first.', 'error');
         return;
     }
-    Promise.all([loadUserEmail(), loadKPI(), loadFilters(), loadAdjustmentReasons(), loadUnits(), loadCurrencies()])
+    
+    // EJECUTAR TODAS LAS PROMESAS EN CADENA
+    loadUserEmail()
+        .then(function() {
+            return loadKPI();
+        })
+        .then(function() {
+            return loadFilters();
+        })
+        .then(function() {
+            return loadAdjustmentReasons();
+        })
+        .then(function() {
+            return loadUnits();
+        })
+        .then(function() {
+            return loadCurrencies();
+        })
         .then(function() {
             return refreshCatalog(false);
         })
         .then(function() {
             document.getElementById('footer-status').innerText = 'Connected';
+            // SOLO AQUÍ se oculta el spinner
             hideLoading();
             showToast('Inventory Hub loaded successfully ✅', 'success');
             setupAssetSuggestions();
