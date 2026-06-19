@@ -1210,16 +1210,18 @@
         }
         
         // Validar que realCreationDate no sea futuro
-	var realCreationDate = document.getElementById('realCreationDate') ? document.getElementById('realCreationDate').value : '';
-	if (realCreationDate) {
-	    var selectedDate = new Date(realCreationDate);
-	    var now = new Date();
-	    if (selectedDate > now) {
-	        showToast('⚠️ The corrected date cannot be in the future', 'error');
-	        document.getElementById('realCreationDate').classList.add('error');
-	        return;
-	    }
-	}
+        var realCreationDate = document.getElementById('realCreationDate') ? document.getElementById('realCreationDate').value : '';
+        if (realCreationDate) {
+            var selectedDate = new Date(realCreationDate);
+            var now = new Date();
+            if (selectedDate > now) {
+                showToast('⚠️ The corrected date cannot be in the future', 'error');
+                document.getElementById('realCreationDate').classList.add('error');
+                isSubmitting = false;  // ← IMPORTANTE: Resetear el estado
+                validateFields();       // ← Restaurar botones
+                return;
+            }
+        }
         
         var payload = {
             folio: folio,
