@@ -1007,28 +1007,53 @@ function sendLogoToIframe(iframe, logoUrl) {
 // VERSIÓN DINÁMICA
 // ============================================
 
-function sendVersionToIframe(iframe) {
-    const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
-    
-    const send = () => {
-        if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-                type: 'SET_VERSION',
-                version: version
-            }, '*');
+async function sendVersionToIframe(iframe) {
+    try {
+        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+        let version = 'v1.0.0'; // fallback
+        
+        if (session && session.eamsApiUrl) {
+            const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: session.eamsApiUrl,
+                    payload: { action: 'getVersionInfo', args: [] }
+                })
+            });
+            const result = await response.json();
+            if (result.success && result.data && result.data.fullVersion) {
+                version = 'v' + result.data.fullVersion;
+                console.log('✅ Versión obtenida desde API:', version);
+            } else {
+                console.warn('No se pudo obtener versión desde API, usando fallback');
+            }
         }
-    };
-    
-    if (iframe.contentWindow && iframe.contentWindow.document && 
-        iframe.contentWindow.document.readyState === 'complete') {
-        send();
-    } else {
-        // No sobrescribir onload si ya existe
-        const existingOnload = iframe.onload;
-        iframe.onload = function(e) {
-            if (existingOnload) existingOnload(e);
-            send();
+        
+        const send = () => {
+            if (iframe.contentWindow) {
+                iframe.contentWindow.postMessage({
+                    type: 'SET_VERSION',
+                    version: version
+                }, '*');
+            }
         };
+        
+        if (iframe.contentWindow && iframe.contentWindow.document && 
+            iframe.contentWindow.document.readyState === 'complete') {
+            send();
+        } else {
+            const existingOnload = iframe.onload;
+            iframe.onload = function(e) {
+                if (existingOnload) existingOnload(e);
+                send();
+            };
+        }
+    } catch (error) {
+        console.warn('Error obteniendo versión:', error);
+        // Fallback: usar la de config
+        const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
+        // ... enviar versión
     }
 }
 
