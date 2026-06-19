@@ -1217,8 +1217,8 @@
             if (selectedDate > now) {
                 showToast('⚠️ The corrected date cannot be in the future', 'error');
                 document.getElementById('realCreationDate').classList.add('error');
-                isSubmitting = false;  // ← IMPORTANTE: Resetear el estado
-                validateFields();       // ← Restaurar botones
+                isSubmitting = false;
+                validateFields();
                 return;
             }
         }
