@@ -292,11 +292,12 @@ const Logger = (function() {
     /**
      * Registra la aprobación de una WO
      * @param {string} woId - ID de la WO
-     * @param {string} approvedBy - Quién aprobó
-     * @returns {Promise<boolean>}
-     */
+     *param {string} approvedBy - Quién aprobó
+    * @returns {Promise<boolean>}
+    */
     async function woApproved(woId, approvedBy) {
-        return await audit('APPROVE_WO', 'WO', woId, 'Status', 'Pending', 'Approved', `Aprobada por ${approvedBy}`);
+        const details = `Approved by ${approvedBy}`;
+        return await callEamsLogging('logApprove', ['WO', woId, details]);
     }
     
     /**
@@ -306,7 +307,8 @@ const Logger = (function() {
      * @returns {Promise<boolean>}
      */
     async function woRejected(woId, reason) {
-        return await audit('REJECT_WO', 'WO', woId, 'Status', 'Pending', 'Rejected', reason);
+        const details = `Rejected: ${reason}`;
+        return await callEamsLogging('logReject', ['WO', woId, details]);
     }
     
     // API pública
