@@ -1218,6 +1218,7 @@
                 showToast('⚠️ The corrected date cannot be in the future', 'error');
                 document.getElementById('realCreationDate').classList.add('error');
                 isSubmitting = false;
+                hideLoading();  // ← AGREGAR ESTA LÍNEA
                 validateFields();
                 return;
             }
