@@ -541,7 +541,7 @@
             </div>
 
             <div class="button-group">
-                <button id="cancelBtn" class="btn-secondary"><i class="fas fa-times"></i> CANCEL</button>
+                <button id="cancelBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> REFRESH</button>
                 <button id="submitBtn" class="btn-primary" disabled><i class="fas fa-check"></i> SUBMIT WORK ORDER</button>
             </div>
         </div>
@@ -563,9 +563,8 @@
     <div class="custom-confirm-modal">
         <h3><i class="fas fa-check-circle"></i> WORK ORDER CREATED</h3>
         <p id="confirmMessage">Work Order created successfully!</p>
-        <div class="custom-confirm-buttons">
-            <button id="confirmYesBtn" class="btn-confirm-yes">YES, CREATE ANOTHER</button>
-            <button id="confirmNoBtn" class="btn-confirm-no">NO, CLOSE</button>
+        <div class="custom-confirm-buttons" style="justify-content: center;">
+            <button id="confirmOkBtn" class="btn-confirm-yes" style="min-width: 120px;">OK</button>
         </div>
     </div>
 </div>
@@ -1080,25 +1079,17 @@ async function logWOCreation(woId, woData) {
         var cancelBtn = document.getElementById('cancelBtn');
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
         
-        var confirmYesBtn = document.getElementById('confirmYesBtn');
-        var confirmNoBtn = document.getElementById('confirmNoBtn');
-        var confirmOverlay = document.getElementById('customConfirmOverlay');
-        
-        if (confirmYesBtn) {
-            confirmYesBtn.addEventListener('click', function() {
-                confirmOverlay.classList.remove('active');
-                resetCreateForm();
-                loadInitialData();
-            });
-        }
-        
-        if (confirmNoBtn) {
-            confirmNoBtn.addEventListener('click', function() {
-                confirmOverlay.classList.remove('active');
-                resetCreateForm();
-                closeModal();
-            });
-        }
+	var confirmOkBtn = document.getElementById('confirmOkBtn');
+	var confirmOverlay = document.getElementById('customConfirmOverlay');
+
+	if (confirmOkBtn) {
+	    confirmOkBtn.addEventListener('click', function() {
+	        confirmOverlay.classList.remove('active');
+	        resetCreateForm();
+	        loadInitialData();
+	        // El iframe se queda abierto, listo para crear otra WO
+	    });
+	}
         
         if (confirmOverlay) {
             confirmOverlay.addEventListener('click', function(e) {
