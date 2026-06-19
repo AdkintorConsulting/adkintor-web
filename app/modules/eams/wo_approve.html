@@ -920,14 +920,26 @@
         validateFields();
     }
 
-    function fillQuickComment() {
-        var smartVal = document.getElementById('smartSelect') ? document.getElementById('smartSelect').value : '';
-        var comments = document.getElementById('comments');
-        if (smartVal && comments) {
-            comments.value = smartVal;
-            validateFields();
-        }
-    }
+	function fillQuickComment() {
+	    var smartVal = document.getElementById('smartSelect') ? document.getElementById('smartSelect').value : '';
+	    var comments = document.getElementById('comments');
+	    if (smartVal && comments) {
+	        comments.value = smartVal;
+	        validateFields();
+	    }
+	}
+
+	// Y cuando se cambia manualmente el textarea, limpiar el dropdown
+	// En el event listener de comments:
+	if (comments) {
+	    comments.addEventListener('input', function() {
+	        var smartSelect = document.getElementById('smartSelect');
+	        if (smartSelect && this.value !== smartSelect.value) {
+	            smartSelect.value = ''; // Limpiar quick response si el usuario editó manualmente
+	        }
+	        validateFields();
+	    });
+	}
 
     // ============================================
     // VALIDACIÓN ESPECÍFICA (APPROVE vs REJECT)
@@ -1060,7 +1072,7 @@
                 renderPMs();
             }
             
-            document.getElementById('footer-status').innerText = 'Data Loaded';
+            console.log('[WO_APPROVE] Data loaded');
             showToast('Data loaded: ' + woData.length + ' open work orders', 'success');
             validateFields();
             hideLoading();
@@ -1185,7 +1197,17 @@
             folio = selectedValue ? selectedValue.split(' - ')[0] : '';
         }
         
-        var realCreationDate = document.getElementById('realCreationDate') ? document.getElementById('realCreationDate').value : '';
+        // Validar que realCreationDate no sea futuro
+	var realCreationDate = document.getElementById('realCreationDate') ? document.getElementById('realCreationDate').value : '';
+	if (realCreationDate) {
+	    var selectedDate = new Date(realCreationDate);
+	    var now = new Date();
+	    if (selectedDate > now) {
+	        showToast('⚠️ The corrected date cannot be in the future', 'error');
+	        document.getElementById('realCreationDate').classList.add('error');
+	        return;
+	    }
+	}
         
         var payload = {
             folio: folio,
@@ -1195,7 +1217,8 @@
             approver: approver,
             comments: comments,
             techniciansWithEmails: techniciansWithEmails,
-            realCreationDate: realCreationDate
+            realCreationDate: realCreationDate,
+	    user: userEmail
         };
         
         try {
@@ -1220,7 +1243,7 @@
                 
                 var emailMsg = (response.emailSent === false) ? ' ⚠️ Email notification failed.' : (response.emailSent === true ? ' 📧 Email sent.' : '');
                 showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
-                document.getElementById('footer-status').innerText = 'Processed ' + (response.count || 0) + ' WO(s)';
+                console.log('[WO_APPROVE] Processed', response.count, 'WO(s)');
                 
                 if (document.getElementById('folioSelect')) document.getElementById('folioSelect').value = '';
                 if (document.getElementById('comments')) document.getElementById('comments').value = '';
@@ -1228,6 +1251,17 @@
                 removeErrorHighlights();
                 
                 await loadData();
+		// Limpiar selección actual
+		if (document.getElementById('folioSelect')) {
+		    document.getElementById('folioSelect').value = '';
+		}
+		// Resetear auditoría
+		document.getElementById('auditPanel').style.display = 'none';
+		// Resetear campos
+		document.getElementById('techSelect').value = '';
+		document.getElementById('typeSelect').value = '';
+		document.getElementById('apprSelect').value = '';
+		document.getElementById('comments').value = '';
             } else {
                 throw new Error(response.error || 'Unknown error');
             }
