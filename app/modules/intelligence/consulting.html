@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FORESIGHT - Consulting Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* FORESIGHT Dark Mode Theme */
+    /* ============================================
+       FORESIGHT DARK MODE THEME
+       ============================================ */
     :root {
       --bg-primary: #0a0a0f;
       --bg-secondary: #111827;
@@ -24,7 +26,7 @@
       --danger: #ff5252;
       --info: #00e5ff;
       --gray: #64748b;
-      --border-radius-sm: 8px;
+      --gold: #ffd700;
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,32 +39,42 @@
       overflow: hidden;
     }
     
-    /* Toast Container */
+    /* ============================================
+       TOAST - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
     #toastContainer {
       position: fixed;
-      top: 80px;
-      right: 20px;
+      top: 16px;
+      right: 16px;
       z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 360px;
+      pointer-events: none;
     }
     
-    .toast {
+    #toastContainer .toast {
+      pointer-events: auto;
       display: flex;
       align-items: center;
       gap: 12px;
       background: var(--bg-card);
       border-left: 4px solid var(--info);
-      padding: 12px 20px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: 6px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       animation: slideIn 0.3s ease;
       color: var(--text-primary);
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
     }
     
-    .toast.success { border-left-color: var(--success); }
-    .toast.error { border-left-color: var(--danger); }
-    .toast.warning { border-left-color: var(--warning); }
+    #toastContainer .toast-success { border-left-color: var(--success); }
+    #toastContainer .toast-error { border-left-color: var(--danger); }
+    #toastContainer .toast-warning { border-left-color: var(--warning); }
+    #toastContainer .toast-info { border-left-color: var(--info); }
     
     .toast-close {
       cursor: pointer;
@@ -70,7 +82,6 @@
       opacity: 0.7;
       transition: opacity 0.2s;
     }
-    
     .toast-close:hover { opacity: 1; }
     
     @keyframes slideIn {
@@ -78,7 +89,9 @@
       to { transform: translateX(0); opacity: 1; }
     }
     
-    /* Loading Overlay */
+    /* ============================================
+       LOADING OVERLAY - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
     #loadingOverlay {
       position: fixed;
       top: 0;
@@ -88,9 +101,28 @@
       background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(4px);
       display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      gap: 12px;
+    }
+    
+    #loadingOverlay.visible {
+      display: flex;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
     
     .loading-content {
@@ -102,119 +134,194 @@
       box-shadow: 0 0 20px var(--accent-glow);
     }
     
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border-color);
-      border-top-color: var(--accent-color);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .loading-content .loading-spinner {
       margin: 0 auto 15px;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* EAMS Unified Header */
-    .eams-header {
+    /* ============================================
+       HEADER - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    .module-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 24px;
+      padding: 10px 24px;
       background: var(--bg-card);
       border-bottom: 2px solid var(--accent-color);
+      flex-shrink: 0;
+      min-height: 56px;
       position: sticky;
       top: 0;
       z-index: 1000;
     }
     
-    .eams-header h2 {
-      font-size: 18px;
-      color: var(--accent-color);
-      margin: 0;
+    .header-left {
+      display: flex;
+      align-items: center;
     }
     
-    .eams-header h2 i {
+    .module-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent-color);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .module-title i {
       margin-right: 8px;
     }
     
-    .user-badge {
-      background: rgba(0, 229, 255, 0.15);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent-color);
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     
-    /* Breadcrumbs */
+    .user-badge {
+      font-size: 12px;
+      color: var(--text-primary);
+      background: rgba(0, 229, 255, 0.15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .company-logo {
+      height: 32px;
+      width: auto;
+      display: none;
+    }
+    
+    /* ============================================
+       BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
     .breadcrumbs {
-      padding: 10px 24px;
-      background: var(--bg-secondary);
+      padding: 8px 24px;
       font-size: 12px;
       color: var(--text-secondary);
+      background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
     }
     
-    .breadcrumbs span:last-child {
+    .breadcrumbs .current {
       color: var(--accent-color);
       font-weight: 600;
     }
     
-    /* EAMS Status Bar (Footer) */
-    .eams-status-bar {
+    .breadcrumbs .foresight-tag {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       FOOTER - ESTÁNDAR ADKINTOR (DARK)
+       ============================================ */
+    .module-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 24px;
+      padding: 6px 24px;
       background: var(--bg-card);
       border-top: 1px solid var(--border-color);
       font-size: 11px;
       color: var(--text-secondary);
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
       position: sticky;
       bottom: 0;
       z-index: 1000;
     }
     
-    /* Consulting Container */
-    .consulting-container {
-      padding: 24px;
-      max-width: 1400px;
-      margin: 0 auto;
-      height: calc(100vh - 115px);
-      overflow-y: auto;
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 5px;
     }
     
-    /* Header */
-    .consulting-header {
-      background: linear-gradient(135deg, var(--accent-color) 0%, #0d47a1 100%);
-      color: white;
-      padding: 20px 24px;
-      border-radius: 12px;
+    .status-dot.connected {
+      background: var(--success);
+    }
+    
+    .footer-version {
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+    
+    /* ============================================
+       MODULE BODY
+       ============================================ */
+    .module-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--bg-primary);
+    }
+    
+    .module-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      background: var(--bg-primary);
+    }
+    
+    /* ============================================
+       CONSULTING CONTAINER
+       ============================================ */
+    .consulting-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Hero Header */
+    .consulting-hero {
+      background: linear-gradient(135deg, #00e5ff 0%, #0d47a1 100%);
+      padding: 28px 32px;
+      border-radius: 16px;
       margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.15);
     }
     
-    .consulting-header h1 {
-      font-size: 24px;
-      font-weight: 600;
+    .consulting-hero h1 {
+      font-size: 28px;
+      font-weight: 700;
       margin: 0;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
-    .header-badge {
+    .consulting-hero p {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .hero-badge {
       background: rgba(255,255,255,0.2);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
+      backdrop-filter: blur(4px);
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 13px;
+      color: white;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .hero-badge i {
+      margin-right: 6px;
     }
     
     /* Controls */
     .controls {
       background: var(--bg-card);
-      padding: 20px;
+      padding: 20px 24px;
       border-radius: 12px;
       margin-bottom: 24px;
       display: flex;
@@ -231,39 +338,40 @@
     }
     
     .control-group label {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-secondary);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'Inter', sans-serif;
     }
     
-    select, .adk-btn {
+    .control-group select {
       padding: 10px 16px;
       border-radius: 8px;
       font-size: 14px;
-    }
-    
-    select {
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       color: var(--text-primary);
       min-width: 150px;
       cursor: pointer;
+      font-family: 'Inter', sans-serif;
     }
     
-    select:focus {
+    .control-group select:focus {
       outline: none;
       border-color: var(--accent-color);
     }
     
     .adk-btn {
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       border: none;
       transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
     }
     
     .adk-btn-primary {
@@ -274,7 +382,7 @@
     .adk-btn-primary:hover {
       opacity: 0.9;
       transform: scale(1.02);
-      box-shadow: 0 0 10px var(--accent-glow);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
     
     .adk-btn-success {
@@ -288,8 +396,22 @@
     }
     
     .adk-btn-success:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
+    }
+    
+    /* Report Content */
+    .loading-placeholder {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+    
+    .loading-placeholder .icon-large {
+      font-size: 48px;
+      color: var(--accent-color);
+      margin-bottom: 16px;
+      display: block;
     }
     
     /* Tabs */
@@ -300,6 +422,7 @@
       padding: 8px 16px 0 16px;
       border-radius: 12px 12px 0 0;
       border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
     }
     
     .tab {
@@ -309,10 +432,13 @@
       font-weight: 500;
       color: var(--text-secondary);
       transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
     
     .tab:hover {
       background: var(--bg-hover);
+      color: var(--text-primary);
     }
     
     .tab.active {
@@ -337,56 +463,110 @@
       display: block;
     }
     
-    /* Cards */
+    /* KPI Grid */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
     
     .kpi-card {
       background: var(--bg-primary);
-      padding: 16px;
+      padding: 16px 20px;
       border-radius: 12px;
       text-align: center;
       border: 1px solid var(--border-color);
+      transition: all 0.2s;
+    }
+    
+    .kpi-card:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
     
     .kpi-value {
       font-size: 32px;
       font-weight: 700;
       color: var(--accent-color);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .kpi-value.gold {
+      color: var(--gold);
+    }
+    
+    .kpi-value.success {
+      color: var(--success);
+    }
+    
+    .kpi-value.danger {
+      color: var(--danger);
     }
     
     .kpi-label {
       font-size: 12px;
       color: var(--text-secondary);
       margin-top: 4px;
+      font-family: 'Inter', sans-serif;
     }
     
     .kpi-status {
       font-size: 11px;
       margin-top: 8px;
-      padding: 4px 8px;
+      padding: 4px 12px;
       border-radius: 20px;
       display: inline-block;
+      font-weight: 600;
     }
     
     .status-critical { background: rgba(255,82,82,0.2); color: var(--danger); }
     .status-warning { background: rgba(255,183,77,0.2); color: var(--warning); }
     .status-good { background: rgba(0,230,118,0.2); color: var(--success); }
     
+    /* Alerts */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .alert-critical {
+      background: rgba(255,82,82,0.12);
+      border-left: 4px solid var(--danger);
+    }
+    
+    .alert-warning {
+      background: rgba(255,183,77,0.12);
+      border-left: 4px solid var(--warning);
+    }
+    
+    .alert-good {
+      background: rgba(0,230,118,0.12);
+      border-left: 4px solid var(--success);
+    }
+    
+    .alert-info {
+      background: rgba(0,229,255,0.08);
+      border-left: 4px solid var(--info);
+    }
+    
+    .alert strong {
+      font-weight: 700;
+    }
+    
     /* Tables */
     .data-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 16px;
+      font-family: 'Inter', sans-serif;
     }
     
     .data-table th,
     .data-table td {
-      padding: 12px;
+      padding: 12px 16px;
       text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
@@ -394,48 +574,17 @@
     .data-table th {
       background: var(--bg-primary);
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
+      text-transform: uppercase;
       color: var(--text-secondary);
+      letter-spacing: 0.5px;
     }
     
-    .data-table tr:hover {
-      background: rgba(0, 229, 255, 0.05);
+    .data-table tr:hover td {
+      background: rgba(0, 229, 255, 0.04);
     }
     
-    /* Alerts */
-    .alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
-    
-    .alert-critical {
-      background: rgba(255,82,82,0.15);
-      border-left: 4px solid var(--danger);
-    }
-    
-    .alert-warning {
-      background: rgba(255,183,77,0.15);
-      border-left: 4px solid var(--warning);
-    }
-    
-    .alert-good {
-      background: rgba(0,230,118,0.15);
-      border-left: 4px solid var(--success);
-    }
-    
-    h3 {
-      font-size: 18px;
-      margin-bottom: 16px;
-      color: var(--accent-color);
-    }
-    
-    h4 {
-      font-size: 14px;
-      margin: 20px 0 12px 0;
-      color: var(--text-secondary);
-    }
-    
+    /* Action Buttons */
     .action-buttons {
       display: flex;
       gap: 12px;
@@ -445,223 +594,156 @@
       border-top: 1px solid var(--border-color);
     }
     
-    .loading {
-      text-align: center;
-      padding: 60px;
+    h3 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--accent-color);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    h4 {
+      font-size: 14px;
+      margin: 24px 0 12px 0;
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    
+    .small-text {
+      font-size: 13px;
       color: var(--text-secondary);
     }
     
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
     ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+    
+    @media (max-width: 768px) {
+      .consulting-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 20px;
+      }
+      .consulting-hero h1 { font-size: 22px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .control-group { width: 100%; }
+      .control-group select { min-width: auto; width: 100%; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .tabs .tab { padding: 8px 12px; font-size: 12px; }
+      .tab-content { padding: 16px; }
+    }
+    
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-<!-- Toast Container -->
+<!-- TOAST -->
 <div id="toastContainer"></div>
 
-<!-- Loading Overlay -->
+<!-- LOADING -->
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage">Loading consulting data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading consulting data...</div>
   </div>
 </div>
 
-<!-- EAMS Unified Header (FORESIGHT Dark Mode) -->
-<div class="eams-header">
-  <h2><i class="fas fa-chalkboard-user"></i> Consulting Intelligence Dashboard</h2>
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <div class="user-badge" id="userDisplay">Loading...</div>
-    <img id="companyLogo" src="" alt="Company Logo" style="height: 32px; display: none;">
-  </div>
-</div>
-
-<!-- Breadcrumbs -->
-<div class="breadcrumbs">
-  <span>🏠 Home</span> &gt;
-  <span>FORESIGHT</span> &gt;
-  <span>Consulting Intelligence</span>
-</div>
-
-<div class="consulting-container">
-  <div class="consulting-header">
-    <h1>📊 Adkintor Consulting Intelligence</h1>
-    <div class="header-badge">Strategic Advisory Report</div>
-  </div>
+<!-- CONTENIDO -->
+<div class="module-wrapper">
   
-  <div class="controls">
-    <div class="control-group">
-      <label>Year</label>
-      <select id="yearSelect">
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026" selected>2026</option>
-      </select>
+  <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
+  <div class="module-header">
+    <div class="header-left">
+      <span class="module-title"><i class="fas fa-chalkboard-user"></i> Consulting Intelligence</span>
     </div>
-    <div class="control-group">
-      <label>Month</label>
-      <select id="monthSelect">
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">March</option>
-        <option value="4">April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
-        <option value="12" selected>December</option>
-      </select>
-    </div>
-    <div class="control-group">
-      <button id="generateBtn" class="adk-btn adk-btn-primary">📊 Generate Report</button>
-    </div>
-    <div class="control-group">
-      <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled>📄 Export PDF</button>
+    <div class="header-right">
+      <span class="user-badge" id="userDisplay">Loading...</span>
+      <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
-  <div id="reportContent">
-    <div class="loading">
-      <div class="loading-spinner" style="margin: 0 auto 15px;"></div>
-      <p>Select a year and month, then click Generate Report</p>
-      <p style="font-size: 12px; margin-top: 8px;">For annual reports, select December. For quarterly, select March/June/September.</p>
+  <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
+  <div class="breadcrumbs">
+    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">Consulting Intelligence</span>
+  </div>
+  
+  <!-- CUERPO -->
+  <div class="module-body">
+    <div class="consulting-container">
+      <!-- Hero -->
+      <div class="consulting-hero">
+        <div>
+          <h1>📊 Adkintor Consulting Intelligence</h1>
+          <p>Strategic Advisory Report · Data-Driven Insights for Decision Makers</p>
+        </div>
+        <div class="hero-badge">
+          <i class="fas fa-star"></i> Premium Advisory
+        </div>
+      </div>
+      
+      <!-- Controls -->
+      <div class="controls">
+        <div class="control-group">
+          <label><i class="far fa-calendar-alt"></i> Year</label>
+          <select id="yearSelect">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label><i class="far fa-calendar-alt"></i> Month</label>
+          <select id="monthSelect">
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12" selected>December</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <button id="generateBtn" class="adk-btn adk-btn-primary"><i class="fas fa-chart-line"></i> Generate Report</button>
+        </div>
+        <div class="control-group">
+          <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled><i class="fas fa-file-pdf"></i> Export PDF</button>
+        </div>
+      </div>
+      
+      <!-- Report Content -->
+      <div id="reportContent">
+        <div class="loading-placeholder">
+          <i class="fas fa-file-alt icon-large"></i>
+          <p style="font-size: 18px; font-weight: 600; color: var(--text-primary);">Ready to Generate</p>
+          <p style="font-size: 14px;">Select a year and month, then click <strong>Generate Report</strong></p>
+          <p style="font-size: 12px; margin-top: 8px; color: var(--text-secondary);">For annual reports, select December. For quarterly, select March/June/September.</p>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- EAMS Status Bar (Footer) -->
-<div class="eams-status-bar">
-  <span>System Status: <strong id="footer-status">Ready</strong></span>
-  <span>EAMS <span id="eamsVersion">v2.0</span></span>
+  
+  <!-- FOOTER - ESTÁNDAR ADKINTOR (DARK) -->
+  <div class="module-footer">
+    <span>
+      <span class="status-dot connected"></span>
+      <span>Connected</span>
+    </span>
+    <span class="footer-version" id="eamsVersion">v1.0.0</span>
+  </div>
+  
 </div>
 
 <script>
   // ============================================
-  // GLOBAL VARIABLES
-  // ============================================
-  let currentReportData = null;
-  let EAMS_API_URL = null;
-  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-  
-  // ============================================
-  // LOAD API URL FROM SESSION
-  // ============================================
-  function loadApiUrl() {
-    const session = localStorage.getItem('adkintor_session');
-    if (session) {
-      try {
-        const sessionData = JSON.parse(session);
-        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
-        const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
-        }
-        console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);
-      } catch(e) { 
-        console.error('[CONSULTING] Error parsing session:', e);
-        const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
-      }
-    } else {
-      console.warn('[CONSULTING] No session found');
-      const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
-    }
-  }
-  
-  // ============================================
-  // API CALL FUNCTION (via Proxy)
-  // ============================================
-  async function callApi(action, args = []) {
-    if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
-    }
-    
-    console.log('[CONSULTING] Calling API:', action, args);
-    
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        targetUrl: EAMS_API_URL, 
-        payload: { action: action, args: args } 
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    console.log('[CONSULTING] API Response:', result);
-    
-    if (!result.success) {
-      throw new Error(result.error || 'API call failed');
-    }
-    
-    return result.data;
-  }
-  
-  // ============================================
-  // TOAST NOTIFICATION SYSTEM
-  // ============================================
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
-    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
-    
-    container.appendChild(toast);
-    
-    const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.addEventListener('click', () => toast.remove());
-    
-    setTimeout(() => {
-      if (toast.parentNode) toast.remove();
-    }, 4000);
-  }
-  
-  // ============================================
-  // LOADING OVERLAY FUNCTIONS
-  // ============================================
-  function showLoading(message = 'Processing...') {
-    const overlay = document.getElementById('loadingOverlay');
-    const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = message;
-    if (overlay) overlay.style.display = 'flex';
-  }
-  
-  function hideLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = 'none';
-  }
-  
-  // ============================================
-  // LOGGING FUNCTIONS
-  // ============================================
-  async function logForesight(module, action, details) {
-    if (window.Logger && typeof window.Logger.foresight === 'function') {
-      try {
-        await window.Logger.foresight(module, action, details);
-        console.log(`[CONSULTING] Logged: ${module}/${action}`);
-      } catch (err) {
-        console.warn('[CONSULTING] Logger error:', err);
-      }
-    } else {
-      console.log(`[CONSULTING] Log (Logger not available): ${module}/${action} - ${details}`);
-    }
-  }
-  
-  // ============================================
-  // LISTENER FOR LOGO AND VERSION FROM PARENT
+  // RECIBIR MENSAJES DEL PADRE
   // ============================================
   window.addEventListener('message', function(event) {
     const data = event.data;
@@ -685,33 +767,168 @@
   });
   
   // ============================================
+  // CARGAR USUARIO (email)
+  // ============================================
+  function loadUser() {
+    try {
+      const session = JSON.parse(localStorage.getItem('adkintor_session'));
+      if (session && session.email) {
+        document.getElementById('userDisplay').innerText = session.email;
+      }
+    } catch(e) {}
+  }
+  
+  // ============================================
+  // TOAST (usa ModuleBase si existe)
+  // ============================================
+  function showToast(message, type = 'info') {
+    if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+      ModuleBase.showToast(message, type);
+      return;
+    }
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span><i class="fas fa-times toast-close"></i>`;
+    container.appendChild(toast);
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => toast.remove());
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 4000);
+  }
+  
+  // ============================================
+  // LOADING
+  // ============================================
+  function showLoading(msg) {
+    const overlay = document.getElementById('loadingOverlay');
+    const msgSpan = document.getElementById('loadingMessage');
+    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    overlay.classList.add('visible');
+  }
+  
+  function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('visible');
+  }
+  
+  // ============================================
+  // CERRAR MODAL
+  // ============================================
+  function closeModal() {
+    window.parent.postMessage('closeIframe', '*');
+  }
+  
+  // ============================================
+  // API CONFIGURATION
+  // ============================================
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  let EAMS_API_URL = null;
+  
+  function loadApiUrl() {
+    const session = localStorage.getItem('adkintor_session');
+    if (session) {
+      try {
+        const sessionData = JSON.parse(session);
+        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) {
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+        }
+        console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);
+      } catch(e) { 
+        console.error('[CONSULTING] Error parsing session:', e);
+        const userDisplay = document.getElementById('userDisplay');
+        if (userDisplay) userDisplay.innerText = 'User';
+      }
+    } else {
+      console.warn('[CONSULTING] No session found');
+      const userDisplay = document.getElementById('userDisplay');
+      if (userDisplay) userDisplay.innerText = 'Guest';
+    }
+  }
+  
+  async function callApi(action, args = []) {
+    if (!EAMS_API_URL) {
+      throw new Error('API URL not configured. Please check your session.');
+    }
+    
+    console.log('[CONSULTING] Calling API:', action, args);
+    
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        targetUrl: EAMS_API_URL, 
+        payload: { action: action, args: args } 
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+    }
+    
+    const result = await response.json();
+    console.log('[CONSULTING] API Response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API call failed');
+    }
+    
+    return result.data;
+  }
+  
+  // ============================================
+  // LOGGING FUNCTIONS
+  // ============================================
+  async function logForesight(module, action, details) {
+    if (window.Logger && typeof Logger.foresight === 'function') {
+      try {
+        await Logger.foresight(module, action, details);
+        console.log('[CONSULTING] Logged:', module + '/' + action);
+      } catch (err) {
+        console.warn('[CONSULTING] Logger error:', err);
+      }
+    } else {
+      console.log('[CONSULTING] Log (Logger not available):', module + '/' + action + ' - ' + details);
+    }
+  }
+  
+  // ============================================
+  // GLOBAL STATE
+  // ============================================
+  var currentReportData = null;
+  
+  // ============================================
   // REPORT GENERATION
   // ============================================
   async function generateReport() {
-    const year = parseInt(document.getElementById('yearSelect').value);
-    const month = parseInt(document.getElementById('monthSelect').value);
+    var year = parseInt(document.getElementById('yearSelect').value);
+    var month = parseInt(document.getElementById('monthSelect').value);
     
-    await logForesight('CONSULTING', 'GENERATE_REPORT', `Report generated for ${month}/${year}`);
+    await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + month + '/' + year);
     
     showLoading('Generating report...');
-    const reportContainer = document.getElementById('reportContent');
-    reportContainer.innerHTML = '<div class="loading"><div class="loading-spinner" style="margin: 0 auto 15px;"></div><p>Loading report data...</p></div>';
+    var reportContainer = document.getElementById('reportContent');
+    reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">Loading report data...</p></div>';
     
     try {
-      const data = await callApi('getConsultingReportData', [year, month]);
+      var data = await callApi('getConsultingReportData', [year, month]);
       currentReportData = data;
       renderReport(data);
-      const exportBtn = document.getElementById('exportPdfBtn');
+      var exportBtn = document.getElementById('exportPdfBtn');
       if (exportBtn) exportBtn.disabled = false;
       hideLoading();
       showToast('Report generated successfully', 'success');
     } catch (error) {
-      if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('CONSULTING', 'generateReport', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
+      if (window.Logger && typeof Logger.error === 'function') {
+        Logger.error('CONSULTING', 'generateReport', error.message).catch(function(e) { console.warn('[CONSULTING] Error log failed:', e); });
       }
       hideLoading();
       showToast('Error: ' + error.message, 'error');
-      reportContainer.innerHTML = `<div class="alert alert-critical">❌ Error: ${error.message}</div>`;
+      reportContainer.innerHTML = '<div class="alert alert-critical"><i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + error.message + '</div>';
     }
   }
   
@@ -724,12 +941,12 @@
       return;
     }
     
-    const period = `${currentReportData.period?.month || ''}/${currentReportData.period?.year || ''}`;
-    await logForesight('CONSULTING', 'EXPORT_PDF', `Consulting report PDF export - Period: ${period}`);
+    var period = (currentReportData.period?.month || '') + '/' + (currentReportData.period?.year || '');
+    await logForesight('CONSULTING', 'EXPORT_PDF', 'Consulting report PDF export - Period: ' + period);
     
     showLoading('Generating PDF...');
     try {
-      const result = await callApi('exportConsultingReportToPDF', [currentReportData]);
+      var result = await callApi('exportConsultingReportToPDF', [currentReportData]);
       hideLoading();
       if (result && result.url) {
         window.open(result.url, '_blank');
@@ -738,8 +955,8 @@
         showToast('PDF generation started. Check your Google Drive.', 'info');
       }
     } catch (error) {
-      if (window.Logger && typeof window.Logger.error === 'function') {
-        window.Logger.error('CONSULTING', 'exportPDF', error.message).catch(e => console.warn('[CONSULTING] Error log failed:', e));
+      if (window.Logger && typeof Logger.error === 'function') {
+        Logger.error('CONSULTING', 'exportPDF', error.message).catch(function(e) { console.warn('[CONSULTING] Error log failed:', e); });
       }
       hideLoading();
       showToast('Error generating PDF: ' + error.message, 'error');
@@ -750,304 +967,260 @@
   // RENDER FUNCTIONS
   // ============================================
   function renderReport(data) {
-    const html = `
-      ${renderExecutiveSummary(data.executiveSummary, data.period)}
-      ${renderTabs(data)}
-    `;
+    var html = renderExecutiveSummary(data.executiveSummary, data.period) + renderTabs(data);
     document.getElementById('reportContent').innerHTML = html;
     attachTabListeners();
   }
   
   function renderExecutiveSummary(summary, period) {
-    return `
-      <div style="margin-bottom: 24px;">
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-value">${summary.availability.value}%</div>
-            <div class="kpi-label">Availability</div>
-            <div class="kpi-status ${summary.availability.status === '✅ GOOD' ? 'status-good' : (summary.availability.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.availability.status}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value">${summary.pmCompliance.value}%</div>
-            <div class="kpi-label">PM Compliance</div>
-            <div class="kpi-status ${summary.pmCompliance.status === '✅ GOOD' ? 'status-good' : (summary.pmCompliance.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.pmCompliance.status}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value">${summary.mtbf.value} days</div>
-            <div class="kpi-label">MTBF (Class A)</div>
-            <div class="kpi-status ${summary.mtbf.status === '✅ GOOD' ? 'status-good' : (summary.mtbf.status.includes('WARNING') ? 'status-warning' : 'status-critical')}">${summary.mtbf.status}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value">${summary.totalWOs}</div>
-            <div class="kpi-label">Total Work Orders</div>
-            <div class="kpi-status">${summary.correctiveWOs} Corrective</div>
-          </div>
-        </div>
-        
-        <div class="alert ${summary.topIssues.length > 0 ? 'alert-critical' : 'alert-warning'}">
-          <strong>⚠️ Top Issues Impacting Performance</strong><br>
-          ${summary.topIssues.map(issue => `• ${escapeHtml(issue.assetId)}: ${issue.failures} failures (${issue.criticality})`).join('<br>') || 'No major issues detected'}
-        </div>
-        
-        <div class="alert alert-good">
-          <strong>✅ Key Achievements</strong><br>
-          ${summary.topAchievements.map(ach => `• ${escapeHtml(ach)}`).join('<br>') || 'No achievements recorded'}
-        </div>
-      </div>
-    `;
+    var periodText = (period?.month ? getMonthName(period.month) : '') + ' ' + (period?.year || '');
+    
+    var availabilityStatus = summary.availability.status === '✅ GOOD' ? 'status-good' : (summary.availability.status.includes('WARNING') ? 'status-warning' : 'status-critical');
+    var pmStatus = summary.pmCompliance.status === '✅ GOOD' ? 'status-good' : (summary.pmCompliance.status.includes('WARNING') ? 'status-warning' : 'status-critical');
+    var mtbfStatus = summary.mtbf.status === '✅ GOOD' ? 'status-good' : (summary.mtbf.status.includes('WARNING') ? 'status-warning' : 'status-critical');
+    
+    var html = '<div style="margin-bottom: 24px;">' +
+      '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">' +
+        '<div><span style="color: var(--text-secondary); font-size: 13px;">Report Period:</span> <strong style="color: var(--accent-color);">' + periodText + '</strong></div>' +
+        '<div><span class="kpi-status status-good"><i class="fas fa-check-circle"></i> Data Verified</span></div>' +
+      '</div>' +
+      '<div class="kpi-grid">' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.availability.value + '%</div><div class="kpi-label">Availability</div><div class="kpi-status ' + availabilityStatus + '">' + summary.availability.status + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.pmCompliance.value + '%</div><div class="kpi-label">PM Compliance</div><div class="kpi-status ' + pmStatus + '">' + summary.pmCompliance.status + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.mtbf.value + ' days</div><div class="kpi-label">MTBF (Class A)</div><div class="kpi-status ' + mtbfStatus + '">' + summary.mtbf.status + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.totalWOs + '</div><div class="kpi-label">Total Work Orders</div><div class="kpi-status status-info">' + summary.correctiveWOs + ' Corrective</div></div>' +
+      '</div>';
+    
+    if (summary.topIssues && summary.topIssues.length > 0) {
+      html += '<div class="alert alert-critical"><strong>⚠️ Top Issues Impacting Performance</strong><br>';
+      for (var i = 0; i < summary.topIssues.length; i++) {
+        var issue = summary.topIssues[i];
+        html += '• ' + escapeHtml(issue.assetId) + ': ' + issue.failures + ' failures (' + escapeHtml(issue.criticality) + ')<br>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="alert alert-good"><strong>✅ No Major Issues Detected</strong><br>All assets are performing within expected parameters.</div>';
+    }
+    
+    if (summary.topAchievements && summary.topAchievements.length > 0) {
+      html += '<div class="alert alert-good"><strong>✅ Key Achievements</strong><br>';
+      for (var i = 0; i < summary.topAchievements.length; i++) {
+        html += '• ' + escapeHtml(summary.topAchievements[i]) + '<br>';
+      }
+      html += '</div>';
+    }
+    
+    html += '</div>';
+    return html;
   }
   
   function renderTabs(data) {
-    return `
-      <div class="tabs">
-        <div class="tab active" data-tab="financial">💰 Financial</div>
-        <div class="tab" data-tab="staff">👥 Staff</div>
-        <div class="tab" data-tab="reliability">⚙️ Reliability</div>
-        <div class="tab" data-tab="capex">🏗️ CAPEX</div>
-        <div class="tab" data-tab="recommendations">💡 Recommendations</div>
-      </div>
-      <div class="tab-content">
-        <div id="tab-financial" class="tab-pane active">
-          ${renderFinancialTab(data.financialAnalysis)}
-        </div>
-        <div id="tab-staff" class="tab-pane">
-          ${renderStaffTab(data.staffAnalysis)}
-        </div>
-        <div id="tab-reliability" class="tab-pane">
-          ${renderReliabilityTab(data.reliabilityAnalysis)}
-        </div>
-        <div id="tab-capex" class="tab-pane">
-          ${renderCapexTab(data.capexProposal)}
-        </div>
-        <div id="tab-recommendations" class="tab-pane">
-          ${renderRecommendationsTab(data.recommendations)}
-        </div>
-      </div>
-      <div class="action-buttons">
-        <button id="exportPdfBottomBtn" class="adk-btn adk-btn-success">📄 Export PDF</button>
-      </div>
-    `;
+    return '<div class="tabs">' +
+      '<div class="tab active" data-tab="financial"><i class="fas fa-coins"></i> Financial</div>' +
+      '<div class="tab" data-tab="staff"><i class="fas fa-users"></i> Staff</div>' +
+      '<div class="tab" data-tab="reliability"><i class="fas fa-chart-line"></i> Reliability</div>' +
+      '<div class="tab" data-tab="capex"><i class="fas fa-hard-hat"></i> CAPEX</div>' +
+      '<div class="tab" data-tab="recommendations"><i class="fas fa-lightbulb"></i> Recommendations</div>' +
+      '</div>' +
+      '<div class="tab-content">' +
+        '<div id="tab-financial" class="tab-pane active">' + renderFinancialTab(data.financialAnalysis) + '</div>' +
+        '<div id="tab-staff" class="tab-pane">' + renderStaffTab(data.staffAnalysis) + '</div>' +
+        '<div id="tab-reliability" class="tab-pane">' + renderReliabilityTab(data.reliabilityAnalysis) + '</div>' +
+        '<div id="tab-capex" class="tab-pane">' + renderCapexTab(data.capexProposal) + '</div>' +
+        '<div id="tab-recommendations" class="tab-pane">' + renderRecommendationsTab(data.recommendations) + '</div>' +
+      '</div>' +
+      '<div class="action-buttons">' +
+        '<button id="exportPdfBottomBtn" class="adk-btn adk-btn-success"><i class="fas fa-file-pdf"></i> Export PDF</button>' +
+      '</div>';
   }
   
   function renderFinancialTab(financial) {
-    return `
-      <h3>💰 Financial Analysis</h3>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-value">$${financial.totalSpend.toLocaleString()}</div>
-          <div class="kpi-label">Total Spend</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$${financial.budgetAmount.toLocaleString()}</div>
-          <div class="kpi-label">Budget</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${financial.variance.toFixed(1)}%</div>
-          <div class="kpi-label">Variance</div>
-          <div class="kpi-status ${financial.varianceStatus.includes('GOOD') ? 'status-good' : 'status-critical'}">${financial.varianceStatus}</div>
-        </div>
-      </div>
-      
-      <h4>Top 5 Assets by Maintenance Cost</h4>
-      <table class="data-table">
-        <thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead>
-        <tbody>
-          ${financial.topCostAssets.map(asset => `
-            <tr>
-              <td><strong>${escapeHtml(asset.name)}</strong></td>
-              <td>$${asset.cost.toLocaleString()}</td>
-              <td>${escapeHtml(asset.criticality)}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="3">No data available</td></tr>'}
-        </tbody>
-      </table>
-      
-      <h4>Spend by Category</h4>
-      <table class="data-table">
-        <thead><tr><th>Category</th><th>Amount</th></tr></thead>
-        <tbody>
-          ${Object.entries(financial.spendByCategory).map(([cat, amt]) => `
-            <tr>
-              <td>${escapeHtml(cat)}</td>
-              <td>$${amt.toLocaleString()}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="2">No data available</td></tr>'}
-        </tbody>
-      </table>
-    `;
+    var varianceStatusClass = financial.varianceStatus.includes('GOOD') ? 'status-good' : 'status-critical';
+    var varianceIcon = financial.varianceStatus.includes('GOOD') ? '✅' : '⚠️';
+    
+    var html = '<h3><i class="fas fa-coins"></i> Financial Analysis</h3>' +
+      '<div class="kpi-grid">' +
+        '<div class="kpi-card"><div class="kpi-value gold">$' + financial.totalSpend.toLocaleString() + '</div><div class="kpi-label">Total Spend</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">$' + financial.budgetAmount.toLocaleString() + '</div><div class="kpi-label">Budget</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (financial.variance > 0 ? 'danger' : 'success') + '">' + financial.variance.toFixed(1) + '%</div><div class="kpi-label">Variance</div><div class="kpi-status ' + varianceStatusClass + '">' + varianceIcon + ' ' + financial.varianceStatus + '</div></div>' +
+      '</div>';
+    
+    html += '<h4><i class="fas fa-trophy"></i> Top 5 Assets by Maintenance Cost</h4>' +
+      '<table class="data-table"><thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead><tbody>';
+    if (financial.topCostAssets && financial.topCostAssets.length > 0) {
+      for (var i = 0; i < financial.topCostAssets.length && i < 5; i++) {
+        var asset = financial.topCostAssets[i];
+        html += '<tr><td><strong>' + escapeHtml(asset.name) + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="3">No data available</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    html += '<h4><i class="fas fa-pie-chart"></i> Spend by Category</h4>' +
+      '<table class="data-table"><thead><tr><th>Category</th><th>Amount</th></tr></thead><tbody>';
+    if (financial.spendByCategory) {
+      var categories = Object.keys(financial.spendByCategory);
+      for (var i = 0; i < categories.length; i++) {
+        var cat = categories[i];
+        html += '<tr><td>' + escapeHtml(cat) + '</td><td>$' + financial.spendByCategory[cat].toLocaleString() + '</td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="2">No data available</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    return html;
   }
   
   function renderStaffTab(staff) {
-    return `
-      <h3>👥 Staff & Organization Analysis</h3>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-value">${staff.staffCount}</div>
-          <div class="kpi-label">Technicians</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${staff.backlogWeeks} weeks</div>
-          <div class="kpi-label">Backlog</div>
-          <div class="kpi-status ${staff.backlogStatus === '✅ GOOD' ? 'status-good' : 'status-warning'}">${staff.backlogStatus}</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${staff.totalOpenWOs}</div>
-          <div class="kpi-label">Open Work Orders</div>
-        </div>
-      </div>
-      
-      <h4>Technician Performance</h4>
-      <table class="data-table">
-        <thead><tr><th>Name</th><th>WOs</th><th>Completed</th><th>Hours</th><th>Productivity</th><th>Status</th></tr></thead>
-        <tbody>
-          ${staff.staffList.map(tech => `
-            <tr>
-              <td><strong>${escapeHtml(tech.name)}</strong></td>
-              <td>${tech.totalWOs}</td>
-              <td>${tech.completedWOs}</td>
-              <td>${tech.totalHours}</td>
-              <td>${tech.productivity}%</td>
-              <td>${tech.status}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="6">No data available</td></tr>'}
-        </tbody>
-      </table>
-      
-      <h4>Backlog by Age</h4>
-      <table class="data-table">
-        <thead><tr><th>Age Category</th><th>Number of WOs</th><th>Recommendation</th></tr></thead>
-        <tbody>
-          <tr><td>&lt;7 days</td><td>${staff.backlogByAge['<7d'] || 0}</td><td>Normal priority</td></tr>
-          <tr><td>7-14 days</td><td>${staff.backlogByAge['7-14d'] || 0}</td><td>${(staff.backlogByAge['7-14d'] || 0) > 5 ? '⚠️ Monitor closely' : 'Normal'}</td></tr>
-          <tr><td>15-30 days</td><td>${staff.backlogByAge['15-30d'] || 0}</td><td>${(staff.backlogByAge['15-30d'] || 0) > 3 ? '🔴 Escalate' : '⚠️ Review'}</td></tr>
-          <tr><td>&gt;30 days</td><td>${staff.backlogByAge['>30d'] || 0}</td><td>🔴 <strong>URGENT - Escalate immediately</strong></td></tr>
-        </tbody>
-      </table>
-    `;
+    var backlogStatusClass = staff.backlogStatus === '✅ GOOD' ? 'status-good' : 'status-warning';
+    
+    var html = '<h3><i class="fas fa-users"></i> Staff & Organization Analysis</h3>' +
+      '<div class="kpi-grid">' +
+        '<div class="kpi-card"><div class="kpi-value">' + staff.staffCount + '</div><div class="kpi-label">Technicians</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (parseInt(staff.backlogWeeks) > 4 ? 'danger' : 'success') + '">' + staff.backlogWeeks + ' weeks</div><div class="kpi-label">Backlog</div><div class="kpi-status ' + backlogStatusClass + '">' + staff.backlogStatus + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + staff.totalOpenWOs + '</div><div class="kpi-label">Open Work Orders</div></div>' +
+      '</div>';
+    
+    html += '<h4><i class="fas fa-user-check"></i> Technician Performance</h4>' +
+      '<table class="data-table"><thead><tr><th>Name</th><th>WOs</th><th>Completed</th><th>Hours</th><th>Productivity</th><th>Status</th></tr></thead><tbody>';
+    if (staff.staffList && staff.staffList.length > 0) {
+      for (var i = 0; i < staff.staffList.length; i++) {
+        var tech = staff.staffList[i];
+        var techStatusClass = tech.status === '✅ GOOD' ? 'status-good' : (tech.status.includes('WARNING') ? 'status-warning' : 'status-critical');
+        html += '<tr><td><strong>' + escapeHtml(tech.name) + '</strong></td><td>' + tech.totalWOs + '</td><td>' + tech.completedWOs + '</td><td>' + tech.totalHours + '</td><td>' + tech.productivity + '%</td><td><span class="kpi-status ' + techStatusClass + '">' + tech.status + '</span></td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="6">No data available</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    html += '<h4><i class="fas fa-clock"></i> Backlog by Age</h4>' +
+      '<table class="data-table"><thead><tr><th>Age Category</th><th>Number of WOs</th><th>Recommendation</th></tr></thead><tbody>' +
+        '<tr><td>&lt;7 days</td><td>' + (staff.backlogByAge['<7d'] || 0) + '</td><td>Normal priority</td></tr>' +
+        '<tr><td>7-14 days</td><td>' + (staff.backlogByAge['7-14d'] || 0) + '</td><td>' + ((staff.backlogByAge['7-14d'] || 0) > 5 ? '⚠️ Monitor closely' : 'Normal') + '</td></tr>' +
+        '<tr><td>15-30 days</td><td>' + (staff.backlogByAge['15-30d'] || 0) + '</td><td>' + ((staff.backlogByAge['15-30d'] || 0) > 3 ? '🔴 Escalate' : '⚠️ Review') + '</td></tr>' +
+        '<tr><td>&gt;30 days</td><td>' + (staff.backlogByAge['>30d'] || 0) + '</td><td><span style="color: var(--danger); font-weight: 700;">🔴 URGENT - Escalate immediately</span></td></tr>' +
+      '</tbody></table>';
+    
+    return html;
   }
   
   function renderReliabilityTab(reliability) {
-    return `
-      <h3>⚙️ Reliability Analysis</h3>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-value">${reliability.mtbf.A} days</div>
-          <div class="kpi-label">MTBF Class A (Critical)</div>
-          <div class="kpi-status ${reliability.mtbf.status === '✅ MEETS TARGET' ? 'status-good' : 'status-critical'}">${reliability.mtbf.status}</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${reliability.mtbf.B} days</div>
-          <div class="kpi-label">MTBF Class B (Important)</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">${reliability.mtbf.C} days</div>
-          <div class="kpi-label">MTBF Class C (Standard)</div>
-        </div>
-      </div>
-      
-      <h4>PM Compliance</h4>
-      <div class="kpi-card" style="display:inline-block; width:auto;">
-        <div class="kpi-value">${reliability.pmCompliance.percentage}%</div>
-        <div class="kpi-label">(${reliability.pmCompliance.completed}/${reliability.pmCompliance.scheduled} completed)</div>
-      </div>
-      
-      <h4>MTTR by Technician</h4>
-      <table class="data-table">
-        <thead><tr><th>Technician</th><th>MTTR (hours)</th><th>vs Target (${reliability.mttrTarget}h)</th></tr></thead>
-        <tbody>
-          ${reliability.mttr.map(m => `
-            <tr>
-              <td>${escapeHtml(m.technician)}</td>
-              <td>${m.mttr}</td>
-              <td class="${m.status === '✅ GOOD' ? 'status-good' : 'status-critical'}">${m.status}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="3">No data available</td></tr>'}
-        </tbody>
-      </table>
-      
-      <h4>Top Failing Assets</h4>
-      <table class="data-table">
-        <thead><tr><th>Asset</th><th>Failures (Period)</th><th>Criticality</th></tr></thead>
-        <tbody>
-          ${reliability.topFailures.map(asset => `
-            <tr>
-              <td><strong>${escapeHtml(asset.name)}</strong></td>
-              <td>${asset.failures}</td>
-              <td>${escapeHtml(asset.criticality)}</td>
-            </tr>
-          `).join('') || '<tr><td colspan="3">No failures recorded</td></tr>'}
-        </tbody>
-      </table>
-    `;
+    var mtbfStatusClass = reliability.mtbf.status === '✅ MEETS TARGET' ? 'status-good' : 'status-critical';
+    
+    var html = '<h3><i class="fas fa-chart-line"></i> Reliability Analysis</h3>' +
+      '<div class="kpi-grid">' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.A + ' days</div><div class="kpi-label">MTBF Class A (Critical)</div><div class="kpi-status ' + mtbfStatusClass + '">' + reliability.mtbf.status + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.B + ' days</div><div class="kpi-label">MTBF Class B (Important)</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.C + ' days</div><div class="kpi-label">MTBF Class C (Standard)</div></div>' +
+      '</div>';
+    
+    var pmPct = reliability.pmCompliance.percentage;
+    var pmStatusClass = pmPct >= 85 ? 'status-good' : (pmPct >= 70 ? 'status-warning' : 'status-critical');
+    html += '<div class="kpi-grid" style="grid-template-columns: 1fr 1fr;">' +
+        '<div class="kpi-card"><div class="kpi-value ' + (pmPct >= 85 ? 'success' : (pmPct >= 70 ? '' : 'danger')) + '">' + pmPct + '%</div><div class="kpi-label">PM Compliance</div><div class="kpi-status ' + pmStatusClass + '">' + reliability.pmCompliance.completed + '/' + reliability.pmCompliance.scheduled + ' completed</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mttrTarget + ' hrs</div><div class="kpi-label">Target MTTR</div></div>' +
+      '</div>';
+    
+    html += '<h4><i class="fas fa-wrench"></i> MTTR by Technician</h4>' +
+      '<table class="data-table"><thead><tr><th>Technician</th><th>MTTR (hours)</th><th>vs Target (' + reliability.mttrTarget + 'h)</th></tr></thead><tbody>';
+    if (reliability.mttr && reliability.mttr.length > 0) {
+      for (var i = 0; i < reliability.mttr.length; i++) {
+        var m = reliability.mttr[i];
+        var mttrStatusClass = m.status === '✅ GOOD' ? 'status-good' : 'status-critical';
+        html += '<tr><td><strong>' + escapeHtml(m.technician) + '</strong></td><td>' + m.mttr + '</td><td><span class="kpi-status ' + mttrStatusClass + '">' + m.status + '</span></td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="3">No data available</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    html += '<h4><i class="fas fa-exclamation-triangle"></i> Top Failing Assets</h4>' +
+      '<table class="data-table"><thead><tr><th>Asset</th><th>Failures (Period)</th><th>Criticality</th></tr></thead><tbody>';
+    if (reliability.topFailures && reliability.topFailures.length > 0) {
+      for (var i = 0; i < reliability.topFailures.length; i++) {
+        var asset = reliability.topFailures[i];
+        var critClass = asset.criticality === 'A - CRITICAL' ? 'status-critical' : (asset.criticality === 'B - IMPORTANT' ? 'status-warning' : 'status-good');
+        html += '<tr><td><strong>' + escapeHtml(asset.name) + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="3">No failures recorded</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    return html;
   }
   
-function renderCapexTab(capex) {
-  return `
-    <h3>🏗️ CAPEX Proposal for Next Fiscal Year</h3>
-    <div class="alert alert-warning">
-      <strong>📌 Note:</strong> The following are recommendations based on failure data. 
-      Detailed cost estimates require internal evaluation.
-    </div>
+  function renderCapexTab(capex) {
+    var html = '<h3><i class="fas fa-hard-hat"></i> CAPEX Proposal for Next Fiscal Year</h3>' +
+      '<div class="alert alert-info"><strong>📌 Note:</strong> The following are recommendations based on failure data. Detailed cost estimates require internal evaluation.</div>';
     
-    <h4>Recommended Actions to Evaluate</h4>
-    <table class="data-table">
-      <thead>
-        <tr><th>Recommendation</th><th>Priority</th><th>Justification</th></tr>
-      </thead>
-      <tbody>
-        ${capex.proposals.map(proj => `
-          <tr>
-            <td><strong>${escapeHtml(proj.name)}</strong></td>
-            <td class="${proj.priority === 'HIGH' ? 'status-critical' : 'status-warning'}">${proj.priority}</td>
-            <td class="small-text">${escapeHtml(proj.justification)}</td>
-          </tr>
-        `).join('') || '<tr><td colspan="3">No CAPEX recommendations at this time. Continue monitoring asset performance.</td></tr>'}
-      </tbody>
-    </table>
-  `;
-}
+    html += '<h4><i class="fas fa-list-check"></i> Recommended Actions to Evaluate</h4>' +
+      '<table class="data-table"><thead><tr><th>Recommendation</th><th>Priority</th><th>Justification</th></tr></thead><tbody>';
+    if (capex.proposals && capex.proposals.length > 0) {
+      for (var i = 0; i < capex.proposals.length; i++) {
+        var proj = capex.proposals[i];
+        var priorityClass = proj.priority === 'HIGH' ? 'status-critical' : 'status-warning';
+        html += '<tr><td><strong>' + escapeHtml(proj.name) + '</strong></td><td><span class="kpi-status ' + priorityClass + '">' + proj.priority + '</span></td><td class="small-text">' + escapeHtml(proj.justification) + '</td></tr>';
+      }
+    } else {
+      html += '<tr><td colspan="3">No CAPEX recommendations at this time. Continue monitoring asset performance.</td></tr>';
+    }
+    html += '</tbody></table>';
+    
+    return html;
+  }
   
   function renderRecommendationsTab(recommendations) {
     if (!recommendations || recommendations.length === 0) {
-      return `<div class="alert alert-good">✅ No recommendations at this time. All metrics are within targets.</div>`;
+      return '<div class="alert alert-good"><strong>✅ No recommendations at this time.</strong> All metrics are within targets.</div>';
     }
     
-    return `
-      <h3>💡 Strategic Recommendations</h3>
-      ${recommendations.map(rec => `
-        <div class="alert ${rec.priority === 'CRITICAL' ? 'alert-critical' : 'alert-warning'}" style="margin-bottom:16px;">
-          <strong>${rec.priority === 'CRITICAL' ? '🔴' : '🟡'} ${escapeHtml(rec.title)}</strong><br>
-          ${escapeHtml(rec.description)}<br>
-          <table style="margin: 10px 0; width: auto; border: none;">
-            <tr style="border: none;">
-              <td style="border: none; padding: 4px 8px 4px 0;"><strong>Estimated Cost:</strong></td>
-              <td style="border: none; padding: 4px;">$${rec.estimatedCost.toLocaleString()}</td>
-              <td style="border: none; padding: 4px 8px 4px 20px;"><strong>Expected Savings:</strong></td>
-              <td style="border: none; padding: 4px;">$${rec.expectedSavings.toLocaleString()}</td>
-            </tr>
-          </table>
-          <strong>📋 Action Required:</strong> ${escapeHtml(rec.action)}
-        </div>
-      `).join('')}
-      
-      <div class="alert alert-good">
-        <strong>📋 Next Steps for Management:</strong><br>
-        1. Review critical recommendations with leadership team<br>
-        2. Prioritize actions based on ROI and operational impact<br>
-        3. Assign owners to each approved recommendation
-      </div>
-    `;
+    var html = '<h3><i class="fas fa-lightbulb"></i> Strategic Recommendations</h3>';
+    for (var i = 0; i < recommendations.length; i++) {
+      var rec = recommendations[i];
+      var alertClass = rec.priority === 'CRITICAL' ? 'alert-critical' : 'alert-warning';
+      html += '<div class="alert ' + alertClass + '" style="margin-bottom:16px;">' +
+        '<strong>' + (rec.priority === 'CRITICAL' ? '🔴' : '🟡') + ' ' + escapeHtml(rec.title) + '</strong><br>' +
+        escapeHtml(rec.description) + '<br>' +
+        '<table style="margin: 10px 0; width: auto; border: none; border-collapse: collapse;">' +
+          '<tr style="border: none;">' +
+            '<td style="border: none; padding: 4px 8px 4px 0;"><strong>Estimated Cost:</strong></td>' +
+            '<td style="border: none; padding: 4px;">$' + rec.estimatedCost.toLocaleString() + '</td>' +
+            '<td style="border: none; padding: 4px 8px 4px 20px;"><strong>Expected Savings:</strong></td>' +
+            '<td style="border: none; padding: 4px;">$' + rec.expectedSavings.toLocaleString() + '</td>' +
+          '</tr>' +
+        '</table>' +
+        '<strong>📋 Action Required:</strong> ' + escapeHtml(rec.action) +
+      '</div>';
+    }
+    
+    html += '<div class="alert alert-good">' +
+      '<strong>📋 Next Steps for Management:</strong><br>' +
+      '1. Review critical recommendations with leadership team<br>' +
+      '2. Prioritize actions based on ROI and operational impact<br>' +
+      '3. Assign owners to each approved recommendation' +
+    '</div>';
+    
+    return html;
   }
   
   // ============================================
   // UTILITIES
   // ============================================
+  function getMonthName(month) {
+    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return months[month - 1] || month;
+  }
+  
   function attachTabListeners() {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabId = tab.dataset.tab;
-        const tabNames = {
+    var tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var tabId = this.dataset.tab;
+        var tabNames = {
           'financial': 'Financial',
           'staff': 'Staff & Organization',
           'reliability': 'Reliability',
@@ -1055,19 +1228,19 @@ function renderCapexTab(capex) {
           'recommendations': 'Recommendations'
         };
         
-        logForesight('CONSULTING', 'CHANGE_TAB', `User switched to tab: ${tabNames[tabId] || tabId}`);
+        logForesight('CONSULTING', 'CHANGE_TAB', 'User switched to tab: ' + (tabNames[tabId] || tabId));
         
-        tabs.forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        const activePane = document.getElementById(`tab-${tabId}`);
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+        this.classList.add('active');
+        var activePane = document.getElementById('tab-' + tabId);
         if (activePane) activePane.classList.add('active');
       });
     });
     
-    const exportBottomBtn = document.getElementById('exportPdfBottomBtn');
+    var exportBottomBtn = document.getElementById('exportPdfBottomBtn');
     if (exportBottomBtn) {
-      exportBottomBtn.addEventListener('click', () => exportPDF());
+      exportBottomBtn.addEventListener('click', function() { exportPDF(); });
     }
   }
   
@@ -1080,81 +1253,107 @@ function renderCapexTab(capex) {
       return m;
     });
   }
-
-// ============================================
-// LOAD AVAILABLE YEARS FROM DATA
-// ============================================
-async function loadAvailableYears() {
-  try {
-    // Llamar a una función que obtenga los años disponibles
-    const years = await callApi('getAvailableYearsForConsulting', []);
-    const yearSelect = document.getElementById('yearSelect');
-    if (years && years.length > 0 && yearSelect) {
-      yearSelect.innerHTML = '';
-      years.forEach(year => {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-      });
-      // Seleccionar el año más reciente por defecto
-      const currentYear = new Date().getFullYear();
-      if (years.includes(currentYear)) {
-        yearSelect.value = currentYear;
-      } else if (years.length > 0) {
-        yearSelect.value = years[years.length - 1];
-      }
-    }
-  } catch (error) {
-    console.warn('[CONSULTING] Could not load years dynamically:', error);
-    // Fallback: años manuales
-    const yearSelect = document.getElementById('yearSelect');
-    if (yearSelect && yearSelect.children.length <= 1) {
-      const currentYear = new Date().getFullYear();
-      for (let y = currentYear - 2; y <= currentYear + 1; y++) {
-        const option = document.createElement('option');
-        option.value = y;
-        option.textContent = y;
-        yearSelect.appendChild(option);
-      }
-      yearSelect.value = currentYear;
-    }
-  }
-}
   
   // ============================================
-  // INITIALIZATION
+  // LOAD AVAILABLE YEARS
   // ============================================
-  document.addEventListener('DOMContentLoaded', function() {
-    const yearSelectElem = document.getElementById('yearSelect');
-    const monthSelectElem = document.getElementById('monthSelect');
-    const generateBtn = document.getElementById('generateBtn');
-    const exportPdfBtn = document.getElementById('exportPdfBtn');
-    
-    logForesight('CONSULTING', 'OPEN_MODULE', 'User accessed Consulting Intelligence');
-    
-    // Set current date
-    const today = new Date();
-    if (yearSelectElem) yearSelectElem.value = today.getFullYear();
-    if (monthSelectElem) monthSelectElem.value = today.getMonth() + 1;
-    
-    if (generateBtn) {
-      generateBtn.addEventListener('click', () => generateReport());
+  async function loadAvailableYears() {
+    try {
+      var years = await callApi('getAvailableYearsForConsulting', []);
+      var yearSelect = document.getElementById('yearSelect');
+      if (years && years.length > 0 && yearSelect) {
+        yearSelect.innerHTML = '';
+        for (var i = 0; i < years.length; i++) {
+          var option = document.createElement('option');
+          option.value = years[i];
+          option.textContent = years[i];
+          yearSelect.appendChild(option);
+        }
+        var currentYear = new Date().getFullYear();
+        if (years.indexOf(currentYear) !== -1) {
+          yearSelect.value = currentYear;
+        } else if (years.length > 0) {
+          yearSelect.value = years[years.length - 1];
+        }
+      }
+    } catch (error) {
+      console.warn('[CONSULTING] Could not load years dynamically:', error);
+      var yearSelect = document.getElementById('yearSelect');
+      if (yearSelect && yearSelect.children.length <= 1) {
+        var currentYear = new Date().getFullYear();
+        for (var y = currentYear - 2; y <= currentYear + 1; y++) {
+          var option = document.createElement('option');
+          option.value = y;
+          option.textContent = y;
+          yearSelect.appendChild(option);
+        }
+        yearSelect.value = currentYear;
+      }
     }
-    
-    if (exportPdfBtn) {
-      exportPdfBtn.addEventListener('click', () => exportPDF());
-    }
-    
-    // Load API URL and initialize
+  }
+  
+  // ============================================
+  // MAIN INIT
+  // ============================================
+  async function init() {
+    loadUser();
+    showLoading('Loading Consulting Intelligence...');
     loadApiUrl();
     
-    // Request logo and version from parent
-    if (window.parent !== window) {
-      window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
-      window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+    if (!EAMS_API_URL) {
+      hideLoading();
+      showToast('API URL not configured. Please login.', 'error');
+      return;
     }
-  });
+    
+    try {
+      // Log access
+      await logForesight('CONSULTING', 'OPEN_MODULE', 'User accessed Consulting Intelligence');
+      
+      // Set current date
+      var today = new Date();
+      var yearSelect = document.getElementById('yearSelect');
+      var monthSelect = document.getElementById('monthSelect');
+      if (yearSelect) yearSelect.value = today.getFullYear();
+      if (monthSelect) monthSelect.value = today.getMonth() + 1;
+      
+      // Load available years
+      await loadAvailableYears();
+      
+      // Setup buttons
+      var generateBtn = document.getElementById('generateBtn');
+      var exportPdfBtn = document.getElementById('exportPdfBtn');
+      
+      if (generateBtn) {
+        generateBtn.addEventListener('click', function() { generateReport(); });
+      }
+      
+      if (exportPdfBtn) {
+        exportPdfBtn.addEventListener('click', function() { exportPDF(); });
+      }
+      
+      // Request logo and version from parent
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+        window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+      }
+      
+      hideLoading();
+      showToast('Consulting Intelligence loaded successfully ✅', 'success');
+      document.getElementById('footer-status').innerText = 'Ready';
+      
+    } catch(err) {
+      hideLoading();
+      showToast('Error loading data: ' + err.message, 'error');
+    }
+  }
+  
+  // Iniciar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 </script>
 </body>
 </html>
