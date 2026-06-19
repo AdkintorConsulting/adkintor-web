@@ -944,16 +944,29 @@
     // ============================================
     // VALIDACIÓN ESPECÍFICA (APPROVE vs REJECT)
     // ============================================
-    function validateFields() {
-        var approveBtn = document.getElementById('approveBtn');
-        var rejectBtn = document.getElementById('rejectBtn');
-        var obsRequired = document.getElementById('obsRequired');
-        
-        if (isSubmitting) {
-            if (approveBtn) approveBtn.disabled = true;
-            if (rejectBtn) rejectBtn.disabled = true;
-            return;
-        }
+	function validateFields() {
+	    var approveBtn = document.getElementById('approveBtn');
+	    var rejectBtn = document.getElementById('rejectBtn');
+	    var obsRequired = document.getElementById('obsRequired');
+    
+	    if (isSubmitting) {
+	        if (approveBtn) {
+	            approveBtn.disabled = true;
+	            approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+	        }
+	        if (rejectBtn) {
+	            rejectBtn.disabled = true;
+	            rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+	        }
+	        return;
+	    }
+	    // Restaurar texto de botones cuando no está procesando
+	    if (approveBtn) {
+	        approveBtn.innerHTML = '<i class="fas fa-check"></i> APPROVE & RELEASE';
+	    }
+	    if (rejectBtn) {
+	        rejectBtn.innerHTML = '<i class="fas fa-times"></i> REJECT';
+	    }
         
         var woType = document.getElementById('woTypeSelect') ? document.getElementById('woTypeSelect').value : 'CORRECTIVE';
         var isPreventive = (woType === 'PREVENTIVE');
@@ -1183,6 +1196,14 @@
         if (comments === '') comments = action === 'APPROVED' ? 'Approved' : 'Rejected';
         
         isSubmitting = true;
+	// Obtener usuario de la sesión
+	let userEmail = 'unknown';
+	try {
+	    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+	    if (session && session.email) {
+	        userEmail = session.email;
+	    }
+	} catch(e) {}
         validateFields();
         showLoading('Processing ' + action + '...');
         
@@ -1289,12 +1310,22 @@
         var apprSelect = document.getElementById('apprSelect');
         var comments = document.getElementById('comments');
         var folioSelect = document.getElementById('folioSelect');
+        var smartSelect = document.getElementById('smartSelect');
         
         if (techSelect) techSelect.addEventListener('change', validateFields);
         if (typeSelect) typeSelect.addEventListener('change', validateFields);
         if (apprSelect) apprSelect.addEventListener('change', validateFields);
-        if (comments) comments.addEventListener('input', validateFields);
         if (folioSelect) folioSelect.addEventListener('change', validateFields);
+        
+        // Limpiar quick response cuando el usuario edita manualmente
+        if (comments) {
+            comments.addEventListener('input', function() {
+                if (smartSelect && this.value !== smartSelect.value) {
+                    smartSelect.value = '';
+                }
+                validateFields();
+            });
+        }
     }
 
     function init() {
