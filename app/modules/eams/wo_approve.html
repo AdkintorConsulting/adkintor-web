@@ -1187,16 +1187,15 @@
         if (comments === '') comments = action === 'APPROVED' ? 'Approved' : 'Rejected';
         
         isSubmitting = true;
-	// Obtener usuario de la sesión
-	let userEmail = 'unknown';
-	try {
-	    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-	    if (session && session.email) {
-	        userEmail = session.email;
-	    }
-	} catch(e) {}
+        // Obtener usuario de la sesión
+        let userEmail = 'unknown';
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                userEmail = session.email;
+            }
+        } catch(e) {}
         validateFields();
-        showLoading('Processing ' + action + '...');
         
         var woType = document.getElementById('woTypeSelect') ? document.getElementById('woTypeSelect').value : 'CORRECTIVE';
         var isPreventiveSelected = (woType === 'PREVENTIVE');
@@ -1209,7 +1208,9 @@
             folio = selectedValue ? selectedValue.split(' - ')[0] : '';
         }
         
-        // Validar que realCreationDate no sea futuro
+        // ============================================
+        // VALIDACIÓN DE FECHA FUTURA (ANTES del loading)
+        // ============================================
         var realCreationDate = document.getElementById('realCreationDate') ? document.getElementById('realCreationDate').value : '';
         if (realCreationDate) {
             var selectedDate = new Date(realCreationDate);
@@ -1218,11 +1219,15 @@
                 showToast('⚠️ The corrected date cannot be in the future', 'error');
                 document.getElementById('realCreationDate').classList.add('error');
                 isSubmitting = false;
-                hideLoading();  // ← AGREGAR ESTA LÍNEA
                 validateFields();
                 return;
             }
         }
+        
+        // ============================================
+        // MOSTRAR LOADING SOLO SI PASÓ LA VALIDACIÓN
+        // ============================================
+        showLoading('Processing ' + action + '...');
         
         var payload = {
             folio: folio,
@@ -1233,7 +1238,7 @@
             comments: comments,
             techniciansWithEmails: techniciansWithEmails,
             realCreationDate: realCreationDate,
-	    user: userEmail
+            user: userEmail
         };
         
         try {
@@ -1266,17 +1271,17 @@
                 removeErrorHighlights();
                 
                 await loadData();
-		// Limpiar selección actual
-		if (document.getElementById('folioSelect')) {
-		    document.getElementById('folioSelect').value = '';
-		}
-		// Resetear auditoría
-		document.getElementById('auditPanel').style.display = 'none';
-		// Resetear campos
-		document.getElementById('techSelect').value = '';
-		document.getElementById('typeSelect').value = '';
-		document.getElementById('apprSelect').value = '';
-		document.getElementById('comments').value = '';
+                // Limpiar selección actual
+                if (document.getElementById('folioSelect')) {
+                    document.getElementById('folioSelect').value = '';
+                }
+                // Resetear auditoría
+                document.getElementById('auditPanel').style.display = 'none';
+                // Resetear campos
+                document.getElementById('techSelect').value = '';
+                document.getElementById('typeSelect').value = '';
+                document.getElementById('apprSelect').value = '';
+                document.getElementById('comments').value = '';
             } else {
                 throw new Error(response.error || 'Unknown error');
             }
