@@ -296,8 +296,10 @@ const Logger = (function() {
     * @returns {Promise<boolean>}
     */
     async function woApproved(woId, approvedBy) {
+        const session = getSession();
+        const userEmail = session ? session.email : 'system';
         const details = `Approved by ${approvedBy}`;
-        return await callEamsLogging('logApprove', ['WO', woId, details]);
+        return await callEamsLogging('logApprove', ['WO', woId, details, userEmail]);
     }
     
     /**
@@ -307,8 +309,10 @@ const Logger = (function() {
      * @returns {Promise<boolean>}
      */
     async function woRejected(woId, reason) {
+        const session = getSession();
+        const userEmail = session ? session.email : 'system';
         const details = `Rejected: ${reason}`;
-        return await callEamsLogging('logReject', ['WO', woId, details]);
+        return await callEamsLogging('logReject', ['WO', woId, details, userEmail]);
     }
     
     // API pública
