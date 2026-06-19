@@ -1191,6 +1191,14 @@
         }
         
         isSubmitting = true;
+        // Obtener usuario de la sesión
+        let userEmail = 'unknown';
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                userEmail = session.email;
+            }
+        } catch(e) {}        
         updateSubmitButton();
         showLoading('Finalizing archive...');
         
@@ -1200,8 +1208,8 @@
             note: note,
             isPM: woData && woData.pm ? woData.pm.isPM : false,
             tasksExecuted: tasksInput ? (parseInt(tasksInput.value) || 0) : 0,
-            supervisorEmails: supervisorEmails
-            user: userEmail  // ← AGREGAR
+            supervisorEmails: supervisorEmails,  // ← AGREGAR COMA
+            user: userEmail
         };
         
         try {
