@@ -929,17 +929,6 @@
 	    }
 	}
 
-	// Y cuando se cambia manualmente el textarea, limpiar el dropdown
-	// En el event listener de comments:
-	if (comments) {
-	    comments.addEventListener('input', function() {
-	        var smartSelect = document.getElementById('smartSelect');
-	        if (smartSelect && this.value !== smartSelect.value) {
-	            smartSelect.value = ''; // Limpiar quick response si el usuario editó manualmente
-	        }
-	        validateFields();
-	    });
-	}
 
     // ============================================
     // VALIDACIÓN ESPECÍFICA (APPROVE vs REJECT)
