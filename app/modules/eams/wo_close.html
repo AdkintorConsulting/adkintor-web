@@ -655,7 +655,7 @@
                 </div>
                 
                 <div class="button-group">
-                    <button id="cancelBtn" class="btn-cancel"><i class="fas fa-times"></i> CANCEL</button>
+                    <button id="cancelBtn" class="btn-cancel"><i class="fas fa-sync-alt"></i> REFRESH</button>
                     <button id="closeBtn" class="btn-closure" disabled>
                         <i class="fas fa-archive"></i> AUTHORIZE FINAL CLOSURE & ARCHIVE
                     </button>
@@ -908,10 +908,15 @@
         if (note) note.value = '';
         if (tasksInput) tasksInput.value = '';
         
+        // Ocultar stages
         var stage2 = document.getElementById('stage2');
         var stage3 = document.getElementById('stage3');
         if (stage2) stage2.style.display = 'none';
         if (stage3) stage3.style.display = 'none';
+        
+        // Ocultar pmBox
+        var pmBox = document.getElementById('pmBox');
+        if (pmBox) pmBox.style.display = 'none';
         
         removeErrorHighlights();
         updateSubmitButton();
@@ -975,7 +980,7 @@
                 showToast('Loaded ' + folioOptions.length + ' completed work orders', 'success');
             }
             
-            document.getElementById('footer-status').innerText = 'Data Loaded';
+            console.log('[WO_CLOSE] Data loaded');
             updateSubmitButton();
             hideLoading();
             
@@ -1196,6 +1201,7 @@
             isPM: woData && woData.pm ? woData.pm.isPM : false,
             tasksExecuted: tasksInput ? (parseInt(tasksInput.value) || 0) : 0,
             supervisorEmails: supervisorEmails
+            user: userEmail  // ← AGREGAR
         };
         
         try {
@@ -1210,7 +1216,7 @@
                 logWOClosure(folio, closedBy, resolution, tasksExecuted).catch(function(e) { console.warn('[WO] Closure log failed:', e); });
                 
                 showToast('Work Order closed successfully!', 'success');
-                document.getElementById('footer-status').innerText = 'WO Closed';
+                console.log('[WO_CLOSE] WO Closed');
                 resetClosureForm();
                 await loadInitialData();
             } else {
@@ -1251,7 +1257,10 @@
         if (apprSel) apprSel.addEventListener('change', validateFields);
         if (note) note.addEventListener('input', validateFields);
         if (closeBtn) closeBtn.addEventListener('click', executeClosure);
-        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', function() {
+            resetClosureForm();
+            loadInitialData();
+        });
         if (tasksInput) tasksInput.addEventListener('input', validateFields);
         
         var confirmYes = document.getElementById('pmConfirmYes');
