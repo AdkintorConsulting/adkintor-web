@@ -1012,24 +1012,40 @@
         if (stage3) stage3.style.display = 'none';
         
         showLoading('Loading work order details...');
-        
         try {
+            // Invoca la nueva función exclusiva que creamos en Apps Script
             var response = await callApi('WO_getWODetailsClosure', [folio]);
             
             hideLoading();
             
-            if (!response.success) {
-                showToast('Error loading details: ' + (response.error || 'Unknown error'), 'error');
+            // Verificación inteligente del objeto devuelto
+            if (!response) {
+                showToast('Error loading details: No response from server', 'error');
                 return;
             }
             
-            if (!response.wo) {
+            // Como el backend o el proxy pueden duplicar la propiedad 'data', extraemos la capa real
+            var actualData = response;
+            if (response.data) {
+                actualData = response.data;
+            } else if (!response.wo && response.success && response.data === undefined) {
+                // Si la estructura viene anidada profundamente por el Proxy
+                actualData = response;
+            }
+
+            // Si vino envuelto en otro objeto success/data intermedio
+            if (actualData.success && actualData.data) {
+                actualData = actualData.data;
+            }
+            
+            if (!actualData || !actualData.wo) {
                 showToast('No data found for this work order', 'error');
                 return;
             }
             
-            woData = response;
-            var wo = response.wo;
+            // Asignación de variables globales de interfaz
+            woData = actualData;
+            var wo = actualData.wo;
             
             var stageTitle = document.querySelector('#stage2 .stage-title span:first-child');
             if (stageTitle) {
