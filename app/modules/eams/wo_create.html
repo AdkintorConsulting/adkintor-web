@@ -377,20 +377,7 @@
             cursor: not-allowed;
         }
         
-        /* Custom Confirm Modal */
-        #customConfirmOverlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        
+    
         #customConfirmOverlay.active {
             display: flex;
         }
@@ -558,17 +545,6 @@
     
 </div>
 
-<!-- Custom Confirm Modal -->
-<div id="customConfirmOverlay">
-    <div class="custom-confirm-modal">
-        <h3><i class="fas fa-check-circle"></i> WORK ORDER CREATED</h3>
-        <p id="confirmMessage">Work Order created successfully!</p>
-        <div class="custom-confirm-buttons" style="justify-content: center;">
-            <button id="confirmOkBtn" class="btn-confirm-yes" style="min-width: 120px;">OK</button>
-        </div>
-    </div>
-</div>
-
 <script>
     // ============================================
     // RECIBIR MENSAJES DEL PADRE
@@ -731,62 +707,78 @@
         return allValid;
     }
 
-function updateSubmitButton() {
-    const submitBtn = document.getElementById('submitBtn');
-    if (!submitBtn) return;
-    const isValid = validateAndHighlight();
-    submitBtn.disabled = !isValid || isSubmitting;
-    submitBtn.textContent = isSubmitting ? 'PROCESSING...' : 'SUBMIT WORK ORDER';
-}
+    function updateSubmitButton(showErrors = false) {
+        const submitBtn = document.getElementById('submitBtn');
+        if (!submitBtn) return;
+        
+        let allValid = true;
+        document.querySelectorAll('[data-required="true"]').forEach(field => {
+            let value = field.tagName === 'SELECT' ? field.value : field.value.trim();
+            const isValid = value !== '' && value !== null;
+            if (!isValid) {
+                allValid = false;
+                if (showErrors) {
+                    field.classList.add('error');
+                } else {
+                    field.classList.remove('error');
+                }
+            } else {
+                field.classList.remove('error');
+            }
+        });
+        
+        submitBtn.disabled = !allValid || isSubmitting;
+        submitBtn.textContent = isSubmitting ? 'PROCESSING...' : 'SUBMIT WORK ORDER';
+    }
 
     function onFieldChange() {
-        updateSubmitButton();
+        updateSubmitButton(true);  // ← Mostrar errores al interactuar
     }
 
     // ============================================
     // RESET FORM - LIMPIA TODO
     // ============================================
-function resetCreateForm() {
-    const elements = getElements();
-    if (elements.requester) elements.requester.value = '';
-    if (elements.priority) elements.priority.value = '';
-    if (elements.area) elements.area.value = '';
-    if (elements.equipment) {
-        elements.equipment.innerHTML = '<option value="">-- Select Area First --</option>';
-        elements.equipment.disabled = true;
+    function resetCreateForm() {
+        const elements = getElements();
+        if (elements.requester) elements.requester.value = '';
+        if (elements.priority) elements.priority.value = '';
+        if (elements.area) elements.area.value = '';
+        if (elements.equipment) {
+            elements.equipment.innerHTML = '<option value="">-- Select Area First --</option>';
+            elements.equipment.disabled = true;
+        }
+        if (elements.assetInfo) elements.assetInfo.value = '';
+        if (elements.description) elements.description.value = '';
+        
+        currentAsset = null;
+        isSubmitting = false;
+        removeErrorHighlights();
+        
+        // RESET FOLIO PREVIEW a placeholder
+        if (elements.folioPreview) {
+            var now = new Date();
+            var yy = now.getFullYear().toString().slice(2);
+            var mm = (now.getMonth() + 1).toString().padStart(2, '0');
+            var dd = now.getDate().toString().padStart(2, '0');
+            elements.folioPreview.textContent = 'WO-' + yy + mm + dd + '----';
+        }
+        
+        const folioDisplay = document.getElementById('folioDisplay');
+        if (folioDisplay) {
+            folioDisplay.style.borderColor = '#bdc3c7';
+            folioDisplay.style.background = '#f8f9fa';
+            folioDisplay.classList.remove('success');
+        }
+        
+        // Reset submit button
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SUBMIT WORK ORDER';
+        }
+        
+        updateSubmitButton(false);  // ← No mostrar errores al resetear
     }
-    if (elements.assetInfo) elements.assetInfo.value = '';
-    if (elements.description) elements.description.value = '';
-    
-    currentAsset = null;
-    isSubmitting = false;
-    removeErrorHighlights();
-    
-    // RESET FOLIO PREVIEW a placeholder
-    if (elements.folioPreview) {
-        var now = new Date();
-        var yy = now.getFullYear().toString().slice(2);
-        var mm = (now.getMonth() + 1).toString().padStart(2, '0');
-        var dd = now.getDate().toString().padStart(2, '0');
-        elements.folioPreview.textContent = 'WO-' + yy + mm + dd + '----';
-    }
-    
-    const folioDisplay = document.getElementById('folioDisplay');
-    if (folioDisplay) {
-        folioDisplay.style.borderColor = '#bdc3c7';
-        folioDisplay.style.background = '#f8f9fa';
-        folioDisplay.classList.remove('success');
-    }
-    
-    // Reset submit button
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'SUBMIT WORK ORDER';
-    }
-    
-    updateSubmitButton();
-}
 
     // ============================================
     // ASSET MANAGEMENT
@@ -842,38 +834,38 @@ function resetCreateForm() {
     // ============================================
     // LOGGING
     // ============================================
-async function logWOCreation(woId, woData) {
-    if (!window.Logger || typeof window.Logger.woCreated !== 'function') {
-        console.warn('[WO] Logger not available, skipping log');
-        return;
-    }
-    
-    try {
-        // Obtener usuario de la sesión
-        let userEmail = 'unknown';
-        try {
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            if (session && session.email) {
-                userEmail = session.email;
-            }
-        } catch(e) {}
-        
-        await window.Logger.woCreated(woId, {
-            assetId: woData.assetId || '',
-            priority: woData.priority || '',
-            type: woData.type || 'CORRECTIVE',
-            requester: woData.requester || '',
-            user: userEmail  // Pasamos el usuario explícitamente
-        });
-        console.log('[WO] WO creation logged:', woId, 'by', userEmail);
-        
-        if (window.Logger.foresight) {
-            await window.Logger.foresight('WO', 'WO_CREATED', 'WO ' + woId + ' created - Priority: ' + woData.priority + ' by ' + userEmail);
+    async function logWOCreation(woId, woData) {
+        if (!window.Logger || typeof window.Logger.woCreated !== 'function') {
+            console.warn('[WO] Logger not available, skipping log');
+            return;
         }
-    } catch (err) {
-        console.warn('[WO] Failed to log WO creation:', err);
+        
+        try {
+            // Obtener usuario de la sesión
+            let userEmail = 'unknown';
+            try {
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    userEmail = session.email;
+                }
+            } catch(e) {}
+            
+            await window.Logger.woCreated(woId, {
+                assetId: woData.assetId || '',
+                priority: woData.priority || '',
+                type: woData.type || 'CORRECTIVE',
+                requester: woData.requester || '',
+                user: userEmail  // Pasamos el usuario explícitamente
+            });
+            console.log('[WO] WO creation logged:', woId, 'by', userEmail);
+            
+            if (window.Logger.foresight) {
+                await window.Logger.foresight('WO', 'WO_CREATED', 'WO ' + woId + ' created - Priority: ' + woData.priority + ' by ' + userEmail);
+            }
+        } catch (err) {
+            console.warn('[WO] Failed to log WO creation:', err);
+        }
     }
-}
 
     // ============================================
     // DATA LOADING
@@ -939,7 +931,7 @@ async function logWOCreation(woId, woData) {
             }
             
             showToast('Data loaded successfully', 'success');
-            updateSubmitButton();
+            updateSubmitButton(false);  // ← No mostrar errores al cargar
             hideLoading();
             
         } catch (error) {
@@ -972,26 +964,26 @@ async function logWOCreation(woId, woData) {
         updateSubmitButton();
         showLoading('Creating Work Order...');
         
-	// Obtener usuario de la sesión
-	let userEmail = 'unknown';
-	try {
-	    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-	    if (session && session.email) {
-	        userEmail = session.email;
-	    }
-	} catch(e) {}
+        // Obtener usuario de la sesión
+        let userEmail = 'unknown';
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                userEmail = session.email;
+            }
+        } catch(e) {}
 
-	var payload = {
-	    requester: elements.requester ? elements.requester.value : '',
-	    priority: elements.priority ? elements.priority.value : '',
-	    area: elements.area ? elements.area.value : '',
-	    techLocation: currentAsset ? currentAsset.id : '',
-	    equipment: elements.equipment ? elements.equipment.value : '',
-	    criticality: currentAsset ? (currentAsset.crit || '') : '',
-	    description: description,
-	    emails: emailRecipients,
-	    user: userEmail  // ← AGREGAR ESTO
-	};
+        var payload = {
+            requester: elements.requester ? elements.requester.value : '',
+            priority: elements.priority ? elements.priority.value : '',
+            area: elements.area ? elements.area.value : '',
+            techLocation: currentAsset ? currentAsset.id : '',
+            equipment: elements.equipment ? elements.equipment.value : '',
+            criticality: currentAsset ? (currentAsset.crit || '') : '',
+            description: description,
+            emails: emailRecipients,
+            user: userEmail  // ← AGREGAR ESTO
+        };
         
         try {
             var response = await callApi('WO_saveWO', [payload]);
@@ -1029,12 +1021,9 @@ async function logWOCreation(woId, woData) {
                 showToast('✅ Work Order ' + response.generatedFolio + ' created successfully!' + emailStatusMsg, 'success');
                 console.log('[WO] WO Created:', response.generatedFolio);
                 
-                var confirmMessage = document.getElementById('confirmMessage');
-                if (confirmMessage) {
-                    confirmMessage.innerText = 'Work Order ' + lastCreatedFolio + ' has been created successfully!\n\n' + emailStatusMsg.trim();
-                }
-                document.getElementById('customConfirmOverlay').classList.add('active');
-                
+                // Solo el toast ya se muestra arriba, no necesitamos modal
+                console.log('[WO] WO Created:', response.generatedFolio);
+
             } else {
                 throw new Error(response.message || 'Unknown error');
             }
@@ -1078,26 +1067,6 @@ async function logWOCreation(woId, woData) {
         
         var cancelBtn = document.getElementById('cancelBtn');
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-        
-	var confirmOkBtn = document.getElementById('confirmOkBtn');
-	var confirmOverlay = document.getElementById('customConfirmOverlay');
-
-	if (confirmOkBtn) {
-	    confirmOkBtn.addEventListener('click', function() {
-	        confirmOverlay.classList.remove('active');
-	        resetCreateForm();
-	        loadInitialData();
-	        // El iframe se queda abierto, listo para crear otra WO
-	    });
-	}
-        
-        if (confirmOverlay) {
-            confirmOverlay.addEventListener('click', function(e) {
-                if (e.target === confirmOverlay) {
-                    confirmOverlay.classList.remove('active');
-                }
-            });
-        }
     }
 
     // ============================================
