@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search & Reporting - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/app/css/print.css">  <!-- ← AGREGAR -->
     <style>
         /* ============================================
            BASE
@@ -230,6 +231,7 @@
         /* Sidebar - filtros */
         .sidebar {
             width: 320px;
+            min-height: 100%;
             background: #f1f3f4;
             border-right: 1px solid #dadce0;
             display: flex;
@@ -237,12 +239,18 @@
             flex-shrink: 0;
             overflow: hidden;
         }
+
+        .filter-area {
+            flex: 1;
+            overflow-y: auto;  /* ← Asegurar que el scroll esté aquí */
+            padding: 12px 16px;
+        }
         
         .sidebar-header {
             padding: 16px 20px;
             border-bottom: 1px solid #dadce0;
             background: white;
-            flex-shrink: 0;
+            flex-shrink: 0;  /* ← Asegurar que no se encoja */
         }
         
         .filter-area {
@@ -1236,7 +1244,7 @@
             
             hideLoading();
             showToast('Loaded ' + MASTER_DATA.length + ' records. Showing current week.', 'success');
-            document.getElementById('footer-status').innerText = 'Data Loaded';
+            console.log('[WO_SEARCH] Data loaded');
             
         } catch (error) {
             hideLoading();
@@ -1486,118 +1494,68 @@
     // DETAIL VIEW - CON CLOSURE FIX
     // ============================================
 
-function view(folio) {
-    showLoading('Loading work order details...');
-    
-    try {
-        // ... obtener datos de la WO (código existente) ...
-        
-        // En lugar de mostrar el modal #fullView, usar printModule
-        const bodyContent = `
-            <div style="padding: 20px;">
-                <!-- HEADER -->
-                <div style="margin-bottom: 20px;">
-                    <h1 style="font-size: 22px; letter-spacing: -0.5px;">WORK ORDER TECHNICAL REPORT</h1>
-                    <div style="font-size: 16px; font-weight: bold; color: #1a1a2e; margin-top: 12px;">W.O. #: ${folio}</div>
-                    <div style="margin-top: 6px;">
-                        <span style="font-size: 11px; color: #5f6368; font-weight: 600; text-transform: uppercase;">Current Status:</span>
-                        <span style="font-weight: bold; font-size: 14px; color: #2e7d32; margin-left: 6px;">${parsedWo.status || '---'}</span>
-                    </div>
-                </div>
-
-                <!-- FRAME 1 - Equipment Identification -->
-                <div style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
-                    <span style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase;">1. EQUIPMENT IDENTIFICATION</span>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px;">
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Area / Sector</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.area || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Tech. Location</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.techLocation || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Asset Tag</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.assetId || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Equipment Name</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.equipment || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Criticality</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.criticality || '---'}</div></div>
-                    </div>
-                </div>
-
-                <!-- FRAME 2 - Request Details -->
-                <div style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
-                    <span style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase;">2. REQUEST DETAILS</span>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px;">
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Requested By</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.requester || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Creation Date</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.creationDate || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Priority</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.priority || '---'}</div></div>
-                    </div>
-                    <div style="margin-top: 10px; border-top: 1px solid #e8eaed; padding-top: 6px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Failure Description / Request Notes</span>
-                        <div style="font-size: 12px; color: #202124; white-space: pre-wrap; margin-top: 2px;">${parsedWo.description || '---'}</div>
-                    </div>
-                </div>
-
-                <!-- FRAME 3 - Maintenance Execution -->
-                <div style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
-                    <span style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase;">3. MAINTENANCE EXECUTION</span>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Activity Type</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.maintType || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Primary Technician</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.assignedTech || '---'}</div></div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Technical Findings &amp; Work Performed</span>
-                        <div style="font-size: 12px; color: #202124; white-space: pre-wrap; margin-top: 2px;">${parsedWo.workPerformed || '---'}</div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Spare Parts &amp; Materials Consumed</span>
-                        <div style="font-size: 12px; color: #202124; margin-top: 2px;">${parsedWo.materials || '---'}</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 10px;">
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Start Time</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.startDate || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Completion Time</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.endDate || '---'}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Total Man-Hours</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.laborHours || '0'}</div></div>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Equipment Downtime</span>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 6px;">
-                            <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Downtime Start</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.downStart || '---'}</div></div>
-                            <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Downtime End</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.downReturn || '---'}</div></div>
-                            <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Total Downtime</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${parsedWo.totalDown || '0'}</div></div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Root Cause Analysis</span>
-                        <div style="font-size: 12px; color: #202124; margin-top: 2px;">${parsedWo.rootCause || '---'}</div>
-                    </div>
-                </div>
-
-                <!-- FRAME 4 - Closure & Reliability -->
-                <div style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
-                    <span style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase;">4. CLOSURE &amp; RELIABILITY</span>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px;">
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Closed By (Supervisor)</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${supervisor}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Approve Date</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${approveDate}</div></div>
-                        <div><span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Closure Date</span><div style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px;">${closureDate}</div></div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <span style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase;">Additional Observations</span>
-                        <div style="font-size: 12px; color: #202124; white-space: pre-wrap; margin-top: 2px;">${parsedWo.observations || '---'}</div>
-                    </div>
-                </div>
-                <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                    EAMS Work Order System | Technical Report
-                </div>
-            </div>
-        `;
-        
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('WO Report - ' + folio, bodyContent);
-        } else {
-            // Fallback al modal existente
-            document.getElementById('fullView').style.display = 'block';
-        }
-        hideLoading();
-        
-    } catch (error) {
-        hideLoading();
-        showToast('Error loading details: ' + error.message, 'error');
-        console.error('View error:', error);
-    }
-}
+  function view(folio) {
+      showLoading('Loading work order details...');
+      
+      (async function() {
+          try {
+              const response = await callApi('WO_getSingleWO', [folio]);
+              const parsedWo = JSON.parse(response);
+              
+              if (!parsedWo) {
+                  throw new Error('Work Order not found');
+              }
+              
+              // Extraer datos
+              const supervisor = extractSupervisor(parsedWo.observations || '');
+              const approveDate = extractApproveDate(parsedWo.observations || '');
+              const closureDate = extractClosureDate(parsedWo.observations || '', parsedWo.status);
+              
+              // Verificar que el elemento #fullView existe
+              const fullView = document.getElementById('fullView');
+              if (!fullView) {
+                  throw new Error('Full view element not found');
+              }
+              
+              // Poblar el reporte
+              document.getElementById('r_folio').innerText = parsedWo.folio || '--';
+              document.getElementById('r_status').innerText = parsedWo.status || '--';
+              document.getElementById('r_area').innerText = parsedWo.area || '---';
+              document.getElementById('r_loc').innerText = parsedWo.techLocation || '---';
+              document.getElementById('r_asset').innerText = parsedWo.assetId || '---';
+              document.getElementById('r_equip').innerText = parsedWo.equipment || '---';
+              document.getElementById('r_crit').innerText = parsedWo.criticality || '---';
+              document.getElementById('r_req').innerText = parsedWo.requester || '---';
+              document.getElementById('r_date').innerText = parsedWo.creationDate || '---';
+              document.getElementById('r_prio').innerText = parsedWo.priority || '---';
+              document.getElementById('r_desc').innerText = parsedWo.description || '---';
+              document.getElementById('r_type').innerText = parsedWo.maintType || '---';
+              document.getElementById('r_tech').innerText = parsedWo.assignedTech || '---';
+              document.getElementById('r_perf').innerText = parsedWo.workPerformed || '---';
+              document.getElementById('r_mats').innerText = parsedWo.materials || '---';
+              document.getElementById('r_start').innerText = parsedWo.startDate || '---';
+              document.getElementById('r_end').innerText = parsedWo.endDate || '---';
+              document.getElementById('r_hrs').innerText = parsedWo.laborHours || '0';
+              document.getElementById('r_downStart').innerText = parsedWo.downStart || '---';
+              document.getElementById('r_downReturn').innerText = parsedWo.downReturn || '---';
+              document.getElementById('r_totalDown').innerText = parsedWo.totalDown || '0';
+              document.getElementById('r_root').innerText = parsedWo.rootCause || '---';
+              document.getElementById('r_appr').innerText = supervisor;
+              document.getElementById('r_approveDate').innerText = approveDate;
+              document.getElementById('r_cdate').innerText = closureDate;
+              document.getElementById('r_obs').innerText = parsedWo.observations || '---';
+              
+              // Mostrar el reporte
+              fullView.style.display = 'block';
+              hideLoading();
+              
+          } catch (error) {
+              hideLoading();
+              showToast('Error loading details: ' + error.message, 'error');
+              console.error('View error:', error);
+          }
+      })();
+  }
 
     // ============================================
     // COLUMN CONFIGURATION
