@@ -238,12 +238,15 @@
             flex-direction: column;
             flex-shrink: 0;
             overflow: hidden;
+            height: 100%;  /* ← AGREGAR */
+            max-height: 100%;  /* ← AGREGAR */
         }
 
         .filter-area {
             flex: 1;
-            overflow-y: auto;  /* ← Asegurar que el scroll esté aquí */
+            overflow-y: auto;  /* ← Asegurar scroll aquí */
             padding: 12px 16px;
+            min-height: 0;  /* ← AGREGAR para que flex funcione */
         }
         
         .sidebar-header {
@@ -439,7 +442,7 @@
         }
         
         .acc.active .acc-content {
-            max-height: 240px;
+            max-height: 300px;  /* ← Aumentar de 240px a 300px */
             overflow-y: auto;
             border-top: 1px solid #dadce0;
         }
@@ -1185,12 +1188,22 @@
 
     function extractClosureDate(raw, status) {
         if (!raw) return '---';
-        if (status !== 'CLOSED' && status !== 'APPROVED') return '---';
+        // Si está CLOSED o APPROVED, extraer fecha de cierre
+        if (status !== 'CLOSED' && status !== 'APPROVED' && status !== 'Closed' && status !== 'Approved') return '---';
         
-        const match = raw.match(/CLOSURE:\s*([\d\-:\s]+)/i);
-        if (match && match[1]) {
-            return formatDateString(match[1].trim());
+        // Buscar CLOSURE: seguido de fecha
+        const closureMatch = raw.match(/CLOSURE:\s*([\d\-:\s]+)/i);
+        if (closureMatch && closureMatch[1]) {
+            const dateStr = closureMatch[1].trim();
+            // Si tiene formato YYYY-MM-DD HH:MM:SS, formatear
+            const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/);
+            if (match) {
+                return match[3] + '/' + match[2] + '/' + match[1] + ' ' + match[4] + ':' + match[5] + ':' + match[6];
+            }
+            return dateStr;
         }
+        
+        // Fallback: buscar APPROVED:
         const approveMatch = raw.match(/APPROVED:\s*([\d\-:\s]+)/i);
         if (approveMatch && approveMatch[1]) {
             return formatDateString(approveMatch[1].trim());
