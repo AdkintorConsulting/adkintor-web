@@ -1014,7 +1014,7 @@
         showLoading('Loading work order details...');
         
         try {
-            var response = await callApi('WO_getWODetails', [folio]);
+            var response = await callApi('WO_getWODetailsClosure', [folio]);
             
             hideLoading();
             
