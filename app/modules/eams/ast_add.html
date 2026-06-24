@@ -886,13 +886,14 @@
         const catObj = DB.categories.find(c => c.name === payload.category);
         const topLevelTypes = DB.assetTypes || [];
         const isTopLevel = topLevelTypes.includes(payload.type);
+        console.log('[AST] Category value:', payload.category);
         const assetData = {
             area: payload.area,
             areaPrefix: areaObj ? areaObj.prefix : "GEN",
             name: payload.name,
             parentID: payload.parentID || 'N/A',
             type: payload.type,
-            category: isTopLevel ? "" : payload.category,
+            category: isTopLevel ? "" : (payload.category || ""),
             catPrefix: isTopLevel ? (areaObj ? areaObj.prefix : "GEN") : (catObj ? catObj.prefix : "GEN"),
             status: payload.status,
             mfr: payload.mfr || '',
