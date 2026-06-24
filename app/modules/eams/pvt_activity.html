@@ -910,6 +910,7 @@
                     <div class="search-container">
                         <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
                         <button class="btn-build" onclick="executeSearch()"><i class="fas fa-search"></i> Search</button>
+                        <button class="btn-build" onclick="refreshModule()" style="background: #6c757d;"><i class="fas fa-sync-alt"></i> Refresh</button>
                         <div id="suggestions" class="custom-scroll"></div>
                     </div>
                 </div>
@@ -1634,6 +1635,7 @@ async function updateDashboard() {
         var select = document.getElementById('edit-equipment');
         var selectedOption = select.options[select.selectedIndex];
         var equipment = selectedOption?.getAttribute('data-name') || select.value;
+        var equipmentId = select.value;
         
         if (!equipment) {
             document.getElementById('edit-clone-section').style.display = 'none';
@@ -1645,7 +1647,8 @@ async function updateDashboard() {
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentContext.assetId]);
+            // ✅ Usar equipmentId en lugar de currentContext.assetId
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, equipmentId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
@@ -1778,6 +1781,32 @@ async function updateDashboard() {
                 if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
             }
         })();
+    }
+
+    // ============================================
+    // REFRESH MODULE
+    // ============================================
+    function refreshModule() {
+        // Si está en modo editor, preguntar antes de salir
+        if (isInEditorMode) {
+            if (confirm('You are currently editing an activity. Refreshing will take you back to the results view. Continue?')) {
+                backToResults();
+                // Recargar árbol y dashboard
+                loadHierarchyTree();
+                updateDashboard();
+                document.getElementById('search-input').value = '';
+                showToast('Module refreshed successfully ✅', 'success');
+            }
+        } else {
+            // Recargar árbol y dashboard
+            loadHierarchyTree();
+            updateDashboard();
+            document.getElementById('search-input').value = '';
+            // Ocultar resultados
+            document.getElementById('resultsTable').style.display = 'none';
+            document.getElementById('noResultsMsg').style.display = 'block';
+            showToast('Module refreshed successfully ✅', 'success');
+        }
     }
 
     async function submitDelete() {
