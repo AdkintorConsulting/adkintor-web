@@ -854,7 +854,8 @@
     function selectTL(val) {
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
-        searchTL();
+        // ✅ Solo cargar el valor en el input, NO buscar automáticamente
+        showToast('Asset ID loaded. Click SELECT TL to search.', 'info');
     }
 
     // ============================================
@@ -1158,29 +1159,63 @@
     function refreshForm() {
         var hasChanges = selectedAsset !== null || generatedWeeks.length > 0 || document.getElementById('freqSelect').value !== '';
         if (hasChanges) {
-            if (confirm('Unsaved changes will be lost. Continue?')) {
-                resetFormAndRefresh();
-            }
+            showRefreshConfirmModal();
         } else {
             resetFormAndRefresh();
         }
     }
 
+    function showRefreshConfirmModal() {
+        var modalHtml = 
+            '<div class="modal-overlay" id="refreshConfirmModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-icon" style="color: #f59e0b;">' +
+                        '<i class="fas fa-exclamation-triangle"></i>' +
+                    '</div>' +
+                    '<h3>Confirm Refresh</h3>' +
+                    '<p>Unsaved changes will be lost. Continue?</p>' +
+                    '<div class="modal-buttons">' +
+                        '<button class="btn-modal-secondary" onclick="closeRefreshConfirmModal()">Cancel</button>' +
+                        '<button class="btn-modal-primary" id="refreshConfirmBtn">Continue</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        document.getElementById('refreshConfirmBtn').onclick = function() {
+            closeRefreshConfirmModal();
+            resetFormAndRefresh();
+        };
+    }
+
+    function closeRefreshConfirmModal() {
+        var modal = document.getElementById('refreshConfirmModal');
+        if (modal) modal.remove();
+    }
+
     function resetFormAndRefresh() {
         document.getElementById('search-input').value = '';
         document.getElementById('freqSelect').value = '';
-        // ✅ No usar yearSelect porque ya no existe (reemplazado por checkboxes)
         document.getElementById('startWeek').value = '1';
         document.getElementById('previewSection').style.display = 'none';
         document.getElementById('suggestions').style.display = 'none';
         
         document.getElementById('freqSelect').disabled = true;
-        // ✅ No usar yearSelect porque ya no existe
         document.getElementById('startWeek').disabled = true;
         
-        // Deshabilitar checkboxes también
+        // ✅ Desmarcar y deshabilitar checkboxes
         var checkboxes = document.querySelectorAll('.year-checkbox');
-        checkboxes.forEach(function(cb) { cb.disabled = true; });
+        checkboxes.forEach(function(cb) {
+            cb.checked = false;
+            cb.disabled = true;
+        });
+        
+        // ✅ Eliminar mensaje de advertencia de frecuencia duplicada
+        var warningEl = document.getElementById('freqWarning');
+        if (warningEl) {
+            warningEl.style.display = 'none';
+        }
         
         selectedAsset = null;
         generatedWeeks = [];
