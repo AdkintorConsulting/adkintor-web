@@ -1437,10 +1437,15 @@ async function updateDashboard() {
 
     function renderCloneList(containerId, targets, mode) {
         var container = document.getElementById(containerId);
+        if (!container) return;
+        
         if (!targets || targets.length === 0) {
             container.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No similar equipment found.</div>';
             return;
         }
+        
+        // ✅ Determinar qué función de resumen llamar según el modo
+        var summaryFn = mode === 'create' ? 'updateCreateSummary()' : 'updateEditSummary()';
         
         var sameTL = targets.filter(function(t) { return t.isSameTL; });
         var otherTLs = targets.filter(function(t) { return !t.isSameTL; });
@@ -1454,7 +1459,7 @@ async function updateDashboard() {
                 var t = sameTL[i];
                 var globalIdx = targets.indexOf(t);
                 html += '<div class="clone-item">' +
-                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="updateCreateSummary()">' +
+                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
                     '<span>' + escapeHtml(t.name) + '</span>' +
                 '</div>';
             }
@@ -1479,7 +1484,7 @@ async function updateDashboard() {
                     var t = group.equipments[j];
                     var globalIdx = targets.indexOf(t);
                     html += '<div class="clone-item">' +
-                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="updateCreateSummary()">' +
+                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
                         '<span>' + escapeHtml(t.name) + '</span>' +
                     '</div>';
                 }
@@ -1497,6 +1502,9 @@ async function updateDashboard() {
             if (checkboxes[i].checked) selectedCount++;
         }
         var summary = document.getElementById('create-summary');
+        
+        // ✅ Verificar que summary existe antes de usarlo
+        if (!summary) return;
         
         if (selectedCount > 0) {
             summary.style.display = 'block';
@@ -1635,7 +1643,6 @@ async function updateDashboard() {
         var select = document.getElementById('edit-equipment');
         var selectedOption = select.options[select.selectedIndex];
         var equipment = selectedOption?.getAttribute('data-name') || select.value;
-        var equipmentId = select.value;
         
         if (!equipment) {
             document.getElementById('edit-clone-section').style.display = 'none';
@@ -1647,8 +1654,8 @@ async function updateDashboard() {
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
-            // ✅ Usar equipmentId en lugar de currentContext.assetId
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, equipmentId]);
+            // ✅ Usar currentContext.assetId (el TL) como tercer parámetro (igual que en GAS)
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentContext.assetId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
@@ -1657,7 +1664,7 @@ async function updateDashboard() {
             cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
-
+    
     function updateEditSummary() {
         var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
         var selectedCount = 0;
@@ -1665,6 +1672,9 @@ async function updateDashboard() {
             if (checkboxes[i].checked) selectedCount++;
         }
         var summary = document.getElementById('edit-summary');
+        
+        // ✅ Verificar que summary existe antes de usarlo
+        if (!summary) return;
         
         if (selectedCount > 0) {
             summary.style.display = 'block';
