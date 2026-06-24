@@ -1378,7 +1378,7 @@
     function extractApprovedBy(raw) {
         if (!raw) return '---';
         // Buscar APPROVED: seguido de nombre (hasta | o salto de línea)
-        const match = raw.match(/APPROVED:\s*([^|\n]+)/i);
+        const match = raw.match(/APPROVED:\s*([^|<\n]+)/i);
         if (match && match[1]) {
             return match[1].trim();
         }
@@ -1388,7 +1388,7 @@
     function extractClosedBy(raw) {
         if (!raw) return '---';
         // Buscar CLOSURE: seguido de nombre (hasta | o salto de línea)
-        const match = raw.match(/CLOSURE:\s*([^|\n]+)/i);
+        const match = raw.match(/CLOSURE:\s*([^|<\n]+)/i);
         if (match && match[1]) {
             return match[1].trim();
         }
@@ -1630,7 +1630,9 @@
                 
                 // Frame 2: Request Details
                 document.getElementById('r_req').innerText = parsedWo.requester || '---';
-                document.getElementById('r_date').innerText = parsedWo.creationDate || '---';
+                // Extraer fecha y hora de creationDate
+                const creationDateTime = parsedWo.creationDate || '---';
+                document.getElementById('r_date').innerText = creationDateTime;
                 document.getElementById('r_prio').innerText = parsedWo.priority || '---';
                 document.getElementById('r_desc').innerText = parsedWo.description || '---';
                 
