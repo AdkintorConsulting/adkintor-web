@@ -795,6 +795,16 @@
             requiredInput.classList.add('invalid-field');
             isValid = false;
         }
+        // ✅ VALIDAR PARENT ID (obligatorio si NO es Technical Location)
+        const typeSelect = document.getElementById('type');
+        const parentSelect = document.getElementById('parentID');
+        const selectedType = typeSelect ? typeSelect.value : '';
+        if (selectedType !== 'Technical Location') {
+            if (!parentSelect.value || parentSelect.value === '' || parentSelect.value === 'N/A') {
+                parentSelect.classList.add('invalid-field');
+                isValid = false;
+            }
+        }
         const critInputs = document.querySelectorAll('.crit-input');
         for (let i = 0; i < critInputs.length; i++) {
             if (!critInputs[i].value || critInputs[i].value === '') {
