@@ -919,7 +919,7 @@
             name: payload.name,
             parentID: payload.parentID || 'N/A',
             type: payload.type,
-            category: isTopLevel ? "" : (payload.category || ""),
+            category: payload.category || "",
             catPrefix: isTopLevel ? (areaObj ? areaObj.prefix : "GEN") : (catObj ? catObj.prefix : "GEN"),
             status: payload.status,
             mfr: payload.mfr || '',
