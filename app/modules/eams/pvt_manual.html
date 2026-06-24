@@ -1203,22 +1203,38 @@
         var freqSelect = document.getElementById('freqSelect');
         var frequency = freqSelect.value;
         
-        // Obtener el primer año de los seleccionados
+        // Obtener TODOS los años seleccionados
         var checkedYears = document.querySelectorAll('.year-checkbox:checked');
         if (checkedYears.length === 0) {
             showToast('Please select at least one year', 'error');
             return;
         }
-        var firstYear = parseInt(checkedYears[0].value);
         
-        try {
-            var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, firstYear]);
-            if (exists) {
-                showToast('⚠️ Frequency already created for this TL. Verify in Planner or change frequency.', 'error');
-                return;
+        var years = [];
+        checkedYears.forEach(function(cb) { years.push(parseInt(cb.value)); });
+        years.sort(function(a, b) { return a - b; });
+        var firstYear = years[0];
+        
+        // ✅ Verificar duplicado en TODOS los años seleccionados
+        var duplicateFound = false;
+        var duplicateYear = null;
+        
+        for (var i = 0; i < years.length; i++) {
+            try {
+                var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, years[i]]);
+                if (exists) {
+                    duplicateFound = true;
+                    duplicateYear = years[i];
+                    break;
+                }
+            } catch (e) {
+                console.warn('Error checking frequency for year', years[i], ':', e);
             }
-        } catch (e) {
-            console.warn('Error checking frequency:', e);
+        }
+        
+        if (duplicateFound) {
+            showToast('⚠️ Frequency "' + frequency + '" already exists for ' + selectedAsset.id + ' in year ' + duplicateYear + '. Verify in Planner or change frequency.', 'error');
+            return;
         }
         
         var payload = {
