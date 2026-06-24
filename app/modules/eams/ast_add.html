@@ -459,7 +459,7 @@
             </div>
 
             <div class="btn-container">
-                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="button" class="btn-secondary" onclick="refreshForm()">🔄 Refresh</button>
                 <button type="submit" id="btnSubmit" class="btn-primary">Register Asset</button>
             </div>
         </form>
@@ -546,6 +546,17 @@
     function closeModal() {
         window.parent.postMessage('closeIframe', '*');
     }
+
+    function refreshForm() {
+        document.getElementById('assetForm').reset();
+        const critInputs = document.querySelectorAll('.crit-input');
+        critInputs.forEach(el => el.value = '');
+        document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+        document.getElementById('critBadge').style.background = '#ddd';
+        document.getElementById('critBadge').style.color = '#333';
+        loadConfig();
+        showMessage('Form refreshed ✅', false);
+    }    
     
     // ============================================
     // CONFIGURACIÓN (TUS VARIABLES ORIGINALES)
@@ -687,6 +698,48 @@
         return { score: score.toFixed(2), level: level };
     }
 
+    function populateParents(area) {
+        const pSel = document.getElementById('parentID');
+        const typeSelect = document.getElementById('type');
+        const selectedType = typeSelect ? typeSelect.value : '';
+        if (selectedType === 'Technical Location') {
+            pSel.disabled = true;
+            pSel.innerHTML = `<option value="${area}">${area} (Root Area)</option>`;
+            pSel.value = area;
+            return;
+        }
+        pSel.disabled = false;
+        if (area && DB.parents) {
+            const filtered = DB.parents.filter(p => p.area === area && p.type === 'Technical Location');
+            let html = '<option value="N/A">N/A - None / Root Level</option>';
+            filtered.forEach(p => {
+                html += `<option value="${p.id}">${p.id} - ${p.name}</option>`;
+            });
+            pSel.innerHTML = html;
+        } else {
+            pSel.innerHTML = '<option value="N/A">N/A - None / Root Level</option>';
+        }
+    }
+
+    function updateStatusOptions() {
+        const typeSelect = document.getElementById('type');
+        const statusSelect = document.getElementById('status');
+        const selectedType = typeSelect ? typeSelect.value : '';
+        const currentStatus = statusSelect.value;
+        let statusOptions = [];
+        if (selectedType === 'Technical Location') {
+            statusOptions = ['Active', 'Active-PM', 'Inactive', 'Under Maintenance'];
+        } else {
+            statusOptions = ['Active', 'Inactive', 'Under Maintenance', 'Decommissioned'];
+        }
+        let html = '<option value=""> — Select — </option>';
+        statusOptions.forEach(s => {
+            const selected = (s === currentStatus) ? 'selected' : '';
+            html += `<option value="${s}" ${selected}>${s}</option>`;
+        });
+        statusSelect.innerHTML = html;
+    }
+
     function syncUI() {
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
@@ -694,18 +747,8 @@
         const isTopLevelType = topLevelTypes.length > 0 && selectedType === topLevelTypes[0];
         document.querySelectorAll('.lockable').forEach(el => el.disabled = isTopLevelType);
         const area = document.getElementById('area').value;
-        const pSel = document.getElementById('parentID');
-        if (isTopLevelType) {
-            pSel.innerHTML = `<option value="N/A">N/A - None / Root Level</option><option value="${area}">${area} (Root Area)</option>`;
-            pSel.value = area;
-        } else if (area && DB.parents) {
-            const filtered = DB.parents.filter(p => p.area === area);
-            let html = '<option value="N/A">N/A - None / Root Level</option>';
-            filtered.forEach(p => {
-                html += `<option value="${p.id}">${p.id} - ${p.name}</option>`;
-            });
-            pSel.innerHTML = html;
-        }
+        populateParents(area);
+        updateStatusOptions();
         recalc();
     }
 
@@ -848,7 +891,8 @@
             oper: parseInt(payload.oper) || 1,
             redun: parseInt(payload.redun) || 1,
             score: crit.score,
-            level: crit.level
+            level: crit.level,
+            user: currentUserEmail || 'system'
         };
         try {
             const result = await saveAsset(assetData);
@@ -861,7 +905,9 @@
                 ModuleBase.showToast('Asset saved successfully! ✅', 'success');
             }
             showMessage(result.message || 'Asset saved successfully!', false);
-            setTimeout(() => closeModal(), 2000);
+            setTimeout(() => {
+                refreshForm();
+            }, 2000);
         } catch (error) {
             if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
                 try {
