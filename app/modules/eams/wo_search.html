@@ -741,26 +741,98 @@
         }
         
         @media print {
-            .no-print { display: none !important; }
+            /* Asegurar que fullView se muestre correctamente */
             #fullView {
+                display: block !important;
                 position: absolute;
                 top: 0;
-                background: white;
-                padding: 0;
-            }
-            .report-paper {
-                box-shadow: none;
+                left: 0;
                 width: 100%;
+                background: white;
                 padding: 20px;
-                margin: 0;
+                z-index: 9999;
             }
+            
+            .report-paper {
+                box-shadow: none !important;
+                width: 100% !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            
+            .frame {
+                border: 1px solid #333 !important;
+                padding: 16px 20px !important;
+                margin-bottom: 16px !important;
+                border-radius: 4px !important;
+                position: relative !important;
+                page-break-inside: avoid !important;
+            }
+            
+            .frame-title {
+                background: white !important;
+                font-weight: bold !important;
+                color: #1a1a2e !important;
+                font-size: 9px !important;
+                text-transform: uppercase !important;
+                padding: 0 8px !important;
+            }
+            
+            .grid-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+            }
+
+            .grid-3 {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            .label {
+                font-size: 8px !important;
+                color: #555 !important;
+                font-weight: bold !important;
+                text-transform: uppercase !important;
+            }
+            
+            .val {
+                font-size: 12px !important;
+                color: #000 !important;
+                border-bottom: 1px solid #ddd !important;
+                padding-bottom: 4px !important;
+            }
+            
+            /* Ocultar elementos no imprimibles */
+            .no-print {
+                display: none !important;
+            }
+            
+            /* Mostrar el reporte completo */
+            .report-paper {
+                position: relative !important;
+            }
+            
             .report-logo {
-                position: absolute;
-                top: 20px;
-                right: 20px;
+                position: absolute !important;
+                top: 20px !important;
+                right: 20px !important;
+                max-width: 80px !important;
+                max-height: 60px !important;
             }
-            @page { size: A4; margin: 1.5cm; }
-            body { margin: 0; padding: 0; }
+            
+            @page {
+                size: A4;
+                margin: 1.5cm;
+            }
+            
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
         }
     </style>
 </head>
@@ -1000,7 +1072,7 @@
           <!-- FRAME 4 - Closure & Reliability -->
           <div class="frame">
               <span class="frame-title">4. CLOSURE &amp; RELIABILITY</span>
-              <div class="grid-3">
+              <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                   <div><span class="label">Approved By</span><div class="val" id="r_approvedBy">---</div></div>
                   <div><span class="label">Closed By</span><div class="val" id="r_closedBy">---</div></div>
                   <div><span class="label">Approve Date</span><div class="val" id="r_approveDate">---</div></div>
@@ -1188,34 +1260,20 @@
 
     function extractApproveDate(raw) {
         if (!raw) return '---';
-        const match = raw.match(/APPROVED:\s*([\d\-:\s]+)/i);
+        // Buscar APPROVED: seguido de fecha YYYY-MM-DD HH:MM:SS
+        const match = raw.match(/APPROVED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/i);
         if (match && match[1]) {
             return formatDateString(match[1].trim());
         }
         return '---';
     }
 
-    function extractClosureDate(raw, status) {
+    function extractClosureDate(raw) {
         if (!raw) return '---';
-        // Si está CLOSED o APPROVED, extraer fecha de cierre
-        if (status !== 'CLOSED' && status !== 'APPROVED' && status !== 'Closed' && status !== 'Approved') return '---';
-        
-        // Buscar CLOSURE: seguido de fecha
-        const closureMatch = raw.match(/CLOSURE:\s*([\d\-:\s]+)/i);
-        if (closureMatch && closureMatch[1]) {
-            const dateStr = closureMatch[1].trim();
-            // Si tiene formato YYYY-MM-DD HH:MM:SS, formatear
-            const match = dateStr.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/);
-            if (match) {
-                return match[3] + '/' + match[2] + '/' + match[1] + ' ' + match[4] + ':' + match[5] + ':' + match[6];
-            }
-            return dateStr;
-        }
-        
-        // Fallback: buscar APPROVED:
-        const approveMatch = raw.match(/APPROVED:\s*([\d\-:\s]+)/i);
-        if (approveMatch && approveMatch[1]) {
-            return formatDateString(approveMatch[1].trim());
+        // Buscar CLOSURE: seguido de fecha YYYY-MM-DD HH:MM:SS
+        const match = raw.match(/CLOSURE:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/i);
+        if (match && match[1]) {
+            return formatDateString(match[1].trim());
         }
         return '---';
     }
@@ -1319,7 +1377,8 @@
 
     function extractApprovedBy(raw) {
         if (!raw) return '---';
-        const match = raw.match(/APPROVED:\s*([^|]+)/i);
+        // Buscar APPROVED: seguido de nombre (hasta | o salto de línea)
+        const match = raw.match(/APPROVED:\s*([^|\n]+)/i);
         if (match && match[1]) {
             return match[1].trim();
         }
@@ -1328,7 +1387,8 @@
 
     function extractClosedBy(raw) {
         if (!raw) return '---';
-        const match = raw.match(/CLOSURE:\s*([^|]+)/i);
+        // Buscar CLOSURE: seguido de nombre (hasta | o salto de línea)
+        const match = raw.match(/CLOSURE:\s*([^|\n]+)/i);
         if (match && match[1]) {
             return match[1].trim();
         }
