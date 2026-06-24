@@ -898,10 +898,13 @@
                     showToast('Selected: ' + selected.display, 'success');
                     
                     renderFreqDropdown();
-                    renderYearDropdown();
+                    renderYearCheckboxes();  // ✅ Cambiar nombre
                     document.getElementById('freqSelect').disabled = false;
-                    document.getElementById('yearSelect').disabled = false;
                     document.getElementById('startWeek').disabled = false;
+                    
+                    // Habilitar checkboxes de años
+                    var checkboxes = document.querySelectorAll('.year-checkbox');
+                    checkboxes.forEach(function(cb) { cb.disabled = false; });
                     
                     document.getElementById('previewSection').style.display = 'none';
                     generatedWeeks = [];
@@ -933,10 +936,13 @@
             if (response.status === 'success' && response.data) {
                 configData = response.data;
                 renderFreqDropdown();
-                renderYearDropdown();
+                renderYearCheckboxes();  // ✅ Cambiar nombre
                 document.getElementById('freqSelect').disabled = true;
-                document.getElementById('yearSelect').disabled = true;
                 document.getElementById('startWeek').disabled = true;
+                
+                // Deshabilitar checkboxes de años
+                var checkboxes = document.querySelectorAll('.year-checkbox');
+                checkboxes.forEach(function(cb) { cb.disabled = true; });
                 showToast('Configuration loaded. Search for a Technical Location.', 'success');
                 console.log('[PVT Manual] Ready');
             } else {
@@ -965,7 +971,7 @@
         select.innerHTML = html;
     }
 
-    function renderYearDropdown() {
+    function renderYearCheckboxes() {
         var container = document.getElementById('yearCheckboxes');
         container.innerHTML = '';
         
@@ -985,6 +991,7 @@
             input.id = 'year_' + year;
             input.value = year;
             input.className = 'year-checkbox';
+            input.disabled = true;  // ✅ Inicialmente deshabilitado
             input.onchange = function() { validateYearSelection(); calculateWeeks(); };
             
             var label = document.createElement('label');
@@ -1163,14 +1170,18 @@
     function resetFormAndRefresh() {
         document.getElementById('search-input').value = '';
         document.getElementById('freqSelect').value = '';
-        document.getElementById('yearSelect').value = '';
+        // ✅ No usar yearSelect porque ya no existe (reemplazado por checkboxes)
         document.getElementById('startWeek').value = '1';
         document.getElementById('previewSection').style.display = 'none';
         document.getElementById('suggestions').style.display = 'none';
         
         document.getElementById('freqSelect').disabled = true;
-        document.getElementById('yearSelect').disabled = true;
+        // ✅ No usar yearSelect porque ya no existe
         document.getElementById('startWeek').disabled = true;
+        
+        // Deshabilitar checkboxes también
+        var checkboxes = document.querySelectorAll('.year-checkbox');
+        checkboxes.forEach(function(cb) { cb.disabled = true; });
         
         selectedAsset = null;
         generatedWeeks = [];
