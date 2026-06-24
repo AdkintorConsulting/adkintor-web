@@ -726,11 +726,15 @@
         const statusSelect = document.getElementById('status');
         const selectedType = typeSelect ? typeSelect.value : '';
         const currentStatus = statusSelect.value;
+        // Usar los statuses desde DB (cargados desde SETUP_AST col G)
+        let allStatuses = DB.statuses || [];
         let statusOptions = [];
         if (selectedType === 'Technical Location') {
-            statusOptions = ['Active', 'Active-PM', 'Inactive', 'Under Maintenance'];
+            // Mostrar todos los status incluyendo Active-PM
+            statusOptions = allStatuses;
         } else {
-            statusOptions = ['Active', 'Inactive', 'Under Maintenance', 'Decommissioned'];
+            // Filtrar Active-PM para no-TL
+            statusOptions = allStatuses.filter(s => s !== 'Active-PM');
         }
         let html = '<option value=""> — Select — </option>';
         statusOptions.forEach(s => {
@@ -806,7 +810,7 @@
 
     async function loadConfig() {
         try {
-            const response = await callApi('AST_getAssetConfig', []);
+            const response = await callApi('AST_getInitialData', []);
             DB = response.data;
             const areaNames = DB.areas ? DB.areas.map(a => a.name) : [];
             fillSelect('area', areaNames);
@@ -898,7 +902,6 @@
             const result = await saveAsset(assetData);
             const newAssetId = result.assetId || result.data?.assetId || result.id || 
                                (result.data && result.data.assetId) || 'UNKNOWN';
-            await logAssetCreation(newAssetId, assetData, payload.name, payload.type, payload.area, crit.level);
             hideLoading();
             enableButton('btnSubmit');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
