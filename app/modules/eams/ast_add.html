@@ -702,23 +702,43 @@
         const pSel = document.getElementById('parentID');
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
+        
+        // Caso 1: Technical Location → padre es el AREA
         if (selectedType === 'Technical Location') {
             pSel.disabled = true;
             pSel.innerHTML = `<option value="${area}">${area} (Root Area)</option>`;
             pSel.value = area;
             return;
         }
+        
+        // Caso 2: Main Equipment → solo TL del área
         pSel.disabled = false;
-        if (area && DB.parents) {
-            const filtered = DB.parents.filter(p => p.area === area && p.type === 'Technical Location');
-            let html = '<option value="N/A">N/A - None / Root Level</option>';
-            filtered.forEach(p => {
-                html += `<option value="${p.id}">${p.id} - ${p.name}</option>`;
-            });
-            pSel.innerHTML = html;
-        } else {
+        if (!area || !DB.parents) {
             pSel.innerHTML = '<option value="N/A">N/A - None / Root Level</option>';
+            return;
         }
+        
+        let filtered = [];
+        const mainTypes = ['Main Equipment'];
+        const subTypes = ['Sub-Assembly', 'Auxiliary', 'Component'];
+        
+        if (mainTypes.includes(selectedType)) {
+            // Solo TL
+            filtered = DB.parents.filter(p => p.area === area && p.type === 'Technical Location');
+        } else if (subTypes.includes(selectedType)) {
+            // TL + Main Equipment
+            filtered = DB.parents.filter(p => p.area === area && 
+                (p.type === 'Technical Location' || p.type === 'Main Equipment'));
+        } else {
+            // Fallback: solo TL
+            filtered = DB.parents.filter(p => p.area === area && p.type === 'Technical Location');
+        }
+        
+        let html = '<option value="N/A">N/A - None / Root Level</option>';
+        filtered.forEach(p => {
+            html += `<option value="${p.id}">${p.id} - ${p.name} (${p.type})</option>`;
+        });
+        pSel.innerHTML = html;
     }
 
     function updateStatusOptions() {
@@ -874,6 +894,11 @@
         showLoading('Processing Transaction...');
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
+        // ✅ Forzar captura de Category aunque esté deshabilitado
+        const categoryEl = document.getElementById('category');
+        if (categoryEl && categoryEl.value) {
+            payload.category = categoryEl.value;
+        }
         const crit = recalc();
         if (crit.level === 'INCOMPLETE') {
             hideLoading();
@@ -887,6 +912,7 @@
         const topLevelTypes = DB.assetTypes || [];
         const isTopLevel = topLevelTypes.includes(payload.type);
         console.log('[AST] Category value:', payload.category);
+        console.log('[AST] Category after sanitize:', payload.category);
         const assetData = {
             area: payload.area,
             areaPrefix: areaObj ? areaObj.prefix : "GEN",
