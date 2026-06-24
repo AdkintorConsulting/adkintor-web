@@ -1065,6 +1065,8 @@
             if (isTL) {
                 if (field) {
                     field.disabled = true;
+                    field.style.opacity = '0.6';
+                    field.style.backgroundColor = '#f1f5f9';
                     field.removeAttribute('required');
                     if (fieldId === 'v-cat') field.value = '';
                 }
@@ -1075,6 +1077,8 @@
             } else {
                 if (field) {
                     field.disabled = false;
+                    field.style.opacity = '1';
+                    field.style.backgroundColor = 'white';
                     if (fieldId === 'v-cat') field.setAttribute('required', 'required');
                 }
                 if (container) {
@@ -1083,6 +1087,36 @@
                 }
             }
         }
+        
+        // ✅ ACTUALIZAR STATUS según tipo (misma lógica que ADD)
+        updateStatusOptionsForModify();
+    }
+    
+    function updateStatusOptionsForModify() {
+        const typeSelect = document.getElementById('v-type');
+        const statusSelect = document.getElementById('v-status');
+        const selectedType = typeSelect ? typeSelect.value : '';
+        const currentStatus = statusSelect ? statusSelect.value : '';
+        
+        // Usar los statuses desde DBconfig (cargados desde SETUP_AST col G)
+        let allStatuses = DBconfig?.statuses || [];
+        let statusOptions = [];
+        
+        if (selectedType === 'Technical Location') {
+            // Mostrar todos los status incluyendo Active-PM
+            statusOptions = allStatuses;
+        } else {
+            // Filtrar Active-PM para no-TL
+            statusOptions = allStatuses.filter(s => s !== 'Active-PM');
+        }
+        
+        // Reconstruir dropdown manteniendo el valor seleccionado si existe
+        let html = '<option value=""> — Select — </option>';
+        statusOptions.forEach(s => {
+            const selected = (s === currentStatus) ? 'selected' : '';
+            html += `<option value="${s}" ${selected}>${s}</option>`;
+        });
+        statusSelect.innerHTML = html;
     }
     
     function renderEditor(assetData) {
@@ -1211,6 +1245,13 @@
                 catEl.classList.add('invalid-field');
                 isValid = false;
             }
+            
+            // ✅ VALIDAR PARENT ID (obligatorio si NO es TL)
+            const parentEl = document.getElementById('v-parent');
+            if (!parentEl.value || parentEl.value === '' || parentEl.value === 'N/A') {
+                parentEl.classList.add('invalid-field');
+                isValid = false;
+            }
         }
         
         const critInputs = document.querySelectorAll('.crit-input');
@@ -1284,7 +1325,8 @@
             model: sanitizeInput(document.getElementById('v-model').value),
             serial: sanitizeInput(document.getElementById('v-serial').value),
             year: document.getElementById('v-year').value || '',
-            hse: 1, prod: 1, usage: 1, oper: 1, redun: 1
+            hse: 1, prod: 1, usage: 1, oper: 1, redun: 1,
+            user: currentUserEmail || 'system'
         };
         
         var critInputs = document.querySelectorAll('.crit-input');
@@ -1312,6 +1354,8 @@
             showMessage(res.message || 'Asset updated successfully', false);
             markClean();
             
+            // ✅ Recargar árbol y luego recargar el asset
+            await loadTree();
             await loadAsset(formData.id);
             
         } catch (error) {
