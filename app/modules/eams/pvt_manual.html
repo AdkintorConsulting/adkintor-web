@@ -601,7 +601,7 @@
             <!-- Search Container -->
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
-                <button class="btn-search" onclick="searchTL()"><i class="fas fa-check-circle"></i> SELECT TL</button>
+                <button class="btn-search" id="searchBtn" onclick="searchTL()"><i class="fas fa-check-circle"></i> SELECT TL</button>
                 <div id="suggestions" class="custom-scroll"></div>
             </div>
 
@@ -614,8 +614,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-calendar-alt"></i> Target Year</label>
-                    <select id="yearSelect" class="input-main" onchange="calculateWeeks()" disabled></select>
+                    <label><i class="fas fa-calendar-alt"></i> Target Year(s)</label>
+                    <div id="yearCheckboxes" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;"></div>
+                    <div style="font-size: 0.6rem; color: #64748b; margin-top: 4px;">
+                        <i class="fas fa-info-circle"></i> Select consecutive years (e.g., 2026, 2027, 2028)
+                    </div>
                 </div>
             </div>
 
@@ -824,6 +827,10 @@
         if (suggestionTimeout) clearTimeout(suggestionTimeout);
         suggestionTimeout = setTimeout(async function() {
             try {
+                // ✅ Mostrar spinner
+                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                suggestionsDiv.style.display = 'block';
+                
                 var list = await callApi('PVT_getTLAutocompletar', [val]);
                 if (list && list.length > 0) {
                     var html = '';
@@ -833,13 +840,15 @@
                     suggestionsDiv.innerHTML = html;
                     suggestionsDiv.style.display = 'block';
                 } else {
-                    suggestionsDiv.style.display = 'none';
+                    suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #94a3b8;">No results found</div>';
+                    suggestionsDiv.style.display = 'block';
                 }
             } catch (e) {
                 console.error('Error getting suggestions:', e);
-                suggestionsDiv.style.display = 'none';
+                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #dc3545;">Error searching</div>';
+                suggestionsDiv.style.display = 'block';
             }
-        }, 300);
+        }, 400);
     }
 
     function selectTL(val) {
@@ -929,7 +938,7 @@
                 document.getElementById('yearSelect').disabled = true;
                 document.getElementById('startWeek').disabled = true;
                 showToast('Configuration loaded. Search for a Technical Location.', 'success');
-                document.getElementById('footer-status').innerText = 'Ready';
+                console.log('[PVT Manual] Ready');
             } else {
                 showToast('Error: ' + (response.message || 'Unknown error'), 'error');
             }
@@ -957,18 +966,72 @@
     }
 
     function renderYearDropdown() {
-        var select = document.getElementById('yearSelect');
-        select.innerHTML = '';
+        var container = document.getElementById('yearCheckboxes');
+        container.innerHTML = '';
         
         var years = configData.availableYears;
         if (!years || years.length === 0) {
             var currentYear = new Date().getFullYear();
-            years = [currentYear, currentYear + 1, currentYear + 2];
+            years = [currentYear, currentYear + 1, currentYear + 2, currentYear + 3];
         }
         
         for (var i = 0; i < years.length; i++) {
-            select.innerHTML += '<option value="' + years[i] + '">' + years[i] + '</option>';
+            var year = years[i];
+            var checkbox = document.createElement('div');
+            checkbox.style.cssText = 'display: flex; align-items: center; gap: 4px;';
+            
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = 'year_' + year;
+            input.value = year;
+            input.className = 'year-checkbox';
+            input.onchange = function() { validateYearSelection(); calculateWeeks(); };
+            
+            var label = document.createElement('label');
+            label.htmlFor = 'year_' + year;
+            label.textContent = year;
+            label.style.cssText = 'font-size: 0.8rem; cursor: pointer; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;';
+            
+            checkbox.appendChild(input);
+            checkbox.appendChild(label);
+            container.appendChild(checkbox);
         }
+    }
+
+    function validateYearSelection() {
+        var checked = document.querySelectorAll('.year-checkbox:checked');
+        var btn = document.getElementById('saveBtn');
+        
+        if (checked.length === 0) {
+            if (btn) btn.disabled = true;
+            return;
+        }
+        
+        // Verificar que sean consecutivos
+        var years = [];
+        checked.forEach(function(cb) { years.push(parseInt(cb.value)); });
+        years.sort(function(a, b) { return a - b; });
+        
+        var isConsecutive = true;
+        for (var i = 1; i < years.length; i++) {
+            if (years[i] - years[i-1] !== 1) {
+                isConsecutive = false;
+                break;
+            }
+        }
+        
+        if (!isConsecutive) {
+            showToast('⚠️ Please select consecutive years only', 'error');
+            checked.forEach(function(cb) { cb.checked = false; });
+            if (btn) btn.disabled = true;
+            return;
+        }
+        
+        // Actualizar startWeek para usar el primer año seleccionado
+        var firstYear = years[0];
+        document.getElementById('yearSelect').value = firstYear;
+        
+        validateForm();
     }
 
     // ============================================
@@ -977,7 +1040,6 @@
     function calculateWeeks() {
         var freqSelect = document.getElementById('freqSelect');
         var startWeek = parseInt(document.getElementById('startWeek').value);
-        var year = parseInt(document.getElementById('yearSelect').value);
         var selectedOption = freqSelect.options[freqSelect.selectedIndex];
         
         if (!selectedOption || !selectedOption.value) {
@@ -992,26 +1054,87 @@
             return;
         }
 
+        // Obtener años seleccionados
+        var checkedYears = document.querySelectorAll('.year-checkbox:checked');
+        if (checkedYears.length === 0) {
+            showToast('Please select at least one year', 'error');
+            return;
+        }
+        
+        var years = [];
+        checkedYears.forEach(function(cb) { years.push(parseInt(cb.value)); });
+        years.sort(function(a, b) { return a - b; });
+
         var days = parseInt(selectedOption.dataset.days);
         var weeksInterval = Math.max(1, Math.round(days / 7));
         
         generatedWeeks = [];
-        var currentWeek = startWeek;
         
-        while (currentWeek <= 52) {
-            generatedWeeks.push({ week: currentWeek, year: year });
-            currentWeek += weeksInterval;
+        // Generar semanas para cada año seleccionado
+        for (var y = 0; y < years.length; y++) {
+            var year = years[y];
+            var currentWeek = startWeek;
+            var weekCount = 0;
+            
+            // Para el primer año, empezar en startWeek
+            // Para años siguientes, calcular offset basado en el intervalo
+            if (y > 0) {
+                // Calcular cuántas semanas han pasado desde el año anterior
+                var weeksPerYear = Math.floor(52 / weeksInterval);
+                var offset = (weeksPerYear * y) % 52;
+                currentWeek = ((startWeek - 1 + offset) % 52) + 1;
+            }
+            
+            while (currentWeek <= 52 && weekCount < 52) {
+                generatedWeeks.push({ week: currentWeek, year: year });
+                currentWeek += weeksInterval;
+                weekCount++;
+            }
         }
 
         var preview = document.getElementById('weeksPreview');
         var html = '';
         for (var i = 0; i < generatedWeeks.length; i++) {
-            html += '<div class="week-tag"><i class="fas fa-calendar-check"></i> W' + generatedWeeks[i].week + '</div>';
+            html += '<div class="week-tag"><i class="fas fa-calendar-check"></i> ' + generatedWeeks[i].year + ' - W' + generatedWeeks[i].week + '</div>';
         }
         preview.innerHTML = html;
 
         document.getElementById('previewSection').style.display = 'block';
         validateForm();
+        checkDuplicateFrequency();
+    }
+
+    async function checkDuplicateFrequency() {
+        var freqSelect = document.getElementById('freqSelect');
+        var frequency = freqSelect.value;
+        var year = parseInt(document.getElementById('yearSelect').value);
+        
+        if (!selectedAsset || !frequency || !year) return;
+        
+        try {
+            var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, year]);
+            
+            var warningDiv = document.getElementById('freqWarning');
+            if (!warningDiv) {
+                // Crear elemento de warning si no existe
+                var container = freqSelect.parentElement;
+                var warning = document.createElement('div');
+                warning.id = 'freqWarning';
+                warning.style.cssText = 'font-size: 0.7rem; color: #dc3545; margin-top: 4px; display: none;';
+                warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> This frequency is already created for this TL. Verify in Planner or change frequency.';
+                container.appendChild(warning);
+            }
+            
+            var warningEl = document.getElementById('freqWarning');
+            if (exists) {
+                warningEl.style.display = 'block';
+                showToast('⚠️ Frequency already created for this TL', 'warning');
+            } else {
+                warningEl.style.display = 'none';
+            }
+        } catch (e) {
+            console.warn('Error checking frequency:', e);
+        }
     }
 
     function validateForm() {
@@ -1066,10 +1189,25 @@
             return;
         }
         
+        // Verificar duplicado antes de guardar
+        var freqSelect = document.getElementById('freqSelect');
+        var frequency = freqSelect.value;
+        var firstYear = parseInt(document.getElementById('yearSelect').value);
+        
+        try {
+            var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, firstYear]);
+            if (exists) {
+                showToast('⚠️ Frequency already created for this TL. Verify in Planner or change frequency.', 'error');
+                return;
+            }
+        } catch (e) {
+            console.warn('Error checking frequency:', e);
+        }
+        
         var payload = {
             assetId: selectedAsset.id,
             assetName: selectedAsset.name,
-            frequency: document.getElementById('freqSelect').value,
+            frequency: frequency,
             weeks: generatedWeeks,
             year: parseInt(document.getElementById('yearSelect').value)
         };
@@ -1222,7 +1360,7 @@
             loadConfig();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
+            console.log('[PVT Manual] Not Configured');
         }
     }
     
