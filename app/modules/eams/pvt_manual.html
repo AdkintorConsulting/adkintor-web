@@ -1014,7 +1014,6 @@
             return;
         }
         
-        // Verificar que sean consecutivos
         var years = [];
         checked.forEach(function(cb) { years.push(parseInt(cb.value)); });
         years.sort(function(a, b) { return a - b; });
@@ -1034,10 +1033,7 @@
             return;
         }
         
-        // Actualizar startWeek para usar el primer año seleccionado
-        var firstYear = years[0];
-        document.getElementById('yearSelect').value = firstYear;
-        
+        // ✅ Eliminar referencia a yearSelect
         validateForm();
     }
 
@@ -1114,16 +1110,19 @@
     async function checkDuplicateFrequency() {
         var freqSelect = document.getElementById('freqSelect');
         var frequency = freqSelect.value;
-        var year = parseInt(document.getElementById('yearSelect').value);
         
-        if (!selectedAsset || !frequency || !year) return;
+        // ✅ Obtener el primer año seleccionado
+        var checkedYears = document.querySelectorAll('.year-checkbox:checked');
+        if (checkedYears.length === 0) return;
+        var firstYear = parseInt(checkedYears[0].value);
+        
+        if (!selectedAsset || !frequency || !firstYear) return;
         
         try {
-            var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, year]);
+            var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, firstYear]);
             
             var warningDiv = document.getElementById('freqWarning');
             if (!warningDiv) {
-                // Crear elemento de warning si no existe
                 var container = freqSelect.parentElement;
                 var warning = document.createElement('div');
                 warning.id = 'freqWarning';
@@ -1289,7 +1288,7 @@
                         '<i class="fas fa-exclamation-triangle"></i>' +
                     '</div>' +
                     '<h3>⚠️ No Annual Plan Found</h3>' +
-                    '<p>No annual strategy plan found for ' + escapeHtml(selectedAsset.name) + ' (' + escapeHtml(selectedAsset.id) + ') in ' + document.getElementById('yearSelect').value + '.<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>' +
+                    '<p>No annual strategy plan found for ' + escapeHtml(selectedAsset.name) + ' (' + escapeHtml(selectedAsset.id) + ').<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>' +
                     '<div class="modal-buttons">' +
                         '<button class="btn-modal-secondary" onclick="closeWarningModal()">Cancel</button>' +
                         '<button class="btn-modal-primary" id="warningConfirmBtn">Continue Anyway</button>' +
