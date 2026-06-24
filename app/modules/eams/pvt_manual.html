@@ -1203,7 +1203,14 @@
         // Verificar duplicado antes de guardar
         var freqSelect = document.getElementById('freqSelect');
         var frequency = freqSelect.value;
-        var firstYear = parseInt(document.getElementById('yearSelect').value);
+        
+        // Obtener el primer año de los seleccionados
+        var checkedYears = document.querySelectorAll('.year-checkbox:checked');
+        if (checkedYears.length === 0) {
+            showToast('Please select at least one year', 'error');
+            return;
+        }
+        var firstYear = parseInt(checkedYears[0].value);
         
         try {
             var exists = await callApi('PVT_checkFrequencyExists', [selectedAsset.id, frequency, firstYear]);
@@ -1220,7 +1227,7 @@
             assetName: selectedAsset.name,
             frequency: frequency,
             weeks: generatedWeeks,
-            year: parseInt(document.getElementById('yearSelect').value)
+            year: firstYear
         };
         
         pendingSavePayload = payload;
@@ -1228,7 +1235,7 @@
         showLoading('Checking annual plan status...');
         
         try {
-            var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, parseInt(document.getElementById('yearSelect').value)]);
+            var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, firstYear]);
             hideLoading();
             
             if (hasPlan === true) {
