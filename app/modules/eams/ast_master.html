@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Master - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/app/css/print.css">
     <style>
         /* ============================================
            BASE
@@ -553,18 +554,15 @@
                     <p style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Search or click on an asset in the tree, then click <strong>SEARCH</strong> to view details.</p>
                 </div>
                 <div id="dashboard" style="display: none;">
-                    <div class="back-button">
-                        <button class="btn-secondary" onclick="backToSearch()">
-                            <i class="fas fa-arrow-left"></i> BACK TO SEARCH
-                        </button>
-                    </div>
                     <div class="dashboard-header">
                         <div>
                             <h2 id="d-name">---</h2>
                             <span class="asset-id" id="d-id">TAG: ---</span>
                         </div>
                         <div class="button-group">
-                            <button class="btn-secondary" onclick="closeModal()">Close Terminal</button>
+                            <button class="btn-secondary" onclick="backToSearch()">
+                                <i class="fas fa-arrow-left"></i> Back to Search
+                            </button>
                             <button class="btn-primary" onclick="printDashboard()">
                                 <i class="fas fa-print"></i> Print Datasheet
                             </button>
@@ -1126,17 +1124,23 @@ async function printMasterList() {
                     </thead>
                     <tbody>${tableRows}</tbody>
                 </table>
-                <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 30px;">
+                    <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 30px;">
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
                         <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">📊 GENERAL COUNTS</h4>
-                        <p>Total Areas: <strong>${stats.totalAreas || 0}</strong></p>
-                        <p>Total Assets: <strong>${stats.totalAssets || 0}</strong></p>
+                        <p>Areas: <strong>${stats.totalAreas || 0}</strong></p>
+                        <p>Technical Locations: <strong>${stats.totalTechLocations || 0}</strong></p>
+                        <p>Main Equipment: <strong>${stats.totalMainEquipment || 0}</strong></p>
+                        <p>Other Equipment: <strong>${(stats.totalEquipment || 0) - (stats.totalMainEquipment || 0)}</strong></p>
+                        <p><strong>TOTAL ASSETS: ${stats.totalEquipment || 0}</strong></p>
                     </div>
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
                         <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">⚙️ BY STATUS</h4>
-                        <p>Active: <strong>${stats.statusCounts?.active || 0}</strong></p>
-                        <p>Active-PM: <strong>${stats.statusCounts?.activePm || 0}</strong></p>
-                        <p>Inactive: <strong>${stats.statusCounts?.inactive || 0}</strong></p>
+                        ${Object.keys(stats.statusCounts || {}).length > 0 ? 
+                            Object.entries(stats.statusCounts).map(([key, value]) => 
+                                `<p>${key}: <strong>${value}</strong></p>`
+                            ).join('') : 
+                            '<p>No status data</p>'
+                        }
                     </div>
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
                         <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">🎯 BY CRITICALITY</h4>
