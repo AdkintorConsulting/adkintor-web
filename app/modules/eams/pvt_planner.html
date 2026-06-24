@@ -692,6 +692,49 @@
                 padding: 2px 8px;
             }
         }
+
+        /* ============================================
+           RESIZE HANDLE
+           ============================================ */
+        .resize-handle {
+            width: 6px;
+            background: #e2e8f0;
+            cursor: col-resize;
+            flex-shrink: 0;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .resize-handle:hover {
+            background: #94a3b8;
+        }
+
+        .resize-handle::before {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .resize-handle:hover::before {
+            color: #1a1a2e;
+        }
+
+        .side-panel {
+            width: 340px;
+            min-width: 200px;
+            max-width: 600px;
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }        
     </style>
 </head>
 <body>
@@ -738,16 +781,18 @@
                 <button id="btnGen" class="btn-nav btn-warning-nav" onclick="generatePlan()"><i class="fas fa-cogs"></i> GENERATE</button>
                 <button id="btnSave" class="btn-nav btn-success-nav" onclick="savePlan('UNLOCKED')"><i class="fas fa-save"></i> DRAFT</button>
                 <button id="btnLock" class="btn-nav btn-danger-nav" onclick="savePlan('LOCKED')"><i class="fas fa-lock"></i> LOCK</button>
-                <button class="btn-nav btn-close-nav" onclick="closeModal()"><i class="fas fa-times"></i> CLOSE</button>
             </div>
         </div>
 
-        <div class="planner-wrapper">
+        <div class="planner-wrapper" id="plannerWrapper">
             <!-- Grid de semanas -->
             <div class="grid-area custom-scroll" id="gridContainer"></div>
             
+            <!-- Resize Handle -->
+            <div class="resize-handle" id="resizeHandle"></div>
+            
             <!-- Panel lateral -->
-            <div class="side-panel">
+            <div class="side-panel" id="sidePanel">
                 <div class="panel-header">
                     <h6><i class="fas fa-tasks"></i> WEEK LOAD</h6>
                     <span class="week-badge" id="weekLabel">--</span>
@@ -937,6 +982,50 @@
     let isDirty = false;
 
     // ============================================
+    // RESIZE FUNCTIONALITY
+    // ============================================
+    function initResize() {
+        var handle = document.getElementById('resizeHandle');
+        var panel = document.getElementById('sidePanel');
+        var wrapper = document.getElementById('plannerWrapper');
+        
+        if (!handle || !panel || !wrapper) return;
+        
+        var isResizing = false;
+        var startX = 0;
+        var startWidth = 0;
+        
+        handle.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = panel.offsetWidth;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+            var deltaX = startX - e.clientX;
+            var newWidth = startWidth + deltaX;
+            
+            if (newWidth < 200) newWidth = 200;
+            if (newWidth > 600) newWidth = 600;
+            
+            panel.style.width = newWidth + 'px';
+            panel.style.flex = '0 0 ' + newWidth + 'px';
+        });
+        
+        document.addEventListener('mouseup', function() {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        });
+    }
+
+    // ============================================
     // INITIALIZATION
     // ============================================
     async function init() {
@@ -963,10 +1052,13 @@
             }
             
             renderYearSelect();
-            checkLockState();
             hideLoading();
-            document.getElementById('footer-status').innerText = 'Ready';
+            initResize();
+            console.log('[PVT] Ready');
             showToast('Strategic Planner loaded successfully ✅', 'success');
+            
+            // Opcional: Cargar plan del año seleccionado automáticamente
+            // loadPlan();
             
         } catch (e) {
             hideLoading();
@@ -977,7 +1069,6 @@
             allYears = [currentYear, currentYear + 1, currentYear + 2];
             lockedYears = [];
             renderYearSelect();
-            checkLockState();
         }
     }
 
@@ -995,7 +1086,7 @@
         }
     }
 
-    function checkLockState() {
+    function checkLockState(showMessage = false) {
         var year = document.getElementById('yearSelect').value;
         var isLocked = lockedYears.indexOf(year) !== -1;
         
@@ -1005,7 +1096,7 @@
             if (btn) btn.disabled = isLocked;
         }
         
-        if (isLocked) {
+        if (isLocked && showMessage) {
             showToast('⚠️ YEAR LOCKED - READ ONLY MODE', 'warning');
         }
     }
@@ -1076,7 +1167,7 @@
             renderHeatmap();
             hideLoading();
             showToast('📋 Loaded ' + currentPlan.length + ' tasks', 'success');
-            checkLockState();
+            checkLockState(true);  // ✅ Mostrar mensaje solo aquí
             
         } catch (e) {
             hideLoading();
@@ -1381,7 +1472,11 @@
                 isDirty = false;
                 
                 if (lockStatus === 'LOCKED') {
-                    if (lockedYears.indexOf(document.getElementById('yearSelect').value) === -1) {
+                    // ✅ Recargar años bloqueados desde el backend para persistencia
+                    var yearsData = await callApi('PVT_getAvailableYears', []);
+                    if (yearsData && yearsData.lockedYears) {
+                        lockedYears = yearsData.lockedYears;
+                    } else if (lockedYears.indexOf(document.getElementById('yearSelect').value) === -1) {
                         lockedYears.push(document.getElementById('yearSelect').value);
                     }
                     renderYearSelect();
