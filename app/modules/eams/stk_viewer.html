@@ -221,39 +221,39 @@
            ============================================ */
         .kpi-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .kpi-card {
             background: white;
-            border-radius: 10px;
-            padding: 16px 18px;
+            border-radius: 8px;
+            padding: 10px 12px;
             text-align: center;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             transition: all 0.2s;
         }
 
         .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .kpi-value {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: #1a1a2e;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .kpi-label {
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             color: #64748b;
-            margin-top: 4px;
+            margin-top: 2px;
             font-weight: 600;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -601,6 +601,7 @@
             <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description or Part Number..." onkeyup="filterAndRender()">
             <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
             <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
+            <button class="btn-secondary" onclick="toggleShowAll()" id="showAllBtn"><i class="fas fa-list"></i> Show All</button>            
             <button class="btn-secondary" onclick="clearFilters()"><i class="fas fa-eraser"></i> Clear Filters</button>
         </div>
 
@@ -895,6 +896,35 @@
     }
 
     // ============================================
+    // SHOW ALL TOGGLE
+    // ============================================
+    var showAllMode = false;
+
+    async function toggleShowAll() {
+        showAllMode = !showAllMode;
+        var btn = document.getElementById('showAllBtn');
+        
+        if (showAllMode) {
+            btn.innerHTML = '<i class="fas fa-eye"></i> Show Recent';
+            showToast('Showing ALL items', 'info');
+        } else {
+            btn.innerHTML = '<i class="fas fa-list"></i> Show All';
+            showToast('Showing items with recent transactions', 'info');
+        }
+        
+        showLoading('Refreshing catalog...');
+        try {
+            var response = await callApi('STK_VIEWER_getCatalogFiltered', [showAllMode]);
+            catalogData = response.data || [];
+            filterAndRender();
+            hideLoading();
+        } catch(err) {
+            hideLoading();
+            showToast('Failed to refresh: ' + err.message, 'error');
+        }
+    }    
+
+    // ============================================
     // HISTORY MODAL
     // ============================================
     async function showHistory(sku) {
@@ -973,7 +1003,7 @@
         if (!EAMS_API_URL) { 
             hideLoading();
             showToast('Session error: missing API URL. Please login first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not connected';
+            console.log('[STK] Not connected');
             return;
         }
         
@@ -983,9 +1013,14 @@
             await loadFilters();
             await refreshCatalog();
             
-            document.getElementById('footer-status').innerText = 'Connected (Read Only)';
+            console.log('[STK] Connected (Read Only)');
             hideLoading();
             showToast('Inventory Viewer loaded successfully ✅', 'success');
+            
+            // ✅ Mostrar mensaje informativo sobre el filtro
+            setTimeout(function() {
+                showToast('📋 Showing items with transactions in the last 30 days. Click "Show All" to view full catalog.', 'info');
+            }, 1500);
         } catch(err) {
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
