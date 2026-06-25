@@ -918,7 +918,7 @@
         }
         yearSel.value = currentYear;
         
-        document.getElementById('footer-status').innerText = 'Ready';
+        console.log('[Release] Ready');
         loadWeek();
     }
 
@@ -943,7 +943,7 @@
             localTasks = tasks || [];
             renderTable();
             hideLoading();
-            document.getElementById('footer-status').innerText = 'Ready - Table refreshed';
+            console.log('[Release] Ready - Table refreshed');
         } catch (e) {
             hideLoading();
             showToast('Error loading tasks: ' + e.message, 'error');
@@ -1232,7 +1232,7 @@
             loadInitialData();
         } else {
             showToast('Please login to access EAMS', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
+            console.log('[Release] Not Configured');
         }
     }
     
