@@ -1141,7 +1141,7 @@ async function init() {
         await loadHierarchyTree();    // ✅ Espera a que termine
         hideLoading();                // ✅ Ahora sí, se oculta al final
         showToast('Activity Builder loaded successfully ✅', 'success');
-        document.getElementById('footer-status').innerText = 'Ready';
+        console.log('[Activity Builder] Ready');
     } else {
         hideLoading();
         showToast('API URL not configured. Please log in first.', 'error');
@@ -1229,7 +1229,6 @@ async function updateDashboard() {
     function selectTL(val) {
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
-        executeSearch();
     }
 
     // ============================================
@@ -1326,7 +1325,7 @@ async function updateDashboard() {
         for (var i = 0; i < existingTasks.length; i++) {
             var task = existingTasks[i];
             html += '<tr style="border-bottom: 1px solid #e2e8f0;">' +
-                '<td style="padding: 8px 12px;">' + escapeHtml(task.equipment || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.assetId || '') + ' (' + escapeHtml(task.equipment || '') + ')</td>' +
                 '<td style="padding: 8px 12px;">' + escapeHtml(task.instruction || '') + '</td>' +
                 '<td style="padding: 8px 12px;">' + escapeHtml(task.standard || '') + '</td>' +
                 '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
@@ -1664,7 +1663,7 @@ async function updateDashboard() {
             cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
-    
+
     function updateEditSummary() {
         var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
         var selectedCount = 0;
