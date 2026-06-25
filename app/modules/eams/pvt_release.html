@@ -905,7 +905,8 @@
         currentWeekNum = Math.min(currentWeekNum, 52);
         weekSel.value = currentWeekNum;
         currentWeek = weekSel.value;
-        document.getElementById('currentWeekLabel').innerText = currentWeek;
+        var weekLabel = document.getElementById('currentWeekLabel');
+        if (weekLabel) weekLabel.innerText = currentWeek;
         
         // Poblar selector de años
         var yearSel = document.getElementById('yearSelector');
@@ -934,7 +935,8 @@
         var week = document.getElementById('weekSelector').value;
         var year = document.getElementById('yearSelector').value;
         currentWeek = week;
-        document.getElementById('currentWeekLabel').innerText = week;
+        var weekLabel = document.getElementById('currentWeekLabel');
+        if (weekLabel) weekLabel.innerText = week;
         
         showLoading('Loading maintenance tasks...');
         
