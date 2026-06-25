@@ -1642,6 +1642,7 @@ async function updateDashboard() {
         var select = document.getElementById('edit-equipment');
         var selectedOption = select.options[select.selectedIndex];
         var equipment = selectedOption?.getAttribute('data-name') || select.value;
+        var selectedEquipmentId = select.value;  // ✅ Obtener el ID del equipo seleccionado
         
         if (!equipment) {
             document.getElementById('edit-clone-section').style.display = 'none';
@@ -1653,8 +1654,8 @@ async function updateDashboard() {
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
-            // ✅ Usar currentContext.assetId (el TL) como tercer parámetro (igual que en GAS)
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentContext.assetId]);
+            // ✅ Usar selectedEquipmentId (el equipo actual) como tercer parámetro
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, selectedEquipmentId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
