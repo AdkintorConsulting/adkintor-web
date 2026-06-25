@@ -1711,11 +1711,11 @@ async function updateDashboard() {
         }
         
         var payload = {
-            originalAssetId: currentContext.assetId,
+            originalAssetId: currentEditTask.assetId || currentContext.assetId,  // ✅ Usar assetId de la tarea
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentEditTask.equipment,
             originalInstruction: currentEditTask.instruction,
-            assetId: currentContext.assetId,
+            assetId: currentEditTask.assetId || currentContext.assetId,          // ✅ Usar assetId de la tarea
             strategyId: currentContext.strategyId,
             frequency: currentContext.frequency,
             equipment: selectedEquipmentName,
