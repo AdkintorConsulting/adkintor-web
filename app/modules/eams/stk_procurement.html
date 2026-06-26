@@ -920,14 +920,18 @@
                                 <div class="form-group">
                                     <label>PO Number</label>
                                     <input type="text" id="poNumber" placeholder="PO number">
+                                    <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" id="poNumberHint">Only for Purchase Order payment method</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group">
                                     <label>Vendor / Supplier *</label>
                                     <div style="position:relative">
-                                        <input type="text" id="vendor" required autocomplete="off">
+                                        <input type="text" id="vendor" required autocomplete="off" placeholder="Type vendor name...">
                                         <div id="vendorSuggestions" class="custom-suggestions" style="display:none;"></div>
+                                        <div id="vendorSpinner" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#64748b; font-size:0.8rem;">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -943,9 +947,12 @@
                                     <input type="date" id="issueDate">
                                 </div>
                                 <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <div style="font-size:0.65rem;color:#666;padding-top:6px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Leave empty for today</div>
+                                    <label>Expected Delivery Date</label>
+                                    <input type="date" id="expectedDeliveryDate">
                                 </div>
+                            </div>
+                            <div style="font-size:0.65rem;color:#666;padding-bottom:12px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                                <i class="fas fa-info-circle"></i> Leave issue date empty for today. Expected delivery date is optional.
                             </div>
                             <div class="row">
                                 <div class="form-group">
@@ -1086,14 +1093,18 @@
 <div id="modalHasProduct" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> DIRECT PURCHASE DETECTED</h3>
+            <h3><i class="fas fa-box" style="color:#f59e0b;"></i> INVENTORY RECEIPT</h3>
             <button class="btn-close-modal" onclick="closeModal('modalHasProduct')">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="modalHasProductMsg">Do you want to record this as an inventory receipt (stock) or a direct consumption?</p>
+            <p id="modalHasProductMsg" style="font-size:0.9rem; margin-bottom:12px;">Do you already have the product physically?</p>
+            <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔹 YES</strong> → Product is in hand. Stock will be updated now.</p>
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔹 NO</strong> → Product will arrive later. A temporary PO will be created.</p>
+            </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
-                <button class="btn-secondary" onclick="resolveModal('modalHasProduct', 'NO')"><i class="fas fa-times"></i> NO</button>
-                <button class="btn-primary" onclick="resolveModal('modalHasProduct', 'YES')"><i class="fas fa-check"></i> YES</button>
+                <button class="btn-secondary" onclick="resolveModal('modalHasProduct', 'NO')"><i class="fas fa-clock"></i> NOT YET</button>
+                <button class="btn-primary" onclick="resolveModal('modalHasProduct', 'YES')"><i class="fas fa-check"></i> YES, RECEIVE NOW</button>
             </div>
         </div>
     </div>
@@ -1102,18 +1113,18 @@
 <div id="modalUsageType" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-box"></i> ITEM USAGE TYPE</h3>
+            <h3><i class="fas fa-warehouse"></i> DESTINATION</h3>
             <button class="btn-close-modal" onclick="closeModal('modalUsageType')">&times;</button>
         </div>
         <div class="modal-body">
-            <p>How will this item be used?</p>
-            <div class="info-box">
-                <p><strong>STOCK</strong> → Warehouse (inventory increases)</p>
-                <p><strong>CONSUME</strong> → Used immediately (no inventory change)</p>
+            <p style="font-size:0.9rem; margin-bottom:12px;">Where is this item going?</p>
+            <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>📦 STOCK</strong> → Stored in warehouse. Inventory will increase.</p>
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>⚡ CONSUME</strong> → Used immediately. No inventory change.</p>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalUsageType', 'CONSUME')"><i class="fas fa-fire"></i> CONSUME</button>
-                <button class="btn-primary" onclick="resolveModal('modalUsageType', 'STOCK')"><i class="fas fa-warehouse"></i> STOCK</button>
+                <button class="btn-secondary" onclick="resolveModal('modalUsageType', 'CONSUME')"><i class="fas fa-bolt"></i> CONSUME</button>
+                <button class="btn-primary" onclick="resolveModal('modalUsageType', 'STOCK')"><i class="fas fa-warehouse"></i> ADD TO STOCK</button>
             </div>
         </div>
     </div>
@@ -1122,14 +1133,18 @@
 <div id="modalHasWO" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-tools"></i> WORK ORDER ASSOCIATION</h3>
+            <h3><i class="fas fa-clipboard-list"></i> WORK ORDER</h3>
             <button class="btn-close-modal" onclick="closeModal('modalHasWO')">&times;</button>
         </div>
         <div class="modal-body">
-            <p>Is this consumption associated with a Work Order?</p>
+            <p style="font-size:0.9rem; margin-bottom:12px;">Is this consumption associated with a Work Order?</p>
+            <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔧 YES</strong> → Select a Work Order. Must be IN PROGRESS or COMPLETED.</p>
+                <p style="margin:4px 0; font-size:0.8rem;"><strong>📋 NO</strong> → Recorded as administrative consumption.</p>
+            </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalHasWO', 'NO')"><i class="fas fa-times"></i> NO</button>
-                <button class="btn-primary" onclick="resolveModal('modalHasWO', 'YES')"><i class="fas fa-check"></i> YES</button>
+                <button class="btn-secondary" onclick="resolveModal('modalHasWO', 'NO')"><i class="fas fa-times"></i> ADMIN CONSUMPTION</button>
+                <button class="btn-primary" onclick="resolveModal('modalHasWO', 'YES')"><i class="fas fa-check"></i> ASSOCIATE TO WO</button>
             </div>
         </div>
     </div>
@@ -1530,8 +1545,33 @@
             return;
         }
         
-        showLoading('Updating PO number...');
+        // ✅ VERIFICAR DUPLICADO ANTES DE ACTUALIZAR
+        showLoading('Verifying PO number...');
         try {
+            // Buscar si el nuevo PO ya existe
+            var checkResult = await callApi('STK_searchPOs', [newPoNumber]);
+            
+            // Si existe, verificar si está CLOSED o CANCELLED
+            if (checkResult && checkResult.length > 0) {
+                var existingPO = checkResult[0];
+                var existingStatus = existingPO.status || '';
+                
+                if (existingStatus.toUpperCase() !== 'CLOSED' && existingStatus.toUpperCase() !== 'CANCELLED') {
+                    hideLoading();
+                    showToast('PO Number ' + newPoNumber + ' already exists with status: ' + existingStatus + '. Please use a different number.', 'error');
+                    return;
+                }
+                
+                // Si está CLOSED o CANCELLED, preguntar si quiere continuar
+                var confirmMsg = 'PO Number ' + newPoNumber + ' already exists but is ' + existingStatus + '. Do you want to continue?';
+                if (!confirm(confirmMsg)) {
+                    hideLoading();
+                    return;
+                }
+            }
+            
+            // ✅ Actualizar PO number
+            showLoading('Updating PO number...');
             var res = await callApi('STK_updatePONumber', [currentTempPoNumber, newPoNumber]);
             showToast(res.message, 'success');
             document.getElementById('tempPoSection').style.display = 'none';
@@ -1552,6 +1592,7 @@
         document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
         document.getElementById('tempPoSection').style.display = 'none';
         document.getElementById('receiptNotes').value = '';
+        document.getElementById('receiptDate').value = '';  // ✅ Limpiar Receipt Date
         selectedPO = null;
         selectedPOFull = null;
         currentTempPoNumber = null;
@@ -1697,6 +1738,8 @@
         document.getElementById('budgetArea').value = '';
         document.getElementById('budgetCode').value = '';
         document.getElementById('reqNotes').value = '';
+        document.getElementById('issueDate').value = '';           // ✅ Limpiar Issue Date
+        document.getElementById('expectedDeliveryDate').value = ''; // ✅ Limpiar Expected Delivery Date
         document.getElementById('reqItemsBody').innerHTML = '';
         addReqItem();
         // ✅ Limpiar sugerencias flotantes
@@ -1797,7 +1840,9 @@
             return;
         }
         
-        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate };
+        var expectedDeliveryDate = document.getElementById('expectedDeliveryDate').value;
+        
+        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate };
         showLoading('Saving...');
         try {
             var res = await callApi('STK_saveProcurementRequisition', [payload]);
@@ -2111,6 +2156,35 @@
                 }
             }
             
+            // ✅ Agregar evento para deshabilitar PO Number cuando no es Purchase Order
+            var poNumberInput = document.getElementById('poNumber');
+            var poNumberHint = document.getElementById('poNumberHint');
+            
+            paymentSelect.addEventListener('change', function() {
+                var isPurchaseOrder = paymentSelect.value === 'Purchase Order';
+                if (isPurchaseOrder) {
+                    poNumberInput.disabled = false;
+                    poNumberInput.placeholder = 'PO number';
+                    poNumberInput.style.background = 'white';
+                    poNumberHint.textContent = 'Optional - enter PO number or leave empty for auto-generation';
+                    poNumberHint.style.color = '#94a3b8';
+                } else {
+                    poNumberInput.disabled = true;
+                    poNumberInput.value = '';
+                    poNumberInput.placeholder = 'Not applicable';
+                    poNumberInput.style.background = '#f1f5f9';
+                    poNumberHint.textContent = 'Not required for ' + paymentSelect.value + ' payment method';
+                    poNumberHint.style.color = '#94a3b8';
+                }
+            });
+            
+            // ✅ Inicializar el estado correcto al cargar (si hay un valor seleccionado)
+            if (paymentSelect.value) {
+                var event = new Event('change');
+                paymentSelect.dispatchEvent(event);
+            }
+            
+        
             // Configurar budget areas
             var budgetSelect = document.getElementById('budgetArea');
             budgetSelect.innerHTML = '<option value="">-- Select area --</option>';
@@ -2140,25 +2214,49 @@
             // Configurar sugerencias de proveedores
             var vendorInput = document.getElementById('vendor');
             var vendorDiv = document.getElementById('vendorSuggestions');
+            var vendorSpinner = document.getElementById('vendorSpinner');
+            var searchTimeout = null;
+            
             vendorInput.addEventListener('input', function() {
                 var term = vendorInput.value.trim().toLowerCase();
-                if (term.length < 2) { vendorDiv.style.display = 'none'; return; }
-                var matches = [];
-                for (var i = 0; i < allVendors.length; i++) {
-                    if (allVendors[i].toLowerCase().indexOf(term) !== -1) {
-                        matches.push(allVendors[i]);
-                    }
-                }
-                if (matches.length) {
-                    var html = '';
-                    for (var i = 0; i < matches.length; i++) {
-                        html += '<div onclick="document.getElementById(\'vendor\').value=\'' + escapeHtml(matches[i]) + '\'; this.parentElement.style.display=\'none\';">' + escapeHtml(matches[i]) + '</div>';
-                    }
-                    vendorDiv.innerHTML = html;
-                    vendorDiv.style.display = 'block';
-                } else {
+                
+                // ✅ Ocultar spinner si no hay texto
+                if (term.length < 2) {
                     vendorDiv.style.display = 'none';
+                    vendorSpinner.style.display = 'none';
+                    return;
                 }
+                
+                // ✅ Mostrar spinner mientras se busca
+                vendorSpinner.style.display = 'block';
+                
+                // ✅ Limpiar timeout anterior
+                if (searchTimeout) clearTimeout(searchTimeout);
+                
+                // ✅ Retrasar la búsqueda 300ms para mejor experiencia
+                searchTimeout = setTimeout(function() {
+                    var matches = [];
+                    for (var i = 0; i < allVendors.length; i++) {
+                        if (allVendors[i].toLowerCase().indexOf(term) !== -1) {
+                            matches.push(allVendors[i]);
+                        }
+                    }
+                    
+                    // ✅ Ocultar spinner después de buscar
+                    vendorSpinner.style.display = 'none';
+                    
+                    if (matches.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < matches.length; i++) {
+                            html += '<div onclick="document.getElementById(\'vendor\').value=\'' + escapeHtml(matches[i]) + '\'; this.parentElement.style.display=\'none\';">' + escapeHtml(matches[i]) + '</div>';
+                        }
+                        vendorDiv.innerHTML = html;
+                        vendorDiv.style.display = 'block';
+                    } else {
+                        vendorDiv.innerHTML = '<div style="padding:8px 12px; color:#94a3b8; font-size:0.75rem; font-style:italic;">No vendors found. Type to create new.</div>';
+                        vendorDiv.style.display = 'block';
+                    }
+                }, 300);
             });
             document.addEventListener('click', function(e) {
                 if (vendorInput && !vendorInput.contains(e.target) && !vendorDiv.contains(e.target)) {
