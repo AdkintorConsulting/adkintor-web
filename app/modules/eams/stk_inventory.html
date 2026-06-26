@@ -816,7 +816,7 @@
                     </div>
                     <div class="full-width">
                         <label class="field-label">Description *</label>
-                        <input type="text" id="skuDescription" required>
+                        <input type="text" id="skuDescription" required autocomplete="off">
                     </div>
                     <div>
                         <label class="field-label">Category</label>
@@ -1142,9 +1142,10 @@
 
     async function loadAdjustmentReasons() {
         try {
-            // ✅ Usar STK_getSetupData para obtener Adjustment Reasons de SETUP_STK col C
-            var setupData = await callApi('STK_getProcurementHubConfig', []);
-            adjustmentReasons = setupData.adjustmentReasons || [];
+            // ✅ Usar STK_getInventoryFilters para obtener Adjustment Reasons de SETUP_STK col C
+            var filterData = await callApi('STK_getInventoryFilters', []);
+            // Las razones de ajuste vienen en adjustmentReasons desde el backend
+            adjustmentReasons = filterData.adjustmentReasons || [];
             var reasonSelect = document.getElementById('adjustReason');
             reasonSelect.innerHTML = '<option value="">-- Select a reason --</option>';
             for (var i = 0; i < adjustmentReasons.length; i++) {
