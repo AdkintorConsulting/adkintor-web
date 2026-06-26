@@ -153,7 +153,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 99999;  /* ✅ Por sobre los modales */
             gap: 12px;
         }
         
@@ -221,39 +221,39 @@
            ============================================ */
         .kpi-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .kpi-card {
             background: white;
-            border-radius: 10px;
-            padding: 16px 18px;
+            border-radius: 8px;
+            padding: 10px 12px;
             text-align: center;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             transition: all 0.2s;
         }
 
         .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .kpi-value {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: #1a1a2e;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .kpi-label {
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             color: #64748b;
-            margin-top: 4px;
+            margin-top: 2px;
             font-weight: 600;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -828,8 +828,8 @@
                     </div>
                     <div class="full-width relative">
                         <label class="field-label">Asset Linkage (Technical Location)</label>
-                        <input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)">
-                        <div id="assetSuggestions"></div>
+                        <input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
+                        <div id="assetSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                     <div>
                         <label class="field-label">Manufacturer</label>
@@ -855,9 +855,10 @@
                         <label class="field-label">Min Stock</label>
                         <input type="number" id="skuMinStock" step="1">
                     </div>
-                    <div>
+                    <div class="full-width relative">
                         <label class="field-label">Vendor Name</label>
-                        <input type="text" id="skuVendor">
+                        <input type="text" id="skuVendor" placeholder="Type vendor name or select from suggestions" autocomplete="off" list="vendorSuggestions">
+                        <datalist id="vendorSuggestions"></datalist>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1132,19 +1133,33 @@
                 locSelect.innerHTML += '<option value="' + loc + '">' + loc + '</option>';
                 skuLocSelect.innerHTML += '<option value="' + loc + '">' + loc + '</option>';
             }
+            
+            // ✅ Cargar Locations desde SETUP_STK col D (ya están en locationsList)
+            // No hace falta cambiar nada porque locationsList ya viene de SETUP_STK
+            
         } catch(e) { showToast('Error loading filters', 'error'); }
     }
 
     async function loadAdjustmentReasons() {
         try {
-            var config = await callApi('STK_getProcurementHubConfig', []);
-            adjustmentReasons = config.adjustmentReasons || [];
+            // ✅ Usar STK_getSetupData para obtener Adjustment Reasons de SETUP_STK col C
+            var setupData = await callApi('STK_getProcurementHubConfig', []);
+            adjustmentReasons = setupData.adjustmentReasons || [];
             var reasonSelect = document.getElementById('adjustReason');
             reasonSelect.innerHTML = '<option value="">-- Select a reason --</option>';
             for (var i = 0; i < adjustmentReasons.length; i++) {
                 reasonSelect.innerHTML += '<option value="' + adjustmentReasons[i] + '">' + adjustmentReasons[i] + '</option>';
             }
-        } catch(e) { console.warn(e); }
+            
+            // ✅ Si no hay razones, mostrar mensaje
+            if (adjustmentReasons.length === 0) {
+                reasonSelect.innerHTML = '<option value="">No reasons configured in SETUP_STK</option>';
+            }
+        } catch(e) { 
+            console.warn('Error loading adjustment reasons:', e);
+            var reasonSelect = document.getElementById('adjustReason');
+            reasonSelect.innerHTML = '<option value="">Error loading reasons</option>';
+        }
     }
 
     async function loadUnits() {
@@ -1378,6 +1393,19 @@
         }
     }
 
+    async function loadVendors() {
+        try {
+            var vendors = await callApi('STK_getExistingVendors', []);
+            var datalist = document.getElementById('vendorSuggestions');
+            datalist.innerHTML = '';
+            for (var i = 0; i < vendors.length; i++) {
+                var opt = document.createElement('option');
+                opt.value = vendors[i];
+                datalist.appendChild(opt);
+            }
+        } catch(e) { console.warn('Error loading vendors:', e); }
+    }    
+
     // ============================================
     // STOCK ADJUSTMENT
     // ============================================
@@ -1490,12 +1518,13 @@
                         var html = '';
                         for (var i = 0; i < assets.length; i++) {
                             var a = assets[i];
-                            html += '<div onclick="document.getElementById(\'skuAssetId\').value=\'' + a.id + '\'; document.getElementById(\'assetSuggestions\').style.display=\'none\';">🔧 ' + a.id + ' - ' + a.name + '</div>';
+                            html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + a.id + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + a.id + ' - ' + a.name + '</div>';
                         }
                         suggestionsDiv.innerHTML = html;
                         suggestionsDiv.style.display = 'block';
                     } else {
-                        suggestionsDiv.style.display = 'none';
+                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No TLs found</div>';
+                        suggestionsDiv.style.display = 'block';
                     }
                 } catch(e) {
                     suggestionsDiv.style.display = 'none';
@@ -1505,11 +1534,17 @@
             }
         });
         
+        // ✅ Al seleccionar, solo se puede elegir de la lista
         document.addEventListener('click', function(e) {
-            if (e.target !== assetInput && e.target !== suggestionsDiv) {
+            if (e.target !== assetInput && !suggestionsDiv.contains(e.target)) {
                 suggestionsDiv.style.display = 'none';
             }
         });
+    }
+
+    function selectAsset(id, name) {
+        document.getElementById('skuAssetId').value = id;
+        document.getElementById('assetSuggestions').style.display = 'none';
     }
 
     // ============================================
@@ -1549,9 +1584,10 @@
             await loadAdjustmentReasons();
             await loadUnits();
             await loadCurrencies();
+            await loadVendors();  // ✅ NUEVO
             await refreshCatalog(false);
             
-            document.getElementById('footer-status').innerText = 'Connected';
+            console.log('[STK] Connected');
             hideLoading();
             showToast('Inventory Hub loaded successfully ✅', 'success');
             setupAssetSuggestions();
