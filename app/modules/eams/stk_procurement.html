@@ -877,7 +877,11 @@
                 <div class="tracker-header">
                     <h3><i class="fas fa-list-ul"></i> Procurement Tracker</h3>
                     <div class="filter-bar">
-                        <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." onkeyup="handleSearchInput()">
+                        <div style="display:flex; gap:6px;">
+                            <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." style="flex:1;">
+                            <button class="btn-primary" onclick="applySearchFilter()" style="padding:6px 12px; font-size:0.65rem; background:#64748b;"><i class="fas fa-search"></i></button>
+                            <button class="btn-secondary" onclick="clearSearchFilter()" style="padding:6px 12px; font-size:0.65rem;"><i class="fas fa-times"></i></button>
+                        </div>
                         <div style="display: flex; gap: 6px;">
                             <select id="monthsFilter" onchange="refreshTracker()" style="flex:1;">
                                 <option value="1">Last Month</option>
@@ -989,8 +993,20 @@
                         <div class="po-search-container">
                             <input type="text" id="poSearchInput" placeholder="Search by PO Number...">
                             <button class="btn-primary" onclick="searchPOForReceipt()"><i class="fas fa-search"></i> SEARCH</button>
+                            <button class="btn-secondary" onclick="clearReceiptSearch()"><i class="fas fa-eraser"></i> CLEAR</button>
                         </div>
                         <div id="receiveSelectionMsg" class="receive-summary">Enter a PO number above.</div>
+                        <div id="tempPoSection" style="display:none; background:#fef3c7; padding:10px 14px; border-radius:6px; margin-bottom:12px; border-left:4px solid #f59e0b;">
+                            <strong><i class="fas fa-exclamation-triangle"></i> TEMPORARY PO DETECTED</strong>
+                            <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; align-items:center;">
+                                <span style="font-size:0.8rem; font-weight:600; font-family:'Courier New',monospace; color:#92400e;" id="tempPoNumberDisplay">TEMP-XXXX</span>
+                                <input type="text" id="updatePoNumberInput" placeholder="Enter new PO number..." style="padding:6px 10px; border:1px solid #e2e8f0; border-radius:4px; font-size:0.75rem; flex:1; min-width:150px;">
+                                <button class="btn-primary" onclick="updateTempPoNumber()" style="background:#d97706;"><i class="fas fa-pen"></i> UPDATE PO</button>
+                            </div>
+                            <div style="font-size:0.65rem; color:#92400e; margin-top:4px;">
+                                <i class="fas fa-info-circle"></i> Replace the temporary PO number with the actual PO number from your supplier.
+                            </div>
+                        </div>
                         <form id="receiptForm" style="display:none">
                             <div class="row">
                                 <div class="form-group">
@@ -1383,9 +1399,11 @@
     }
 
     async function refreshTracker() {
-        var searchTerm = document.getElementById('searchInput').value.trim();
+        // ✅ Usar la variable global searchTerm
+        var searchTerm = window.searchTerm || document.getElementById('searchInput').value.trim();
         var status = document.getElementById('statusFilter').value;
         var months = document.getElementById('monthsFilter').value;
+        // ✅ Limpiar cache forzando recarga completa
         showLoading('Loading tracker...');
         try {
             var data = await callApi('STK_getProcurementTracker', [{ status: status, months: parseInt(months), ignoreDateFilter: searchTerm !== '' }]);
@@ -1479,9 +1497,65 @@
         }
     }
 
-    function handleSearchInput() {
-        refreshTracker();
+
+    // ============================================
+    // ACTUALIZAR PO TEMPORAL A REAL
+    // ============================================
+    var currentTempPoNumber = null;
+
+    function checkIfTempPo(poNumber) {
+        if (poNumber && poNumber.startsWith('TEMP-')) {
+            currentTempPoNumber = poNumber;
+            document.getElementById('tempPoNumberDisplay').innerText = poNumber;
+            document.getElementById('tempPoSection').style.display = 'block';
+            document.getElementById('updatePoNumberInput').value = '';
+        } else {
+            currentTempPoNumber = null;
+            document.getElementById('tempPoSection').style.display = 'none';
+        }
     }
+
+    async function updateTempPoNumber() {
+        var newPoNumber = document.getElementById('updatePoNumberInput').value.trim();
+        if (!newPoNumber) {
+            showToast('Please enter a new PO number', 'error');
+            return;
+        }
+        if (newPoNumber.startsWith('TEMP-')) {
+            showToast('Cannot use TEMP- prefix. Use a real PO number.', 'error');
+            return;
+        }
+        if (!currentTempPoNumber) {
+            showToast('No temporary PO detected', 'error');
+            return;
+        }
+        
+        showLoading('Updating PO number...');
+        try {
+            var res = await callApi('STK_updatePONumber', [currentTempPoNumber, newPoNumber]);
+            showToast(res.message, 'success');
+            document.getElementById('tempPoSection').style.display = 'none';
+            currentTempPoNumber = null;
+            document.getElementById('poSearchInput').value = newPoNumber;
+            await searchPOForReceipt();
+            refreshTracker();
+            hideLoading();
+        } catch(err) {
+            hideLoading();
+            showToast(err.message, 'error');
+        }
+    }
+
+    function clearReceiptSearch() {
+        document.getElementById('poSearchInput').value = '';
+        document.getElementById('receiptForm').style.display = 'none';
+        document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+        document.getElementById('tempPoSection').style.display = 'none';
+        document.getElementById('receiptNotes').value = '';
+        selectedPO = null;
+        selectedPOFull = null;
+        currentTempPoNumber = null;
+    }    
 
     // ============================================
     // REQUEST ITEMS
@@ -1506,7 +1580,15 @@
     }
 
     function showSkuSuggestions(input, val) {
-        if (val.length < 3) return;
+        var div = input.parentNode.querySelector('.custom-suggestions');
+        
+        // ✅ Si no hay texto, eliminar sugerencias
+        if (!val || val.length < 3) {
+            if (div) div.remove();
+            input.classList.remove('invalid-sku');
+            return;
+        }
+        
         var filtered = [];
         for (var i = 0; i < catalog.length; i++) {
             if (catalog[i].sku.toLowerCase().indexOf(val.toLowerCase()) !== -1) {
@@ -1516,10 +1598,10 @@
         }
         if (filtered.length === 0) {
             input.classList.add('invalid-sku');
+            if (div) div.remove();
             return;
         }
         input.classList.remove('invalid-sku');
-        var div = input.parentNode.querySelector('.custom-suggestions');
         if (div) div.remove();
         div = document.createElement('div');
         div.className = 'custom-suggestions';
@@ -1544,7 +1626,14 @@
     }
 
     function showDescSuggestions(input, val) {
-        if (val.length < 3) return;
+        var div = input.parentNode.querySelector('.custom-suggestions');
+        
+        // ✅ Si no hay texto, eliminar sugerencias
+        if (!val || val.length < 3) {
+            if (div) div.remove();
+            return;
+        }
+        
         var filtered = [];
         for (var i = 0; i < catalog.length; i++) {
             if (catalog[i].description.toLowerCase().indexOf(val.toLowerCase()) !== -1) {
@@ -1552,8 +1641,10 @@
                 if (filtered.length >= 8) break;
             }
         }
-        if (filtered.length === 0) return;
-        var div = input.parentNode.querySelector('.custom-suggestions');
+        if (filtered.length === 0) {
+            if (div) div.remove();
+            return;
+        }
         if (div) div.remove();
         div = document.createElement('div');
         div.className = 'custom-suggestions';
@@ -1608,6 +1699,8 @@
         document.getElementById('reqNotes').value = '';
         document.getElementById('reqItemsBody').innerHTML = '';
         addReqItem();
+        // ✅ Limpiar sugerencias flotantes
+        document.querySelectorAll('.custom-suggestions').forEach(function(el) { el.remove(); });        
     }
 
     function generateTempPONumber() {
@@ -1646,15 +1739,28 @@
             var qty = parseFloat(row.querySelector('.qty-input').value) || 0;
             var price = parseFloat(row.querySelector('.price-input').value) || 0;
             
-            if (type === 'inventory' && sku) {
+            if (type === 'inventory') {
+                if (!sku) {
+                    showToast('SKU is required for inventory items', 'error');
+                    return;
+                }
                 var found = false;
                 for (var j = 0; j < catalog.length; j++) {
                     if (catalog[j].sku.toUpperCase() === sku.toUpperCase()) {
                         found = true;
+                        // ✅ También verificar que la descripción coincida
+                        var catDesc = catalog[j].description || '';
+                        if (desc && catDesc.toUpperCase() !== desc.toUpperCase()) {
+                            showToast('Description mismatch for SKU ' + sku + '. Expected: "' + catDesc + '"', 'error');
+                            return;
+                        }
                         break;
                     }
                 }
-                if (!found) { showToast('SKU ' + sku + ' not found in catalog', 'error'); return; }
+                if (!found) { 
+                    showToast('SKU "' + sku + '" not found in SPARE_PARTS_CATALOG. Please check the SKU code.', 'error'); 
+                    return; 
+                }
             }
             if (!desc) { showToast('Description required', 'error'); return; }
             if (qty <= 0) { showToast('Qty >0 required', 'error'); return; }
@@ -1784,6 +1890,19 @@
         } catch(e) { console.error(e); }
     }
 
+    var searchTerm = '';
+
+    function applySearchFilter() {
+        searchTerm = document.getElementById('searchInput').value.trim();
+        refreshTracker();
+    }
+
+    function clearSearchFilter() {
+        document.getElementById('searchInput').value = '';
+        searchTerm = '';
+        refreshTracker();
+    }    
+
     // ============================================
     // RECEIPT FUNCTIONS
     // ============================================
@@ -1796,6 +1915,8 @@
             if (result && result.success) {
                 selectedPO = result.header;
                 selectedPOFull = result;
+                // ✅ Verificar si es TEMP
+                checkIfTempPo(selectedPO.poNumber);
                 document.getElementById('receiveSelectionMsg').innerHTML = 'Ready to receive: <strong>' + escapeHtml(result.header.poNumber) + '</strong> from ' + escapeHtml(result.header.vendor);
                 document.getElementById('receiptForm').style.display = 'block';
                 document.getElementById('receiptPONumber').value = result.header.poNumber;
@@ -1847,6 +1968,20 @@
 
     async function submitReceipt() {
         if (!selectedPO) { showToast('Search for a PO first', 'error'); return; }
+        
+        // ✅ Validar que Receipt Date no sea anterior a la fecha de la PO
+        var receiptDate = document.getElementById('receiptDate').value;
+        var poDate = selectedPO.issueDate;
+        
+        if (receiptDate && poDate && poDate !== 'N/A') {
+            var recDate = new Date(receiptDate);
+            var poDateObj = new Date(poDate);
+            if (!isNaN(recDate.getTime()) && !isNaN(poDateObj.getTime()) && recDate < poDateObj) {
+                showToast('Receipt date cannot be before PO creation date (' + poDate + ')', 'error');
+                return;
+            }
+        }
+        
         var items = [];
         var rows = document.querySelectorAll('#receiptItemsContainer tbody tr');
         for (var i = 0; i < rows.length; i++) {
@@ -1887,6 +2022,7 @@
             document.getElementById('receiptForm').style.display = 'none';
             document.getElementById('poSearchInput').value = '';
             document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+            document.getElementById('receiptNotes').value = '';  // ✅ Limpiar notas
             selectedPO = null;
             selectedPOFull = null;
             refreshTracker();
@@ -2039,7 +2175,7 @@
             // TODO OK - ocultar spinner
             hideLoading();
             showToast('Procurement Hub loaded successfully ✅', 'success');
-            document.getElementById('footer-status').innerText = 'Ready';
+            console.log('[STK] Ready');
             
         } catch(err) {
             hideLoading();
