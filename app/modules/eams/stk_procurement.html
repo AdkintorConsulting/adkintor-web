@@ -1848,8 +1848,15 @@
         var vendorSpinner = document.getElementById('vendorSpinner');
         if (vendorSpinner) vendorSpinner.style.display = 'none';
         
-        // ✅ RECARGAR VENDORS
-        loadVendors();
+        // ✅ RECARGAR VENDORS (sin llamar a loadVendors)
+        (async function reloadVendors() {
+            try {
+                allVendors = await callApi('STK_getExistingVendors', []);
+                console.log('🏢 Vendors recargados:', allVendors.length);
+            } catch(e) {
+                console.warn('Error reloading vendors:', e);
+            }
+        })();
     }
 
     function generateTempPONumber() {
