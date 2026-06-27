@@ -1575,7 +1575,7 @@
                     html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
                     html += '<th style="padding:6px 8px;text-align:center;">Qty</th>';
                     html += '<th style="padding:6px 8px;text-align:right;">Amount</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">Received By</th>';
+                    html += '<th style="padding:6px 8px;text-align:left;">Notes</th>';  // ← CAMBIADO
                     html += '</tr></thead><tbody>';
                     
                     for (var i = 0; i < receiptHistory.length; i++) {
@@ -1585,7 +1585,7 @@
                         html += '<td style="padding:6px 8px;">' + escapeHtml(r.sku || '') + '</td>';
                         html += '<td style="padding:6px 8px;text-align:center;font-weight:600;">' + (r.qty || 0) + '</td>';
                         html += '<td style="padding:6px 8px;text-align:right;">$' + (r.total || 0).toFixed(2) + '</td>';
-                        html += '<td style="padding:6px 8px;">' + escapeHtml(r.receivedBy || '') + '</td>';
+                        html += '<td style="padding:6px 8px;font-size:0.65rem;color:#64748b;">' + escapeHtml(r.deliveryNote || '') + '</td>';
                         html += '</tr>';
                     }
                     html += '</tbody></table>';
@@ -1843,12 +1843,13 @@
         document.getElementById('reqItemsBody').innerHTML = '';
         addReqItem();
         document.querySelectorAll('.custom-suggestions').forEach(function(el) { el.remove(); });
-        
-        // ✅ REINICIAR SUGERENCIAS DE VENDOR
         var vendorDiv = document.getElementById('vendorSuggestions');
         if (vendorDiv) vendorDiv.style.display = 'none';
         var vendorSpinner = document.getElementById('vendorSpinner');
         if (vendorSpinner) vendorSpinner.style.display = 'none';
+        
+        // ✅ RECARGAR VENDORS
+        loadVendors();
     }
 
     function generateTempPONumber() {
@@ -2187,11 +2188,22 @@
         if (!selectedPO) { showToast('No PO selected', 'error'); return; }
         var confirmed = await showModalPromise('modalCancelPO');
         if (confirmed) {
+            // ✅ Obtener nota antes de cancelar
+            var cancelNote = document.getElementById('receiptNotes').value.trim();
+            var noteText = cancelNote ? 'CANCEL NOTE: ' + cancelNote : 'CANCELLED BY USER';
+            
             showLoading('Cancelling...');
             try {
-                var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber]);
-                logPOCancellation(selectedPO.poNumber, 'Cancelled by user', currentUser).catch(function(e) { console.warn('[STK] Cancel log failed:', e); });
+                var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber, noteText]);
+                logPOCancellation(selectedPO.poNumber, noteText, currentUser).catch(function(e) { console.warn('[STK] Cancel log failed:', e); });
                 showToast(res.message, 'success');
+                // ✅ Refrescar todo
+                document.getElementById('receiptForm').style.display = 'none';
+                document.getElementById('poSearchInput').value = '';
+                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                document.getElementById('receiptNotes').value = '';
+                selectedPO = null;
+                selectedPOFull = null;
                 refreshTracker();
                 hideLoading();
             } catch(err) {
@@ -2208,10 +2220,21 @@
         if (!selectedPO) { showToast('No PO selected', 'error'); return; }
         var confirmed = await showModalPromise('modalForceClosePO');
         if (confirmed) {
+            // ✅ Obtener nota antes de forzar cierre
+            var closeNote = document.getElementById('receiptNotes').value.trim();
+            var noteText = closeNote ? 'FORCE CLOSE NOTE: ' + closeNote : 'FORCE CLOSED BY USER';
+            
             showLoading('Closing...');
             try {
-                var res = await callApi('STK_forceClosePurchaseOrder', [selectedPO.poNumber]);
+                var res = await callApi('STK_forceClosePurchaseOrder', [selectedPO.poNumber, noteText]);
                 showToast(res.message, 'success');
+                // ✅ Refrescar todo
+                document.getElementById('receiptForm').style.display = 'none';
+                document.getElementById('poSearchInput').value = '';
+                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                document.getElementById('receiptNotes').value = '';
+                selectedPO = null;
+                selectedPOFull = null;
                 refreshTracker();
                 hideLoading();
             } catch(err) {
