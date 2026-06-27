@@ -1452,20 +1452,27 @@
         for (var i = 0; i < filtered.length; i++) {
             var item = filtered[i];
             html += '<div class="tracker-card">' +
+                // PRIMERA FILA: PO Number en negrita y grande
                 '<div class="tracker-row">' +
-                    '<div><span class="tracker-po-number">' + escapeHtml(item.poNumber || 'NOT ISSUED') + '</span><span class="tracker-date"> | ' + escapeHtml(item.date || 'N/A') + '</span></div>' +
+                    '<div><span class="tracker-po-number" style="font-size:1rem; font-weight:700; color:#1a1a2e;">' + escapeHtml(item.poNumber || 'NOT ISSUED') + '</span></div>' +
                     '<div class="tracker-actions">' +
                         '<button onclick="copyToClipboard(\'' + escapeHtml(item.poNumber) + '\')" title="Copy PO"><i class="fas fa-copy"></i></button>' +
                         (item.poNumber && item.poNumber !== 'N/A' ? '<button onclick="viewPODetails(\'' + escapeHtml(item.poNumber) + '\')" title="View Details"><i class="fas fa-eye"></i></button>' : '') +
                     '</div>' +
                 '</div>' +
-                '<div class="tracker-vendor">' + escapeHtml(item.vendor || 'N/A') + '</div>' +
-                '<div class="tracker-row" style="margin-top:6px;">' +
-                    '<span>Req: ' + escapeHtml(item.reqNumber || item.id || 'N/A') + '</span>' +
-                    '<span>$' + (item.total || 0).toLocaleString() + '</span>' +
+                // SEGUNDA FILA: Vendor | Date
+                '<div class="tracker-row" style="margin-top:2px;">' +
+                    '<span class="tracker-vendor" style="font-size:0.75rem; color:#475569;">' + escapeHtml(item.vendor || 'N/A') + '</span>' +
+                    '<span class="tracker-date" style="font-size:0.7rem; color:#94a3b8;">' + escapeHtml(item.date || 'N/A') + '</span>' +
                 '</div>' +
-                '<div class="tracker-row">' +
-                    '<span>📦 Rec: ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0) + '</span>' +
+                // TERCERA FILA: Req # | Total
+                '<div class="tracker-row" style="margin-top:4px;">' +
+                    '<span style="font-size:0.7rem; color:#64748b;">' + escapeHtml(item.reqNumber || item.id || 'N/A') + '</span>' +
+                    '<span style="font-size:0.75rem; font-weight:600; color:#1a1a2e;">$' + (item.total || 0).toLocaleString() + '</span>' +
+                '</div>' +
+                // CUARTA FILA: Received | Status
+                '<div class="tracker-row" style="margin-top:4px;">' +
+                    '<span style="font-size:0.7rem; font-weight:500; color:#475569;">📦 Rec: ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0) + '</span>' +
                     '<span class="tracker-status ' + (item.status || '') + '">' + escapeHtml(item.status || 'N/A') + '</span>' +
                 '</div>' +
             '</div>';
