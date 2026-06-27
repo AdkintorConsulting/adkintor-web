@@ -1511,6 +1511,8 @@
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
+                // ✅ AGREGAR NOTA DE EMITTED (columna M de PO_REGISTER)
+                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(header.notes || 'No notes') + '</div>';
                 html += '</div>';
                 
                 // ============================================
@@ -1848,7 +1850,7 @@
         var vendorSpinner = document.getElementById('vendorSpinner');
         if (vendorSpinner) vendorSpinner.style.display = 'none';
         
-        // ✅ RECARGAR VENDORS (sin llamar a loadVendors)
+        // ✅ RECARGAR VENDORS después de limpiar
         (async function reloadVendors() {
             try {
                 allVendors = await callApi('STK_getExistingVendors', []);
@@ -1857,6 +1859,12 @@
                 console.warn('Error reloading vendors:', e);
             }
         })();
+        
+        // ✅ También reiniciar el evento input del vendor
+        var vendorInput = document.getElementById('vendor');
+        if (vendorInput) {
+            vendorInput.value = '';
+        }
     }
 
     function generateTempPONumber() {
@@ -2082,6 +2090,25 @@
                 document.getElementById('receiptPaymentMethod').value = result.header.paymentMethod || '';
                 document.getElementById('receiptStatus').value = result.header.status || '';
                 
+                // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
+                var status = (result.header.status || '').toUpperCase();
+                var cancelBtn = document.querySelector('#receiptForm .btn-danger');
+                var forceBtn = document.querySelector('#receiptForm .btn-warning');
+                var receiptBtn = document.querySelector('#receiptForm .btn-primary');
+                
+                if (status === 'CLOSED' || status === 'CANCELLED') {
+                    // Deshabilitar todos los botones
+                    if (cancelBtn) cancelBtn.disabled = true;
+                    if (forceBtn) forceBtn.disabled = true;
+                    if (receiptBtn) receiptBtn.disabled = true;
+                    showToast('⚠️ This PO is already ' + status + '. No further actions allowed.', 'warning');
+                } else {
+                    // Habilitar botones
+                    if (cancelBtn) cancelBtn.disabled = false;
+                    if (forceBtn) forceBtn.disabled = false;
+                    if (receiptBtn) receiptBtn.disabled = false;
+                }
+                
                 var items = result.items || [];
                 var itemsHtml = '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
                     '<thead><tr><th style="padding:6px;text-align:left;">SKU</th><th style="padding:6px;text-align:left;">Description</th><th style="padding:6px;text-align:center;">Ordered</th><th style="padding:6px;text-align:center;">Received</th><th style="padding:6px;text-align:center;">Pending</th><th style="padding:6px;text-align:center;">Receive Now</th><th style="padding:6px;text-align:right;">Unit Price</th></tr></thead><tbody>';
@@ -2091,13 +2118,14 @@
                     var received = item.qtyReceived || 0;
                     var pending = ordered - received;
                     var price = item.unitPrice || 0;
+                    var isDisabled = (status === 'CLOSED' || status === 'CANCELLED') ? 'disabled' : '';
                     itemsHtml += '<tr>' +
                         '<td style="padding:6px;">' + escapeHtml(item.sku) + '</td>' +
                         '<td style="padding:6px;">' + escapeHtml(item.description) + '</td>' +
                         '<td style="text-align:center;padding:6px;">' + ordered + '</td>' +
                         '<td style="text-align:center;padding:6px;">' + received + '</td>' +
                         '<td style="text-align:center;padding:6px;">' + pending + '</td>' +
-                        '<td style="text-align:center;padding:6px;"><input type="number" id="recQty_' + i + '" value="0" min="0" max="' + pending + '" style="width:60px;padding:4px;border:1px solid #e2e8f0;border-radius:4px;" onchange="updateReceiptTotal()"></td>' +
+                        '<td style="text-align:center;padding:6px;"><input type="number" id="recQty_' + i + '" value="0" min="0" max="' + pending + '" style="width:60px;padding:4px;border:1px solid #e2e8f0;border-radius:4px;" onchange="updateReceiptTotal()" ' + isDisabled + '></td>' +
                         '<td style="text-align:right;padding:6px;">$' + price.toFixed(2) + '</td>' +
                     '</tr>';
                 }
