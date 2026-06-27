@@ -1507,7 +1507,7 @@
                 html += '</div>';
                 
                 // ============================================
-                // TABLA DE ITEMS
+                // TABLA DE ITEMS CON TOTAL FIJO Y DINÁMICO
                 // ============================================
                 html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📦 ITEMS</h4>';
                 html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;margin-bottom:16px;">';
@@ -1517,16 +1517,24 @@
                 html += '<th style="padding:6px 8px;text-align:center;">Ordered</th>';
                 html += '<th style="padding:6px 8px;text-align:center;">Received</th>';
                 html += '<th style="padding:6px 8px;text-align:right;">Unit Price</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total</th>';
+                html += '<th style="padding:6px 8px;text-align:right;">Total (Fijo)</th>';  // ← NUEVA COLUMNA
+                html += '<th style="padding:6px 8px;text-align:right;">Total (Recibido)</th>';
                 html += '</tr></thead><tbody>';
+                
+                var totalFijoGeneral = 0;
+                var totalDinamicoGeneral = 0;
                 
                 for (var i = 0; i < items.length; i++) {
                     var it = items[i];
                     var received = it.qtyReceived || 0;
                     var ordered = it.qtyOrdered || 0;
                     var unitPrice = it.unitPrice || 0;
-                    var total = received * unitPrice;
+                    var totalFijo = ordered * unitPrice;
+                    var totalDinamico = received * unitPrice;
                     var isComplete = received >= ordered && ordered > 0;
+                    
+                    totalFijoGeneral += totalFijo;
+                    totalDinamicoGeneral += totalDinamico;
                     
                     html += '<tr style="border-bottom:1px solid #e2e8f0;">';
                     html += '<td style="padding:6px 8px;font-weight:600;">' + escapeHtml(it.sku) + '</td>';
@@ -1534,7 +1542,8 @@
                     html += '<td style="padding:6px 8px;text-align:center;">' + ordered + '</td>';
                     html += '<td style="padding:6px 8px;text-align:center;' + (isComplete ? 'color:#22c55e;font-weight:700;' : '') + '">' + received + '</td>';
                     html += '<td style="padding:6px 8px;text-align:right;">$' + unitPrice.toFixed(2) + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:right;font-weight:600;">$' + total.toFixed(2) + '</td>';
+                    html += '<td style="padding:6px 8px;text-align:right;font-weight:600;color:#1a1a2e;">$' + totalFijo.toFixed(2) + '</td>';
+                    html += '<td style="padding:6px 8px;text-align:right;' + (isComplete ? 'color:#22c55e;font-weight:700;' : 'color:#64748b;') + '">$' + totalDinamico.toFixed(2) + '</td>';
                     html += '</tr>';
                 }
                 
@@ -1543,7 +1552,8 @@
                 html += '<td style="padding:6px 8px;text-align:center;">' + totalOrdered + '</td>';
                 html += '<td style="padding:6px 8px;text-align:center;">' + totalReceived + '</td>';
                 html += '<td style="padding:6px 8px;text-align:right;"></td>';
-                html += '<td style="padding:6px 8px;text-align:right;">$' + (totalReceived * (items[0]?.unitPrice || 0)).toFixed(2) + '</td>';
+                html += '<td style="padding:6px 8px;text-align:right;color:#1a1a2e;">$' + totalFijoGeneral.toFixed(2) + '</td>';
+                html += '<td style="padding:6px 8px;text-align:right;' + (totalReceived >= totalOrdered ? 'color:#22c55e;' : 'color:#64748b;') + '">$' + totalDinamicoGeneral.toFixed(2) + '</td>';
                 html += '</tr>';
                 html += '</tbody></table>';
                 
@@ -1821,12 +1831,17 @@
         document.getElementById('budgetArea').value = '';
         document.getElementById('budgetCode').value = '';
         document.getElementById('reqNotes').value = '';
-        document.getElementById('issueDate').value = '';           // ✅ Limpiar Issue Date
-        document.getElementById('expectedDeliveryDate').value = ''; // ✅ Limpiar Expected Delivery Date
+        document.getElementById('issueDate').value = '';
+        document.getElementById('expectedDeliveryDate').value = '';
         document.getElementById('reqItemsBody').innerHTML = '';
         addReqItem();
-        // ✅ Limpiar sugerencias flotantes
-        document.querySelectorAll('.custom-suggestions').forEach(function(el) { el.remove(); });        
+        document.querySelectorAll('.custom-suggestions').forEach(function(el) { el.remove(); });
+        
+        // ✅ REINICIAR SUGERENCIAS DE VENDOR
+        var vendorDiv = document.getElementById('vendorSuggestions');
+        if (vendorDiv) vendorDiv.style.display = 'none';
+        var vendorSpinner = document.getElementById('vendorSpinner');
+        if (vendorSpinner) vendorSpinner.style.display = 'none';
     }
 
     function generateTempPONumber() {
