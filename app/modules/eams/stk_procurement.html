@@ -1502,19 +1502,56 @@
                 // ============================================
                 // CABECERA CON DETALLES DE LA PO
                 // ============================================
+                // ✅ DETECTAR EVENTOS ESPECIALES (CANCELLED / FORCE CLOSED)
+                var specialEvent = '';
+                var specialEventDate = '';
+                var specialEventNote = '';
+                
+                // Buscar en receiptHistory eventos con notas especiales
+                if (receiptHistory && receiptHistory.length > 0) {
+                    for (var i = 0; i < receiptHistory.length; i++) {
+                        var r = receiptHistory[i];
+                        var note = (r.deliveryNote || '').toUpperCase();
+                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
+                            specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
+                            specialEventDate = r.date || '';
+                            specialEventNote = r.deliveryNote || '';
+                            break;
+                        }
+                    }
+                }
+                
+                // Si no se encontró en receiptHistory, buscar en el header.notes
+                if (!specialEvent && header.notes) {
+                    var headerNote = (header.notes || '').toUpperCase();
+                    if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || headerNote.includes('CANCELLED BY USER') || headerNote.includes('FORCE CLOSED BY USER')) {
+                        specialEvent = headerNote.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
+                        specialEventDate = header.issueDate || '';
+                        specialEventNote = header.notes || '';
+                    }
+                }
+                
                 html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;font-size:0.8rem;background:#f8fafc;padding:12px;border-radius:8px;">';
                 html += '<div><strong>PO:</strong> ' + escapeHtml(header.poNumber) + '</div>';
                 html += '<div><strong>Vendor:</strong> ' + escapeHtml(header.vendor) + '</div>';
-                html += '<div><strong>Status:</strong> <span style="font-weight:700;color:' + (header.status === 'CLOSED' ? '#22c55e' : header.status === 'PARTIAL' ? '#f59e0b' : '#64748b') + ';">' + escapeHtml(header.status) + '</span></div>';
+                html += '<div><strong>Status:</strong> <span style="font-weight:700;color:' + (header.status === 'CLOSED' ? '#22c55e' : header.status === 'PARTIAL' ? '#f59e0b' : header.status === 'CANCELLED' ? '#dc3545' : '#64748b') + ';">' + escapeHtml(header.status) + '</span></div>';
                 html += '<div><strong>Date:</strong> ' + escapeHtml(header.issueDate) + '</div>';
                 html += '<div><strong>Req #:</strong> ' + escapeHtml(header.reqNumber) + '</div>';
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
-                // ✅ AGREGAR NOTA DE EMITTED (columna M de PO_REGISTER)
                 html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(header.notes || 'No notes') + '</div>';
-                html += '</div>';
                 
+                // ✅ AGREGAR EVENTO ESPECIAL SI EXISTE
+                if (specialEvent) {
+                    html += '<div style="grid-column:span 2;margin-top:4px;padding:6px 10px;border-radius:4px;background:' + (specialEvent.includes('CANCELLED') ? '#fef2f2' : '#fef3c7') + ';border-left:4px solid ' + (specialEvent.includes('CANCELLED') ? '#dc3545' : '#f59e0b') + ';">';
+                    html += '<span style="font-weight:700;">⚠️ Event:</span> ' + specialEvent;
+                    if (specialEventDate) html += ' on ' + specialEventDate;
+                    if (specialEventNote) html += '<br><span style="font-size:0.75rem;color:#64748b;">' + escapeHtml(specialEventNote) + '</span>';
+                    html += '</div>';
+                }
+                
+                html += '</div>';
                 // ============================================
                 // TABLA DE ITEMS CON TOTAL FIJO Y DINÁMICO
                 // ============================================
