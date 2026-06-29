@@ -1502,12 +1502,13 @@
                 // ============================================
                 // CABECERA CON DETALLES DE LA PO
                 // ============================================
-                // ✅ DETECTAR EVENTOS ESPECIALES (CANCELLED / FORCE CLOSED)
+                // ✅ SEPARAR NOTA EMITTED DE NOTA DE EVENTO
+                var emittedNote = header.notes || '';
+                var eventNote = '';
                 var specialEvent = '';
                 var specialEventDate = '';
-                var specialEventNote = '';
                 
-                // Buscar en receiptHistory eventos con notas especiales
+                // Buscar en receiptHistory eventos especiales
                 if (receiptHistory && receiptHistory.length > 0) {
                     for (var i = 0; i < receiptHistory.length; i++) {
                         var r = receiptHistory[i];
@@ -1515,19 +1516,21 @@
                         if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
                             specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
                             specialEventDate = r.date || '';
-                            specialEventNote = r.deliveryNote || '';
+                            eventNote = r.deliveryNote || '';
                             break;
                         }
                     }
                 }
                 
-                // Si no se encontró en receiptHistory, buscar en el header.notes
+                // Si no se encontró en receiptHistory, buscar en header.notes
                 if (!specialEvent && header.notes) {
                     var headerNote = (header.notes || '').toUpperCase();
                     if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || headerNote.includes('CANCELLED BY USER') || headerNote.includes('FORCE CLOSED BY USER')) {
                         specialEvent = headerNote.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
                         specialEventDate = header.issueDate || '';
-                        specialEventNote = header.notes || '';
+                        eventNote = header.notes || '';
+                        // ✅ Limpiar emittedNote: quitar la parte del evento
+                        emittedNote = emittedNote.replace(eventNote, '').replace(/\s*\|\s*$/, '').trim();
                     }
                 }
                 
@@ -1540,14 +1543,25 @@
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
-                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(header.notes || 'No notes') + '</div>';
+                // ✅ MOSTRAR SOLO LA NOTA EMITTED (sin la nota del evento)
+                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote || 'No notes') + '</div>';
                 
-                // ✅ AGREGAR EVENTO ESPECIAL SI EXISTE
+                // ✅ MOSTRAR EVENTO ESPECIAL CON SOLO LA NOTA DEL EVENTO
                 if (specialEvent) {
                     html += '<div style="grid-column:span 2;margin-top:4px;padding:6px 10px;border-radius:4px;background:' + (specialEvent.includes('CANCELLED') ? '#fef2f2' : '#fef3c7') + ';border-left:4px solid ' + (specialEvent.includes('CANCELLED') ? '#dc3545' : '#f59e0b') + ';">';
                     html += '<span style="font-weight:700;">⚠️ Event:</span> ' + specialEvent;
                     if (specialEventDate) html += ' on ' + specialEventDate;
-                    if (specialEventNote) html += '<br><span style="font-size:0.75rem;color:#64748b;">' + escapeHtml(specialEventNote) + '</span>';
+                    if (eventNote) {
+                        // ✅ Limpiar la nota del evento: solo mostrar la parte del evento
+                        var cleanEventNote = eventNote;
+                        // Si contiene el texto "CANCEL NOTE:" o "FORCE CLOSE NOTE:", extraer solo esa parte
+                        if (cleanEventNote.includes('CANCEL NOTE:')) {
+                            cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
+                        } else if (cleanEventNote.includes('FORCE CLOSE NOTE:')) {
+                            cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('FORCE CLOSE NOTE:'));
+                        }
+                        html += '<br><span style="font-size:0.75rem;color:#64748b;">' + escapeHtml(cleanEventNote) + '</span>';
+                    }
                     html += '</div>';
                 }
                 
