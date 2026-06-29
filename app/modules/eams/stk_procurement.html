@@ -1930,13 +1930,21 @@
         document.getElementById('expectedDeliveryDate').value = '';
         document.getElementById('reqItemsBody').innerHTML = '';
         addReqItem();
-        document.querySelectorAll('.custom-suggestions').forEach(function(el) { el.remove(); });
+        
+        // ✅ NO eliminar vendorSuggestions, solo limpiar y ocultar
         var vendorDiv = document.getElementById('vendorSuggestions');
-        if (vendorDiv) vendorDiv.style.display = 'none';
+        if (vendorDiv) {
+            vendorDiv.innerHTML = '';
+            vendorDiv.style.display = 'none';
+        }
+        
+        // ✅ Limpiar otras sugerencias (SKU, descripción)
+        document.querySelectorAll('.custom-suggestions:not(#vendorSuggestions)').forEach(function(el) { el.remove(); });
+        
         var vendorSpinner = document.getElementById('vendorSpinner');
         if (vendorSpinner) vendorSpinner.style.display = 'none';
         
-        // ✅ RECARGAR VENDORS después de limpiar
+        // ✅ RECARGAR VENDORS
         (async function reloadVendors() {
             try {
                 allVendors = await callApi('STK_getExistingVendors', []);
@@ -1946,7 +1954,6 @@
             }
         })();
         
-        // ✅ También reiniciar el evento input del vendor
         var vendorInput = document.getElementById('vendor');
         if (vendorInput) {
             vendorInput.value = '';
