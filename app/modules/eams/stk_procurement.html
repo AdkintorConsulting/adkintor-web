@@ -1500,20 +1500,23 @@
                 var html = '';
                 
                 // ============================================
-                // CABECERA CON DETALLES DE LA PO
+                // SEPARAR NOTAS POR TIPO
                 // ============================================
-                // ✅ SEPARAR NOTA EMITTED DE NOTA DE EVENTO
+                // 1. EMITTED NOTE: de la primera fila (sin eventos)
                 var emittedNote = header.notes || '';
+                
+                // 2. EVENT NOTE: buscar en receiptHistory o header
                 var eventNote = '';
                 var specialEvent = '';
                 var specialEventDate = '';
                 
-                // Buscar en receiptHistory eventos especiales
+                // Buscar en receiptHistory
                 if (receiptHistory && receiptHistory.length > 0) {
                     for (var i = 0; i < receiptHistory.length; i++) {
                         var r = receiptHistory[i];
                         var note = (r.deliveryNote || '').toUpperCase();
-                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
+                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || 
+                            note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
                             specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
                             specialEventDate = r.date || '';
                             eventNote = r.deliveryNote || '';
@@ -1525,15 +1528,44 @@
                 // Si no se encontró en receiptHistory, buscar en header.notes
                 if (!specialEvent && header.notes) {
                     var headerNote = (header.notes || '').toUpperCase();
-                    if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || headerNote.includes('CANCELLED BY USER') || headerNote.includes('FORCE CLOSED BY USER')) {
+                    if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || 
+                        headerNote.includes('CANCELLED BY USER') || headerNote.includes('FORCE CLOSED BY USER')) {
                         specialEvent = headerNote.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
                         specialEventDate = header.issueDate || '';
                         eventNote = header.notes || '';
-                        // ✅ Limpiar emittedNote: quitar la parte del evento
-                        emittedNote = emittedNote.replace(eventNote, '').replace(/\s*\|\s*$/, '').trim();
                     }
                 }
                 
+                // 3. LIMPIAR EMITTED NOTE: quitar cualquier evento que esté pegado
+                if (eventNote) {
+                    // Si emittedNote contiene el eventNote, removerlo
+                    if (emittedNote.includes(eventNote)) {
+                        emittedNote = emittedNote.replace(eventNote, '').replace(/\s*\|\s*$/, '').trim();
+                    }
+                    // Si emittedNote contiene "CANCEL NOTE:" o "FORCE CLOSE NOTE:", limpiar
+                    if (emittedNote.includes('CANCEL NOTE:')) {
+                        emittedNote = emittedNote.substring(0, emittedNote.indexOf('CANCEL NOTE:')).replace(/\s*\|\s*$/, '').trim();
+                    }
+                    if (emittedNote.includes('FORCE CLOSE NOTE:')) {
+                        emittedNote = emittedNote.substring(0, emittedNote.indexOf('FORCE CLOSE NOTE:')).replace(/\s*\|\s*$/, '').trim();
+                    }
+                }
+                
+                // 4. LIMPIAR EVENT NOTE: extraer solo la parte del evento
+                var cleanEventNote = eventNote;
+                if (cleanEventNote.includes('CANCEL NOTE:')) {
+                    cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
+                } else if (cleanEventNote.includes('FORCE CLOSE NOTE:')) {
+                    cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('FORCE CLOSE NOTE:'));
+                } else if (cleanEventNote.includes('CANCELLED BY USER')) {
+                    cleanEventNote = 'CANCELLED BY USER';
+                } else if (cleanEventNote.includes('FORCE CLOSED BY USER')) {
+                    cleanEventNote = 'FORCE CLOSED BY USER';
+                }
+                
+                // ============================================
+                // CABECERA CON DETALLES DE LA PO
+                // ============================================
                 html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;font-size:0.8rem;background:#f8fafc;padding:12px;border-radius:8px;">';
                 html += '<div><strong>PO:</strong> ' + escapeHtml(header.poNumber) + '</div>';
                 html += '<div><strong>Vendor:</strong> ' + escapeHtml(header.vendor) + '</div>';
@@ -1543,31 +1575,23 @@
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
-                // ✅ MOSTRAR SOLO LA NOTA EMITTED (sin la nota del evento)
                 html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote || 'No notes') + '</div>';
                 
-                // ✅ MOSTRAR EVENTO ESPECIAL CON SOLO LA NOTA DEL EVENTO
+                // ✅ EVENTO ESPECIAL
                 if (specialEvent) {
                     html += '<div style="grid-column:span 2;margin-top:4px;padding:6px 10px;border-radius:4px;background:' + (specialEvent.includes('CANCELLED') ? '#fef2f2' : '#fef3c7') + ';border-left:4px solid ' + (specialEvent.includes('CANCELLED') ? '#dc3545' : '#f59e0b') + ';">';
                     html += '<span style="font-weight:700;">⚠️ Event:</span> ' + specialEvent;
                     if (specialEventDate) html += ' on ' + specialEventDate;
-                    if (eventNote) {
-                        // ✅ Limpiar la nota del evento: solo mostrar la parte del evento
-                        var cleanEventNote = eventNote;
-                        // Si contiene el texto "CANCEL NOTE:" o "FORCE CLOSE NOTE:", extraer solo esa parte
-                        if (cleanEventNote.includes('CANCEL NOTE:')) {
-                            cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
-                        } else if (cleanEventNote.includes('FORCE CLOSE NOTE:')) {
-                            cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('FORCE CLOSE NOTE:'));
-                        }
+                    if (cleanEventNote) {
                         html += '<br><span style="font-size:0.75rem;color:#64748b;">' + escapeHtml(cleanEventNote) + '</span>';
                     }
                     html += '</div>';
                 }
                 
                 html += '</div>';
+                
                 // ============================================
-                // TABLA DE ITEMS CON TOTAL FIJO Y DINÁMICO
+                // TABLA DE ITEMS
                 // ============================================
                 html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📦 ITEMS</h4>';
                 html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;margin-bottom:16px;">';
@@ -1577,7 +1601,7 @@
                 html += '<th style="padding:6px 8px;text-align:center;">Ordered</th>';
                 html += '<th style="padding:6px 8px;text-align:center;">Received</th>';
                 html += '<th style="padding:6px 8px;text-align:right;">Unit Price</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total (Global)</th>';  // ← NUEVA COLUMNA
+                html += '<th style="padding:6px 8px;text-align:right;">Total (Global)</th>';
                 html += '<th style="padding:6px 8px;text-align:right;">Total (Received)</th>';
                 html += '</tr></thead><tbody>';
                 
@@ -1628,17 +1652,32 @@
                     html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
                     html += '<th style="padding:6px 8px;text-align:center;">Qty</th>';
                     html += '<th style="padding:6px 8px;text-align:right;">Amount</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">Notes</th>';  // ← CAMBIADO
+                    html += '<th style="padding:6px 8px;text-align:left;">Notes</th>';
                     html += '</tr></thead><tbody>';
                     
                     for (var i = 0; i < receiptHistory.length; i++) {
                         var r = receiptHistory[i];
+                        // ✅ LIMPIAR NOTA DE RECEPCIÓN: quitar eventos
+                        var receiptNote = r.deliveryNote || '';
+                        if (receiptNote.includes('CANCEL NOTE:') || receiptNote.includes('FORCE CLOSE NOTE:') ||
+                            receiptNote.includes('CANCELLED BY USER') || receiptNote.includes('FORCE CLOSED BY USER')) {
+                            // Si la nota contiene un evento, extraer solo la parte anterior
+                            var eventKeywords = ['CANCEL NOTE:', 'FORCE CLOSE NOTE:', 'CANCELLED BY USER', 'FORCE CLOSED BY USER'];
+                            for (var j = 0; j < eventKeywords.length; j++) {
+                                var keyword = eventKeywords[j];
+                                if (receiptNote.includes(keyword)) {
+                                    receiptNote = receiptNote.substring(0, receiptNote.indexOf(keyword)).replace(/\s*\|\s*$/, '').trim();
+                                    break;
+                                }
+                            }
+                        }
+                        
                         html += '<tr style="border-bottom:1px solid #e2e8f0;">';
                         html += '<td style="padding:6px 8px;">' + escapeHtml(r.date || '') + '</td>';
                         html += '<td style="padding:6px 8px;">' + escapeHtml(r.sku || '') + '</td>';
                         html += '<td style="padding:6px 8px;text-align:center;font-weight:600;">' + (r.qty || 0) + '</td>';
                         html += '<td style="padding:6px 8px;text-align:right;">$' + (r.total || 0).toFixed(2) + '</td>';
-                        html += '<td style="padding:6px 8px;font-size:0.65rem;color:#64748b;">' + escapeHtml(r.deliveryNote || '') + '</td>';
+                        html += '<td style="padding:6px 8px;font-size:0.65rem;color:#64748b;">' + escapeHtml(receiptNote || '') + '</td>';
                         html += '</tr>';
                     }
                     html += '</tbody></table>';
