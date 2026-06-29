@@ -1522,12 +1522,22 @@
                     emittedNote = header.notes;
                 }
                 
-                // 2. EVENT NOTE: buscar en receiptHistory o items
-                var eventNote = '';
+                // 2. EVENT NOTE: USAR header.eventNote DIRECTAMENTE
+                var eventNote = header.eventNote || '';
                 var specialEvent = '';
-                var specialEventDate = '';
+                var specialEventDate = header.issueDate || '';
                 
-                if (receiptHistory && receiptHistory.length > 0) {
+                if (eventNote) {
+                    var noteUpper = eventNote.toUpperCase();
+                    if (noteUpper.includes('CANCEL NOTE:') || noteUpper.includes('CANCELLED BY USER')) {
+                        specialEvent = '🚫 CANCELLED';
+                    } else if (noteUpper.includes('FORCE CLOSE NOTE:') || noteUpper.includes('FORCE CLOSED BY USER')) {
+                        specialEvent = '🔒 FORCE CLOSED';
+                    }
+                }
+                
+                // Fallback: si no hay eventNote en header, buscar en receiptHistory
+                if (!eventNote && receiptHistory && receiptHistory.length > 0) {
                     for (var i = 0; i < receiptHistory.length; i++) {
                         var r = receiptHistory[i];
                         var note = (r.deliveryNote || '').toUpperCase();
@@ -1538,29 +1548,6 @@
                             eventNote = r.deliveryNote || '';
                             break;
                         }
-                    }
-                }
-                
-                if (!specialEvent) {
-                    for (var i = 0; i < items.length; i++) {
-                        var note = (items[i].notes || '').toUpperCase();
-                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || 
-                            note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
-                            specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
-                            specialEventDate = header.issueDate || '';
-                            eventNote = items[i].notes || '';
-                            break;
-                        }
-                    }
-                }
-                
-                if (!specialEvent && header.notes) {
-                    var headerNote = (header.notes || '').toUpperCase();
-                    if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || 
-                        headerNote.includes('CANCELLED BY USER') || headerNote.includes('FORCE CLOSED BY USER')) {
-                        specialEvent = headerNote.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
-                        specialEventDate = header.issueDate || '';
-                        eventNote = header.notes || '';
                     }
                 }
                 
