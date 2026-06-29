@@ -1480,37 +1480,35 @@
         container.innerHTML = html;
     }
 
-    async function viewPODetails(poNumber) {
-        showLoading('Loading PO details...');
-        try {
-            var result = await callApi('STK_getPOFullDetails_V2', [poNumber]);
-            if (result && result.success) {
-                var header = result.header;
-                var items = result.items || [];
-                var receiptHistory = result.receiptHistory || [];
-                
-                // Calcular totales
-                var totalOrdered = 0;
-                var totalReceived = 0;
-                for (var i = 0; i < items.length; i++) {
-                    totalOrdered += items[i].qtyOrdered || 0;
-                    totalReceived += items[i].qtyReceived || 0;
-                }
-                
-                var html = '';
-                
                 // ============================================
                 // SEPARAR NOTAS POR TIPO
                 // ============================================
-                // 1. EMITTED NOTE: de la primera fila (sin eventos)
-                var emittedNote = header.notes || '';
+                // 1. EMITTED NOTE: de la PRIMERA FILA (status EMITTED)
+                // Buscar en items la primera fila con status EMITTED
+                var emittedNote = 'No notes';
+                for (var i = 0; i < items.length; i++) {
+                    // La nota EMITTED está en items[i].notes
+                    // Si la nota contiene CANCEL o FORCE CLOSE, no es EMITTED
+                    var note = (items[i].notes || '').toUpperCase();
+                    if (!note.includes('CANCEL NOTE:') && !note.includes('FORCE CLOSE NOTE:') && 
+                        !note.includes('CANCELLED BY USER') && !note.includes('FORCE CLOSED BY USER')) {
+                        if (items[i].notes && items[i].notes.trim() !== '') {
+                            emittedNote = items[i].notes;
+                            break;
+                        }
+                    }
+                }
+                // Fallback: usar header.notes si no se encontró
+                if (emittedNote === 'No notes' && header.notes && header.notes.trim() !== '') {
+                    emittedNote = header.notes;
+                }
                 
-                // 2. EVENT NOTE: buscar en receiptHistory o header
+                // 2. EVENT NOTE: buscar en items con status CANCELLED o CLOSED (qtyReceived = 0)
                 var eventNote = '';
                 var specialEvent = '';
                 var specialEventDate = '';
                 
-                // Buscar en receiptHistory
+                // Buscar en receiptHistory primero (eventos están en las filas de recepción)
                 if (receiptHistory && receiptHistory.length > 0) {
                     for (var i = 0; i < receiptHistory.length; i++) {
                         var r = receiptHistory[i];
@@ -1525,7 +1523,21 @@
                     }
                 }
                 
-                // Si no se encontró en receiptHistory, buscar en header.notes
+                // Si no se encontró en receiptHistory, buscar en items
+                if (!specialEvent) {
+                    for (var i = 0; i < items.length; i++) {
+                        var note = (items[i].notes || '').toUpperCase();
+                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || 
+                            note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
+                            specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
+                            specialEventDate = header.issueDate || '';
+                            eventNote = items[i].notes || '';
+                            break;
+                        }
+                    }
+                }
+                
+                // Si aún no se encontró, buscar en header.notes
                 if (!specialEvent && header.notes) {
                     var headerNote = (header.notes || '').toUpperCase();
                     if (headerNote.includes('CANCEL NOTE:') || headerNote.includes('FORCE CLOSE NOTE:') || 
@@ -1536,22 +1548,7 @@
                     }
                 }
                 
-                // 3. LIMPIAR EMITTED NOTE: quitar cualquier evento que esté pegado
-                if (eventNote) {
-                    // Si emittedNote contiene el eventNote, removerlo
-                    if (emittedNote.includes(eventNote)) {
-                        emittedNote = emittedNote.replace(eventNote, '').replace(/\s*\|\s*$/, '').trim();
-                    }
-                    // Si emittedNote contiene "CANCEL NOTE:" o "FORCE CLOSE NOTE:", limpiar
-                    if (emittedNote.includes('CANCEL NOTE:')) {
-                        emittedNote = emittedNote.substring(0, emittedNote.indexOf('CANCEL NOTE:')).replace(/\s*\|\s*$/, '').trim();
-                    }
-                    if (emittedNote.includes('FORCE CLOSE NOTE:')) {
-                        emittedNote = emittedNote.substring(0, emittedNote.indexOf('FORCE CLOSE NOTE:')).replace(/\s*\|\s*$/, '').trim();
-                    }
-                }
-                
-                // 4. LIMPIAR EVENT NOTE: extraer solo la parte del evento
+                // 3. LIMPIAR EVENT NOTE: extraer solo la parte del evento
                 var cleanEventNote = eventNote;
                 if (cleanEventNote.includes('CANCEL NOTE:')) {
                     cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
@@ -1575,7 +1572,7 @@
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
-                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote || 'No notes') + '</div>';
+                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote) + '</div>';
                 
                 // ✅ EVENTO ESPECIAL
                 if (specialEvent) {
@@ -1589,113 +1586,6 @@
                 }
                 
                 html += '</div>';
-                
-                // ============================================
-                // TABLA DE ITEMS
-                // ============================================
-                html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📦 ITEMS</h4>';
-                html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;margin-bottom:16px;">';
-                html += '<thead><tr style="background:#f1f5f9;">';
-                html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
-                html += '<th style="padding:6px 8px;text-align:left;">Description</th>';
-                html += '<th style="padding:6px 8px;text-align:center;">Ordered</th>';
-                html += '<th style="padding:6px 8px;text-align:center;">Received</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Unit Price</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total (Global)</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total (Received)</th>';
-                html += '</tr></thead><tbody>';
-                
-                var totalFijoGeneral = 0;
-                var totalDinamicoGeneral = 0;
-                
-                for (var i = 0; i < items.length; i++) {
-                    var it = items[i];
-                    var received = it.qtyReceived || 0;
-                    var ordered = it.qtyOrdered || 0;
-                    var unitPrice = it.unitPrice || 0;
-                    var totalFijo = ordered * unitPrice;
-                    var totalDinamico = received * unitPrice;
-                    var isComplete = received >= ordered && ordered > 0;
-                    
-                    totalFijoGeneral += totalFijo;
-                    totalDinamicoGeneral += totalDinamico;
-                    
-                    html += '<tr style="border-bottom:1px solid #e2e8f0;">';
-                    html += '<td style="padding:6px 8px;font-weight:600;">' + escapeHtml(it.sku) + '</td>';
-                    html += '<td style="padding:6px 8px;">' + escapeHtml(it.description) + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:center;">' + ordered + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:center;' + (isComplete ? 'color:#22c55e;font-weight:700;' : '') + '">' + received + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:right;">$' + unitPrice.toFixed(2) + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:right;font-weight:600;color:#1a1a2e;">$' + totalFijo.toFixed(2) + '</td>';
-                    html += '<td style="padding:6px 8px;text-align:right;' + (isComplete ? 'color:#22c55e;font-weight:700;' : 'color:#64748b;') + '">$' + totalDinamico.toFixed(2) + '</td>';
-                    html += '</tr>';
-                }
-                
-                html += '<tr style="background:#f8fafc;font-weight:700;">';
-                html += '<td colspan="2" style="padding:6px 8px;text-align:right;">TOTAL</td>';
-                html += '<td style="padding:6px 8px;text-align:center;">' + totalOrdered + '</td>';
-                html += '<td style="padding:6px 8px;text-align:center;">' + totalReceived + '</td>';
-                html += '<td style="padding:6px 8px;text-align:right;"></td>';
-                html += '<td style="padding:6px 8px;text-align:right;color:#1a1a2e;">$' + totalFijoGeneral.toFixed(2) + '</td>';
-                html += '<td style="padding:6px 8px;text-align:right;' + (totalReceived >= totalOrdered ? 'color:#22c55e;' : 'color:#64748b;') + '">$' + totalDinamicoGeneral.toFixed(2) + '</td>';
-                html += '</tr>';
-                html += '</tbody></table>';
-                
-                // ============================================
-                // HISTORIAL DE RECEPCIONES
-                // ============================================
-                if (receiptHistory && receiptHistory.length > 0) {
-                    html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📜 RECEIPT HISTORY</h4>';
-                    html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">';
-                    html += '<thead><tr style="background:#f1f5f9;">';
-                    html += '<th style="padding:6px 8px;text-align:left;">Date</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
-                    html += '<th style="padding:6px 8px;text-align:center;">Qty</th>';
-                    html += '<th style="padding:6px 8px;text-align:right;">Amount</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">Notes</th>';
-                    html += '</tr></thead><tbody>';
-                    
-                    for (var i = 0; i < receiptHistory.length; i++) {
-                        var r = receiptHistory[i];
-                        // ✅ LIMPIAR NOTA DE RECEPCIÓN: quitar eventos
-                        var receiptNote = r.deliveryNote || '';
-                        if (receiptNote.includes('CANCEL NOTE:') || receiptNote.includes('FORCE CLOSE NOTE:') ||
-                            receiptNote.includes('CANCELLED BY USER') || receiptNote.includes('FORCE CLOSED BY USER')) {
-                            // Si la nota contiene un evento, extraer solo la parte anterior
-                            var eventKeywords = ['CANCEL NOTE:', 'FORCE CLOSE NOTE:', 'CANCELLED BY USER', 'FORCE CLOSED BY USER'];
-                            for (var j = 0; j < eventKeywords.length; j++) {
-                                var keyword = eventKeywords[j];
-                                if (receiptNote.includes(keyword)) {
-                                    receiptNote = receiptNote.substring(0, receiptNote.indexOf(keyword)).replace(/\s*\|\s*$/, '').trim();
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        html += '<tr style="border-bottom:1px solid #e2e8f0;">';
-                        html += '<td style="padding:6px 8px;">' + escapeHtml(r.date || '') + '</td>';
-                        html += '<td style="padding:6px 8px;">' + escapeHtml(r.sku || '') + '</td>';
-                        html += '<td style="padding:6px 8px;text-align:center;font-weight:600;">' + (r.qty || 0) + '</td>';
-                        html += '<td style="padding:6px 8px;text-align:right;">$' + (r.total || 0).toFixed(2) + '</td>';
-                        html += '<td style="padding:6px 8px;font-size:0.65rem;color:#64748b;">' + escapeHtml(receiptNote || '') + '</td>';
-                        html += '</tr>';
-                    }
-                    html += '</tbody></table>';
-                } else {
-                    html += '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:0.75rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No receipt history found.</div>';
-                }
-                
-                document.getElementById('detailModalContent').innerHTML = html;
-                document.getElementById('detailModal').classList.add('active');
-            } else {
-                showToast('PO not found', 'error');
-            }
-            hideLoading();
-        } catch(err) {
-            hideLoading();
-            showToast(err.message, 'error');
-        }
-    }
 
     function copyToClipboard(text) {
         if (text && text !== 'N/A') {
