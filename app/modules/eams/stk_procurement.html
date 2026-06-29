@@ -2056,7 +2056,7 @@
         
         var expectedDeliveryDate = document.getElementById('expectedDeliveryDate').value;
         
-        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate };
+        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate, user: currentUser };
         showLoading('Saving...');
         try {
             var res = await callApi('STK_saveProcurementRequisition', [payload]);
@@ -2092,7 +2092,8 @@
             notes: ctx.notes,
             items: ctx.items,
             consumptionType: consumptionType,
-            woNumber: woNumber
+            woNumber: woNumber,
+            user: currentUser
         };
         showLoading('Processing...');
         try {
@@ -2118,7 +2119,8 @@
             budgetAreas: budgetAreas,
             notes: ctx.notes,
             items: ctx.items,
-            createPO: true
+            createPO: true,
+            user: currentUser
         };
         showLoading('Creating temp PO...');
         try {
