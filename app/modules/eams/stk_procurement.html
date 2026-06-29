@@ -1484,20 +1484,23 @@
                 // SEPARAR NOTAS POR TIPO
                 // ============================================
                 // 1. EMITTED NOTE: de la PRIMERA FILA (status EMITTED)
-                // Buscar en items la primera fila con status EMITTED
                 var emittedNote = 'No notes';
-                for (var i = 0; i < items.length; i++) {
-                    // La nota EMITTED está en items[i].notes
-                    // Si la nota contiene CANCEL o FORCE CLOSE, no es EMITTED
-                    var note = (items[i].notes || '').toUpperCase();
-                    if (!note.includes('CANCEL NOTE:') && !note.includes('FORCE CLOSE NOTE:') && 
-                        !note.includes('CANCELLED BY USER') && !note.includes('FORCE CLOSED BY USER')) {
-                        if (items[i].notes && items[i].notes.trim() !== '') {
-                            emittedNote = items[i].notes;
-                            break;
+                
+                // ✅ Verificar que items existe y tiene datos
+                if (items && items.length > 0) {
+                    for (var i = 0; i < items.length; i++) {
+                        var note = (items[i].notes || '').toUpperCase();
+                        // Si la nota contiene CANCEL o FORCE CLOSE, no es EMITTED
+                        if (!note.includes('CANCEL NOTE:') && !note.includes('FORCE CLOSE NOTE:') && 
+                            !note.includes('CANCELLED BY USER') && !note.includes('FORCE CLOSED BY USER')) {
+                            if (items[i].notes && items[i].notes.trim() !== '') {
+                                emittedNote = items[i].notes;
+                                break;
+                            }
                         }
                     }
                 }
+                
                 // Fallback: usar header.notes si no se encontró
                 if (emittedNote === 'No notes' && header.notes && header.notes.trim() !== '') {
                     emittedNote = header.notes;
