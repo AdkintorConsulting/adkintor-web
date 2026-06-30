@@ -1054,9 +1054,10 @@
                                 <textarea id="receiptNotes" rows="2"></textarea>
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
-                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()"><i class="fas fa-times"></i> Cancel PO</button>
-                                  <button class="btn-primary" onclick="closeCurrentPO()"><i class="fas fa-check"></i> CLOSE PO</button>
-                                <button type="button" class="btn-primary" onclick="submitReceipt()"><i class="fas fa-check"></i> Confirm Receipt</button>
+                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
+                                <button type="button" class="btn-success" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
+                                <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
+                            </div>
                             </div>
                         </form>
                     </div>
@@ -1195,6 +1196,22 @@
             <div style="display:flex;gap:10px;justify-content:flex-end;">
                 <button class="btn-secondary" onclick="resolveModal('modalForceClosePO', false)"><i class="fas fa-times"></i> Cancel</button>
                 <button class="btn-primary" onclick="resolveModal('modalForceClosePO', true)"><i class="fas fa-check"></i> Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalClosePO" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fas fa-check-circle" style="color:#22c55e;"></i> CLOSE PO</h3>
+            <button class="btn-close-modal" onclick="closeModal('modalClosePO')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="modalClosePOMsg">Are you sure you want to close this Purchase Order? This will mark it as COMPLETED.</p>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="btn-secondary" onclick="resolveModal('modalClosePO', false)"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-primary" onclick="resolveModal('modalClosePO', true)"><i class="fas fa-check"></i> Confirm</button>
             </div>
         </div>
     </div>
@@ -1508,8 +1525,8 @@
                 if (items && items.length > 0) {
                     for (var i = 0; i < items.length; i++) {
                         var note = (items[i].notes || '').toUpperCase();
-                        if (!note.includes('CANCEL NOTE:') && !note.includes('FORCE CLOSE NOTE:') && 
-                            !note.includes('CANCELLED BY USER') && !note.includes('FORCE CLOSED BY USER')) {
+                        if (!note.includes('CANCEL NOTE:') && !note.includes('CLOSED_BY:') && 
+                            !note.includes('CANCELLED BY USER') && !note.includes('CLOSED BY')) {
                             if (items[i].notes && items[i].notes.trim() !== '') {
                                 emittedNote = items[i].notes;
                                 break;
@@ -1522,44 +1539,67 @@
                     emittedNote = header.notes;
                 }
                 
-                // 2. EVENT NOTE: USAR header.eventNote DIRECTAMENTE
-                var eventNote = header.eventNote || '';
+                // 2. EVENT NOTE: detectar según el status
                 var specialEvent = '';
                 var specialEventDate = header.issueDate || '';
+                var cleanEventNote = '';
                 
-                if (eventNote) {
-                    var noteUpper = eventNote.toUpperCase();
-                    if (noteUpper.includes('CANCEL NOTE:') || noteUpper.includes('CANCELLED BY USER')) {
-                        specialEvent = '🚫 CANCELLED';
-                    } else if (noteUpper.includes('FORCE CLOSE NOTE:') || noteUpper.includes('FORCE CLOSED BY USER')) {
-                        specialEvent = '🔒 FORCE CLOSED';
+                if (header.status === 'CANCELLED') {
+                    specialEvent = '🚫 CANCELLED';
+                    // Buscar nota de cancelación
+                    if (header.notes && header.notes.includes('CANCEL NOTE:')) {
+                        cleanEventNote = header.notes;
+                    } else if (receiptHistory && receiptHistory.length > 0) {
+                        for (var i = 0; i < receiptHistory.length; i++) {
+                            var r = receiptHistory[i];
+                            if ((r.deliveryNote || '').includes('CANCEL NOTE:')) {
+                                cleanEventNote = r.deliveryNote;
+                                specialEventDate = r.date || header.issueDate || '';
+                                break;
+                            }
+                        }
                     }
-                }
-                
-                // Fallback: si no hay eventNote en header, buscar en receiptHistory
-                if (!eventNote && receiptHistory && receiptHistory.length > 0) {
-                    for (var i = 0; i < receiptHistory.length; i++) {
-                        var r = receiptHistory[i];
-                        var note = (r.deliveryNote || '').toUpperCase();
-                        if (note.includes('CANCEL NOTE:') || note.includes('FORCE CLOSE NOTE:') || 
-                            note.includes('CANCELLED BY USER') || note.includes('FORCE CLOSED BY USER')) {
-                            specialEvent = note.includes('CANCEL') ? '🚫 CANCELLED' : '🔒 FORCE CLOSED';
-                            specialEventDate = r.date || '';
-                            eventNote = r.deliveryNote || '';
-                            break;
+                } else if (header.status === 'CLOSED') {
+                    specialEvent = '✅ CLOSED';
+                    // Buscar nota de cierre
+                    if (header.notes && header.notes.includes('CLOSED_BY:')) {
+                        cleanEventNote = header.notes;
+                    } else if (receiptHistory && receiptHistory.length > 0) {
+                        for (var i = 0; i < receiptHistory.length; i++) {
+                            var r = receiptHistory[i];
+                            if ((r.deliveryNote || '').includes('CLOSED_BY:')) {
+                                cleanEventNote = r.deliveryNote;
+                                specialEventDate = r.date || header.issueDate || '';
+                                break;
+                            }
                         }
                     }
                 }
                 
-                var cleanEventNote = eventNote;
-                if (cleanEventNote.includes('CANCEL NOTE:')) {
-                    cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
-                } else if (cleanEventNote.includes('FORCE CLOSE NOTE:')) {
-                    cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('FORCE CLOSE NOTE:'));
-                } else if (cleanEventNote.includes('CANCELLED BY USER')) {
-                    cleanEventNote = 'CANCELLED BY USER';
-                } else if (cleanEventNote.includes('FORCE CLOSED BY USER')) {
-                    cleanEventNote = 'FORCE CLOSED BY USER';
+                // Si hay eventNote en el header (backup)
+                if (!cleanEventNote && header.eventNote) {
+                    var eventNoteUpper = header.eventNote.toUpperCase();
+                    if (eventNoteUpper.includes('CANCEL NOTE:') || eventNoteUpper.includes('CANCELLED BY USER')) {
+                        specialEvent = '🚫 CANCELLED';
+                        cleanEventNote = header.eventNote;
+                    } else if (eventNoteUpper.includes('FORCE CLOSE NOTE:') || eventNoteUpper.includes('FORCE CLOSED BY USER')) {
+                        // Forzar a CLOSED (ya no existe FORCE CLOSE)
+                        specialEvent = '✅ CLOSED';
+                        cleanEventNote = header.eventNote.replace('FORCE CLOSE NOTE:', 'CLOSED_BY:').replace('FORCE CLOSED BY USER', 'CLOSED BY USER');
+                    }
+                }
+                
+                // Limpiar nota de evento
+                if (cleanEventNote) {
+                    if (cleanEventNote.includes('CANCEL NOTE:')) {
+                        cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CANCEL NOTE:'));
+                    } else if (cleanEventNote.includes('CLOSED_BY:')) {
+                        cleanEventNote = cleanEventNote.substring(cleanEventNote.indexOf('CLOSED_BY:'));
+                    } else if (cleanEventNote.includes('CANCELLED BY USER')) {
+                        cleanEventNote = 'CANCELLED BY USER';
+                    } else if (cleanEventNote.includes('FORCE CLOSED BY USER')) {
+                        cleanEventNote = 'CLOSED BY USER';
+                    }
                 }
                 
                 // ============================================
@@ -2196,20 +2236,29 @@
                 // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
                 var status = (result.header.status || '').toUpperCase();
                 var cancelBtn = document.querySelector('#receiptForm .btn-danger');
-                var forceBtn = document.querySelector('#receiptForm .btn-warning');
+                var closeBtn = document.querySelector('#receiptForm .btn-close');
                 var receiptBtn = document.querySelector('#receiptForm .btn-primary');
                 
-                if (status === 'CLOSED' || status === 'CANCELLED') {
-                    // Deshabilitar todos los botones
-                    if (cancelBtn) cancelBtn.disabled = true;
-                    if (forceBtn) forceBtn.disabled = true;
-                    if (receiptBtn) receiptBtn.disabled = true;
+                // Ocultar todos los botones por defecto
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (closeBtn) closeBtn.style.display = 'none';
+                if (receiptBtn) receiptBtn.style.display = 'none';
+                
+                // Mostrar botones según estado
+                if (status === 'EMITTED') {
+                    // EMITTED: CANCEL + RECEIPT
+                    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+                    if (receiptBtn) receiptBtn.style.display = 'inline-block';
+                } else if (status === 'PARTIAL') {
+                    // PARTIAL: RECEIPT + CLOSE
+                    if (receiptBtn) receiptBtn.style.display = 'inline-block';
+                    if (closeBtn) closeBtn.style.display = 'inline-block';
+                } else if (status === 'RECEIVED') {
+                    // RECEIVED: solo CLOSE
+                    if (closeBtn) closeBtn.style.display = 'inline-block';
+                } else if (status === 'CLOSED' || status === 'CANCELLED') {
+                    // CLOSED/CANCELLED: ningún botón
                     showToast('⚠️ This PO is already ' + status + '. No further actions allowed.', 'warning');
-                } else {
-                    // Habilitar botones
-                    if (cancelBtn) cancelBtn.disabled = false;
-                    if (forceBtn) forceBtn.disabled = false;
-                    if (receiptBtn) receiptBtn.disabled = false;
                 }
                 
                 var items = result.items || [];
@@ -2384,6 +2433,13 @@
     
     async function closeCurrentPO() {
         if (!selectedPO) { showToast('No PO selected', 'error'); return; }
+        
+        var status = (selectedPO.status || '').toUpperCase();
+        if (status !== 'PARTIAL' && status !== 'RECEIVED') {
+            showToast('PO must be PARTIAL or RECEIVED to close.', 'error');
+            return;
+        }
+        
         var confirmed = await showModalPromise('modalClosePO');
         if (confirmed) {
             showLoading('Closing PO...');
@@ -2402,7 +2458,7 @@
                 showToast(err.message, 'error');
             }
         }
-    }    
+    }  
 
     // ============================================
     // MAIN INIT
