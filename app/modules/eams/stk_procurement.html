@@ -1055,7 +1055,7 @@
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
                                 <button type="button" class="btn-danger" onclick="cancelCurrentPO()"><i class="fas fa-times"></i> Cancel PO</button>
-                                <button type="button" class="btn-warning" onclick="forceCloseCurrentPO()"><i class="fas fa-lock"></i> Force Close</button>
+                                  <button class="btn-primary" onclick="closeCurrentPO()"><i class="fas fa-check"></i> CLOSE PO</button>
                                 <button type="button" class="btn-primary" onclick="submitReceipt()"><i class="fas fa-check"></i> Confirm Receipt</button>
                             </div>
                         </form>
@@ -2381,6 +2381,28 @@
             }
         }
     }
+    
+    async function closeCurrentPO() {
+        if (!selectedPO) { showToast('No PO selected', 'error'); return; }
+        var confirmed = await showModalPromise('modalClosePO');
+        if (confirmed) {
+            showLoading('Closing PO...');
+            try {
+                var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber]);
+                showToast(res.message, 'success');
+                document.getElementById('receiptForm').style.display = 'none';
+                document.getElementById('poSearchInput').value = '';
+                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                selectedPO = null;
+                selectedPOFull = null;
+                refreshTracker();
+                hideLoading();
+            } catch(err) {
+                hideLoading();
+                showToast(err.message, 'error');
+            }
+        }
+    }    
 
     // ============================================
     // MAIN INIT
