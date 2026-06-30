@@ -2434,6 +2434,8 @@
                     poNumberHint.textContent = 'Not required for ' + paymentSelect.value + ' payment method';
                     poNumberHint.style.color = '#94a3b8';
                 }
+                // ✅ Forzar limpieza del campo al cambiar
+                document.getElementById('poNumber').value = '';
             });
             
             // ✅ Inicializar el estado correcto al cargar (si hay un valor seleccionado)
