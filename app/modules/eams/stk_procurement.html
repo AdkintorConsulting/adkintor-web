@@ -2044,7 +2044,7 @@
                     }
                 }
             } else {
-                // ✅ NO: crear compra directa sin PO (no es un Temporary PO)
+                // ✅ NO: crear compra pendiente de recepción (EMITTED)
                 await saveDirectPurchase({ 
                     vendor: vendor, 
                     paymentType: paymentType, 
@@ -2052,7 +2052,7 @@
                     budgetAreaName: budgetAreaName, 
                     notes: notes, 
                     items: items 
-                }, 'GOES_TO_STOCK', '');
+                }, 'PENDING', '');
             }
             return;
         }
