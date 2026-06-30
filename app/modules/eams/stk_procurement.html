@@ -2044,7 +2044,15 @@
                     }
                 }
             } else {
-                await createTemporaryPO({ vendor: vendor, paymentType: paymentType, reqId: reqId, budgetAreaName: budgetAreaName, notes: notes, items: items });
+                // ✅ NO: crear compra directa sin PO (no es un Temporary PO)
+                await saveDirectPurchase({ 
+                    vendor: vendor, 
+                    paymentType: paymentType, 
+                    reqId: reqId, 
+                    budgetAreaName: budgetAreaName, 
+                    notes: notes, 
+                    items: items 
+                }, 'GOES_TO_STOCK', '');
             }
             return;
         }
