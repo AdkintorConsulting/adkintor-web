@@ -2235,9 +2235,9 @@
                 
                 // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
                 var status = (result.header.status || '').toUpperCase();
-                var cancelBtn = document.querySelector('#receiptForm .btn-danger');
-                var closeBtn = document.querySelector('#receiptForm .btn-close');
-                var receiptBtn = document.querySelector('#receiptForm .btn-primary');
+                var cancelBtn = document.getElementById('btnCancelPO');
+                var closeBtn = document.getElementById('btnClosePO');
+                var receiptBtn = document.getElementById('btnConfirmReceipt');
                 
                 // Ocultar todos los botones por defecto
                 if (cancelBtn) cancelBtn.style.display = 'none';
@@ -2249,15 +2249,22 @@
                     // EMITTED: CANCEL + RECEIPT
                     if (cancelBtn) cancelBtn.style.display = 'inline-block';
                     if (receiptBtn) receiptBtn.style.display = 'inline-block';
+                    if (closeBtn) closeBtn.style.display = 'none';
                 } else if (status === 'PARTIAL') {
                     // PARTIAL: RECEIPT + CLOSE
+                    if (cancelBtn) cancelBtn.style.display = 'none';
                     if (receiptBtn) receiptBtn.style.display = 'inline-block';
                     if (closeBtn) closeBtn.style.display = 'inline-block';
                 } else if (status === 'RECEIVED') {
                     // RECEIVED: solo CLOSE
+                    if (cancelBtn) cancelBtn.style.display = 'none';
+                    if (receiptBtn) receiptBtn.style.display = 'none';
                     if (closeBtn) closeBtn.style.display = 'inline-block';
                 } else if (status === 'CLOSED' || status === 'CANCELLED') {
                     // CLOSED/CANCELLED: ningún botón
+                    if (cancelBtn) cancelBtn.style.display = 'none';
+                    if (closeBtn) closeBtn.style.display = 'none';
+                    if (receiptBtn) receiptBtn.style.display = 'none';
                     showToast('⚠️ This PO is already ' + status + '. No further actions allowed.', 'warning');
                 }
                 
@@ -2270,6 +2277,7 @@
                     var received = item.qtyReceived || 0;
                     var pending = ordered - received;
                     var price = item.unitPrice || 0;
+                    // Deshabilitar inputs si está CLOSED o CANCELLED
                     var isDisabled = (status === 'CLOSED' || status === 'CANCELLED') ? 'disabled' : '';
                     itemsHtml += '<tr>' +
                         '<td style="padding:6px;">' + escapeHtml(item.sku) + '</td>' +
