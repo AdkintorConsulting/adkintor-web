@@ -1054,9 +1054,9 @@
                                 <textarea id="receiptNotes" rows="2"></textarea>
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
-                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
-                                <button type="button" class="btn-success" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
-                                <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
+                                <button type="button" class="btn-danger" id="btnCancelPO" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
+                                <button type="button" class="btn-success" id="btnClosePO" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
+                                <button type="button" class="btn-primary" id="btnConfirmReceipt" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
                             </div>
                             </div>
                         </form>
