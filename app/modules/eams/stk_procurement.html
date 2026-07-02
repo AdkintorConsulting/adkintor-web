@@ -2083,7 +2083,10 @@
                         var sel = document.getElementById('woNumberSelect');
                         sel.innerHTML = '<option value="">⏳ Loading WOs...</option>';
                         
-                        // ✅ Abrir el modal CON el spinner ya visible
+                        // ✅ Cargar las WO ANTES de abrir el modal
+                        await loadWOsForModal();
+                        
+                        // ✅ Abrir el modal CON los datos ya cargados
                         var woNumber = await showModalPromise('modalWONumber');
                         
                         // ✅ Si el usuario seleccionó una WO, guardar
