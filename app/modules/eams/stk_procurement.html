@@ -1055,7 +1055,7 @@
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
                                 <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
-                                <button type="button" class="btn-primary" onclick="closeCurrentPO()" style="display:none; background:#22c55e;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
+                                <button type="button" class="btn-secondary" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> Close PO</button>
                                 <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
                             </div>
                             </div>
@@ -2245,7 +2245,7 @@
                 // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
                 var status = (result.header.status || '').toUpperCase();
                 var cancelBtn = document.querySelector('#receiptForm .btn-danger');
-                var closeBtn = document.querySelector('#receiptForm .btn-close');
+                var closeBtn = document.querySelector('#receiptForm .btn-secondary');  // ✅ Cambiado a .btn-secondary
                 var receiptBtn = document.querySelector('#receiptForm .btn-primary');
                 
                 // Ocultar todos los botones por defecto
