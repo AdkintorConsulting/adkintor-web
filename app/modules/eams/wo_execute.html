@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Technical Execution Portal - ADKINTOR EAMS</title>
+    <title>Technical Report Portal - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
     <style>
@@ -1504,8 +1504,20 @@
         var endTime = document.getElementById('endTime')?.value;
         var hasValidTime = startTime && endTime && (new Date(endTime) > new Date(startTime));
         var hasTasks = pmTasksCompleted > 0;
+        var notes = document.getElementById('reportNotesPM')?.value || '';
         
-        var isValid = hasValidTime && hasTasks;
+        // ✅ NUEVA REGLA: Si hay tareas marcadas, tiempos obligatorios
+        // Si NO hay tareas, comentario obligatorio
+        var isValid = false;
+        
+        if (hasTasks) {
+            // Si hay tareas, tiempos son obligatorios
+            isValid = hasValidTime;
+        } else {
+            // Si NO hay tareas, comentario es obligatorio (mínimo 10 caracteres)
+            isValid = notes.length >= 10;
+        }
+        
         var nextBtn = document.getElementById('btnNextHeader');
         var timeWarning = document.getElementById('timeWarning');
         
@@ -1526,7 +1538,6 @@
             } catch(e) {}
         }
 
-        // En validateCorrective():
         if (startTime && DB.selectedWO && DB.selectedWO.date) {
             var creationDateStr = DB.selectedWO.date;
             var creationDate = new Date(creationDateStr);
@@ -1538,25 +1549,24 @@
                     timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
                     timeWarning.classList.add('visible');
                 }
-                // ✅ TOAST: Error de fecha
-                showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
             }
         }
         
-        if (startTime && DB.selectedWO && DB.selectedWO.date) {
-            var creationDateStr = DB.selectedWO.date;
-            var creationDate = new Date(creationDateStr);
-            var startDateTime = new Date(startTime);
-            
-            if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
-                isValid = false;
-                if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
-                    timeWarning.classList.add('visible');
-                }
-            } else if (timeWarning && timeWarning.innerHTML.includes('creation date')) {
-                timeWarning.classList.remove('visible');
+        // ✅ Mostrar mensaje de validación
+        if (!isValid && !startTime && !endTime && !hasTasks) {
+            // No mostrar warning si está todo vacío
+        } else if (!isValid && !hasTasks && notes.length < 10) {
+            if (timeWarning) {
+                timeWarning.innerHTML = '⚠️ Since no tasks were checked, please provide a detailed comment explaining why (minimum 10 characters).';
+                timeWarning.classList.add('visible');
             }
+        } else if (!isValid && hasTasks && !hasValidTime) {
+            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+                timeWarning.innerHTML = '⚠️ Start and End times are required when tasks are checked.';
+                timeWarning.classList.add('visible');
+            }
+        } else if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+            timeWarning.classList.remove('visible');
         }
         
         if (nextBtn) nextBtn.disabled = !isValid;
@@ -2429,6 +2439,14 @@
           }
       } catch(e) {}
       
+      // ✅ Obtener lista COMPLETA de tareas (todas, no solo las completadas)
+      var allTasksList = [];
+      if (DB.cachedTasks && DB.cachedTasks.length > 0) {
+          for (var i = 0; i < DB.cachedTasks.length; i++) {
+              allTasksList.push(DB.cachedTasks[i].task);
+          }
+      }
+
       var payload = {
           action: action,
           folio: folio,
@@ -2438,14 +2456,15 @@
           end: end,
           rootCause: rootCause,
           materialsList: DB.cart,
-          pmTasksCompleted: pmTasksCompleted,
-          pmTotalTasks: pmTotalTasks,
-          pmCompletedTasksList: completedTasksList,
+          pmTasksCompleted: pmTasksCompleted,        // ← Ya existe
+          pmTotalTasks: pmTotalTasks,                // ← Ya existe
+          pmCompletedTasksList: completedTasksList,  // ← Ya existe
+          pmAllTasksList: allTasksList,              // ✅ NUEVO: Lista completa
           needsSparePartPurchase: needsSparePart,
           needsExternalService: needsExternalService,
           needsOther: needsOther,
           otherComment: otherCommentText,
-          user: userEmail  // ← AGREGADO
+          user: userEmail
       };
       
       try {
