@@ -857,8 +857,8 @@
                     </div>
                     <div class="full-width relative">
                         <label class="field-label">Vendor Name</label>
-                        <input type="text" id="skuVendor" placeholder="Type vendor name or select from suggestions" autocomplete="off" list="vendorSuggestions">
-                        <datalist id="vendorSuggestions"></datalist>
+                        <input type="text" id="skuVendor" placeholder="Type vendor name (min 3 chars)" autocomplete="off">
+                        <div id="vendorSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1394,18 +1394,13 @@
         }
     }
 
+    // ============================================
+    // VENDORS - FUNCIÓN SIMPLIFICADA
+    // ============================================
     async function loadVendors() {
-        try {
-            var vendors = await callApi('STK_getExistingVendors', []);
-            var datalist = document.getElementById('vendorSuggestions');
-            datalist.innerHTML = '';
-            for (var i = 0; i < vendors.length; i++) {
-                var opt = document.createElement('option');
-                opt.value = vendors[i];
-                datalist.appendChild(opt);
-            }
-        } catch(e) { console.warn('Error loading vendors:', e); }
-    }    
+        // Ya no necesitamos cargar datalist, la función setupVendorSuggestions lo maneja
+        console.log('[STK] Vendor suggestions ready');
+    }  
 
     // ============================================
     // STOCK ADJUSTMENT
@@ -1503,44 +1498,64 @@
     }
 
     // ============================================
-    // ASSET SUGGESTIONS
+    // VENDOR SUGGESTIONS - AL TERCER CARACTER
     // ============================================
-    function setupAssetSuggestions() {
-        var assetInput = document.getElementById('skuAssetId');
-        if (!assetInput) return;
-        var suggestionsDiv = document.getElementById('assetSuggestions');
+    function setupVendorSuggestions() {
+        var vendorInput = document.getElementById('skuVendor');
+        if (!vendorInput) return;
+        var suggestionsDiv = document.getElementById('vendorSuggestions');
+        if (!suggestionsDiv) return;
         
-        assetInput.addEventListener('input', async function(e) {
+        var allVendors = []; // Cache de todos los vendors
+        
+        // Cargar todos los vendors una vez
+        async function loadAllVendors() {
+            try {
+                allVendors = await callApi('STK_getExistingVendors', []);
+                console.log('[STK] Vendors loaded:', allVendors.length);
+            } catch(e) {
+                console.warn('[STK] Error loading vendors:', e);
+            }
+        }
+        loadAllVendors();
+        
+        vendorInput.addEventListener('input', function(e) {
             var term = e.target.value.trim();
-            if (term.length >= 3) {
-                try {
-                    var assets = await callApi('STK_searchTechnicalLocations', [term]);
-                    if (assets && assets.length) {
-                        var html = '';
-                        for (var i = 0; i < assets.length; i++) {
-                            var a = assets[i];
-                            html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + a.id + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + a.id + ' - ' + a.name + '</div>';
-                        }
-                        suggestionsDiv.innerHTML = html;
-                        suggestionsDiv.style.display = 'block';
-                    } else {
-                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No TLs found</div>';
-                        suggestionsDiv.style.display = 'block';
+            var suggestionsDiv = document.getElementById('vendorSuggestions');
+            
+            if (term.length >= 3 && allVendors.length > 0) {
+                var matched = allVendors.filter(function(v) {
+                    return v.toLowerCase().includes(term.toLowerCase());
+                });
+                
+                if (matched.length > 0) {
+                    var html = '';
+                    for (var i = 0; i < Math.min(matched.length, 10); i++) {
+                        var vendor = matched[i];
+                        html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectVendor(\'' + escapeHtml(vendor) + '\')">🏢 ' + escapeHtml(vendor) + '</div>';
                     }
-                } catch(e) {
-                    suggestionsDiv.style.display = 'none';
+                    suggestionsDiv.innerHTML = html;
+                    suggestionsDiv.style.display = 'block';
+                } else {
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No vendors found</div>';
+                    suggestionsDiv.style.display = 'block';
                 }
             } else {
                 suggestionsDiv.style.display = 'none';
             }
         });
         
-        // ✅ Al seleccionar, solo se puede elegir de la lista
+        // Cerrar sugerencias al hacer clic fuera
         document.addEventListener('click', function(e) {
-            if (e.target !== assetInput && !suggestionsDiv.contains(e.target)) {
+            if (e.target !== vendorInput && !suggestionsDiv.contains(e.target)) {
                 suggestionsDiv.style.display = 'none';
             }
         });
+    }
+
+    function selectVendor(name) {
+        document.getElementById('skuVendor').value = name;
+        document.getElementById('vendorSuggestions').style.display = 'none';
     }
 
     function selectAsset(id, name) {
@@ -1585,7 +1600,7 @@
             await loadAdjustmentReasons();
             await loadUnits();
             await loadCurrencies();
-            await loadVendors();  // ✅ NUEVO
+            setupVendorSuggestions(); // ✅ NUEVO - Sugerencias al tercer caracter
             await refreshCatalog(false);
             
             console.log('[STK] Connected');
