@@ -1148,7 +1148,8 @@
             return;
         }
         
-        if (woData && woData.pm && woData.pm.isPM) {
+        // ✅ SOLO validar PM si la WO es PREVENTIVA
+        if (woData && woData.pm && woData.pm.isPM === true) {
             var val = parseInt(tasksInput ? tasksInput.value : '0');
             var max = woData.pm.maxTasks || 0;
             
@@ -1184,6 +1185,7 @@
             }
         }
         
+        // ✅ Si no es PM, continuar directamente
         continueClosure();
     }
 
