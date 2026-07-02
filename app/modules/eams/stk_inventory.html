@@ -1606,7 +1606,7 @@
             console.log('[STK] Connected');
             hideLoading();
             showToast('Inventory Hub loaded successfully ✅', 'success');
-            setupAssetSuggestions();
+            setupVendorSuggestions(); // ✅ Esta es la función que creamos
         } catch(err) {
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
