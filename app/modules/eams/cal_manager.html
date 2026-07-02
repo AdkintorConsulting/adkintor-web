@@ -1089,7 +1089,7 @@ async function init() {
     await loadInstruments();
     setupEventListeners();
     hideLoading();
-    document.getElementById('footer-status').innerText = 'Ready';
+    console.log('[CAL] Ready'); // ✅ El footer no tiene ID, usamos console.log
     showToast('Calibration Manager loaded successfully ✅', 'success');
 }
 
