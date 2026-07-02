@@ -1499,6 +1499,57 @@
         validateCorrective();
     }
 
+    // ============================================
+    // CALCULATE LABOUR FOR PM (PREVENTIVE) - COPIA DE calcLabour
+    // ============================================
+    function calcLabourPM() {
+        var startInput = document.getElementById('startTime');
+        var endInput = document.getElementById('endTime');
+        var labourDisplay = document.getElementById('labourDisplay');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        if (startInput && endInput && startInput.value && endInput.value) {
+            var start = new Date(startInput.value);
+            var end = new Date(endInput.value);
+            
+            if (end > start) {
+                var diff = (end - start) / 3600000;
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: ' + diff.toFixed(2) + ' hours';
+                if (timeWarning) timeWarning.classList.remove('visible');
+                
+                if (diff > 8) {
+                    if (timeWarning) {
+                        timeWarning.innerHTML = '⚠️ Warning: Working time exceeds 8 hours (' + diff.toFixed(2) + 'h). Please verify shift duration.';
+                        timeWarning.classList.add('visible');
+                    }
+                }
+                
+                // Validación REUNIFY vs último End Time
+                if (DB.selectedWO && DB.selectedWO.lastEndTime) {
+                    try {
+                        var lastEndDate = new Date(DB.selectedWO.lastEndTime);
+                        if (!isNaN(lastEndDate.getTime()) && start < lastEndDate) {
+                            if (timeWarning) {
+                                timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + '). Please select a later start time.';
+                                timeWarning.classList.add('visible');
+                            }
+                            showToast('Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + ')', 'error');
+                        }
+                    } catch(e) {}
+                }
+                
+            } else {
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: 0.00 hours';
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ End time must be after start time';
+                    timeWarning.classList.add('visible');
+                }
+                showToast('End time must be after start time', 'error');
+            }
+        }
+        validatePMStep();
+    }    
+
     function validatePMStep() {
         var startTime = document.getElementById('startTime')?.value;
         var endTime = document.getElementById('endTime')?.value;
