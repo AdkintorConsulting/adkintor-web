@@ -700,8 +700,8 @@
         .modal-container {
             background: white;
             border-radius: 12px;
-            width: 600px;
-            max-width: 92%;
+            width: 800px;
+            max-width: 94%;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -1054,9 +1054,9 @@
                                 <textarea id="receiptNotes" rows="2"></textarea>
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
-                                <button type="button" class="btn-danger" id="btnCancelPO" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
-                                <button type="button" class="btn-success" id="btnClosePO" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
-                                <button type="button" class="btn-primary" id="btnConfirmReceipt" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
+                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
+                                <button type="button" class="btn-primary" onclick="closeCurrentPO()" style="display:none; background:#22c55e;"><i class="fas fa-check-circle"></i> CLOSE PO</button>
+                                <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
                             </div>
                             </div>
                         </form>
@@ -1884,7 +1884,10 @@
                     var row = input.closest('tr');
                     row.querySelector('.desc-input').value = desc;
                     var priceInp = row.querySelector('.price-input');
-                    if (!priceInp.value) priceInp.value = price;
+                    // ✅ Si el precio no tiene valor o es 0, usar el del catálogo
+                    if (!priceInp.value || parseFloat(priceInp.value) === 0) {
+                        priceInp.value = price;
+                    }
                     div.remove();
                 };
             }(item.sku, item.description, item.price);
@@ -2184,9 +2187,12 @@
     }
 
     async function loadWOsForModal() {
+        // ✅ Mostrar spinner en el select
+        var sel = document.getElementById('woNumberSelect');
+        sel.innerHTML = '<option value="">⏳ Loading WOs...</option>';
+        
         try {
             var wos = await callApi('STK_getActiveWorkOrders');
-            var sel = document.getElementById('woNumberSelect');
             if (wos.length) {
                 var html = '<option value="">-- Select WO --</option>';
                 for (var i = 0; i < wos.length; i++) {
@@ -2196,7 +2202,10 @@
             } else {
                 sel.innerHTML = '<option value="">-- No active WOs --</option>';
             }
-        } catch(e) { console.error(e); }
+        } catch(e) {
+            console.error(e);
+            sel.innerHTML = '<option value="">-- Error loading WOs --</option>';
+        }
     }
 
     var searchTerm = '';
@@ -2235,9 +2244,9 @@
                 
                 // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
                 var status = (result.header.status || '').toUpperCase();
-                var cancelBtn = document.getElementById('btnCancelPO');
-                var closeBtn = document.getElementById('btnClosePO');
-                var receiptBtn = document.getElementById('btnConfirmReceipt');
+                var cancelBtn = document.querySelector('#receiptForm .btn-danger');
+                var closeBtn = document.querySelector('#receiptForm .btn-close');
+                var receiptBtn = document.querySelector('#receiptForm .btn-primary');
                 
                 // Ocultar todos los botones por defecto
                 if (cancelBtn) cancelBtn.style.display = 'none';
@@ -2249,22 +2258,15 @@
                     // EMITTED: CANCEL + RECEIPT
                     if (cancelBtn) cancelBtn.style.display = 'inline-block';
                     if (receiptBtn) receiptBtn.style.display = 'inline-block';
-                    if (closeBtn) closeBtn.style.display = 'none';
                 } else if (status === 'PARTIAL') {
                     // PARTIAL: RECEIPT + CLOSE
-                    if (cancelBtn) cancelBtn.style.display = 'none';
                     if (receiptBtn) receiptBtn.style.display = 'inline-block';
                     if (closeBtn) closeBtn.style.display = 'inline-block';
                 } else if (status === 'RECEIVED') {
                     // RECEIVED: solo CLOSE
-                    if (cancelBtn) cancelBtn.style.display = 'none';
-                    if (receiptBtn) receiptBtn.style.display = 'none';
                     if (closeBtn) closeBtn.style.display = 'inline-block';
                 } else if (status === 'CLOSED' || status === 'CANCELLED') {
                     // CLOSED/CANCELLED: ningún botón
-                    if (cancelBtn) cancelBtn.style.display = 'none';
-                    if (closeBtn) closeBtn.style.display = 'none';
-                    if (receiptBtn) receiptBtn.style.display = 'none';
                     showToast('⚠️ This PO is already ' + status + '. No further actions allowed.', 'warning');
                 }
                 
@@ -2277,7 +2279,6 @@
                     var received = item.qtyReceived || 0;
                     var pending = ordered - received;
                     var price = item.unitPrice || 0;
-                    // Deshabilitar inputs si está CLOSED o CANCELLED
                     var isDisabled = (status === 'CLOSED' || status === 'CANCELLED') ? 'disabled' : '';
                     itemsHtml += '<tr>' +
                         '<td style="padding:6px;">' + escapeHtml(item.sku) + '</td>' +
