@@ -816,7 +816,8 @@
     async function refreshCatalog() {
         // showLoading se llama desde init, no desde aquí
         try {
-            var response = await callApi('STK_VIEWER_getFullCatalog', []);
+            // ✅ Usar filtro de 30 días por defecto
+            var response = await callApi('STK_VIEWER_getCatalogFiltered', [false]);
             catalogData = response.data || [];
             filterAndRender();
             return true;
