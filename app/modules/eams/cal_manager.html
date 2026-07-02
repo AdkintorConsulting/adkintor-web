@@ -1207,8 +1207,8 @@ async function init() {
                     '<tr>' +
                         '<td><strong style="color:#1a1a2e;">' + escapeHtml(inst.tagId) + '</strong></td>' +
                         '<td>' + escapeHtml(inst.name) + '</td>' +
-                        '<td>' + escapeHtml(inst.type) || '-' + '</td>' +
-                        '<td>' + escapeHtml(inst.area) || '-' + '</td>' +
+                        '<td>' + escapeHtml(inst.type || '-') + '</td>' +
+                        '<td>' + escapeHtml(inst.area || '-') + '</td>' +
                         '<td>' + (inst.lastCal || '-') + '</td>' +
                         '<td>' + (inst.nextCal || '-') + '</td>' +
                         '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' days</span></td>' +
