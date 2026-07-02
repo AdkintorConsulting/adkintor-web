@@ -2079,9 +2079,17 @@
                 } else if (usageType === 'CONSUME') {
                     var hasWO = await showModalPromise('modalHasWO');
                     if (hasWO === 'YES') {
-                        await loadWOsForModal();
+                        // ✅ Primero mostrar spinner en el modal
+                        var sel = document.getElementById('woNumberSelect');
+                        sel.innerHTML = '<option value="">⏳ Loading WOs...</option>';
+                        
+                        // ✅ Abrir el modal CON el spinner ya visible
                         var woNumber = await showModalPromise('modalWONumber');
-                        if (woNumber) await saveDirectPurchase({ vendor: vendor, paymentType: paymentType, reqId: reqId, budgetAreaName: budgetAreaName, notes: notes, items: items }, 'CONSUMED_WO', woNumber);
+                        
+                        // ✅ Si el usuario seleccionó una WO, guardar
+                        if (woNumber) {
+                            await saveDirectPurchase({ vendor: vendor, paymentType: paymentType, reqId: reqId, budgetAreaName: budgetAreaName, notes: notes, items: items }, 'CONSUMED_WO', woNumber);
+                        }
                     } else {
                         await saveDirectPurchase({ vendor: vendor, paymentType: paymentType, reqId: reqId, budgetAreaName: budgetAreaName, notes: notes, items: items }, 'CONSUMED_ADMIN', '');
                     }
@@ -2187,12 +2195,9 @@
     }
 
     async function loadWOsForModal() {
-        // ✅ Mostrar spinner en el select
-        var sel = document.getElementById('woNumberSelect');
-        sel.innerHTML = '<option value="">⏳ Loading WOs...</option>';
-        
         try {
             var wos = await callApi('STK_getActiveWorkOrders');
+            var sel = document.getElementById('woNumberSelect');
             if (wos.length) {
                 var html = '<option value="">-- Select WO --</option>';
                 for (var i = 0; i < wos.length; i++) {
@@ -2202,9 +2207,12 @@
             } else {
                 sel.innerHTML = '<option value="">-- No active WOs --</option>';
             }
+            return wos;
         } catch(e) {
             console.error(e);
+            var sel = document.getElementById('woNumberSelect');
             sel.innerHTML = '<option value="">-- Error loading WOs --</option>';
+            return [];
         }
     }
 
