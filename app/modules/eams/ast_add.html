@@ -699,9 +699,15 @@
     }
 
     function populateParents(area) {
+        console.log('[AST] populateParents - area:', area);
+        console.log('[AST] populateParents - DB.parents:', DB.parents);
+        
         const pSel = document.getElementById('parentID');
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
+        
+        console.log('[AST] populateParents - selectedType:', selectedType);
+
         
         // Si es TL, el padre es el área (ya se maneja en updateFieldStates)
         if (selectedType === 'Technical Location') {
@@ -778,6 +784,7 @@
     }
 
     function syncUI() {
+        console.log('[AST] syncUI ejecutado');
         // ✅ Verificar que los elementos existen antes de continuar
         const typeSelect = document.getElementById('type');
         if (!typeSelect) {
@@ -786,6 +793,7 @@
             return;
         }
         
+        console.log('[AST] syncUI - llamando a updateFieldStates');
         // Llamar a la nueva función de estados secuenciales
         updateFieldStates();
         
@@ -809,8 +817,9 @@
             return;
         }
         
-        const areaValue = area.value;
-        const typeValue = type.value;
+        const areaValue = area.value || '';
+        const typeValue = type.value || '';
+        console.log('[AST] updateFieldStates - area:', areaValue, 'type:', typeValue);
         
         // Referencias a todos los campos
         const fields = {
@@ -1024,6 +1033,9 @@
         try {
             const response = await callApi('AST_getInitialData', []);
             DB = response.data;
+            console.log('[AST] DB cargado:', DB);
+            console.log('[AST] DB.parents:', DB.parents);  // ← Verificar
+            console.log('[AST] DB.parents length:', DB.parents?.length);
             const areaNames = DB.areas ? DB.areas.map(a => a.name) : [];
             fillSelect('area', areaNames);
             fillSelect('type', DB.assetTypes || []);
@@ -1064,10 +1076,11 @@
             await loadConfig();
             // ✅ Esperar un momento para que los selects se rendericen
             setTimeout(function() {
+                console.log('[AST] Ejecutando updateFieldStates desde init');
                 updateFieldStates();
                 hideLoading();
                 showMessage('Add Asset loaded successfully ✅', false);
-            }, 100);
+            }, 300);  // ← Aumentar a 300ms para asegurar que los selects estén listos
         } else {
             showMessage('API URL not configured. Please log in again.', true);
         }
