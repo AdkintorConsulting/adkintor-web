@@ -1031,7 +1031,7 @@
             fillSelect('category', categoryNames);
             fillSelect('status', DB.statuses || []);
             setupCriticalityGrid();
-            syncUI();
+            // ✅ NO llamar a syncUI() aquí, se llama desde init con timeout
         } catch (error) {
             showMessage('Failed to load configuration: ' + error.message, 'error');
             document.getElementById('btnSubmit').disabled = true;
