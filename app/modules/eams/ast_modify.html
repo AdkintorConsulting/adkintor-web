@@ -959,7 +959,8 @@
                 result.push({
                     id: node.id,
                     name: node.name,
-                    area: node.area || node.parentArea || ''
+                    area: node.area || node.parentArea || '',
+                    type: node.type || ''  // ✅ AGREGAR type
                 });
             }
             if (node.children && node.children.length > 0) {
