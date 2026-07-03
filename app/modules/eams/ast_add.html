@@ -395,7 +395,7 @@
                 </div>
                 <div class="field-group required-field">
                     <label>Asset Type</label>
-                    <select id="area" name="area" onchange="syncUI()" required>
+                    <select id="type" name="type" onchange="syncUI()" required>
                         <option value=""> — Select — </option>
                     </select>
                 </div>
@@ -799,8 +799,18 @@
     }
 
     function updateFieldStates() {
-        const area = document.getElementById('area').value;
-        const type = document.getElementById('type').value;
+        const area = document.getElementById('area');
+        const type = document.getElementById('type');
+        
+        // ✅ Si los selects no existen, salir
+        if (!area || !type) {
+            console.warn('[AST] Selects not ready, retrying...');
+            setTimeout(updateFieldStates, 100);
+            return;
+        }
+        
+        const areaValue = area.value;
+        const typeValue = type.value;
         
         // Referencias a todos los campos
         const fields = {
@@ -1052,10 +1062,12 @@
         if (EAMS_API_URL) {
             showLoading('Loading configuration...');
             await loadConfig();
-            // ✅ Inicializar estados de campos (todo deshabilitado excepto Área)
-            updateFieldStates();
-            hideLoading();
-            showMessage('Add Asset loaded successfully ✅', false);
+            // ✅ Esperar un momento para que los selects se rendericen
+            setTimeout(function() {
+                updateFieldStates();
+                hideLoading();
+                showMessage('Add Asset loaded successfully ✅', false);
+            }, 100);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
         }
