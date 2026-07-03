@@ -1235,28 +1235,19 @@
             loadSelect('v-status', DBconfig.statuses, assetData.status);
         }
 
-        // ✅ Esperar a que los selects estén poblados antes de aplicar la lógica
-        setTimeout(function() {
-            applyTypeLogic();
-        }, 50);
-
-        // También asegurar que el evento change del tipo esté configurado
         const typeSelect = document.getElementById('v-type');
         if (typeSelect) {
             typeSelect.removeEventListener('change', applyTypeLogic);
             typeSelect.addEventListener('change', function() {
-                const newType = typeSelect.value;
                 applyTypeLogic();
                 markDirty();
-                const area = document.getElementById('v-area').value;
-                const currentId = document.getElementById('v-id').value;
-                const parentSelect = document.getElementById('v-parent');
-                if (area && newType !== 'Technical Location') {
-                    loadParentSelect(area, parentSelect.value, currentId);
-                }
             });
         }
-        applyTypeLogic();
+
+        // ✅ Esperar a que los selects estén poblados antes de aplicar la lógica
+        setTimeout(function() {
+            applyTypeLogic();
+        }, 50);
         
         allAssetsFlat = [];
         loadParentSelect(assetData.area, assetData.parentId, assetData.id);
