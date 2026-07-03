@@ -778,6 +778,14 @@
     }
 
     function syncUI() {
+        // ✅ Verificar que los elementos existen antes de continuar
+        const typeSelect = document.getElementById('type');
+        if (!typeSelect) {
+            console.warn('[AST] Type select not ready, retrying...');
+            setTimeout(syncUI, 100);
+            return;
+        }
+        
         // Llamar a la nueva función de estados secuenciales
         updateFieldStates();
         
