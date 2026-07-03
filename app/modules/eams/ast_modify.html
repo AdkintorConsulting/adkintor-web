@@ -1227,23 +1227,27 @@
         document.getElementById('v-serial').value = assetData.serial || '';
         document.getElementById('v-year').value = assetData.year || '';
         
+        // En renderEditor(), después de loadSelect y antes de applyTypeLogic
         if (DBconfig) {
             loadSelect('v-area', DBconfig.areas, assetData.area);
             loadSelect('v-type', DBconfig.assetTypes, assetData.type);
             loadSelect('v-cat', DBconfig.categories, assetData.category);
             loadSelect('v-status', DBconfig.statuses, assetData.status);
         }
-        
+
+        // ✅ Esperar a que los selects estén poblados antes de aplicar la lógica
+        setTimeout(function() {
+            applyTypeLogic();
+        }, 50);
+
+        // También asegurar que el evento change del tipo esté configurado
         const typeSelect = document.getElementById('v-type');
         if (typeSelect) {
             typeSelect.removeEventListener('change', applyTypeLogic);
             typeSelect.addEventListener('change', function() {
-                // ✅ Guardar el tipo anterior antes de cambiarlo
                 const newType = typeSelect.value;
                 applyTypeLogic();
                 markDirty();
-                
-                // ✅ Recargar opciones de parent después del cambio de tipo
                 const area = document.getElementById('v-area').value;
                 const currentId = document.getElementById('v-id').value;
                 const parentSelect = document.getElementById('v-parent');
