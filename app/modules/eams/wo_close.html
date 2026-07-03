@@ -1084,15 +1084,16 @@
             if (stage3) stage3.style.display = 'block';
             
             var pmBox = document.getElementById('pmBox');
-            var isPM = response.pm && response.pm.isPM;
-            var isOnHold = response.isOnHold === true;
-            
+            // ✅ Usar woData en lugar de response
+            var isPM = woData && woData.pm && woData.pm.isPM === true;
+            var isOnHold = woData && woData.isOnHold === true;
+
             if (pmBox) {
                 if (isPM) {
                     pmBox.style.display = 'block';
                     pmBox.classList.remove('follow-up');
-                    var completedTasks = response.pm.completedTasks || 0;
-                    var maxTasks = response.pm.maxTasks || 0;
+                    var completedTasks = woData.pm.completedTasks || 0;
+                    var maxTasks = woData.pm.maxTasks || 0;
                     document.getElementById('maxTLabel').innerText = maxTasks;
                     var tasksInput = document.getElementById('tasksExecuted');
                     if (tasksInput) {
