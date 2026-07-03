@@ -395,7 +395,7 @@
                 </div>
                 <div class="field-group required-field">
                     <label>Asset Type</label>
-                    <select id="type" name="type" onchange="syncUI()" required>
+                    <select id="area" name="area" onchange="syncUI()" required>
                         <option value=""> — Select — </option>
                     </select>
                 </div>
@@ -703,7 +703,7 @@
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
         
-        // Caso 1: Technical Location → padre es el AREA
+        // Si es TL, el padre es el área (ya se maneja en updateFieldStates)
         if (selectedType === 'Technical Location') {
             pSel.disabled = true;
             pSel.innerHTML = `<option value="${area}">${area} (Root Area)</option>`;
@@ -711,12 +711,14 @@
             return;
         }
         
-        // Caso 2: Main Equipment → solo TL del área
-        pSel.disabled = false;
+        // Si no hay área, limpiar
         if (!area || !DB.parents) {
             pSel.innerHTML = '<option value="N/A">N/A - None / Root Level</option>';
+            pSel.value = 'N/A';
             return;
         }
+        
+        pSel.disabled = false;
         
         let filtered = [];
         const mainTypes = ['Main Equipment'];
@@ -739,6 +741,11 @@
             html += `<option value="${p.id}">${p.id} - ${p.name} (${p.type})</option>`;
         });
         pSel.innerHTML = html;
+        
+        // Si solo hay una opción (N/A), seleccionarla automáticamente
+        if (filtered.length === 0) {
+            pSel.value = 'N/A';
+        }
     }
 
     function updateStatusOptions() {
@@ -746,16 +753,22 @@
         const statusSelect = document.getElementById('status');
         const selectedType = typeSelect ? typeSelect.value : '';
         const currentStatus = statusSelect.value;
-        // Usar los statuses desde DB (cargados desde SETUP_AST col G)
+        
+        // Si status está deshabilitado, no hacer nada
+        if (statusSelect.disabled) {
+            statusSelect.innerHTML = '<option value=""> — Select — </option>';
+            return;
+        }
+        
         let allStatuses = DB.statuses || [];
         let statusOptions = [];
+        
         if (selectedType === 'Technical Location') {
-            // Mostrar todos los status incluyendo Active-PM
             statusOptions = allStatuses;
         } else {
-            // Filtrar Active-PM para no-TL
             statusOptions = allStatuses.filter(s => s !== 'Active-PM');
         }
+        
         let html = '<option value=""> — Select — </option>';
         statusOptions.forEach(s => {
             const selected = (s === currentStatus) ? 'selected' : '';
@@ -765,16 +778,167 @@
     }
 
     function syncUI() {
-        const typeSelect = document.getElementById('type');
-        const selectedType = typeSelect ? typeSelect.value : '';
-        const topLevelTypes = DB.assetTypes && DB.assetTypes.length > 0 ? DB.assetTypes : [];
-        const isTopLevelType = topLevelTypes.length > 0 && selectedType === topLevelTypes[0];
-        document.querySelectorAll('.lockable').forEach(el => el.disabled = isTopLevelType);
-        const area = document.getElementById('area').value;
-        populateParents(area);
-        updateStatusOptions();
-        recalc();
+        // Llamar a la nueva función de estados secuenciales
+        updateFieldStates();
+        
+        // Actualizar críticidad (solo si los campos están habilitados)
+        const critInputs = document.querySelectorAll('.crit-input');
+        let allDisabled = true;
+        critInputs.forEach(el => { if (!el.disabled) allDisabled = false; });
+        if (!allDisabled) {
+            recalc();
+        }
     }
+
+    function updateFieldStates() {
+        const area = document.getElementById('area').value;
+        const type = document.getElementById('type').value;
+        
+        // Referencias a todos los campos
+        const fields = {
+            parentID: document.getElementById('parentID'),
+            name: document.getElementById('name'),
+            category: document.getElementById('category'),
+            status: document.getElementById('status'),
+            mfr: document.querySelector('input[name="mfr"]'),
+            model: document.querySelector('input[name="model"]'),
+            serial: document.querySelector('input[name="serial"]'),
+            year: document.querySelector('input[name="year"]'),
+            critInputs: document.querySelectorAll('.crit-input')
+        };
+        
+        // Estado inicial: solo Área habilitado
+        const areaSelected = area && area !== '';
+        const typeSelected = type && type !== '';
+        
+        // Paso 1: Si no hay área seleccionada, solo Área habilitado
+        if (!areaSelected) {
+            // Deshabilitar todo excepto Área
+            document.getElementById('type').disabled = false; // Asset Type SIEMPRE habilitado
+            fields.parentID.disabled = true;
+            fields.name.disabled = true;
+            fields.category.disabled = true;
+            fields.status.disabled = true;
+            if (fields.mfr) fields.mfr.disabled = true;
+            if (fields.model) fields.model.disabled = true;
+            if (fields.serial) fields.serial.disabled = true;
+            if (fields.year) fields.year.disabled = true;
+            fields.critInputs.forEach(el => el.disabled = true);
+            
+            // Limpiar valores de campos deshabilitados
+            fields.parentID.value = 'N/A';
+            fields.name.value = '';
+            fields.category.value = '';
+            fields.status.value = '';
+            if (fields.mfr) fields.mfr.value = '';
+            if (fields.model) fields.model.value = '';
+            if (fields.serial) fields.serial.value = '';
+            if (fields.year) fields.year.value = '';
+            fields.critInputs.forEach(el => el.value = '');
+            
+            document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+            document.getElementById('critBadge').style.background = '#ddd';
+            document.getElementById('critBadge').style.color = '#333';
+            return;
+        }
+        
+        // Paso 2: Área seleccionada, habilitar Asset Type
+        document.getElementById('type').disabled = false;
+        
+        // Paso 3: Si no hay tipo seleccionado, solo Área + Type habilitados
+        if (!typeSelected) {
+            fields.parentID.disabled = true;
+            fields.name.disabled = true;
+            fields.category.disabled = true;
+            fields.status.disabled = true;
+            if (fields.mfr) fields.mfr.disabled = true;
+            if (fields.model) fields.model.disabled = true;
+            if (fields.serial) fields.serial.disabled = true;
+            if (fields.year) fields.year.disabled = true;
+            fields.critInputs.forEach(el => el.disabled = true);
+            
+            // Limpiar valores
+            fields.parentID.value = 'N/A';
+            fields.name.value = '';
+            fields.category.value = '';
+            fields.status.value = '';
+            if (fields.mfr) fields.mfr.value = '';
+            if (fields.model) fields.model.value = '';
+            if (fields.serial) fields.serial.value = '';
+            if (fields.year) fields.year.value = '';
+            fields.critInputs.forEach(el => el.value = '');
+            
+            document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+            document.getElementById('critBadge').style.background = '#ddd';
+            document.getElementById('critBadge').style.color = '#333';
+            return;
+        }
+        
+        // Paso 4: Tipo seleccionado → habilitar según el tipo
+        const isTL = (type === 'Technical Location');
+        const isMain = (type === 'Main Equipment');
+        const isSub = (type === 'Sub-Assembly' || type === 'Auxiliary' || type === 'Component');
+        
+        // ----- PARENT ID -----
+        if (isTL) {
+            // TL: Parent ID deshabilitado (fijo en el área)
+            fields.parentID.disabled = true;
+            fields.parentID.innerHTML = `<option value="${area}">${area} (Root Area)</option>`;
+            fields.parentID.value = area;
+        } else {
+            // Main / Sub: Parent ID habilitado
+            fields.parentID.disabled = false;
+            // populateParents() ya se encarga de llenar las opciones
+            populateParents(area);
+        }
+        
+        // ----- CATEGORY -----
+        // TL: deshabilitado, Main/Sub: habilitado
+        fields.category.disabled = isTL;
+        if (isTL) {
+            fields.category.value = '';
+        }
+        
+        // ----- STATUS -----
+        fields.status.disabled = false;
+        updateStatusOptions();
+        
+        // ----- NAME -----
+        fields.name.disabled = false;
+        
+        // ----- MANUFACTURER, MODEL, SERIAL, YEAR -----
+        // TL: deshabilitado, Main/Sub: habilitado
+        const tlFieldsDisabled = isTL;
+        if (fields.mfr) fields.mfr.disabled = tlFieldsDisabled;
+        if (fields.model) fields.model.disabled = tlFieldsDisabled;
+        if (fields.serial) fields.serial.disabled = tlFieldsDisabled;
+        if (fields.year) fields.year.disabled = tlFieldsDisabled;
+        
+        if (isTL) {
+            if (fields.mfr) fields.mfr.value = '';
+            if (fields.model) fields.model.value = '';
+            if (fields.serial) fields.serial.value = '';
+            if (fields.year) fields.year.value = '';
+        }
+        
+        // ----- CRITICALITY MATRIX -----
+        // TL y Main: habilitado, Sub: deshabilitado (opcional, según tu regla)
+        // Según tu regla: Sub/Aux/Component NO tienen hijos, pero SÍ tienen criticalidad
+        // Así que habilitamos para todos excepto si quieres que Sub no tenga
+        const critDisabled = false; // Todos los tipos tienen criticalidad
+        fields.critInputs.forEach(el => el.disabled = critDisabled);
+        
+        // Si está deshabilitado, limpiar valores
+        if (critDisabled) {
+            fields.critInputs.forEach(el => el.value = '');
+            document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+            document.getElementById('critBadge').style.background = '#ddd';
+            document.getElementById('critBadge').style.color = '#333';
+        } else {
+            // Recalcular si hay valores
+            recalc();
+        }
+    }    
 
     function disableButton(id, text) {
         const btn = document.getElementById(id);
@@ -880,6 +1044,8 @@
         if (EAMS_API_URL) {
             showLoading('Loading configuration...');
             await loadConfig();
+            // ✅ Inicializar estados de campos (todo deshabilitado excepto Área)
+            updateFieldStates();
             hideLoading();
             showMessage('Add Asset loaded successfully ✅', false);
         } else {
