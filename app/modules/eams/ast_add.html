@@ -1074,13 +1074,18 @@
         if (EAMS_API_URL) {
             showLoading('Loading configuration...');
             await loadConfig();
-            // ✅ Esperar un momento para que los selects se rendericen
+            
+            // ✅ Asegurar que los selects están vacíos al inicio
+            document.getElementById('area').value = '';
+            document.getElementById('type').value = '';
+            
+            // ✅ Esperar un momento y luego ejecutar updateFieldStates
             setTimeout(function() {
                 console.log('[AST] Ejecutando updateFieldStates desde init');
                 updateFieldStates();
                 hideLoading();
                 showMessage('Add Asset loaded successfully ✅', false);
-            }, 300);  // ← Aumentar a 300ms para asegurar que los selects estén listos
+            }, 300);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
         }
