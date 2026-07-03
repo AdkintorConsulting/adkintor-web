@@ -631,10 +631,12 @@
                 
                 <div id="pmBox" class="pm-protocol-alert" style="display:none;">
                     <span class="pm-title">🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE</span>
-                    <p>Verify the number of tasks successfully executed from the checklist:</p>
-                    <div class="pm-input-group">
-                        <input type="number" id="tasksExecuted" min="0" placeholder="0" readonly style="background:#f1f5f9; cursor:not-allowed;">
-                        <span> / <strong id="maxTLabel">0</strong> Tasks</span>
+                    <p>Tasks reported by technician:</p>
+                    <div style="display:flex; align-items:center; gap:10px; margin-top:10px; font-size:18px; font-weight:700; color:#1a1a2e;">
+                        <span id="pmCompletedDisplay">0</span>
+                        <span style="font-size:14px; color:#6c757d;">/</span>
+                        <span id="pmTotalDisplay" style="font-size:18px; font-weight:700; color:#1a1a2e;">0</span>
+                        <span style="font-size:14px; font-weight:400; color:#6c757d;">Tasks</span>
                     </div>
                 </div>
             </div>
@@ -833,8 +835,7 @@
         document.querySelectorAll('[data-required="true"]').forEach(function(field) {
             field.classList.remove('error');
         });
-        var tasksInput = document.getElementById('tasksExecuted');
-        if (tasksInput) tasksInput.classList.remove('error');
+        // ✅ Ya no existe tasksExecuted
     }
 
     function validateAndHighlight() {
@@ -851,16 +852,15 @@
             }
         });
         
+        // ✅ Validación PM usando los nuevos spans
         var pmBox = document.getElementById('pmBox');
-        var tasksInput = document.getElementById('tasksExecuted');
-        if (pmBox && pmBox.style.display !== 'none' && tasksInput) {
-            var val = parseInt(tasksInput.value);
-            var max = parseInt(document.getElementById('maxTLabel')?.innerText || '0');
+        if (pmBox && pmBox.style.display !== 'none') {
+            var completedText = document.getElementById('pmCompletedDisplay')?.innerText || '0';
+            var totalText = document.getElementById('pmTotalDisplay')?.innerText || '0';
+            var val = parseInt(completedText);
+            var max = parseInt(totalText);
             if (isNaN(val) || val < 0 || val > max) {
-                tasksInput.classList.add('error');
                 allValid = false;
-            } else {
-                tasksInput.classList.remove('error');
             }
         }
         
@@ -901,12 +901,14 @@
         var folioSel = document.getElementById('folioSel');
         var apprSel = document.getElementById('apprSel');
         var note = document.getElementById('note');
-        var tasksInput = document.getElementById('tasksExecuted');
         
         if (folioSel) folioSel.value = '';
         if (apprSel) apprSel.value = '';
         if (note) note.value = '';
-        if (tasksInput) tasksInput.value = '';
+        
+        // ✅ Resetear los spans del PM Box
+        document.getElementById('pmCompletedDisplay').innerText = '0';
+        document.getElementById('pmTotalDisplay').innerText = '0';
         
         // Ocultar stages
         var stage2 = document.getElementById('stage2');
@@ -1094,18 +1096,14 @@
                     pmBox.classList.remove('follow-up');
                     var completedTasks = woData.pm.completedTasks || 0;
                     var maxTasks = woData.pm.maxTasks || 0;
-                    document.getElementById('maxTLabel').innerText = maxTasks;
-                    var tasksInput = document.getElementById('tasksExecuted');
-                    if (tasksInput) {
-                        tasksInput.max = maxTasks;
-                        tasksInput.value = completedTasks;
-                        tasksInput.readOnly = true;
-                        tasksInput.style.background = '#f1f5f9';
-                        tasksInput.style.cursor = 'not-allowed';
-                    }
+                    
+                    // ✅ Actualizar los nuevos elementos de solo vista
+                    document.getElementById('pmCompletedDisplay').innerText = completedTasks;
+                    document.getElementById('pmTotalDisplay').innerText = maxTasks;
+                    
                     var pmTitle = pmBox.querySelector('.pm-title');
                     if (pmTitle) {
-                        pmTitle.innerHTML = '🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE - Tasks Completed: ' + completedTasks + '/' + maxTasks;
+                        pmTitle.innerHTML = '🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE';
                     }
                 } else if (isOnHold) {
                     pmBox.style.display = 'block';
@@ -1138,7 +1136,6 @@
         var folio = document.getElementById('folioSel') ? document.getElementById('folioSel').value : '';
         var approver = document.getElementById('apprSel') ? document.getElementById('apprSel').value : '';
         var note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
-        var tasksInput = document.getElementById('tasksExecuted');
         
         if (!folio) {
             showToast('Please select a work order', 'error');
@@ -1154,24 +1151,16 @@
         
         // ✅ SOLO validar PM si la WO es PREVENTIVA
         if (woData && woData.pm && woData.pm.isPM === true) {
-            var val = parseInt(tasksInput ? tasksInput.value : '0');
+            var val = woData.pm.completedTasks || 0;
             var max = woData.pm.maxTasks || 0;
-            
-            // ✅ Si el campo está vacío, usar completedTasks del backend
-            if (isNaN(val) || val === 0) {
-                val = woData.pm.completedTasks || 0;
-                if (tasksInput) tasksInput.value = val;
-            }
             
             if (val > max) {
                 showToast('❌ ERROR: Cannot close with ' + val + ' tasks executed. Maximum is ' + max + '. Verify with technician.', 'error');
-                if (tasksInput) tasksInput.classList.add('error');
                 return;
             }
             
             if (isNaN(val) || val < 0) {
                 showToast('PM PROTOCOL ERROR: Executed activities must be a valid number', 'error');
-                if (tasksInput) tasksInput.classList.add('error');
                 return;
             }
             
@@ -1206,7 +1195,6 @@
         var folio = document.getElementById('folioSel') ? document.getElementById('folioSel').value : '';
         var approver = document.getElementById('apprSel') ? document.getElementById('apprSel').value : '';
         var note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
-        var tasksInput = document.getElementById('tasksExecuted');
         
         if (!folio) {
             showToast('Please select a work order', 'error');
@@ -1235,8 +1223,9 @@
             approver: approver,
             note: note,
             isPM: woData && woData.pm ? woData.pm.isPM : false,
-            tasksExecuted: tasksInput ? (parseInt(tasksInput.value) || 0) : 0,
-            supervisorEmails: supervisorEmails,  // ← AGREGAR COMA
+            tasksExecuted: woData && woData.pm ? (woData.pm.completedTasks || 0) : 0,
+            maxTasks: woData && woData.pm ? woData.pm.maxTasks || 0 : 0,
+            supervisorEmails: supervisorEmails,
             user: userEmail
         };
         
@@ -1287,7 +1276,6 @@
         var note = document.getElementById('note');
         var closeBtn = document.getElementById('closeBtn');
         var cancelBtn = document.getElementById('cancelBtn');
-        var tasksInput = document.getElementById('tasksExecuted');
         
         if (folioSel) folioSel.addEventListener('change', fetchDetails);
         if (apprSel) apprSel.addEventListener('change', validateFields);
@@ -1297,7 +1285,6 @@
             resetClosureForm();
             loadInitialData();
         });
-        if (tasksInput) tasksInput.addEventListener('input', validateFields);
         
         var confirmYes = document.getElementById('pmConfirmYes');
         var confirmNo = document.getElementById('pmConfirmNo');
