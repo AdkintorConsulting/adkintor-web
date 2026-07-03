@@ -972,6 +972,26 @@
         var parentSelect = document.getElementById('v-parent');
         if (!parentSelect) return;
         
+        // Si el tipo es Technical Location, no mostrar opciones
+        const typeSelect = document.getElementById('v-type');
+        const selectedType = typeSelect ? typeSelect.value : '';
+        const isTL = (selectedType === 'Technical Location');
+        
+        if (isTL) {
+            parentSelect.disabled = true;
+            parentSelect.innerHTML = `<option value="N/A">N/A - Technical Location has no parent</option>`;
+            parentSelect.value = 'N/A';
+            parentSelect.style.opacity = '0.6';
+            parentSelect.style.backgroundColor = '#f1f5f9';
+            return;
+        }
+        
+        // Si no es TL, habilitar y filtrar padres según jerarquía
+        parentSelect.disabled = false;
+        parentSelect.style.opacity = '1';
+        parentSelect.style.backgroundColor = 'white';
+        
+        // Construir lista de assets plana si no existe
         if (allAssetsFlat.length === 0 && DBhierarchy.length > 0) {
             allAssetsFlat = [];
             extractAllAssets(DBhierarchy, allAssetsFlat);
@@ -980,12 +1000,33 @@
         var html = '<option value="N/A">N/A - None / Root Level</option>';
         
         if (allAssetsFlat.length > 0 && area) {
+            // Filtrar según reglas de jerarquía
+            const mainTypes = ['Main Equipment'];
+            const subTypes = ['Sub-Assembly', 'Auxiliary', 'Component'];
+            
             for (var i = 0; i < allAssetsFlat.length; i++) {
                 var asset = allAssetsFlat[i];
-                if (asset.area === area && asset.id !== currentAssetId) {
+                
+                // Excluir el mismo asset y assets de otras áreas
+                if (asset.id === currentAssetId || asset.area !== area) continue;
+                
+                // Excluir sub-assets que no son padres válidos
+                // AREA solo puede tener TL como hijo → pero en Modify, AREA no se muestra como opción
+                // TL → puede ser padre de Main/Sub/Aux/Component
+                // Main → puede ser padre de Sub/Aux/Component
+                // Sub/Aux/Component → NO pueden ser padres (no tienen hijos)
+                
+                const assetType = asset.type || '';
+                const canBeParent = 
+                    (selectedType === 'Main Equipment' && assetType === 'Technical Location') ||
+                    (selectedType === 'Sub-Assembly' && (assetType === 'Technical Location' || assetType === 'Main Equipment')) ||
+                    (selectedType === 'Auxiliary' && (assetType === 'Technical Location' || assetType === 'Main Equipment')) ||
+                    (selectedType === 'Component' && (assetType === 'Technical Location' || assetType === 'Main Equipment'));
+                
+                if (canBeParent) {
                     var selected = (currentParentId === asset.id) ? 'selected' : '';
                     html += '<option value="' + escapeHtml(asset.id) + '" ' + selected + '>' + 
-                            escapeHtml(asset.id) + ' - ' + escapeHtml(asset.name) + '</option>';
+                            escapeHtml(asset.id) + ' - ' + escapeHtml(asset.name) + ' (' + escapeHtml(assetType) + ')</option>';
                 }
             }
         }
@@ -1056,6 +1097,35 @@
     function applyTypeLogic() {
         const assetType = document.getElementById('v-type').value;
         const isTL = (assetType === 'Technical Location');
+        const wasTL = window._previousAssetType === 'Technical Location';
+        
+        // Si cambia a TL y antes no era TL, limpiar campos
+        if (isTL && !wasTL) {
+            // Confirmar con el usuario
+            const confirmMsg = '⚠️ Changing to Technical Location will clear:\n' +
+                              '• Category\n• Manufacturer\n• Model\n• Serial Number\n• Year of Install\n' +
+                              '• Parent ID (will be set to N/A)\n\n' +
+                              '¿Continuar?';
+            
+            if (!confirm(confirmMsg)) {
+                // Restaurar tipo anterior
+                document.getElementById('v-type').value = window._previousAssetType || '';
+                return;
+            }
+            
+            // Limpiar campos que no debe tener un TL
+            document.getElementById('v-cat').value = '';
+            document.getElementById('v-man').value = '';
+            document.getElementById('v-model').value = '';
+            document.getElementById('v-serial').value = '';
+            document.getElementById('v-year').value = '';
+            document.getElementById('v-parent').value = 'N/A';
+            
+            showMessage('Fields cleared for Technical Location', 'warning');
+        }
+        
+        // Guardar el tipo actual para futuros cambios
+        window._previousAssetType = assetType;
         
         const tlDisabledFields = ['v-cat', 'v-man', 'v-model', 'v-serial', 'v-year'];
         
@@ -1070,7 +1140,6 @@
                     field.style.opacity = '0.6';
                     field.style.backgroundColor = '#f1f5f9';
                     field.removeAttribute('required');
-                    if (fieldId === 'v-cat') field.value = '';
                 }
                 if (container) {
                     const label = container.querySelector('label');
@@ -1090,7 +1159,26 @@
             }
         }
         
-        // ✅ ACTUALIZAR STATUS según tipo (misma lógica que ADD)
+        // ✅ Parent ID: Si es TL, deshabilitar y setear a N/A
+        const parentSelect = document.getElementById('v-parent');
+        if (isTL) {
+            parentSelect.disabled = true;
+            parentSelect.value = 'N/A';
+            parentSelect.style.opacity = '0.6';
+            parentSelect.style.backgroundColor = '#f1f5f9';
+        } else {
+            parentSelect.disabled = false;
+            parentSelect.style.opacity = '1';
+            parentSelect.style.backgroundColor = 'white';
+            // Recargar opciones de parent según el área actual
+            const area = document.getElementById('v-area').value;
+            const currentId = document.getElementById('v-id').value;
+            if (area) {
+                loadParentSelect(area, parentSelect.value, currentId);
+            }
+        }
+        
+        // ✅ ACTUALIZAR STATUS según tipo
         updateStatusOptionsForModify();
     }
     
@@ -1125,6 +1213,8 @@
         currentAssetData = assetData;
         
         window._originalAssetData = JSON.parse(JSON.stringify(assetData));
+        // ✅ Guardar el tipo original para detectar cambios
+        window._previousAssetType = assetData.type;        
         
         document.getElementById('searchPane').style.display = 'none';
         document.getElementById('editorPane').style.display = 'block';
@@ -1148,8 +1238,18 @@
         if (typeSelect) {
             typeSelect.removeEventListener('change', applyTypeLogic);
             typeSelect.addEventListener('change', function() {
+                // ✅ Guardar el tipo anterior antes de cambiarlo
+                const newType = typeSelect.value;
                 applyTypeLogic();
                 markDirty();
+                
+                // ✅ Recargar opciones de parent después del cambio de tipo
+                const area = document.getElementById('v-area').value;
+                const currentId = document.getElementById('v-id').value;
+                const parentSelect = document.getElementById('v-parent');
+                if (area && newType !== 'Technical Location') {
+                    loadParentSelect(area, parentSelect.value, currentId);
+                }
             });
         }
         applyTypeLogic();
