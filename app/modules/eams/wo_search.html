@@ -1718,8 +1718,28 @@
                     document.getElementById('r_cdate').innerText = '---';
                 }
 
-                // Additional Observations - siempre mostrar el contenido de columna Z de la propia WO
-                document.getElementById('r_obs').innerText = parsedWo.observations || '---';
+                // Additional Observations (columna Z) - formatear JSON si existe
+                let observations = parsedWo.observations || '---';
+
+                if (observations.includes('--- INHERITED FLAGS ---')) {
+                    try {
+                        const jsonMatch = observations.match(/\{.*\}/s);
+                        if (jsonMatch) {
+                            const flags = JSON.parse(jsonMatch[0]);
+                            const formatted = 
+                                '--- INHERITED FLAGS ---\n' +
+                                'Spare Part Purchase: ' + (flags.spare_purchase ? 'Yes' : 'No') + '\n' +
+                                'External Service: ' + (flags.external_service ? 'Yes' : 'No') + '\n' +
+                                'Inherited From: ' + (flags.inherited_from || 'N/A') + '\n' +
+                                'Date: ' + (flags.timestamp ? new Date(flags.timestamp).toLocaleString() : 'N/A');
+                            observations = formatted;
+                        }
+                    } catch(e) {
+                        observations = parsedWo.observations || '---';
+                    }
+                }
+
+                document.getElementById('r_obs').innerText = observations;
                 
                 // Mostrar el reporte
                 fullView.style.display = 'block';
