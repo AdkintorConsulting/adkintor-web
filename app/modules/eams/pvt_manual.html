@@ -1287,10 +1287,10 @@
             var yearStatus = [];
             for (var i = 0; i < years.length; i++) {
                 var year = years[i];
-                var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, year]);
+                var hasPlan = await callApi('PVT_hasAnnualPlan', [year]);
                 var lockStatus = 'UNLOCKED';
                 if (hasPlan) {
-                    lockStatus = await callApi('PVT_getAnnualPlanLockStatus', [selectedAsset.id, year]);
+                    lockStatus = await callApi('PVT_getAnnualPlanLockStatus', [year]);
                 }
                 yearStatus.push({
                     year: year,
