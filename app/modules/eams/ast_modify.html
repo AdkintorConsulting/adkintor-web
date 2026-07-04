@@ -1779,25 +1779,29 @@
     }
 </script>
 
-<!-- MODAL: Confirmación para cambio a Technical Location -->
-<div id="confirmModal" class="modal-overlay">
-    <div class="modal-container" style="max-width: 480px; border-top-color: #dc3545;">
-        <div class="modal-header">
-            <h4 style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> Confirm Action</h4>
-            <button class="btn-close-modal" id="confirmCloseBtn">&times;</button>
-        </div>
-        <div class="modal-body" id="confirmModalBody">
-            <p id="confirmMessage" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size: 14px; line-height: 1.6; white-space: pre-line;"></p>
-        </div>
-        <div class="modal-footer" style="justify-content: center; gap: 12px;">
-            <button class="btn btn-cancel" id="confirmNoBtn" style="flex: 0 0 auto; padding: 8px 24px; background: #6c757d; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
-                <i class="fas fa-times"></i> Cancel
-            </button>
-            <button class="btn btn-confirm" id="confirmYesBtn" style="flex: 0 0 auto; padding: 8px 24px; background: #dc3545; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
-                <i class="fas fa-check"></i> Continue
-            </button>
-        </div>
-    </div>
-</div>
+  <!-- MODAL: Confirmación para cambio a Technical Location -->
+  <div id="confirmModal" class="modal-overlay">
+      <div class="modal-container" style="max-width: 480px; border-top: 4px solid #1a1a2e; border-radius: 12px; background: white; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+          <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #e2e8f0;">
+              <h4 style="margin: 0; color: #1a1a2e; font-size: 18px; font-weight: 700; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  <i class="fas fa-exclamation-triangle" style="color: #f59e0b; margin-right: 10px;"></i> Confirm Action
+              </h4>
+              <button class="btn-close-modal" id="confirmCloseBtn" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #94a3b8; transition: color 0.2s; padding: 0; line-height: 1;" onmouseover="this.style.color='#dc3545'" onmouseout="this.style.color='#94a3b8'">
+                  ×
+              </button>
+          </div>
+          <div class="modal-body" id="confirmModalBody" style="padding: 24px 24px 20px 24px;">
+              <p id="confirmMessage" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; line-height: 1.8; color: #1e293b; margin: 0; white-space: pre-line;"></p>
+          </div>
+          <div class="modal-footer" style="display: flex; justify-content: center; gap: 16px; padding: 16px 24px 24px 24px; border-top: 1px solid #e2e8f0;">
+              <button class="btn btn-cancel" id="confirmNoBtn" style="flex: 0 0 auto; padding: 10px 32px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background 0.2s;">
+                  <i class="fas fa-times" style="margin-right: 6px;"></i> Cancel
+              </button>
+              <button class="btn btn-confirm" id="confirmYesBtn" style="flex: 0 0 auto; padding: 10px 32px; background: #1a1a2e; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background 0.2s;">
+                  <i class="fas fa-check" style="margin-right: 6px;"></i> Continue
+              </button>
+          </div>
+      </div>
+  </div>
 </body>
 </html>
