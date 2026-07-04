@@ -1061,8 +1061,7 @@
         // Obtener años seleccionados
         var checkedYears = document.querySelectorAll('.year-checkbox:checked');
         if (checkedYears.length === 0) {
-            showToast('Please select at least one year', 'error');
-            return;
+            return;  // ✅ Solo salir sin toast
         }
         
         var years = [];
@@ -1229,8 +1228,12 @@
     // SAVE MANUAL PLAN
     // ============================================
     async function saveManualPlan() {
+        // ✅ Mostrar spinner INMEDIATAMENTE
+        showLoading('Checking...');
+        
         if (!selectedAsset || generatedWeeks.length === 0) {
             showToast('Please select an asset and generate weeks first', 'error');
+            hideLoading();
             return;
         }
         
