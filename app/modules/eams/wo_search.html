@@ -1703,13 +1703,22 @@
                 // Root Cause
                 document.getElementById('r_root').innerText = parsedWo.rootCause || '---';
                 
-                // Frame 4: Closure & Reliability (4 campos)
-                document.getElementById('r_approvedBy').innerText = approvedBy;
-                document.getElementById('r_closedBy').innerText = closedBy;
-                document.getElementById('r_approveDate').innerText = approveDate;
-                document.getElementById('r_cdate').innerText = closureDate;
-                
-                // Additional Observations (columna Z)
+                // Frame 4: Closure & Reliability
+                const isClosed = (parsedWo.status === 'Completed' || parsedWo.status === 'Closed');
+
+                if (isClosed) {
+                    document.getElementById('r_approvedBy').innerText = approvedBy;
+                    document.getElementById('r_closedBy').innerText = closedBy;
+                    document.getElementById('r_approveDate').innerText = approveDate;
+                    document.getElementById('r_cdate').innerText = closureDate;
+                } else {
+                    document.getElementById('r_approvedBy').innerText = '---';
+                    document.getElementById('r_closedBy').innerText = '---';
+                    document.getElementById('r_approveDate').innerText = '---';
+                    document.getElementById('r_cdate').innerText = '---';
+                }
+
+                // Additional Observations - siempre mostrar el contenido de columna Z de la propia WO
                 document.getElementById('r_obs').innerText = parsedWo.observations || '---';
                 
                 // Mostrar el reporte
