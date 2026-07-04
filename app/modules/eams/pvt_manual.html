@@ -1234,11 +1234,9 @@
             return;
         }
         
-        // Verificar duplicado antes de guardar
         var freqSelect = document.getElementById('freqSelect');
         var frequency = freqSelect.value;
         
-        // Obtener TODOS los años seleccionados
         var checkedYears = document.querySelectorAll('.year-checkbox:checked');
         if (checkedYears.length === 0) {
             showToast('Please select at least one year', 'error');
@@ -1250,7 +1248,7 @@
         years.sort(function(a, b) { return a - b; });
         var firstYear = years[0];
         
-        // ✅ Verificar duplicado en TODOS los años seleccionados
+        // Verificar duplicado
         var duplicateFound = false;
         var duplicateYear = null;
         
@@ -1285,14 +1283,38 @@
         showLoading('Checking annual plan status...');
         
         try {
-            var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, firstYear]);
+            // ✅ Verificar CADA año seleccionado
+            var yearStatus = [];
+            for (var i = 0; i < years.length; i++) {
+                var year = years[i];
+                var hasPlan = await callApi('PVT_hasAnnualPlan', [selectedAsset.id, year]);
+                var lockStatus = 'UNLOCKED';
+                if (hasPlan) {
+                    lockStatus = await callApi('PVT_getAnnualPlanLockStatus', [selectedAsset.id, year]);
+                }
+                yearStatus.push({
+                    year: year,
+                    hasPlan: hasPlan,
+                    lockStatus: lockStatus
+                });
+            }
+            
             hideLoading();
             
-            if (hasPlan === true) {
-                showConfirmModal();
-            } else {
-                showWarningModal();
+            // ✅ Construir mensaje con resumen de TODOS los años
+            var message = 'Resumen de creación:\n';
+            for (var i = 0; i < yearStatus.length; i++) {
+                var ys = yearStatus[i];
+                if (ys.hasPlan) {
+                    message += '- ' + ys.year + ': ' + ys.lockStatus + ' (hereda de plan AUTO)\n';
+                } else {
+                    message += '- ' + ys.year + ': UNLOCKED (no existe plan AUTO)\n';
+                }
             }
+            
+            // ✅ Mostrar modal con el resumen
+            showCustomConfirmModal(message);
+            
         } catch (e) {
             hideLoading();
             showToast('Error checking plan status: ' + e.message, 'error');
@@ -1397,6 +1419,31 @@
             showToast('Error: ' + e.message, 'error');
         }
     }
+
+    function showCustomConfirmModal(message) {
+        var modalHtml = 
+            '<div class="modal-overlay" id="confirmModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-icon" style="color: #f59e0b;">' +
+                        '<i class="fas fa-question-circle"></i>' +
+                    '</div>' +
+                    '<h3>Confirm Action</h3>' +
+                    '<p style="white-space: pre-line; text-align: left;">' + escapeHtml(message) + '</p>' +
+                    '<p style="margin-top: 12px;">Save ' + generatedWeeks.length + ' manual task(s) for ' + escapeHtml(selectedAsset.name) + '?</p>' +
+                    '<div class="modal-buttons">' +
+                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">Cancel</button>' +
+                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        document.getElementById('confirmActionBtn').onclick = function() {
+            closeConfirmModal();
+            executeSave();
+        };
+    }    
 
     // ============================================
     // EVENTOS - AUTOCOMPLETE
