@@ -591,6 +591,33 @@
         .editor-header .btn-secondary i {
             margin-right: 6px;
         }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            max-width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-top: 4px solid #1a1a2e;
+        }        
     </style>
 </head>
 <body>
@@ -1100,34 +1127,45 @@
         const isTL = (assetType === 'Technical Location');
         const wasTL = window._previousAssetType === 'Technical Location';
         
-        // Si cambia a TL y antes no era TL, limpiar campos
+        // Si cambia a TL y antes no era TL, mostrar modal de confirmación
         if (isTL && !wasTL) {
-            // Confirmar con el usuario
-            const confirmMsg = '⚠️ Changing to Technical Location will clear:\n' +
-                              '• Category\n• Manufacturer\n• Model\n• Serial Number\n• Year of Install\n' +
-                              '• Parent ID (will be set to N/A)\n\n' +
-                              '¿Continuar?';
-            
-            if (!confirm(confirmMsg)) {
-                // Restaurar tipo anterior
-                document.getElementById('v-type').value = window._previousAssetType || '';
-                return;
-            }
-            
-            // Limpiar campos que no debe tener un TL
-            document.getElementById('v-cat').value = '';
-            document.getElementById('v-man').value = '';
-            document.getElementById('v-model').value = '';
-            document.getElementById('v-serial').value = '';
-            document.getElementById('v-year').value = '';
-            document.getElementById('v-parent').value = 'N/A';
-            
-            showMessage('Fields cleared for Technical Location', 'warning');
+            // Mostrar modal personalizado en lugar de confirm nativo
+            showConfirmModal(
+                '⚠️ Changing to Technical Location will clear:\n• Category\n• Manufacturer\n• Model\n• Serial Number\n• Year of Install\n• Parent ID (will be set to N/A)\n\nContinue?',
+                function() {
+                    // ✅ CONTINUAR - Limpiar campos
+                    document.getElementById('v-cat').value = '';
+                    document.getElementById('v-man').value = '';
+                    document.getElementById('v-model').value = '';
+                    document.getElementById('v-serial').value = '';
+                    document.getElementById('v-year').value = '';
+                    document.getElementById('v-parent').value = 'N/A';
+                    
+                    showMessage('Fields cleared for Technical Location', 'warning');
+                    
+                    // Guardar el tipo actual para futuros cambios
+                    window._previousAssetType = assetType;
+                    
+                    // Aplicar deshabilitación de campos
+                    applyFieldDisabling(true);
+                },
+                function() {
+                    // ❌ CANCELAR - Restaurar tipo anterior
+                    document.getElementById('v-type').value = window._previousAssetType || '';
+                    // No guardar el tipo, mantener el anterior
+                }
+            );
+            return; // Salir, el proceso continúa en el callback
         }
         
         // Guardar el tipo actual para futuros cambios
         window._previousAssetType = assetType;
         
+        // Aplicar deshabilitación de campos
+        applyFieldDisabling(isTL);
+    }
+
+    function applyFieldDisabling(isTL) {
         const tlDisabledFields = ['v-cat', 'v-man', 'v-model', 'v-serial', 'v-year'];
         
         for (let i = 0; i < tlDisabledFields.length; i++) {
@@ -1181,6 +1219,67 @@
         
         // ✅ ACTUALIZAR STATUS según tipo
         updateStatusOptionsForModify();
+    }
+
+    // ============================================
+    // FUNCIÓN PARA MOSTRAR MODAL DE CONFIRMACIÓN
+    // ============================================
+    function showConfirmModal(message, onConfirm, onCancel) {
+        const modal = document.getElementById('confirmModal');
+        const messageEl = document.getElementById('confirmMessage');
+        const yesBtn = document.getElementById('confirmYesBtn');
+        const noBtn = document.getElementById('confirmNoBtn');
+        const closeBtn = document.getElementById('confirmCloseBtn');
+        
+        if (!modal || !messageEl) {
+            // Fallback: usar confirm nativo si no existe el modal
+            if (confirm(message)) {
+                onConfirm();
+            } else {
+                onCancel();
+            }
+            return;
+        }
+        
+        messageEl.textContent = message;
+        modal.classList.add('active');
+        
+        // Función para limpiar event listeners y cerrar
+        function closeModal(confirmed) {
+            modal.classList.remove('active');
+            // Remover event listeners para evitar duplicados
+            yesBtn.removeEventListener('click', confirmHandler);
+            noBtn.removeEventListener('click', cancelHandler);
+            closeBtn.removeEventListener('click', closeHandler);
+            modal.removeEventListener('click', overlayHandler);
+        }
+        
+        function confirmHandler() {
+            closeModal(true);
+            onConfirm();
+        }
+        
+        function cancelHandler() {
+            closeModal(false);
+            onCancel();
+        }
+        
+        function closeHandler() {
+            closeModal(false);
+            onCancel();
+        }
+        
+        function overlayHandler(e) {
+            if (e.target === modal) {
+                closeModal(false);
+                onCancel();
+            }
+        }
+        
+        yesBtn.addEventListener('click', confirmHandler);
+        noBtn.addEventListener('click', cancelHandler);
+        closeBtn.addEventListener('click', closeHandler);
+        modal.addEventListener('click', overlayHandler);
     }
     
     function updateStatusOptionsForModify() {
@@ -1679,5 +1778,26 @@
         init();
     }
 </script>
+
+<!-- MODAL: Confirmación para cambio a Technical Location -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 480px; border-top-color: #dc3545;">
+        <div class="modal-header">
+            <h4 style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> Confirm Action</h4>
+            <button class="btn-close-modal" id="confirmCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="confirmModalBody">
+            <p id="confirmMessage" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; font-size: 14px; line-height: 1.6; white-space: pre-line;"></p>
+        </div>
+        <div class="modal-footer" style="justify-content: center; gap: 12px;">
+            <button class="btn btn-cancel" id="confirmNoBtn" style="flex: 0 0 auto; padding: 8px 24px; background: #6c757d; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+            <button class="btn btn-confirm" id="confirmYesBtn" style="flex: 0 0 auto; padding: 8px 24px; background: #dc3545; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                <i class="fas fa-check"></i> Continue
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
