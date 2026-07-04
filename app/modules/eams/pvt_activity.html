@@ -935,7 +935,10 @@
                     <!-- Editor View -->
                     <div id="editorView" style="display: none;">
                         <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 16px 20px;">
-                            <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
+                                <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
+                            </div>
                             
                             <div class="info-card">
                                 <div><i class="fas fa-fingerprint"></i> <strong>ID:</strong> <span id="head-id"></span></div>
@@ -943,9 +946,8 @@
                                 <div><i class="fas fa-clock"></i> <strong>Frequency:</strong> <span id="head-freq"></span></div>
                             </div>
                             
-                            <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="margin-bottom: 16px; margin-top: 16px;">
                                 <h3 style="margin: 0; font-size: 0.9rem; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-list"></i> Existing Activities</h3>
-                                <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
                             </div>
                             
                             <div id="activitiesTableContainer" style="overflow-x: auto;">
