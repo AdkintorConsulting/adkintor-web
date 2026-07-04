@@ -1992,17 +1992,11 @@
         var btnReunify = document.getElementById('btnReunify');
         if (!btnReunify) return;
         
-        if (DB.woType === 'PREVENTIVE') {
-            btnReunify.disabled = true;
-            btnReunify.style.opacity = '0.5';
-            btnReunify.style.cursor = 'not-allowed';
-            btnReunify.title = 'Not available for Preventive Maintenance';
-        } else {
-            btnReunify.disabled = false;
-            btnReunify.style.opacity = '1';
-            btnReunify.style.cursor = 'pointer';
-            btnReunify.title = '';
-        }
+        // ✅ REUNIFY disponible para TODOS los tipos
+        btnReunify.disabled = false;
+        btnReunify.style.opacity = '1';
+        btnReunify.style.cursor = 'pointer';
+        btnReunify.title = '';
     }
 
     async function loadPreventiveTasks() {
@@ -2119,34 +2113,23 @@
         var qtyInput = document.getElementById('partQty');
         var qty = parseFloat(qtyInput.value);
         
-        // ✅ Verificar que hay un parte seleccionado
         if (!DB.tempPart) {
             showToast('Please select a part first', 'error');
             return;
         }
         
-        // ✅ Verificar que la cantidad es válida
-        if (!qty || qty <= 0 || isNaN(qty)) {
-            showToast('Please enter a valid quantity (greater than 0)', 'error');
-            return;
+        if (qty > 0 && !isNaN(qty)) {
+            if (qty > DB.tempPart.stock) {
+                showToast('Warning: Quantity (' + qty + ') exceeds current stock (' + DB.tempPart.stock + '). Proceeding anyway.', 'error');
+            }
+            DB.cart.push({ id: DB.tempPart.id, name: DB.tempPart.name, price: DB.tempPart.price, stock: DB.tempPart.stock, qty: qty });
+            renderCart();
+            cancelAdd();
+            // ✅ TOAST: Repuesto agregado
+            showToast('Added ' + qty + 'x ' + DB.tempPart.name + ' to cart', 'success');
+        } else {
+            showToast('Please enter a valid quantity', 'error');
         }
-        
-        // ✅ Usar DB.tempPart de forma segura (ya sabemos que no es null)
-        if (qty > DB.tempPart.stock) {
-            showToast('Warning: Quantity (' + qty + ') exceeds current stock (' + DB.tempPart.stock + '). Proceeding anyway.', 'warning');
-        }
-        
-        DB.cart.push({ 
-            id: DB.tempPart.id, 
-            name: DB.tempPart.name, 
-            price: DB.tempPart.price, 
-            stock: DB.tempPart.stock, 
-            qty: qty 
-        });
-        
-        renderCart();
-        cancelAdd();
-        showToast('Added ' + qty + 'x ' + DB.tempPart.name + ' to cart', 'success');
     }
 
     function cancelAdd() {
