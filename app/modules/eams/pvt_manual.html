@@ -1270,7 +1270,8 @@
         
         if (duplicateFound) {
             showToast('⚠️ Frequency "' + frequency + '" already exists for ' + selectedAsset.id + ' in year ' + duplicateYear + '. Verify in Planner or change frequency.', 'error');
-            return;
+            // ✅ IMPORTANTE: detener ejecución y no setear payload
+            return;  // <-- Esto detiene la función
         }
         
         var payload = {
