@@ -1302,13 +1302,13 @@
             hideLoading();
             
             // ✅ Construir mensaje con resumen de TODOS los años
-            var message = 'Resumen de creación:\n';
+            var message = 'Creation summary:\n';
             for (var i = 0; i < yearStatus.length; i++) {
                 var ys = yearStatus[i];
                 if (ys.hasPlan) {
-                    message += '- ' + ys.year + ': ' + ys.lockStatus + ' (hereda de plan AUTO)\n';
+                    message += '- ' + ys.year + ': ' + ys.lockStatus + ' (inherits from PLANNER)\n';
                 } else {
-                    message += '- ' + ys.year + ': UNLOCKED (no existe plan AUTO)\n';
+                    message += '- ' + ys.year + ': UNLOCKED (no PLANNER strategy found)\n';
                 }
             }
             
