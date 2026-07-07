@@ -1564,6 +1564,55 @@
     }
 
     // ============================================
+    // ASSET SUGGESTIONS - AL TERCER CARACTER
+    // ============================================
+    function setupAssetSuggestions() {
+        var assetInput = document.getElementById('skuAssetId');
+        if (!assetInput) return;
+        var suggestionsDiv = document.getElementById('assetSuggestions');
+        if (!suggestionsDiv) return;
+        
+        assetInput.addEventListener('input', function(e) {
+            var term = e.target.value.trim();
+            
+            if (term.length >= 3) {
+                // Mostrar sugerencias
+                suggestionsDiv.style.display = 'block';
+                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
+                
+                // Llamar a la API para buscar Technical Locations
+                callApi('STK_searchTechnicalLocations', [term]).then(function(assets) {
+                    if (assets && assets.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < Math.min(assets.length, 10); i++) {
+                            var a = assets[i];
+                            html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + escapeHtml(a.id) + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + escapeHtml(a.id) + ' - ' + escapeHtml(a.name) + '</div>';
+                        }
+                        suggestionsDiv.innerHTML = html;
+                        suggestionsDiv.style.display = 'block';
+                    } else {
+                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
+                        suggestionsDiv.style.display = 'block';
+                    }
+                }).catch(function(err) {
+                    console.warn('[STK] Error searching assets:', err);
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
+                    suggestionsDiv.style.display = 'block';
+                });
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+        
+        // Cerrar sugerencias al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (e.target !== assetInput && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+    }    
+
+    // ============================================
     // MAIN INIT
     // ============================================
     async function init() {
@@ -1601,6 +1650,7 @@
             await loadUnits();
             await loadCurrencies();
             setupVendorSuggestions(); // ✅ NUEVO - Sugerencias al tercer caracter
+            setupAssetSuggestions();  // ✅ NUEVO: Sugerencias para Asset Linkage
             await refreshCatalog(false);
             
             console.log('[STK] Connected');
