@@ -1079,7 +1079,7 @@
                     '<div class="audit-item"><b>End Time</b><div class="audit-desc">' + escapeHtml(safe(wo.end, '---')) + '</div></div>' +
                     '<div class="audit-item"><b>Labour Hours</b><div class="audit-desc">' + escapeHtml(safe(wo.hours, '0')) + ' hrs</div></div>' +
                     '<div class="audit-item"><b>Total Downtime</b><div class="audit-desc">' + escapeHtml(safe(wo.downtime, '0')) + ' hrs</div></div>' +
-                    '<div class="audit-item full-width"><b>Work Performed</b><div class="audit-desc">' + escapeHtml(safe(wo.performed, 'No description provided.')) + '</div></div>';
+                    '<div class="audit-item full-width"><b>Work Performed</b><div class="audit-desc" style="white-space: pre-wrap;">' + escapeHtml(safe(wo.performed, 'No description provided.')) + '</div></div>';
             }
             
             if (stage2) stage2.style.display = 'block';
