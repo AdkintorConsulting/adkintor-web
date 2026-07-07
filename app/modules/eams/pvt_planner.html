@@ -1052,8 +1052,13 @@
             }
             
             renderYearSelect();
+            checkLockState(true);  // ✅ Verificar estado al cargar
             hideLoading();
             initResize();
+            // Agregar event listener para cambio de año
+            document.getElementById('yearSelect').addEventListener('change', function() {
+                checkLockState(true);
+            });
             console.log('[PVT] Ready');
             showToast('Strategic Planner loaded successfully ✅', 'success');
             
@@ -1084,6 +1089,9 @@
             option.textContent = isLocked ? '🔒 ' + y : '📅 ' + y;
             yearSelect.appendChild(option);
         }
+        
+        // ✅ Verificar estado después de renderizar
+        checkLockState();
     }
 
     function checkLockState(showMessage = false) {
