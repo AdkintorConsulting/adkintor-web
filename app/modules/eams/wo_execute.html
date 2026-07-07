@@ -2506,9 +2506,11 @@
       
       // ✅ Obtener lista COMPLETA de tareas (todas, no solo las completadas)
       var allTasksList = [];
+      var allEquipmentsList = [];  // ✅ NUEVO
       if (DB.cachedTasks && DB.cachedTasks.length > 0) {
           for (var i = 0; i < DB.cachedTasks.length; i++) {
               allTasksList.push(DB.cachedTasks[i].task);
+              allEquipmentsList.push(DB.cachedTasks[i].equipment || 'N/A');  // ✅ NUEVO
           }
       }
 
@@ -2521,10 +2523,11 @@
           end: end,
           rootCause: rootCause,
           materialsList: DB.cart,
-          pmTasksCompleted: pmTasksCompleted,        // ← Ya existe
-          pmTotalTasks: pmTotalTasks,                // ← Ya existe
-          pmCompletedTasksList: completedTasksList,  // ← Ya existe
-          pmAllTasksList: allTasksList,              // ✅ NUEVO: Lista completa
+          pmTasksCompleted: pmTasksCompleted,
+          pmTotalTasks: pmTotalTasks,
+          pmCompletedTasksList: completedTasksList,
+          pmAllTasksList: allTasksList,
+          pmAllEquipmentsList: allEquipmentsList,  // ✅ NUEVO
           needsSparePartPurchase: needsSparePart,
           needsExternalService: needsExternalService,
           needsOther: needsOther,
