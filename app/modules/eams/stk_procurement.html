@@ -914,16 +914,11 @@
                         <form id="reqForm">
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Reference number</label>
-                                    <input type="text" id="reqId" placeholder="Optional internal reference">
-                                </div>
-                                <div class="form-group">
-                                    <label>PO Number</label>
-                                    <input type="text" id="poNumber" placeholder="PO number">
-                                    <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" id="poNumberHint">Only for Purchase Order payment method</div>
-                                </div>
-                            </div>
-                            <div class="row">
+                                    <label>Payment Method *</label>
+                                    <select id="paymentMethod" required>
+                                        <option value="">-- Select one --</option>
+                                    </select>
+                                </div>                              
                                 <div class="form-group">
                                     <label>Vendor / Supplier *</label>
                                     <div style="position:relative">
@@ -934,11 +929,16 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="form-group">
-                                    <label>Payment Method *</label>
-                                    <select id="paymentMethod" required>
-                                        <option value="">-- Select one --</option>
-                                    </select>
+                                    <label>Reference number</label>
+                                    <input type="text" id="reqId" placeholder="Optional internal reference">
+                                </div>
+                                <div class="form-group">
+                                    <label>PO Number</label>
+                                    <input type="text" id="poNumber" placeholder="PO number">
+                                    <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" id="poNumberHint">Only for Purchase Order payment method</div>
                                 </div>
                             </div>
                             <div class="row">
