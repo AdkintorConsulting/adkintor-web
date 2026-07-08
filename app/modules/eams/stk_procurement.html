@@ -999,8 +999,8 @@
                         <h4>Process Material Receipt</h4>
                         <div class="po-search-container">
                             <input type="text" id="poSearchInput" placeholder="Search by PO Number...">
-                            <button class="btn-primary" onclick="searchPOForReceipt()"><i class="fas fa-search"></i> SEARCH</button>
-                            <button class="btn-secondary" onclick="clearReceiptSearch()"><i class="fas fa-eraser"></i> CLEAR</button>
+                            <button class="btn-primary" onclick="searchPOForReceipt()"><i class="fas fa-search"></i> Search</button>
+                            <button class="btn-secondary" onclick="clearReceiptSearch()"><i class="fas fa-eraser"></i> Clear</button>
                         </div>
                         <div id="receiveSelectionMsg" class="receive-summary">Enter a PO number above.</div>
                         <div id="tempPoSection" style="display:none; background:#fef3c7; padding:10px 14px; border-radius:6px; margin-bottom:12px; border-left:4px solid #f59e0b;">
@@ -1208,7 +1208,7 @@
             <button class="btn-close-modal" onclick="closeModal('modalClosePO')">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="modalClosePOMsg">Are you sure you want to close this Purchase Order? This will mark it as COMPLETED.</p>
+            <p id="modalClosePOMsg">Are you sure you want to close this Purchase Order? This will mark it as CLOSED.</p>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
                 <button class="btn-secondary" onclick="resolveModal('modalClosePO', false)"><i class="fas fa-times"></i> Cancel</button>
                 <button class="btn-primary" onclick="resolveModal('modalClosePO', true)"><i class="fas fa-check"></i> Confirm</button>
