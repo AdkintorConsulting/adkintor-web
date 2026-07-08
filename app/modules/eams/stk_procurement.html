@@ -1185,22 +1185,6 @@
     </div>
 </div>
 
-<div id="modalForceClosePO" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3><i class="fas fa-lock"></i> FORCE CLOSE PO</h3>
-            <button class="btn-close-modal" onclick="closeModal('modalForceClosePO')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p id="modalForceClosePOMsg">Are you sure you want to force close this PO? This will mark all remaining items as closed without receiving stock.</p>
-            <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalForceClosePO', false)"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn-primary" onclick="resolveModal('modalForceClosePO', true)"><i class="fas fa-check"></i> Confirm</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div id="modalClosePO" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -1561,13 +1545,13 @@
                     }
                 } else if (header.status === 'CLOSED') {
                     specialEvent = '✅ CLOSED';
-                    // Buscar nota de cierre o force close
-                    if (header.notes && (header.notes.includes('CLOSED_BY:') || header.notes.includes('FORCE CLOSE NOTE:'))) {
+                    // Buscar solo CLOSE NOTE:
+                    if (header.notes && header.notes.includes('CLOSE NOTE:')) {
                         cleanEventNote = header.notes;
                     } else if (receiptHistory && receiptHistory.length > 0) {
                         for (var i = 0; i < receiptHistory.length; i++) {
                             var r = receiptHistory[i];
-                            if ((r.deliveryNote || '').includes('CLOSED_BY:') || (r.deliveryNote || '').includes('FORCE CLOSE NOTE:')) {
+                            if ((r.deliveryNote || '').includes('CLOSE NOTE:')) {
                                 cleanEventNote = r.deliveryNote;
                                 specialEventDate = r.date || header.issueDate || '';
                                 break;
@@ -1582,13 +1566,9 @@
                     if (eventNoteUpper.includes('CANCEL NOTE:') || eventNoteUpper.includes('CANCELLED BY USER')) {
                         specialEvent = '🚫 CANCELLED';
                         cleanEventNote = header.eventNote;
-                    } else if (eventNoteUpper.includes('FORCE CLOSE NOTE:') || eventNoteUpper.includes('FORCE CLOSED BY USER')) {
-                        // Forzar a CLOSED (ya no existe FORCE CLOSE)
-                        specialEvent = '✅ CLOSED';
-                        cleanEventNote = header.eventNote.replace('FORCE CLOSE NOTE:', 'CLOSED_BY:').replace('FORCE CLOSED BY USER', 'CLOSED BY USER');
                     }
-                }
-                
+                }  // ✅ Cerrar este if
+
                 // Limpiar nota de evento
                 if (cleanEventNote) {
                     if (cleanEventNote.includes('CANCEL NOTE:')) {
@@ -2421,34 +2401,6 @@
                 if (window.Logger && typeof window.Logger.error === 'function') {
                     window.Logger.error('STK', 'cancelPO', err.message).catch(function(e) { console.warn('[STK] Error log failed:', e); });
                 }
-                hideLoading();
-                showToast(err.message, 'error');
-            }
-        }
-    }
-
-    async function forceCloseCurrentPO() {
-        if (!selectedPO) { showToast('No PO selected', 'error'); return; }
-        var confirmed = await showModalPromise('modalForceClosePO');
-        if (confirmed) {
-            // ✅ Obtener nota antes de forzar cierre
-            var closeNote = document.getElementById('receiptNotes').value.trim();
-            var noteText = closeNote ? 'FORCE CLOSE NOTE: ' + closeNote : 'FORCE CLOSED BY USER';
-            
-            showLoading('Closing...');
-            try {
-                var res = await callApi('STK_forceClosePurchaseOrder', [selectedPO.poNumber, noteText]);
-                showToast(res.message, 'success');
-                // ✅ Refrescar todo
-                document.getElementById('receiptForm').style.display = 'none';
-                document.getElementById('poSearchInput').value = '';
-                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
-                document.getElementById('receiptNotes').value = '';
-                selectedPO = null;
-                selectedPOFull = null;
-                refreshTracker();
-                hideLoading();
-            } catch(err) {
                 hideLoading();
                 showToast(err.message, 'error');
             }
