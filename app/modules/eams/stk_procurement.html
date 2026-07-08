@@ -2466,13 +2466,18 @@
         
         var confirmed = await showModalPromise('modalClosePO');
         if (confirmed) {
+            // ✅ Obtener el comentario con prefijo CLOSE NOTE:
+            var closeNote = document.getElementById('receiptNotes').value.trim();
+            var noteText = closeNote ? 'CLOSE NOTE: ' + closeNote : 'CLOSE NOTE: No comments provided';
+            
             showLoading('Closing PO...');
             try {
-                var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber]);
+                var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber, noteText]);
                 showToast(res.message, 'success');
                 document.getElementById('receiptForm').style.display = 'none';
                 document.getElementById('poSearchInput').value = '';
                 document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                document.getElementById('receiptNotes').value = '';
                 selectedPO = null;
                 selectedPOFull = null;
                 refreshTracker();
@@ -2482,7 +2487,7 @@
                 showToast(err.message, 'error');
             }
         }
-    }  
+    }
 
     // ============================================
     // MAIN INIT
