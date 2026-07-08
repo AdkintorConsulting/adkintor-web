@@ -1527,7 +1527,7 @@
                 var specialEvent = '';
                 var specialEventDate = header.issueDate || '';
                 var cleanEventNote = '';
-                
+
                 if (header.status === 'CANCELLED') {
                     specialEvent = '🚫 CANCELLED';
                     // Buscar nota de cancelación
@@ -1545,10 +1545,19 @@
                     }
                 } else if (header.status === 'CLOSED') {
                     specialEvent = '✅ CLOSED';
-                    // Buscar solo CLOSE NOTE:
-                    if (header.notes && header.notes.includes('CLOSE NOTE:')) {
+                    // Buscar CLOSE NOTE: primero en items, luego en header, luego en receiptHistory
+                    var foundInItems = false;
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].notes && items[i].notes.includes('CLOSE NOTE:')) {
+                            cleanEventNote = items[i].notes;
+                            foundInItems = true;
+                            break;
+                        }
+                    }
+                    if (!foundInItems && header.notes && header.notes.includes('CLOSE NOTE:')) {
                         cleanEventNote = header.notes;
-                    } else if (receiptHistory && receiptHistory.length > 0) {
+                    }
+                    if (!foundInItems && !cleanEventNote && receiptHistory && receiptHistory.length > 0) {
                         for (var i = 0; i < receiptHistory.length; i++) {
                             var r = receiptHistory[i];
                             if ((r.deliveryNote || '').includes('CLOSE NOTE:')) {
