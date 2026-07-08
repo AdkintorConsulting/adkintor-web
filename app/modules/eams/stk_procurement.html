@@ -1503,25 +1503,8 @@
                 // ============================================
                 // SEPARAR NOTAS POR TIPO
                 // ============================================
-                // 1. EMITTED NOTE: de la PRIMERA FILA (status EMITTED)
-                var emittedNote = 'No notes';
-                
-                if (items && items.length > 0) {
-                    for (var i = 0; i < items.length; i++) {
-                        var note = (items[i].notes || '').toUpperCase();
-                        if (!note.includes('CANCEL NOTE:') && !note.includes('CLOSED_BY:') && 
-                            !note.includes('CANCELLED BY USER') && !note.includes('CLOSED BY')) {
-                            if (items[i].notes && items[i].notes.trim() !== '') {
-                                emittedNote = items[i].notes;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                if (emittedNote === 'No notes' && header.notes && header.notes.trim() !== '') {
-                    emittedNote = header.notes;
-                }
+                // 1. EMITTED NOTE: usar directamente header.notes (comentario EMITTED original)
+                var emittedNote = header.notes && header.notes.trim() !== '' ? header.notes : 'No notes';
                 
                 // 2. EVENT NOTE: detectar según el status
                 var specialEvent = '';
