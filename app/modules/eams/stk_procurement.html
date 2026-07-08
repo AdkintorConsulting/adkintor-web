@@ -1561,13 +1561,13 @@
                     }
                 } else if (header.status === 'CLOSED') {
                     specialEvent = '✅ CLOSED';
-                    // Buscar nota de cierre
-                    if (header.notes && header.notes.includes('CLOSED_BY:')) {
+                    // Buscar nota de cierre o force close
+                    if (header.notes && (header.notes.includes('CLOSED_BY:') || header.notes.includes('FORCE CLOSE NOTE:'))) {
                         cleanEventNote = header.notes;
                     } else if (receiptHistory && receiptHistory.length > 0) {
                         for (var i = 0; i < receiptHistory.length; i++) {
                             var r = receiptHistory[i];
-                            if ((r.deliveryNote || '').includes('CLOSED_BY:')) {
+                            if ((r.deliveryNote || '').includes('CLOSED_BY:') || (r.deliveryNote || '').includes('FORCE CLOSE NOTE:')) {
                                 cleanEventNote = r.deliveryNote;
                                 specialEventDate = r.date || header.issueDate || '';
                                 break;
@@ -1614,6 +1614,9 @@
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
                 html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
                 html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
+                // ✅ AGREGAR BUDGET AREA
+                html += '<div><strong>Budget Area:</strong> ' + escapeHtml(header.budgetAreaName || 'N/A') + '</div>';
+                html += '<div><strong>GL Code:</strong> ' + escapeHtml(header.budgetCode || 'N/A') + '</div>';
                 html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote) + '</div>';
                 
                 if (specialEvent) {
@@ -2095,6 +2098,7 @@
                         }
                     } else {
                         await saveDirectPurchase({ vendor: vendor, paymentType: paymentType, reqId: reqId, budgetAreaName: budgetAreaName, notes: notes, items: items }, 'CONSUMED_ADMIN', '');
+                        hideLoading();  // ✅ AGREGAR ESTA LÍNEA
                     }
                 }
             } else {
@@ -2155,7 +2159,7 @@
             items: ctx.items,
             consumptionType: consumptionType,
             woNumber: woNumber,
-            user: currentUser
+            user: currentUser  // ✅ Asegurar que currentUser está aquí
         };
         showLoading('Processing...');
         try {
