@@ -1767,24 +1767,31 @@ async function init() {
                     suggestionsDiv.style.display = 'block';
                     suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
                     
-                    callApi('CAL_searchTechnicalLocations', [term]).then(function(assets) {
-                        if (assets && assets.length > 0) {
-                            var html = '';
-                            for (var i = 0; i < Math.min(assets.length, 10); i++) {
-                                var a = assets[i];
-                                html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + escapeHtml(a.id) + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + escapeHtml(a.id) + ' - ' + escapeHtml(a.name) + '</div>';
+                    // ✅ USAR callApi DIRECTAMENTE (está en el ámbito global)
+                    callApi('CAL_searchTechnicalLocations', [term])
+                        .then(function(assets) {
+                            console.log('[CAL] Sugerencias recibidas:', assets ? assets.length : 0);
+                            
+                            if (assets && assets.length > 0) {
+                                var html = '';
+                                for (var i = 0; i < Math.min(assets.length, 10); i++) {
+                                    var a = assets[i];
+                                    // ✅ USAR escapeHtml DIRECTAMENTE (está en el ámbito global)
+                                    html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + escapeHtml(a.id) + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + escapeHtml(a.id) + ' - ' + escapeHtml(a.name) + '</div>';
+                                }
+                                suggestionsDiv.innerHTML = html;
+                                suggestionsDiv.style.display = 'block';
+                                console.log('[CAL] ✅ Sugerencias mostradas:', html.length);
+                            } else {
+                                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
+                                suggestionsDiv.style.display = 'block';
                             }
-                            suggestionsDiv.innerHTML = html;
+                        })
+                        .catch(function(err) {
+                            console.warn('[CAL] Error searching assets:', err);
+                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
                             suggestionsDiv.style.display = 'block';
-                        } else {
-                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
-                            suggestionsDiv.style.display = 'block';
-                        }
-                    }).catch(function(err) {
-                        console.warn('[CAL] Error searching assets:', err);
-                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
-                        suggestionsDiv.style.display = 'block';
-                    });
+                        });
                 } else {
                     suggestionsDiv.style.display = 'none';
                 }
@@ -1795,7 +1802,7 @@ async function init() {
                     suggestionsDiv.style.display = 'none';
                 }
             });
-        }   
+        }
 
         return {
             init: init,
