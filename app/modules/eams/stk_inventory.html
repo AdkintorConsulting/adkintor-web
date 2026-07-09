@@ -1354,7 +1354,8 @@
             currency: document.getElementById('skuCurrency').value,
             unit: document.getElementById('skuUnit').value,
             minStock: document.getElementById('skuMinStock').value,
-            vendorName: document.getElementById('skuVendor').value
+            vendorName: document.getElementById('skuVendor').value,
+            user: currentUser  // ✅ AGREGAR
         };
         if (!payload.description) { showToast('Description required', 'error'); return; }
         showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
@@ -1434,7 +1435,7 @@
         if (!reason && adjustmentReasons.length) { showToast('Select a reason', 'error'); return; }
         showLoading('Adjusting stock...');
         try {
-            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason]);
+            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, currentUser]);
             var oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
             var newStock = oldStock + qtyChange;
             logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(function(e) { console.warn('[STK] Adjustment log failed:', e); });
