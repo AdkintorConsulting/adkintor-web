@@ -857,12 +857,11 @@
                         </div>
                         <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Example: 0.02 + mm = "0.02 mm" stored in system</small>
                     </div>
-                    <div class="full-width">
-                        <label class="field-label">ASSOCIATED ASSET ID (optional)</label>
-                        <select id="newAssociatedAsset">
-                            <option value="">-- None --</option>
-                        </select>
-                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Only active Technical Locations are shown</small>
+                    <div class="full-width relative">
+                        <label class="field-label">ASSOCIATED ASSET ID (Technical Location)</label>
+                        <input type="text" id="newAssociatedAsset" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
+                        <div id="assetSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Search by ID or Name (min 3 characters)</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1088,6 +1087,7 @@ async function init() {
     await loadConfig();
     await loadInstruments();
     setupEventListeners();
+    setupAssetSuggestions();  // ✅ NUEVO
     hideLoading();
     console.log('[CAL] Ready'); // ✅ El footer no tiene ID, usamos console.log
     showToast('Calibration Manager loaded successfully ✅', 'success');
@@ -1713,6 +1713,57 @@ async function init() {
                 });
             });
         }
+
+        // ============================================
+        // ASSET SUGGESTIONS - AL TERCER CARACTER
+        // ============================================
+        function setupAssetSuggestions() {
+            var assetInput = document.getElementById('newAssociatedAsset');
+            if (!assetInput) return;
+            var suggestionsDiv = document.getElementById('assetSuggestions');
+            if (!suggestionsDiv) return;
+            
+            assetInput.addEventListener('input', function(e) {
+                var term = e.target.value.trim();
+                
+                if (term.length >= 3) {
+                    suggestionsDiv.style.display = 'block';
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
+                    
+                    callApi('CAL_searchTechnicalLocations', [term]).then(function(assets) {
+                        if (assets && assets.length > 0) {
+                            var html = '';
+                            for (var i = 0; i < Math.min(assets.length, 10); i++) {
+                                var a = assets[i];
+                                html += '<div style="padding:6px 10px; cursor:pointer; font-size:0.75rem; border-bottom:1px solid #f1f5f9;" onclick="selectAsset(\'' + escapeHtml(a.id) + '\', \'' + escapeHtml(a.name) + '\')">🔧 ' + escapeHtml(a.id) + ' - ' + escapeHtml(a.name) + '</div>';
+                            }
+                            suggestionsDiv.innerHTML = html;
+                            suggestionsDiv.style.display = 'block';
+                        } else {
+                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
+                            suggestionsDiv.style.display = 'block';
+                        }
+                    }).catch(function(err) {
+                        console.warn('[CAL] Error searching assets:', err);
+                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
+                        suggestionsDiv.style.display = 'block';
+                    });
+                } else {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (e.target !== assetInput && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+        }
+
+        function selectAsset(id, name) {
+            document.getElementById('newAssociatedAsset').value = id;
+            document.getElementById('assetSuggestions').style.display = 'none';
+        }        
 
         return {
             init: init,
