@@ -1052,6 +1052,7 @@
         if (!validateForm()) return;
         disableButton('btnSubmit', 'REGISTERING...');
         showLoading('Processing Transaction...');
+        
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
         const categoryEl = document.getElementById('category');
@@ -1092,8 +1093,42 @@
             level: crit.level,
             user: currentUserEmail || 'system'
         };
+        
         try {
             const result = await saveAsset(assetData);
+            
+            // ✅ VERIFICAR SI EL RESULTADO ES ERROR
+            if (result.status === 'error') {
+                // Es un error - mostrar sin limpiar formulario
+                const errorMsg = result.message || 'Unknown error';
+                console.error('[AST] Save error:', errorMsg);
+                
+                // Detectar duplicado
+                if (errorMsg.toLowerCase().includes('duplicate')) {
+                    showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
+                    if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                        ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
+                    }
+                    
+                    const nameField = document.getElementById('name');
+                    if (nameField) {
+                        nameField.classList.add('invalid-field');
+                        nameField.focus();
+                        nameField.select();
+                    }
+                } else {
+                    showMessage(`❌ Error: ${errorMsg}`, 'error');
+                    if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                        ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
+                    }
+                }
+                
+                hideLoading();
+                enableButton('btnSubmit');
+                return; // ✅ SALIR - NO limpiar formulario
+            }
+            
+            // ✅ ÉXITO
             const newAssetId = result.assetId || result.data?.assetId || result.id || 
                               (result.data && result.data.assetId) || 'UNKNOWN';
             hideLoading();
@@ -1105,54 +1140,15 @@
             setTimeout(() => {
                 refreshForm();
             }, 2000);
+            
         } catch (error) {
-            // ✅ Extraer mensaje de error de diferentes formatos
-            let errorMsg = '';
-            if (error.message) {
-                errorMsg = error.message;
-            } else if (error.data && error.data.message) {
-                errorMsg = error.data.message;
-            } else if (error.response && error.response.data && error.response.data.message) {
-                errorMsg = error.response.data.message;
-            } else if (typeof error === 'string') {
-                errorMsg = error;
-            } else {
-                errorMsg = JSON.stringify(error);
+            // ✅ Errores de red/excepción
+            console.error('[AST] Exception:', error);
+            const errorMsg = error.message || 'Unknown error';
+            showMessage(`❌ Error: ${errorMsg}`, 'error');
+            if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
             }
-            
-            console.error('[AST] Save error:', error);
-            console.log('[AST] Extracted error message:', errorMsg);
-            
-            // ✅ Detectar duplicado (caso insensible)
-            const errorLower = errorMsg.toLowerCase();
-            const isDuplicate = errorLower.includes('duplicate') || 
-                              errorLower.includes('already exists') ||
-                              errorLower.includes('name already') ||
-                              errorLower.includes('nombre ya') ||
-                              errorLower.includes('ya existe') ||
-                              errorLower.includes('repetido') ||
-                              errorLower.includes('asset name');
-            
-            if (isDuplicate) {
-                showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
-                if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                    ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
-                }
-                
-                const nameField = document.getElementById('name');
-                if (nameField) {
-                    nameField.classList.add('invalid-field');
-                    nameField.focus();
-                    nameField.select();
-                    console.log('[AST] ✅ Name field highlighted and focused');
-                }
-            } else {
-                showMessage(`❌ Error: ${errorMsg}`, 'error');
-                if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                    ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
-                }
-            }
-            
             hideLoading();
             enableButton('btnSubmit');
         }
