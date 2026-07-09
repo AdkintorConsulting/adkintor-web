@@ -1052,7 +1052,6 @@
         if (!validateForm()) return;
         disableButton('btnSubmit', 'REGISTERING...');
         showLoading('Processing Transaction...');
-        
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
         const categoryEl = document.getElementById('category');
@@ -1093,23 +1092,34 @@
             level: crit.level,
             user: currentUserEmail || 'system'
         };
-        
         try {
             const result = await saveAsset(assetData);
             
+            // 🔍 DIAGNÓSTICO - VER QUÉ LLEGA
+            console.log('🔍 RESULTADO COMPLETO:', JSON.stringify(result));
+            console.log('🔍 result.status:', result.status);
+            console.log('🔍 result.status === "error":', result.status === 'error');
+            console.log('🔍 result.message:', result.message);
+            
             // ✅ VERIFICAR SI EL RESULTADO ES ERROR
             if (result.status === 'error') {
-                // Es un error - mostrar sin limpiar formulario
+                console.log('✅ ENTRO AL IF DE ERROR');
+                // ... resto del código ...
+            } else {
+                console.log('❌ NO ENTRO AL IF - result.status NO es "error"');
+            }
+            if (result.status === 'error') {
                 const errorMsg = result.message || 'Unknown error';
-                console.error('[AST] Save error:', errorMsg);
+                console.error('[AST] Error:', errorMsg);
                 
                 // Detectar duplicado
-                if (errorMsg.toLowerCase().includes('duplicate')) {
+                if (errorMsg.toLowerCase().includes('duplicate') || 
+                    errorMsg.toLowerCase().includes('already exists') ||
+                    errorMsg.toLowerCase().includes('name already')) {
                     showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
                     if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                         ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
                     }
-                    
                     const nameField = document.getElementById('name');
                     if (nameField) {
                         nameField.classList.add('invalid-field');
@@ -1117,18 +1127,17 @@
                         nameField.select();
                     }
                 } else {
-                    showMessage(`❌ Error: ${errorMsg}`, 'error');
+                    showMessage('❌ ' + errorMsg, 'error');
                     if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                        ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
+                        ModuleBase.showToast('❌ ' + errorMsg, 'error');
                     }
                 }
-                
                 hideLoading();
                 enableButton('btnSubmit');
-                return; // ✅ SALIR - NO limpiar formulario
+                return; // ✅ SALIR - NO refrescar formulario
             }
             
-            // ✅ ÉXITO
+            // ✅ ÉXITO - SOLO AQUÍ SE REFRESCA
             const newAssetId = result.assetId || result.data?.assetId || result.id || 
                               (result.data && result.data.assetId) || 'UNKNOWN';
             hideLoading();
@@ -1140,14 +1149,13 @@
             setTimeout(() => {
                 refreshForm();
             }, 2000);
-            
         } catch (error) {
-            // ✅ Errores de red/excepción
+            // ✅ ERROR DE RED O EXCEPCIÓN
             console.error('[AST] Exception:', error);
             const errorMsg = error.message || 'Unknown error';
-            showMessage(`❌ Error: ${errorMsg}`, 'error');
+            showMessage('❌ ' + errorMsg, 'error');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
+                ModuleBase.showToast('❌ ' + errorMsg, 'error');
             }
             hideLoading();
             enableButton('btnSubmit');
