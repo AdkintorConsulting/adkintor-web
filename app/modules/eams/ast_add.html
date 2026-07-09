@@ -1098,31 +1098,55 @@
         try {
             const result = await saveAsset(assetData);
             const newAssetId = result.assetId || result.data?.assetId || result.id || 
-                               (result.data && result.data.assetId) || 'UNKNOWN';
+                              (result.data && result.data.assetId) || 'UNKNOWN';
             hideLoading();
             enableButton('btnSubmit');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                 ModuleBase.showToast('Asset saved successfully! ✅', 'success');
             }
             showMessage(result.message || 'Asset saved successfully!', false);
+            // ✅ Solo limpiar en éxito
             setTimeout(() => {
-                refreshForm();  // ✅ Solo en éxito
+                refreshForm();
             }, 2000);
-            } catch (error) {
-                if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
-                    try {
-                        await ModuleBase.logError('AST', 'saveAsset', error.message);
-                    } catch(e) { /* ignore */ }
+        } catch (error) {
+            // ✅ Mostrar error SIN limpiar el formulario
+            console.error('[AST] Save error:', error);
+            
+            // 🔥 Detectar si es error de nombre duplicado
+            const errorMsg = error.message || '';
+            if (errorMsg.toLowerCase().includes('duplicate') || 
+                errorMsg.toLowerCase().includes('already exists') ||
+                errorMsg.toLowerCase().includes('name already')) {
+                // ✅ Mensaje específico para duplicado
+                showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
+                if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                    ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
                 }
-                hideLoading();
-                enableButton('btnSubmit');
-                // ✅ Mostrar error SIN limpiar el formulario
+                
+                // ✅ Resaltar el campo de nombre
+                const nameField = document.getElementById('name');
+                if (nameField) {
+                    nameField.classList.add('invalid-field');
+                    // ✅ Enfocar el campo para que el usuario pueda corregir
+                    nameField.focus();
+                    // ✅ Seleccionar el texto para reemplazarlo fácilmente
+                    nameField.select();
+                }
+            } else {
+                // ✅ Otros errores
+                showMessage('❌ Error: ' + error.message, 'error');
                 if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                     ModuleBase.showToast('❌ Error: ' + error.message, 'error');
                 }
-                showMessage('❌ Error: ' + error.message, 'error');
-                // ❌ ELIMINAR: setTimeout(() => { refreshForm(); }, 2000);
             }
+            
+            // ❌ NO limpiar el formulario
+            // ❌ NO llamar a refreshForm()
+            
+            hideLoading();
+            enableButton('btnSubmit');
+        }
     });
 
     init();
