@@ -1054,7 +1054,6 @@
         showLoading('Processing Transaction...');
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
-        // ✅ Forzar captura de Category aunque esté deshabilitado
         const categoryEl = document.getElementById('category');
         if (categoryEl && categoryEl.value) {
             payload.category = categoryEl.value;
@@ -1071,8 +1070,6 @@
         const catObj = DB.categories.find(c => c.name === payload.category);
         const topLevelTypes = DB.assetTypes || [];
         const isTopLevel = topLevelTypes.includes(payload.type);
-        console.log('[AST] Category value:', payload.category);
-        console.log('[AST] Category after sanitize:', payload.category);
         const assetData = {
             area: payload.area,
             areaPrefix: areaObj ? areaObj.prefix : "GEN",
@@ -1105,44 +1102,56 @@
                 ModuleBase.showToast('Asset saved successfully! ✅', 'success');
             }
             showMessage(result.message || 'Asset saved successfully!', false);
-            // ✅ Solo limpiar en éxito
             setTimeout(() => {
                 refreshForm();
             }, 2000);
         } catch (error) {
-            // ✅ Mostrar error SIN limpiar el formulario
-            console.error('[AST] Save error:', error);
+            // ✅ Extraer mensaje de error de diferentes formatos
+            let errorMsg = '';
+            if (error.message) {
+                errorMsg = error.message;
+            } else if (error.data && error.data.message) {
+                errorMsg = error.data.message;
+            } else if (error.response && error.response.data && error.response.data.message) {
+                errorMsg = error.response.data.message;
+            } else if (typeof error === 'string') {
+                errorMsg = error;
+            } else {
+                errorMsg = JSON.stringify(error);
+            }
             
-            // 🔥 Detectar si es error de nombre duplicado
-            const errorMsg = error.message || '';
-            if (errorMsg.toLowerCase().includes('duplicate') || 
-                errorMsg.toLowerCase().includes('already exists') ||
-                errorMsg.toLowerCase().includes('name already')) {
-                // ✅ Mensaje específico para duplicado
+            console.error('[AST] Save error:', error);
+            console.log('[AST] Extracted error message:', errorMsg);
+            
+            // ✅ Detectar duplicado (caso insensible)
+            const errorLower = errorMsg.toLowerCase();
+            const isDuplicate = errorLower.includes('duplicate') || 
+                              errorLower.includes('already exists') ||
+                              errorLower.includes('name already') ||
+                              errorLower.includes('nombre ya') ||
+                              errorLower.includes('ya existe') ||
+                              errorLower.includes('repetido') ||
+                              errorLower.includes('asset name');
+            
+            if (isDuplicate) {
                 showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
                 if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                     ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
                 }
                 
-                // ✅ Resaltar el campo de nombre
                 const nameField = document.getElementById('name');
                 if (nameField) {
                     nameField.classList.add('invalid-field');
-                    // ✅ Enfocar el campo para que el usuario pueda corregir
                     nameField.focus();
-                    // ✅ Seleccionar el texto para reemplazarlo fácilmente
                     nameField.select();
+                    console.log('[AST] ✅ Name field highlighted and focused');
                 }
             } else {
-                // ✅ Otros errores
-                showMessage('❌ Error: ' + error.message, 'error');
+                showMessage(`❌ Error: ${errorMsg}`, 'error');
                 if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                    ModuleBase.showToast('❌ Error: ' + error.message, 'error');
+                    ModuleBase.showToast(`❌ ${errorMsg}`, 'error');
                 }
             }
-            
-            // ❌ NO limpiar el formulario
-            // ❌ NO llamar a refreshForm()
             
             hideLoading();
             enableButton('btnSubmit');
