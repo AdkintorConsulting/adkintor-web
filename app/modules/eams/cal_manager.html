@@ -785,7 +785,9 @@
                     </div>
                     <div>
                         <label class="field-label">DEVIATION UNIT</label>
-                        <input type="text" id="deviationUnit" placeholder="mm, PSI, °C">
+                        <select id="deviationUnit">
+                            <option value="">-- Select --</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -805,7 +807,7 @@
             <button class="btn-close-modal" id="closeInstModalBtn">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="instrumentForm">
+            <form id="instrumentForm" novalidate>
                 <div class="form-grid">
                     <div class="full-width">
                         <label class="field-label">TAG ID</label>
@@ -813,15 +815,19 @@
                     </div>
                     <div class="full-width">
                         <label class="field-label">INSTRUMENT NAME *</label>
-                        <input type="text" id="newInstrumentName" required>
+                        <input type="text" id="newInstrumentName" >
                     </div>
                     <div>
                         <label class="field-label">INSTRUMENT TYPE *</label>
-                        <select id="newType" required></select>
+                        <select id="newType" >
+                            <option value="">-- Select --</option>
+                        </select>
                     </div>
                     <div>
                         <label class="field-label">AREA / LOCATION *</label>
-                        <select id="newArea" required></select>
+                        <select id="newArea" required>
+                            <option value="">-- Select --</option>
+                        </select>
                     </div>
                     <div>
                         <label class="field-label">MANUFACTURER / MODEL</label>
@@ -833,11 +839,11 @@
                     </div>
                     <div>
                         <label class="field-label">FREQUENCY (MONTHS) *</label>
-                        <input type="number" id="newFrequency" min="1" required>
+                        <input type="number" id="newFrequency" min="1" >
                     </div>
                     <div>
                         <label class="field-label">LAST CALIBRATION *</label>
-                        <input type="date" id="newLastCal" required>
+                        <input type="date" id="newLastCal" >
                     </div>
                     <div>
                         <label class="field-label">STATUS</label>
@@ -1298,16 +1304,27 @@ async function init() {
             document.getElementById('instrumentName').value = inst.name;
             document.getElementById('frequency').value = inst.frequency;
             
+            // ✅ Llenar dropdown de DEVIATION UNIT
+            var unitSelect = document.getElementById('deviationUnit');
+            if (unitSelect) {
+                unitSelect.innerHTML = '<option value="">-- Select --</option>';
+                if (config.toleranceUnits && config.toleranceUnits.length > 0) {
+                    for (var i = 0; i < config.toleranceUnits.length; i++) {
+                        unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
+                    }
+                }
+                unitSelect.value = inst.deviationUnit || '';
+            }
+            
             var today = new Date().toISOString().split('T')[0];
             document.getElementById('calibrationDate').value = today;
             document.getElementById('certificate').value = '';
             document.getElementById('comments').value = '';
             document.getElementById('deviation').value = '';
-            document.getElementById('deviationUnit').value = '';
+            // ❌ Eliminar: document.getElementById('deviationUnit').value = '';
             
             document.getElementById('calibrationModal').classList.add('active');
         }
-
         async function submitCalibration(event) {
             event.preventDefault();
             
@@ -1391,8 +1408,8 @@ async function init() {
             
             try {
                 var tagId = await callApi('CAL_generateTagId', []);
-                hideLoading();
                 
+                // ✅ Configurar el modal ANTES de ocultar el spinner
                 document.getElementById('instModalTitle').innerText = "Register New Instrument";
                 document.getElementById('newTagId').value = tagId;
                 document.getElementById('newInstrumentName').value = '';
@@ -1414,27 +1431,15 @@ async function init() {
                 var respSelect = document.getElementById('newResponsible');
                 if (respSelect.options.length > 0) respSelect.selectedIndex = 0;
                 
-                // Load assets for dropdown
-                try {
-                    var assets = await callApi('CAL_getAssetsForSelect', []);
-                    var assetSelect = document.getElementById('newAssociatedAsset');
-                    if (assetSelect) {
-                        assetSelect.innerHTML = '<option value="">-- None --</option>';
-                        if (assets && assets.length > 0) {
-                            for (var i = 0; i < assets.length; i++) {
-                                var a = assets[i];
-                                var option = document.createElement('option');
-                                option.value = a.id;
-                                option.textContent = a.id + ' - ' + a.name;
-                                assetSelect.appendChild(option);
-                            }
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error loading assets:', err);
-                }
+                // Limpiar el input de Associated Asset
+                document.getElementById('newAssociatedAsset').value = '';
                 
+                // ✅ Ocultar spinner DESPUÉS de configurar todo
+                hideLoading();
+                
+                // ✅ Abrir el modal
                 document.getElementById('instrumentModal').classList.add('active');
+                
             } catch (error) {
                 hideLoading();
                 showToast("Failed to generate Tag ID: " + error.message, "error");
@@ -1475,6 +1480,12 @@ async function init() {
                 return;
             }
             
+            // ✅ Obtener y procesar el Associated Asset ID
+            var associatedAssetId = document.getElementById('newAssociatedAsset').value.trim();
+            if (associatedAssetId && associatedAssetId.includes(' - ')) {
+                associatedAssetId = associatedAssetId.split(' - ')[0].trim();
+            }
+            
             var payload = {
                 tagId: document.getElementById('newTagId').value,
                 name: document.getElementById('newInstrumentName').value,
@@ -1488,7 +1499,7 @@ async function init() {
                 responsible: document.getElementById('newResponsible').value,
                 toleranceValue: toleranceValue,
                 toleranceUnit: toleranceUnit,
-                associatedAssetId: document.getElementById('newAssociatedAsset').value,
+                associatedAssetId: associatedAssetId,  // ✅ Usar la variable procesada
                 certificate: '',
                 comments: ''
             };
@@ -1565,108 +1576,108 @@ async function init() {
             }
         }
 
-        async function openEditInstrumentModal(tagId) {
-            showLoading("Loading instrument data...");
+        showLoading("Loading instrument data...");
+        try {
+            var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
             
-            try {
-                var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
+            if (!instrument) {
                 hideLoading();
-                
-                if (!instrument) {
-                    showToast("Instrument not found", "error");
-                    return;
-                }
-                
-                document.getElementById('instModalTitle').innerText = "✏️ EDIT INSTRUMENT: " + instrument.tagId;
-                
-                document.getElementById('newTagId').value = instrument.tagId;
-                document.getElementById('newInstrumentName').value = instrument.name || '';
-                document.getElementById('newModel').value = instrument.model || '';
-                document.getElementById('newSerial').value = instrument.serial || '';
-                document.getElementById('newFrequency').value = instrument.frequency || '';
-                document.getElementById('newLastCal').value = instrument.lastCal || '';
-                document.getElementById('newToleranceValue').value = instrument.toleranceValue || '';
-                
-                if (instrument.toleranceUnit) {
-                    var unitSelect = document.getElementById('newToleranceUnit');
-                    for (var i = 0; i < unitSelect.options.length; i++) {
-                        if (unitSelect.options[i].value === instrument.toleranceUnit) {
-                            unitSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                } else {
-                    document.getElementById('newToleranceUnit').value = '';
-                }
-                
-                var typeSelect = document.getElementById('newType');
-                if (typeSelect.options.length > 0) {
-                    for (var i = 0; i < typeSelect.options.length; i++) {
-                        if (typeSelect.options[i].value === instrument.type) {
-                            typeSelect.selectedIndex = i;
-                            break;
-                        }
+                showToast("Instrument not found", "error");
+                return;
+            }
+            
+            // ✅ Configurar TODOS los campos ANTES de ocultar el spinner
+            document.getElementById('instModalTitle').innerText = "✏️ EDIT INSTRUMENT: " + instrument.tagId;
+            
+            document.getElementById('newTagId').value = instrument.tagId;
+            document.getElementById('newInstrumentName').value = instrument.name || '';
+            document.getElementById('newModel').value = instrument.model || '';
+            document.getElementById('newSerial').value = instrument.serial || '';
+            document.getElementById('newFrequency').value = instrument.frequency || '';
+            document.getElementById('newLastCal').value = instrument.lastCal || '';
+            document.getElementById('newToleranceValue').value = instrument.toleranceValue || '';
+            
+            if (instrument.toleranceUnit) {
+                var unitSelect = document.getElementById('newToleranceUnit');
+                for (var i = 0; i < unitSelect.options.length; i++) {
+                    if (unitSelect.options[i].value === instrument.toleranceUnit) {
+                        unitSelect.selectedIndex = i;
+                        break;
                     }
                 }
-                
-                var areaSelect = document.getElementById('newArea');
-                if (areaSelect.options.length > 0) {
-                    for (var i = 0; i < areaSelect.options.length; i++) {
-                        if (areaSelect.options[i].value === instrument.area) {
-                            areaSelect.selectedIndex = i;
-                            break;
-                        }
+            } else {
+                document.getElementById('newToleranceUnit').value = '';
+            }
+            
+            var typeSelect = document.getElementById('newType');
+            if (typeSelect.options.length > 0) {
+                for (var i = 0; i < typeSelect.options.length; i++) {
+                    if (typeSelect.options[i].value === instrument.type) {
+                        typeSelect.selectedIndex = i;
+                        break;
                     }
                 }
-                
-                var statusSelect = document.getElementById('newStatus');
-                if (statusSelect.options.length > 0) {
-                    for (var i = 0; i < statusSelect.options.length; i++) {
-                        if (statusSelect.options[i].value === instrument.status) {
-                            statusSelect.selectedIndex = i;
-                            break;
-                        }
+            }
+            
+            var areaSelect = document.getElementById('newArea');
+            if (areaSelect.options.length > 0) {
+                for (var i = 0; i < areaSelect.options.length; i++) {
+                    if (areaSelect.options[i].value === instrument.area) {
+                        areaSelect.selectedIndex = i;
+                        break;
                     }
                 }
-                
-                var respSelect = document.getElementById('newResponsible');
-                if (respSelect.options.length > 0) {
-                    for (var i = 0; i < respSelect.options.length; i++) {
-                        if (respSelect.options[i].value === instrument.responsible) {
-                            respSelect.selectedIndex = i;
-                            break;
-                        }
+            }
+            
+            var statusSelect = document.getElementById('newStatus');
+            if (statusSelect.options.length > 0) {
+                for (var i = 0; i < statusSelect.options.length; i++) {
+                    if (statusSelect.options[i].value === instrument.status) {
+                        statusSelect.selectedIndex = i;
+                        break;
                     }
                 }
-                
-                // Load assets for dropdown
+            }
+            
+            var respSelect = document.getElementById('newResponsible');
+            if (respSelect.options.length > 0) {
+                for (var i = 0; i < respSelect.options.length; i++) {
+                    if (respSelect.options[i].value === instrument.responsible) {
+                        respSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // ✅ Cargar el valor del Associated Asset ID
+            var assetInput = document.getElementById('newAssociatedAsset');
+            if (assetInput && instrument.associatedAssetId) {
                 try {
                     var assets = await callApi('CAL_getAssetsForSelect', []);
-                    var assetSelect = document.getElementById('newAssociatedAsset');
-                    if (assetSelect) {
-                        assetSelect.innerHTML = '<option value="">-- None --</option>';
-                        if (assets && assets.length > 0) {
-                            for (var i = 0; i < assets.length; i++) {
-                                var a = assets[i];
-                                var option = document.createElement('option');
-                                option.value = a.id;
-                                option.textContent = a.id + ' - ' + a.name;
-                                if (a.id === instrument.associatedAssetId) {
-                                    option.selected = true;
-                                }
-                                assetSelect.appendChild(option);
-                            }
+                    if (assets && assets.length > 0) {
+                        var found = assets.find(function(a) { return a.id === instrument.associatedAssetId; });
+                        if (found) {
+                            assetInput.value = found.id + ' - ' + found.name;
+                        } else {
+                            assetInput.value = instrument.associatedAssetId;
                         }
+                    } else {
+                        assetInput.value = instrument.associatedAssetId;
                     }
-                } catch (err) {
-                    console.error('Error loading assets:', err);
+                } catch(err) {
+                    assetInput.value = instrument.associatedAssetId;
                 }
-                
-                document.getElementById('instrumentModal').classList.add('active');
-            } catch (error) {
-                hideLoading();
-                showToast("Failed to load instrument: " + error.message, "error");
             }
+            
+            // ✅ Ocultar spinner DESPUÉS de configurar todo
+            hideLoading();
+            
+            // ✅ Abrir el modal
+            document.getElementById('instrumentModal').classList.add('active');
+            
+        } catch (error) {
+            hideLoading();
+            showToast("Failed to load instrument: " + error.message, "error");
         }
 
         function closeCalModal() {
