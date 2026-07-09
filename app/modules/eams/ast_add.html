@@ -1106,21 +1106,23 @@
             }
             showMessage(result.message || 'Asset saved successfully!', false);
             setTimeout(() => {
-                refreshForm();
+                refreshForm();  // ✅ Solo en éxito
             }, 2000);
-        } catch (error) {
-            if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
-                try {
-                    await ModuleBase.logError('AST', 'saveAsset', error.message);
-                } catch(e) { /* ignore */ }
+            } catch (error) {
+                if (window.ModuleBase && typeof ModuleBase.logError === 'function') {
+                    try {
+                        await ModuleBase.logError('AST', 'saveAsset', error.message);
+                    } catch(e) { /* ignore */ }
+                }
+                hideLoading();
+                enableButton('btnSubmit');
+                // ✅ Mostrar error SIN limpiar el formulario
+                if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                    ModuleBase.showToast('❌ Error: ' + error.message, 'error');
+                }
+                showMessage('❌ Error: ' + error.message, 'error');
+                // ❌ ELIMINAR: setTimeout(() => { refreshForm(); }, 2000);
             }
-            hideLoading();
-            enableButton('btnSubmit');
-            if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                ModuleBase.showToast('Error: ' + error.message, 'error');
-            }
-            showMessage('Error: ' + error.message, 'error');
-        }
     });
 
     init();
