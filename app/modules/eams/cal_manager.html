@@ -1282,14 +1282,17 @@ async function init() {
             }
 
             renderTable(filtered);
-            updateHeatmap(filtered);
+            // ❌ ELIMINAR: updateHeatmap(filtered); 
+            // Las tarjetas NO deben cambiar con el filtro
         }
 
         // ============================================
         // MODAL FUNCTIONS
         // ============================================
-
         function openCalibrationModal(tagId) {
+            // ✅ Mostrar spinner ANTES de buscar el instrumento
+            showLoading("Loading instrument data...");
+            
             var inst = null;
             for (var i = 0; i < instruments.length; i++) {
                 if (instruments[i].tagId === tagId) {
@@ -1297,8 +1300,13 @@ async function init() {
                     break;
                 }
             }
-            if (!inst) return;
+            if (!inst) {
+                hideLoading();
+                showToast("Instrument not found", "error");
+                return;
+            }
 
+            // ✅ Configurar el modal
             document.getElementById('modalTitle').innerText = 'Record Calibration: ' + inst.tagId;
             document.getElementById('tagId').value = inst.tagId;
             document.getElementById('instrumentName').value = inst.name;
@@ -1321,9 +1329,12 @@ async function init() {
             document.getElementById('certificate').value = '';
             document.getElementById('comments').value = '';
             document.getElementById('deviation').value = '';
-            // ❌ Eliminar: document.getElementById('deviationUnit').value = '';
             
+            // ✅ ABRIR el modal
             document.getElementById('calibrationModal').classList.add('active');
+            
+            // ✅ OCULTAR spinner DESPUÉS de abrir el modal
+            hideLoading();
         }
         async function submitCalibration(event) {
             event.preventDefault();
@@ -1434,11 +1445,11 @@ async function init() {
                 // Limpiar el input de Associated Asset
                 document.getElementById('newAssociatedAsset').value = '';
                 
-                // ✅ Ocultar spinner DESPUÉS de configurar todo
-                hideLoading();
-                
-                // ✅ Abrir el modal
+                // ✅ ABRIR el modal
                 document.getElementById('instrumentModal').classList.add('active');
+                
+                // ✅ OCULTAR spinner DESPUÉS de abrir el modal
+                hideLoading();
                 
             } catch (error) {
                 hideLoading();
@@ -1576,108 +1587,110 @@ async function init() {
             }
         }
 
-        showLoading("Loading instrument data...");
-        try {
-            var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
-            
-            if (!instrument) {
-                hideLoading();
-                showToast("Instrument not found", "error");
-                return;
-            }
-            
-            // ✅ Configurar TODOS los campos ANTES de ocultar el spinner
-            document.getElementById('instModalTitle').innerText = "✏️ EDIT INSTRUMENT: " + instrument.tagId;
-            
-            document.getElementById('newTagId').value = instrument.tagId;
-            document.getElementById('newInstrumentName').value = instrument.name || '';
-            document.getElementById('newModel').value = instrument.model || '';
-            document.getElementById('newSerial').value = instrument.serial || '';
-            document.getElementById('newFrequency').value = instrument.frequency || '';
-            document.getElementById('newLastCal').value = instrument.lastCal || '';
-            document.getElementById('newToleranceValue').value = instrument.toleranceValue || '';
-            
-            if (instrument.toleranceUnit) {
-                var unitSelect = document.getElementById('newToleranceUnit');
-                for (var i = 0; i < unitSelect.options.length; i++) {
-                    if (unitSelect.options[i].value === instrument.toleranceUnit) {
-                        unitSelect.selectedIndex = i;
-                        break;
+        async function openEditInstrumentModal(tagId) {
+            showLoading("Loading instrument data...");
+            try {
+                var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
+                
+                if (!instrument) {
+                    hideLoading();
+                    showToast("Instrument not found", "error");
+                    return;
+                }
+                
+                // ✅ Configurar TODOS los campos ANTES de ocultar el spinner
+                document.getElementById('instModalTitle').innerText = "✏️ EDIT INSTRUMENT: " + instrument.tagId;
+                
+                document.getElementById('newTagId').value = instrument.tagId;
+                document.getElementById('newInstrumentName').value = instrument.name || '';
+                document.getElementById('newModel').value = instrument.model || '';
+                document.getElementById('newSerial').value = instrument.serial || '';
+                document.getElementById('newFrequency').value = instrument.frequency || '';
+                document.getElementById('newLastCal').value = instrument.lastCal || '';
+                document.getElementById('newToleranceValue').value = instrument.toleranceValue || '';
+                
+                if (instrument.toleranceUnit) {
+                    var unitSelect = document.getElementById('newToleranceUnit');
+                    for (var i = 0; i < unitSelect.options.length; i++) {
+                        if (unitSelect.options[i].value === instrument.toleranceUnit) {
+                            unitSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    document.getElementById('newToleranceUnit').value = '';
+                }
+                
+                var typeSelect = document.getElementById('newType');
+                if (typeSelect.options.length > 0) {
+                    for (var i = 0; i < typeSelect.options.length; i++) {
+                        if (typeSelect.options[i].value === instrument.type) {
+                            typeSelect.selectedIndex = i;
+                            break;
+                        }
                     }
                 }
-            } else {
-                document.getElementById('newToleranceUnit').value = '';
-            }
-            
-            var typeSelect = document.getElementById('newType');
-            if (typeSelect.options.length > 0) {
-                for (var i = 0; i < typeSelect.options.length; i++) {
-                    if (typeSelect.options[i].value === instrument.type) {
-                        typeSelect.selectedIndex = i;
-                        break;
+                
+                var areaSelect = document.getElementById('newArea');
+                if (areaSelect.options.length > 0) {
+                    for (var i = 0; i < areaSelect.options.length; i++) {
+                        if (areaSelect.options[i].value === instrument.area) {
+                            areaSelect.selectedIndex = i;
+                            break;
+                        }
                     }
                 }
-            }
-            
-            var areaSelect = document.getElementById('newArea');
-            if (areaSelect.options.length > 0) {
-                for (var i = 0; i < areaSelect.options.length; i++) {
-                    if (areaSelect.options[i].value === instrument.area) {
-                        areaSelect.selectedIndex = i;
-                        break;
+                
+                var statusSelect = document.getElementById('newStatus');
+                if (statusSelect.options.length > 0) {
+                    for (var i = 0; i < statusSelect.options.length; i++) {
+                        if (statusSelect.options[i].value === instrument.status) {
+                            statusSelect.selectedIndex = i;
+                            break;
+                        }
                     }
                 }
-            }
-            
-            var statusSelect = document.getElementById('newStatus');
-            if (statusSelect.options.length > 0) {
-                for (var i = 0; i < statusSelect.options.length; i++) {
-                    if (statusSelect.options[i].value === instrument.status) {
-                        statusSelect.selectedIndex = i;
-                        break;
+                
+                var respSelect = document.getElementById('newResponsible');
+                if (respSelect.options.length > 0) {
+                    for (var i = 0; i < respSelect.options.length; i++) {
+                        if (respSelect.options[i].value === instrument.responsible) {
+                            respSelect.selectedIndex = i;
+                            break;
+                        }
                     }
                 }
-            }
-            
-            var respSelect = document.getElementById('newResponsible');
-            if (respSelect.options.length > 0) {
-                for (var i = 0; i < respSelect.options.length; i++) {
-                    if (respSelect.options[i].value === instrument.responsible) {
-                        respSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-            
-            // ✅ Cargar el valor del Associated Asset ID
-            var assetInput = document.getElementById('newAssociatedAsset');
-            if (assetInput && instrument.associatedAssetId) {
-                try {
-                    var assets = await callApi('CAL_getAssetsForSelect', []);
-                    if (assets && assets.length > 0) {
-                        var found = assets.find(function(a) { return a.id === instrument.associatedAssetId; });
-                        if (found) {
-                            assetInput.value = found.id + ' - ' + found.name;
+                
+                // ✅ Cargar el valor del Associated Asset ID
+                var assetInput = document.getElementById('newAssociatedAsset');
+                if (assetInput && instrument.associatedAssetId) {
+                    try {
+                        var assets = await callApi('CAL_getAssetsForSelect', []);
+                        if (assets && assets.length > 0) {
+                            var found = assets.find(function(a) { return a.id === instrument.associatedAssetId; });
+                            if (found) {
+                                assetInput.value = found.id + ' - ' + found.name;
+                            } else {
+                                assetInput.value = instrument.associatedAssetId;
+                            }
                         } else {
                             assetInput.value = instrument.associatedAssetId;
                         }
-                    } else {
+                    } catch(err) {
                         assetInput.value = instrument.associatedAssetId;
                     }
-                } catch(err) {
-                    assetInput.value = instrument.associatedAssetId;
                 }
+                
+                // ✅ ABRIR el modal
+                document.getElementById('instrumentModal').classList.add('active');
+                
+                // ✅ OCULTAR spinner DESPUÉS de abrir el modal
+                hideLoading();
+                
+            } catch (error) {
+                hideLoading();
+                showToast("Failed to load instrument: " + error.message, "error");
             }
-            
-            // ✅ Ocultar spinner DESPUÉS de configurar todo
-            hideLoading();
-            
-            // ✅ Abrir el modal
-            document.getElementById('instrumentModal').classList.add('active');
-            
-        } catch (error) {
-            hideLoading();
-            showToast("Failed to load instrument: " + error.message, "error");
         }
 
         function closeCalModal() {
