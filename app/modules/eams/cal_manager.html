@@ -1728,24 +1728,68 @@
 
     function setupEventListeners() {
         // Filter inputs
-        document.getElementById('searchInput').addEventListener('input', function() { filter(); });
-        document.getElementById('filterType').addEventListener('change', function() { filter(); });
-        document.getElementById('filterArea').addEventListener('change', function() { filter(); });
-        document.getElementById('filterStatus').addEventListener('change', function() { filter(); });
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() { filter(); });
+        }
+        
+        const filterType = document.getElementById('filterType');
+        if (filterType) {
+            filterType.addEventListener('change', function() { filter(); });
+        }
+        
+        const filterArea = document.getElementById('filterArea');
+        if (filterArea) {
+            filterArea.addEventListener('change', function() { filter(); });
+        }
+        
+        const filterStatus = document.getElementById('filterStatus');
+        if (filterStatus) {
+            filterStatus.addEventListener('change', function() { filter(); });
+        }
         
         // New instrument button
-        document.getElementById('newInstrumentBtn').addEventListener('click', function() { openNewInstrumentModal(); });
+        const newInstrumentBtn = document.getElementById('newInstrumentBtn');
+        if (newInstrumentBtn) {
+            newInstrumentBtn.addEventListener('click', function() { openNewInstrumentModal(); });
+        }
         
         // Modal close buttons
-        document.getElementById('closeCalModalBtn').addEventListener('click', function() { closeCalModal(); });
-        document.getElementById('cancelCalBtn').addEventListener('click', function() { closeCalModal(); });
-        document.getElementById('closeInstModalBtn').addEventListener('click', function() { closeInstrumentModal(); });
-        document.getElementById('cancelInstBtn').addEventListener('click', function() { closeInstrumentModal(); });
-        document.getElementById('closeHistoryBtn').addEventListener('click', function() { closeHistoryModal(); });
+        const closeCalModalBtn = document.getElementById('closeCalModalBtn');
+        if (closeCalModalBtn) {
+            closeCalModalBtn.addEventListener('click', function() { closeCalModal(); });
+        }
+        
+        const cancelCalBtn = document.getElementById('cancelCalBtn');
+        if (cancelCalBtn) {
+            cancelCalBtn.addEventListener('click', function() { closeCalModal(); });
+        }
+        
+        const closeInstModalBtn = document.getElementById('closeInstModalBtn');
+        if (closeInstModalBtn) {
+            closeInstModalBtn.addEventListener('click', function() { closeInstrumentModal(); });
+        }
+        
+        const cancelInstBtn = document.getElementById('cancelInstBtn');
+        if (cancelInstBtn) {
+            cancelInstBtn.addEventListener('click', function() { closeInstrumentModal(); });
+        }
+        
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        if (closeHistoryBtn) {
+            closeHistoryBtn.addEventListener('click', function() { closeHistoryModal(); });
+        }
         
         // Form submissions
-        document.getElementById('calibrationForm').addEventListener('submit', function(e) { submitCalibration(e); });
-        document.getElementById('instrumentForm').addEventListener('submit', function(e) { saveNewInstrument(e); });
+        const calibrationForm = document.getElementById('calibrationForm');
+        if (calibrationForm) {
+            calibrationForm.addEventListener('submit', function(e) { submitCalibration(e); });
+        }
+        
+        const instrumentForm = document.getElementById('instrumentForm');
+        if (instrumentForm) {
+            instrumentForm.addEventListener('submit', function(e) { saveNewInstrument(e); });
+        }
         
         // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
@@ -1871,8 +1915,17 @@
         init: init,
         filter: filter,
         setupAssetSuggestions: setupAssetSuggestions,
-        setupPerformerSuggestions: setupPerformerSuggestions
+        setupPerformerSuggestions: setupPerformerSuggestions,
+        openCalibrationModal: openCalibrationModal,
+        openEditInstrumentModal: openEditInstrumentModal,
+        showHistory: showHistory,
+        submitCalibration: submitCalibration,
+        saveNewInstrument: saveNewInstrument,
+        closeCalModal: closeCalModal,
+        closeInstrumentModal: closeInstrumentModal,
+        closeHistoryModal: closeHistoryModal
     };
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() { CAL.init(); });
     } else {
