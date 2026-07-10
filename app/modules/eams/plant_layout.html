@@ -651,28 +651,39 @@
         loadUser();
         loadApiUrl();
         
-        // ✅ FORZAR LOGO DESDE LA SESIÓN
-        try {
-            const session = localStorage.getItem('adkintor_session');
-            if (session) {
-                const sessionData = JSON.parse(session);
-                if (sessionData.companyLogo) {
-                    const img = document.getElementById('companyLogo');
-                    if (img) {
-                        img.src = sessionData.companyLogo;
-                        img.style.display = 'block';
-                        console.log('[LAYOUT] Logo cargado desde sesión:', sessionData.companyLogo);
+        // ✅ FALLBACK: Intentar cargar logo desde sesión
+        setTimeout(function() {
+            const img = document.getElementById('companyLogo');
+            // Si el logo sigue oculto después de 1 segundo, cargarlo desde sesión
+            if (img && img.style.display !== 'block') {
+                try {
+                    const session = localStorage.getItem('adkintor_session');
+                    if (session) {
+                        const sessionData = JSON.parse(session);
+                        // Buscar logo en diferentes campos posibles
+                        const logoUrl = sessionData.companyLogo || sessionData.logoUrl || null;
+                        if (logoUrl) {
+                            img.src = logoUrl;
+                            img.style.display = 'block';
+                            console.log('[LAYOUT] Logo cargado desde sesión (fallback)');
+                        } else {
+                            // Si no hay logo en sesión, usar placeholder
+                            img.src = 'https://via.placeholder.com/120x32/004a99/white?text=ADKINTOR';
+                            img.style.display = 'block';
+                            console.log('[LAYOUT] Logo cargado desde placeholder (fallback)');
+                        }
                     }
+                } catch(e) {
+                    console.warn('[LAYOUT] Error en fallback de logo:', e);
                 }
             }
-        } catch(e) {
-            console.warn('[LAYOUT] Error cargando logo desde sesión:', e);
-        }
+        }, 1000);
         
         if (EAMS_API_URL) {
             loadImage();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
+            document.getElementById('footer-status').innerText = 'Not Configured';
         }
     }
     
