@@ -868,6 +868,7 @@
                         <option value="">-- Loading WOs --</option>
                     </select>
                     <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex:0;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
+                    <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex:0;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="woInfo" style="display:none;">
                     <div class="info-grid">
@@ -1958,6 +1959,79 @@
         }
     }
 
+    async function refreshWOList() {
+        showLoading('Refreshing Work Orders...');
+        
+        try {
+            // ✅ Recargar datos desde el backend
+            var response = await callApi('WO_getInitialTechData', []);
+            var data = JSON.parse(response);
+            DB.wos = data.wos || [];
+            
+            // ✅ Actualizar el selector
+            var woSel = document.getElementById('woSelect');
+            woSel.innerHTML = '<option value="">-- Select WO --</option>';
+            DB.wos.forEach(function(w) {
+                var opt = document.createElement('option');
+                opt.value = w.folio;
+                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
+                woSel.appendChild(opt);
+            });
+            
+            // ✅ Resetear estado
+            DB.selectedWO = null;
+            DB.cachedTasks = [];
+            DB.woType = null;
+            windowPmTasksLoadAttempted = false;
+            document.getElementById('woInfo').style.display = 'none';
+            document.getElementById('woSelect').value = '';
+            
+            // ✅ Resetear contenedor de PM tasks en Step 1
+            var pmTasksContainer = document.getElementById('pmTasksStep1');
+            if (pmTasksContainer) {
+                pmTasksContainer.innerHTML = '';
+            }
+            
+            // ✅ Resetear Step 3
+            var container = document.getElementById('step3DynamicContainer');
+            if (container) {
+                container.innerHTML = '';
+            }
+            
+            // ✅ Resetear carrito
+            resetCart();
+            
+            // ✅ Resetear Step 5
+            resetStep5State();
+            
+            // ✅ Volver a Step 1
+            document.querySelectorAll('.step').forEach(function(step) {
+                step.classList.remove('active');
+                step.style.setProperty('display', 'none', 'important');
+            });
+            currentStep = 1;
+            var step1 = document.getElementById('step1');
+            if (step1) {
+                step1.classList.add('active');
+                step1.style.removeProperty('display');
+                step1.style.setProperty('display', 'block', 'important');
+            }
+            document.getElementById('stepHeader').innerText = 'Step 1: ' + stepTitles[0];
+            document.getElementById('btnBackHeader').style.display = 'none';
+            document.getElementById('btnNextHeader').style.display = 'block';
+            document.getElementById('progressBar').style.width = '20%';
+            
+            hideLoading();
+            showToast('✅ Work Orders refreshed successfully', 'success');
+            
+        } catch (error) {
+            hideLoading();
+            showToast('Error refreshing: ' + error.message, 'error');
+            console.error('Refresh error:', error);
+        }
+    }    
+
     // ============================================
     // LOAD WO CONTEXT - CON PARSING DE JSON (Issue #8)
     // ============================================
@@ -2691,13 +2765,27 @@
       
       // ✅ Obtener lista COMPLETA de tareas (todas, no solo las completadas)
       var allTasksList = [];
-      var allEquipmentsList = [];  // ✅ NUEVO
+      var allEquipmentsList = [];
+      var completedTasksWithEquipment = [];
+
       if (DB.cachedTasks && DB.cachedTasks.length > 0) {
           for (var i = 0; i < DB.cachedTasks.length; i++) {
               allTasksList.push(DB.cachedTasks[i].task);
-              allEquipmentsList.push(DB.cachedTasks[i].equipment || 'N/A');  // ✅ NUEVO
+              allEquipmentsList.push(DB.cachedTasks[i].equipment || 'N/A');
           }
       }
+
+      // ✅ Lista de tareas completadas CON EQUIPO
+      document.querySelectorAll('.pm-checkbox:checked').forEach(function(cb) {
+          var idx = parseInt(cb.dataset.idx);
+          if (DB.cachedTasks && DB.cachedTasks[idx]) {
+              var task = DB.cachedTasks[idx];
+              completedTasksWithEquipment.push({
+                  equipment: task.equipment || 'N/A',
+                  task: task.task
+              });
+          }
+      });
 
       var payload = {
           action: action,
@@ -2710,9 +2798,9 @@
           materialsList: DB.cart,
           pmTasksCompleted: pmTasksCompleted,
           pmTotalTasks: pmTotalTasks,
-          pmCompletedTasksList: completedTasksList,
+          pmCompletedTasksList: completedTasksWithEquipment,  // ✅ AHORA CON EQUIPO
           pmAllTasksList: allTasksList,
-          pmAllEquipmentsList: allEquipmentsList,  // ✅ NUEVO
+          pmAllEquipmentsList: allEquipmentsList,
           needsSparePartPurchase: needsSparePart,
           needsExternalService: needsExternalService,
           needsOther: needsOther,
