@@ -797,14 +797,30 @@
                         <textarea id="comments" rows="3" placeholder="Any observations, out of tolerance notes, etc."></textarea>
                     </div>
                     <div>
-                        <label class="field-label">DEVIATION (optional)</label>
-                        <input type="number" step="any" id="deviation" placeholder="e.g., 0.018">
+                        <label class="field-label">EXPECTED VALUE</label>
+                        <input type="number" step="any" id="expectedValue" placeholder="e.g., 100.0" oninput="calculateCalibrationResult()">
+                    </div>
+                    <div>
+                        <label class="field-label">MEASURED VALUE</label>
+                        <input type="number" step="any" id="measuredValue" placeholder="e.g., 100.02" oninput="calculateCalibrationResult()">
+                    </div>
+                    <div>
+                        <label class="field-label">DEVIATION (auto-calculated)</label>
+                        <input type="text" id="deviation" readonly style="background:#f1f5f9; color:#475569;">
                     </div>
                     <div>
                         <label class="field-label">DEVIATION UNIT</label>
                         <select id="deviationUnit">
                             <option value="">-- Select --</option>
                         </select>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">RESULT (auto-calculated)</label>
+                        <input type="text" id="resultDisplay" readonly style="background:#f1f5f9; color:#475569; font-weight:bold;">
+                    </div>
+                    <div class="full-width" style="display:none;">
+                        <label class="field-label">TOLERANCE (from instrument)</label>
+                        <input type="text" id="toleranceDisplay" readonly style="background:#f1f5f9; color:#475569;">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1075,53 +1091,76 @@
 
     function populateDropdowns() {
         var typeFilter = document.getElementById('filterType');
-        var typeHtml = '<option value="">All Types</option>';
-        for (var i = 0; i < config.types.length; i++) {
-            typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+        if (typeFilter) {
+            var typeHtml = '<option value="">All Types</option>';
+            for (var i = 0; i < config.types.length; i++) {
+                typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+            }
+            typeFilter.innerHTML = typeHtml;
         }
-        typeFilter.innerHTML = typeHtml;
 
         var areaFilter = document.getElementById('filterArea');
-        var areaHtml = '<option value="">All Areas</option>';
-        for (var i = 0; i < config.areas.length; i++) {
-            areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+        if (areaFilter) {
+            var areaHtml = '<option value="">All Areas</option>';
+            for (var i = 0; i < config.areas.length; i++) {
+                areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+            }
+            areaFilter.innerHTML = areaHtml;
         }
-        areaFilter.innerHTML = areaHtml;
 
         var statusFilter = document.getElementById('filterStatus');
-        var statusHtml = '<option value="">All Status</option>';
-        for (var i = 0; i < config.statuses.length; i++) {
-            statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+        if (statusFilter) {
+            var statusHtml = '<option value="">All Status</option>';
+            for (var i = 0; i < config.statuses.length; i++) {
+                statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+            }
+            statusFilter.innerHTML = statusHtml;
         }
-        statusFilter.innerHTML = statusHtml;
 
         var typeField = document.getElementById('newType');
-        var typeFieldHtml = '';
-        for (var i = 0; i < config.types.length; i++) {
-            typeFieldHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+        if (typeField) {
+            var typeFieldHtml = '';
+            for (var i = 0; i < config.types.length; i++) {
+                typeFieldHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
+            }
+            typeField.innerHTML = typeFieldHtml;
         }
-        typeField.innerHTML = typeFieldHtml;
 
         var areaField = document.getElementById('newArea');
-        var areaFieldHtml = '';
-        for (var i = 0; i < config.areas.length; i++) {
-            areaFieldHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+        if (areaField) {
+            var areaFieldHtml = '';
+            for (var i = 0; i < config.areas.length; i++) {
+                areaFieldHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
+            }
+            areaField.innerHTML = areaFieldHtml;
         }
-        areaField.innerHTML = areaFieldHtml;
 
         var statusField = document.getElementById('newStatus');
-        var statusFieldHtml = '';
-        for (var i = 0; i < config.statuses.length; i++) {
-            statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+        if (statusField) {
+            var statusFieldHtml = '';
+            for (var i = 0; i < config.statuses.length; i++) {
+                statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+            }
+            statusField.innerHTML = statusFieldHtml;
         }
-        statusField.innerHTML = statusFieldHtml;
 
         var respField = document.getElementById('newResponsible');
-        var respHtml = '<option value="">-- Select --</option>';
-        for (var i = 0; i < config.responsibles.length; i++) {
-            respHtml += '<option value="' + config.responsibles[i] + '">' + config.responsibles[i] + '</option>';
+        if (respField) {
+            var respHtml = '<option value="">-- Select --</option>';
+            for (var i = 0; i < config.responsibles.length; i++) {
+                respHtml += '<option value="' + config.responsibles[i] + '">' + config.responsibles[i] + '</option>';
+            }
+            respField.innerHTML = respHtml;
         }
-        respField.innerHTML = respHtml;
+
+        // ✅ Llenar tolerance units (solo si el elemento existe)
+        var unitSelect = document.getElementById('newToleranceUnit');
+        if (unitSelect && config.toleranceUnits && config.toleranceUnits.length > 0) {
+            unitSelect.innerHTML = '<option value="">-- Unit --</option>';
+            for (var i = 0; i < config.toleranceUnits.length; i++) {
+                unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
+            }
+        }
     }
 
     async function loadInstruments() {
@@ -1262,6 +1301,13 @@
         document.getElementById('instrumentName').value = inst.name;
         document.getElementById('frequency').value = inst.frequency;
         
+        // ✅ Mostrar tolerancia del instrumento
+        var toleranceDisplay = document.getElementById('toleranceDisplay');
+        if (toleranceDisplay) {
+            var toleranceText = inst.toleranceValue ? inst.toleranceValue + ' ' + (inst.toleranceUnit || '') : 'No tolerance defined';
+            toleranceDisplay.value = toleranceText;
+        }
+        
         // ✅ Llenar dropdown de DEVIATION UNIT
         var unitSelect = document.getElementById('deviationUnit');
         if (unitSelect) {
@@ -1276,10 +1322,23 @@
         
         var today = new Date().toISOString().split('T')[0];
         document.getElementById('calibrationDate').value = today;
-        document.getElementById('performedBy').value = currentUser || ''; // ← NUEVO: Prellenar con usuario actual
+        
+        // ✅ Performed By - mostrar usuario actual o placeholder
+        var performerField = document.getElementById('performedBy');
+        if (currentUser && currentUser !== 'System' && currentUser !== '') {
+            performerField.value = currentUser;
+        } else {
+            performerField.value = '';
+            performerField.placeholder = 'Type name (min 2 chars)...';
+        }
+        
         document.getElementById('certificate').value = '';
         document.getElementById('comments').value = '';
         document.getElementById('deviation').value = '';
+        document.getElementById('expectedValue').value = '';
+        document.getElementById('measuredValue').value = '';
+        document.getElementById('resultDisplay').value = '';
+        document.getElementById('resultDisplay').style.color = '#666';
         
         document.getElementById('calibrationModal').classList.add('active');
         hideLoading();
@@ -1327,23 +1386,27 @@
         resultField.value = '⚠️ No tolerance defined - Cannot determine PASS/FAIL';
         resultField.style.color = '#f59e0b';
     }
+    
     async function submitCalibration(event) {
         event.preventDefault();
         
         var tagId = document.getElementById('tagId').value;
         var calibrationDate = document.getElementById('calibrationDate').value;
-        var performedBy = document.getElementById('performedBy').value.trim(); // ← NUEVO
+        var performedBy = document.getElementById('performedBy').value.trim();
         var certificate = document.getElementById('certificate').value;
         var comments = document.getElementById('comments').value;
+        var expectedValue = document.getElementById('expectedValue').value;
+        var measuredValue = document.getElementById('measuredValue').value;
         var deviation = document.getElementById('deviation').value;
         var deviationUnit = document.getElementById('deviationUnit').value;
+        var result = document.getElementById('resultDisplay').value;
         
         if (!calibrationDate) {
             showToast("Calibration date is required", "error");
             return;
         }
         
-        if (!performedBy) { // ← NUEVA VALIDACIÓN
+        if (!performedBy) {
             showToast("Performed By is required", "error");
             document.getElementById('performedBy').classList.add('invalid-field');
             return;
@@ -1369,6 +1432,11 @@
             return;
         }
         
+        // Extraer resultado (PASS/FAIL) del texto
+        var resultStatus = 'UNKNOWN';
+        if (result.includes('PASS')) resultStatus = 'PASS';
+        else if (result.includes('FAIL')) resultStatus = 'FAIL';
+        
         var payload = {
             tagId: tagId,
             name: inst.name,
@@ -1384,17 +1452,20 @@
             toleranceUnit: inst.toleranceUnit || '',
             responsible: inst.responsible,
             calibrationDate: calibrationDate,
-            performedBy: performedBy, // ← NUEVO
+            performedBy: performedBy,
             comments: comments,
+            expectedValue: expectedValue || null,
+            measuredValue: measuredValue || null,
             deviation: deviation || null,
-            deviationUnit: deviationUnit || null
+            deviationUnit: deviationUnit || null,
+            result: resultStatus
         };
         
         try {
             var response = await callApi('CAL_saveInstrument', [payload]);
             hideLoading();
             if (response.status === "success") {
-                logCalibrationAction('CALIBRATE', tagId, 'Calibration recorded - Date: ' + calibrationDate + ' - By: ' + performedBy + ' - Certificate: ' + certificate)
+                logCalibrationAction('CALIBRATE', tagId, 'Calibration recorded - Date: ' + calibrationDate + ' - By: ' + performedBy + ' - Result: ' + resultStatus + ' - Certificate: ' + certificate)
                     .catch(function(e) { console.warn('[CAL] Log failed:', e); });
                 
                 showToast(response.message, "success");
