@@ -930,13 +930,32 @@
         return;
       }
       
-      var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body"><p><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p><p>📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>';
+      var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body">' +
+        '<p><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p>' +
+        '<p>📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>' +
+        '<p>📊 History: ' + trend.historyCount + ' calibrations | Deviation data: ' + trend.deviationCount + '</p>';
       
       if (trend.deviations && trend.deviations.length > 0) {
-        html += '<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr><th>Date</th><th>Deviation</th><th>Result</th></tr></thead><tbody>';
+        html += '<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr>' +
+          '<th>Date</th>' +
+          '<th>Deviation</th>' +
+          '<th>Measured Value</th>' +
+          '<th>Expected Value</th>' +
+          '<th>Result</th>' +
+          '<th>Tolerance</th>' +
+          '</tr></thead><tbody>';
+        
         for (var i = 0; i < trend.deviations.length; i++) {
           var d = trend.deviations[i];
-          html += '<tr><td>' + new Date(d.date).toLocaleDateString() + '</td><td class="trend-deviation">' + d.deviation + '</td><td>' + escapeHtml(d.result || '—') + '</td></tr>';
+          var resultClass = d.result === 'PASS' ? 'color:var(--success);' : (d.result === 'FAIL' ? 'color:var(--danger);' : '');
+          html += '<tr>' +
+            '<td>' + new Date(d.date).toLocaleDateString() + '</td>' +
+            '<td class="trend-deviation">' + (d.deviation !== null ? d.deviation.toFixed(4) : '—') + '</td>' +
+            '<td>' + (d.measuredValue !== null ? d.measuredValue : '—') + '</td>' +
+            '<td>' + (d.expectedValue !== null ? d.expectedValue : '—') + '</td>' +
+            '<td style="' + resultClass + '">' + escapeHtml(d.result || '—') + '</td>' +
+            '<td>' + escapeHtml(d.tolerance || '—') + '</td>' +
+            '</tr>';
         }
         html += '</tbody></table></div>';
       } else {
