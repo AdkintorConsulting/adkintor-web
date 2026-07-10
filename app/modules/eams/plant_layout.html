@@ -570,7 +570,6 @@
             img.onload = function() {
                 hideLoading();
                 img.style.opacity = '1';
-                document.getElementById('footer-status').innerText = 'Image Loaded';
                 showToast('Plant layout loaded successfully ✅', 'success');
             };
             
@@ -655,7 +654,6 @@
             loadImage();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
         }
     }
     
