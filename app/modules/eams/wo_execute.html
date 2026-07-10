@@ -966,9 +966,9 @@
                             </select>
                         </div>
                     </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-confirm" style="flex:1;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
-                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
                     </div>
                 </div>
 
@@ -1002,9 +1002,9 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-follow" style="flex:1;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
-                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
                     </div>
                 </div>
 
@@ -1015,9 +1015,9 @@
                         <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">⚠️ Equipment will be marked as DOWN</strong><br>
                         <span style="font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.</span>
                     </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-reunify" style="flex:1;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
-                        <button class="btn btn-cancel" style="flex:0.5;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                    <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
                     </div>
                 </div>
             </div>
