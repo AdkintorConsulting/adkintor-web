@@ -885,6 +885,8 @@
                             <label>Previous Shift Logs</label>
                             <div id="info-comments"></div>
                         </div>
+                        <!-- ✅ CONTENEDOR PARA PM TASKS EN STEP 1 -->
+                        <div id="pmTasksStep1" style="grid-column: span 2; display: block; margin-top: 8px;"></div>
                     </div>
                 </div>
             </div>
@@ -1376,7 +1378,46 @@
     // ============================================
     function renderPreventiveUI(container) {
         if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
-            container.innerHTML = '<div style="padding:20px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No preventative tasks were found</div>';
+            container.innerHTML = 
+                '<div style="padding:20px; text-align:center; background:#fff3cd; border-radius:8px; border-left:4px solid #f59e0b;">' +
+                    '<i class="fas fa-info-circle" style="font-size:24px; color:#f59e0b; display:block; margin-bottom:8px;"></i>' +
+                    '<div style="font-size:14px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
+                        '<strong>No preventive tasks assigned yet</strong>' +
+                    '</div>' +
+                    '<div style="font-size:12px; color:#856404; margin-top:4px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
+                        'This Preventive WO does not have tasks in the checklist. You can still complete the WO with a technical report.' +
+                    '</div>' +
+                    '<div style="margin-top:12px; padding:10px; background:#e8f0fe; border-radius:4px; text-align:left;">' +
+                        '<div class="form-group" style="margin-bottom:8px;">' +
+                            '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                            '<input type="datetime-local" id="startTime" data-required="true">' +
+                        '</div>' +
+                        '<div class="form-group" style="margin-bottom:8px;">' +
+                            '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                            '<input type="datetime-local" id="endTime" data-required="true">' +
+                        '</div>' +
+                        '<div id="timeWarning" class="warning-message" style="margin-top: 4px; padding: 6px 10px; background: #fff3cd; border-radius: 4px; border-left: 3px solid #f59e0b; font-size: 12px; color: #856404;"></div>' +
+                        '<div class="form-group" style="margin-top:8px;">' +
+                            '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>' +
+                            '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken... (min. 10 characters)"></textarea>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            
+            // Agregar event listeners
+            var startTime = document.getElementById('startTime');
+            var endTime = document.getElementById('endTime');
+            var reportNotes = document.getElementById('reportNotesPM');
+            
+            if (startTime) startTime.addEventListener('change', calcLabourPM);
+            if (endTime) endTime.addEventListener('change', calcLabourPM);
+            if (reportNotes) reportNotes.addEventListener('input', validatePMStep);
+            
+            // ✅ Forzar validación para PM sin tareas (solo necesita comentario)
+            setTimeout(function() {
+                validatePMStepNoTasks();
+            }, 100);
+            
             return;
         }
         
@@ -1554,27 +1595,28 @@
         var startTime = document.getElementById('startTime')?.value;
         var endTime = document.getElementById('endTime')?.value;
         var hasValidTime = startTime && endTime && (new Date(endTime) > new Date(startTime));
-        var hasTasks = pmTasksCompleted > 0;
         var notes = document.getElementById('reportNotesPM')?.value || '';
         
-        // ✅ NUEVA REGLA: Si hay tareas marcadas, tiempos obligatorios
-        // Si NO hay tareas, comentario obligatorio
+        // ✅ Si no hay tareas, usar la validación especial
+        if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
+            validatePMStepNoTasks();
+            return;
+        }
+        
+        // ✅ Si hay tareas, validación normal
+        var hasTasks = pmTasksCompleted > 0;
         var isValid = false;
         
         if (hasTasks) {
-            // Si hay tareas, tiempos son obligatorios
             isValid = hasValidTime;
         } else {
-            // Si NO hay tareas, comentario es obligatorio (mínimo 10 caracteres)
             isValid = notes.length >= 10;
         }
         
         var nextBtn = document.getElementById('btnNextHeader');
         var timeWarning = document.getElementById('timeWarning');
         
-        // ============================================
-        // VALIDACIÓN REUNIFY: Start Time vs último End Time
-        // ============================================
+        // Validación REUNIFY
         if (startTime && DB.selectedWO && DB.selectedWO.lastEndTime) {
             try {
                 var lastEndDate = new Date(DB.selectedWO.lastEndTime);
@@ -1603,11 +1645,11 @@
             }
         }
         
-        // ✅ Mostrar mensaje de validación
+        // Mensajes informativos
         if (!isValid && !startTime && !endTime && !hasTasks) {
             // No mostrar warning si está todo vacío
         } else if (!isValid && !hasTasks && notes.length < 10) {
-            if (timeWarning) {
+            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
                 timeWarning.innerHTML = '⚠️ Since no tasks were checked, please provide a detailed comment explaining why (minimum 10 characters).';
                 timeWarning.classList.add('visible');
             }
@@ -1622,6 +1664,66 @@
         
         if (nextBtn) nextBtn.disabled = !isValid;
     }
+
+    function validatePMStepNoTasks() {
+        var startTime = document.getElementById('startTime')?.value;
+        var endTime = document.getElementById('endTime')?.value;
+        var notes = document.getElementById('reportNotesPM')?.value || '';
+        
+        // ✅ Para PM sin tareas: Solo necesita comentario y tiempos
+        var hasValidTime = startTime && endTime && (new Date(endTime) > new Date(startTime));
+        var isValid = hasValidTime && notes.length >= 10;
+        
+        var nextBtn = document.getElementById('btnNextHeader');
+        var timeWarning = document.getElementById('timeWarning');
+        
+        // Validación de fechas
+        if (startTime && DB.selectedWO && DB.selectedWO.lastEndTime) {
+            try {
+                var lastEndDate = new Date(DB.selectedWO.lastEndTime);
+                var startDateTime = new Date(startTime);
+                if (!isNaN(lastEndDate.getTime()) && startDateTime < lastEndDate) {
+                    isValid = false;
+                    if (timeWarning) {
+                        timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + '). Please select a later start time.';
+                        timeWarning.classList.add('visible');
+                    }
+                }
+            } catch(e) {}
+        }
+        
+        if (startTime && DB.selectedWO && DB.selectedWO.date) {
+            var creationDateStr = DB.selectedWO.date;
+            var creationDate = new Date(creationDateStr);
+            var startDateTime = new Date(startTime);
+            
+            if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
+                isValid = false;
+                if (timeWarning) {
+                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')';
+                    timeWarning.classList.add('visible');
+                }
+            }
+        }
+        
+        // Mensajes informativos
+        if (!isValid && notes.length < 10 && hasValidTime) {
+            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+                timeWarning.innerHTML = 'ℹ️ Please provide a detailed technical report (minimum 10 characters)';
+                timeWarning.style.background = '#e8f0fe';
+                timeWarning.style.color = '#1a1a2e';
+                timeWarning.style.borderLeftColor = '#1a1a2e';
+                timeWarning.classList.add('visible');
+            }
+        } else if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+            timeWarning.classList.remove('visible');
+            timeWarning.style.background = '#fff3cd';
+            timeWarning.style.color = '#856404';
+            timeWarning.style.borderLeftColor = '#f59e0b';
+        }
+        
+        if (nextBtn) nextBtn.disabled = !isValid;
+    }    
 
     function updatePMProgress() {
         var checkboxes = document.querySelectorAll('.pm-checkbox');
@@ -1908,7 +2010,9 @@
                 }
                 if (assetLabel) assetLabel.innerHTML = 'Component Selection <span style="color:#e67e22; font-size:10px;">(Not required for PM)</span>';
                 if (assetHelpText) assetHelpText.style.display = 'none';
-                loadPreventiveTasks();
+                
+                // ✅ CARGAR TAREAS INMEDIATAMENTE
+                await loadPreventiveTasksForStep1();
             } else {
                 if (assetSelect) {
                     assetSelect.disabled = false;
@@ -1926,6 +2030,7 @@
             document.getElementById('outArea').innerText = wo.area || 'N/A';
             document.getElementById('outEqName').innerText = wo.eqName || 'N/A';
             
+            // ✅ Mostrar descripción
             if (woType === 'PREVENTIVE' && wo.desc && wo.desc.indexOf('[EAMS MASTER PM]') !== -1) {
                 var displayDesc = wo.desc;
                 var strategyMatch = wo.desc.match(/\[EAMS MASTER PM\]\s*(.+?)(?:\n|$)/);
@@ -1937,7 +2042,7 @@
                 document.getElementById('info-description').innerText = wo.desc || 'No description';
             }
             
-            // ✅ Issue #8: Parsear JSON en Previous Shift Logs - VERSIÓN LEGIBLE
+            // ✅ Mostrar histórico
             var historyText = wo.history || 'No logs.';
             try {
                 var parsedHistory = JSON.parse(historyText);
@@ -1945,7 +2050,6 @@
                     var formatted = '';
                     for (var key in parsedHistory) {
                         if (parsedHistory.hasOwnProperty(key)) {
-                            // Formatear TECH FLAGS de forma legible
                             if (key === 'spare_purchase') {
                                 formatted += '🔧 Spare Part Purchase: ' + (parsedHistory[key] ? 'Yes' : 'No') + '\n';
                             } else if (key === 'external_service') {
@@ -1969,8 +2073,18 @@
                     document.getElementById('info-comments').innerText = historyText;
                 }
             } catch (e) {
-                // Si no es JSON, mostrarlo como texto plano
                 document.getElementById('info-comments').innerText = historyText;
+            }
+            
+            // ✅ Si es PM, mostrar las tareas en Step 1
+            if (woType === 'PREVENTIVE' && DB.cachedTasks && DB.cachedTasks.length > 0) {
+                renderPmTasksInStep1();
+            } else if (woType === 'PREVENTIVE') {
+                // Mostrar mensaje de que no hay tareas
+                var pmTasksContainer = document.getElementById('pmTasksStep1');
+                if (pmTasksContainer) {
+                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> No preventive tasks found for this WO.</div>';
+                }
             }
             
             validateStep();
@@ -1978,6 +2092,73 @@
             document.getElementById('woInfo').style.display = 'none';
         }
     }
+
+    async function loadPreventiveTasksForStep1() {
+        if (!DB.selectedWO) return;
+        
+        try {
+            showLoading('Loading preventive tasks...');
+            var tasks = await callApi('WO_getPMTasksByFolio', [DB.selectedWO.folio, DB.selectedWO.tl]);
+            DB.cachedTasks = JSON.parse(tasks);
+            hideLoading();
+            
+            if (DB.cachedTasks && DB.cachedTasks.length > 0) {
+                renderPmTasksInStep1();
+                showToast('✅ Preventive tasks loaded: ' + DB.cachedTasks.length + ' tasks found', 'success');
+            } else {
+                var pmTasksContainer = document.getElementById('pmTasksStep1');
+                if (pmTasksContainer) {
+                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> No preventive tasks found for this WO.</div>';
+                }
+            }
+        } catch (error) {
+            hideLoading();
+            showToast('Error loading PM tasks: ' + error.message, 'error');
+        }
+    }  
+
+    function renderPmTasksInStep1() {
+        var pmTasksContainer = document.getElementById('pmTasksStep1');
+        if (!pmTasksContainer) {
+            // Crear el contenedor si no existe
+            var historyBox = document.querySelector('.history-box');
+            if (historyBox) {
+                var container = document.createElement('div');
+                container.id = 'pmTasksStep1';
+                container.style.cssText = 'grid-column: span 2; background: #e8f5e9; border: 1px solid #43a047; padding: 12px; border-radius: 6px; margin-top: 8px;';
+                historyBox.parentNode.insertBefore(container, historyBox.nextSibling);
+                pmTasksContainer = container;
+            }
+        }
+        
+        if (!pmTasksContainer) return;
+        
+        if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
+            pmTasksContainer.innerHTML = 
+                '<div style="padding:10px; background:#fff3cd; border-radius:6px; border-left:4px solid #f59e0b;">' +
+                    '<i class="fas fa-info-circle" style="color:#f59e0b; margin-right:8px;"></i>' +
+                    '<span style="color:#856404; font-size:13px;">No preventive tasks assigned to this WO yet.</span>' +
+                '</div>';
+            return;
+        }
+        
+        var tasksHtml = '<div style="margin-top:4px;">';
+        tasksHtml += '<label style="color:#2e7d32; font-size:10px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:6px;"><i class="fas fa-clipboard-check"></i> PREVENTIVE TASKS (' + DB.cachedTasks.length + ')</label>';
+        tasksHtml += '<div style="max-height:150px; overflow-y:auto; border:1px solid #c8e6c9; border-radius:4px; background:white; padding:4px 0;">';
+        
+        for (var i = 0; i < DB.cachedTasks.length; i++) {
+            var task = DB.cachedTasks[i];
+            tasksHtml += '<div style="padding:6px 12px; border-bottom:1px solid #f0f0f0; font-size:12px; display:flex; align-items:center; gap:8px;">';
+            tasksHtml += '<span style="color:#43a047; font-weight:700;">' + (i+1) + '.</span>';
+            tasksHtml += '<span style="font-weight:600;">' + escapeHtml(task.equipment || '') + '</span>';
+            tasksHtml += '<span style="color:#555;">' + escapeHtml(task.task || '') + '</span>';
+            tasksHtml += '<span style="font-size:10px; color:#888; margin-left:auto;">⚙️ ' + escapeHtml(task.standard || '') + '</span>';
+            tasksHtml += '</div>';
+        }
+        
+        tasksHtml += '</div></div>';
+        pmTasksContainer.innerHTML = tasksHtml;
+    }  
 
     function resetCart() {
         DB.cart = [];
