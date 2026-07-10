@@ -1934,6 +1934,18 @@
 
     })();
 
+    // ============================================
+    // FORZAR INICIALIZACIÓN (fallback)
+    // ============================================
+    (function ensureInit() {
+        if (typeof CAL !== 'undefined' && typeof CAL.init === 'function') {
+            console.log('[CAL] Inicializando automáticamente...');
+            CAL.init();
+        } else {
+            console.log('[CAL] CAL no está listo, reintentando en 100ms...');
+            setTimeout(ensureInit, 100);
+        }
+    })();
 
 </script>
 </body>
