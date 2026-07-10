@@ -2438,10 +2438,10 @@
         if (DB.woType === 'PREVENTIVE') {
             if (action === 'COMPLETED') {
                 document.getElementById('completedPanel').style.display = 'block';
-                // Ocultar Root Cause para PM
                 document.getElementById('completedRootCause').parentElement.style.display = 'none';
                 document.getElementById('confirmCompletedBtn').disabled = false;
                 document.getElementById('completedPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
             } else if (action === 'FOLLOW_UP') {
                 document.getElementById('fuNeedsSparePartPurchase').checked = false;
                 document.getElementById('fuNeedsExternalService').checked = false;
@@ -2449,11 +2449,15 @@
                 document.getElementById('fuOtherCommentDiv').style.display = 'none';
                 document.getElementById('fuOtherComment').value = '';
                 document.getElementById('followUpPanel').style.display = 'block';
-                // Ocultar Root Cause para PM
                 document.getElementById('fuRootCause').parentElement.style.display = 'none';
                 document.getElementById('fuRootCauseRequired').style.display = 'none';
                 validateConfirmButton('FOLLOW_UP');
                 document.getElementById('followUpPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            } else if (action === 'REUNIFY') {  // ✅ AGREGAR ESTE CASO
+                document.getElementById('reunifyPanel').style.display = 'block';
+                document.getElementById('reunifyPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
             }
             return;
         }
