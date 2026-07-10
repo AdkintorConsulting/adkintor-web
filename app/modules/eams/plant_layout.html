@@ -650,6 +650,25 @@
     function init() {
         loadUser();
         loadApiUrl();
+        
+        // ✅ FORZAR LOGO DESDE LA SESIÓN
+        try {
+            const session = localStorage.getItem('adkintor_session');
+            if (session) {
+                const sessionData = JSON.parse(session);
+                if (sessionData.companyLogo) {
+                    const img = document.getElementById('companyLogo');
+                    if (img) {
+                        img.src = sessionData.companyLogo;
+                        img.style.display = 'block';
+                        console.log('[LAYOUT] Logo cargado desde sesión:', sessionData.companyLogo);
+                    }
+                }
+            }
+        } catch(e) {
+            console.warn('[LAYOUT] Error cargando logo desde sesión:', e);
+        }
+        
         if (EAMS_API_URL) {
             loadImage();
         } else {
