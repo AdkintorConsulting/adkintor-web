@@ -1013,26 +1013,28 @@ async function init() {
             document.getElementById('compliantCount').innerText = compliant;
         }
 
-        function filter() {
-            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            var typeFilter = document.getElementById('filterType').value;
-            var areaFilter = document.getElementById('filterArea').value;
-            var statusFilter = document.getElementById('filterStatus').value;
+    function filter() {
+        var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        var typeFilter = document.getElementById('filterType').value;
+        var areaFilter = document.getElementById('filterArea').value;
+        var statusFilter = document.getElementById('filterStatus').value;
 
-            var filtered = [];
-            for (var i = 0; i < instruments.length; i++) {
-                var inst = instruments[i];
-                if (searchTerm && inst.tagId.toLowerCase().indexOf(searchTerm) === -1 && 
-                    inst.name.toLowerCase().indexOf(searchTerm) === -1) continue;
-                if (typeFilter && inst.type !== typeFilter) continue;
-                if (areaFilter && inst.area !== areaFilter) continue;
-                if (statusFilter && inst.status !== statusFilter) continue;
-                filtered.push(inst);
-            }
-
-            renderTable(filtered);
-            updateHeatmap(filtered);
+        var filtered = [];
+        for (var i = 0; i < instruments.length; i++) {
+            var inst = instruments[i];
+            if (searchTerm && inst.tagId.toLowerCase().indexOf(searchTerm) === -1 && 
+                inst.name.toLowerCase().indexOf(searchTerm) === -1) continue;
+            if (typeFilter && inst.type !== typeFilter) continue;
+            if (areaFilter && inst.area !== areaFilter) continue;
+            if (statusFilter && inst.status !== statusFilter) continue;
+            filtered.push(inst);
         }
+
+        renderTable(filtered);
+        // ✅ ELIMINAR esta línea:
+        // updateHeatmap(filtered);
+        // Las tarjetas SIEMPRE deben mostrar datos totales
+    }
 
         // ============================================
         // HISTORY MODAL
