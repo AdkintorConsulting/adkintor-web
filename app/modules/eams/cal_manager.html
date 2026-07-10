@@ -816,86 +816,6 @@
     </div>
 </div>
 
-<!-- MODAL: NEW INSTRUMENT REGISTRATION -->
-<div id="instrumentModal" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h4 id="instModalTitle">Register New Instrument</h4>
-            <button class="btn-close-modal" id="closeInstModalBtn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="instrumentForm" novalidate>
-                <div class="form-grid">
-                    <div class="full-width">
-                        <label class="field-label">TAG ID</label>
-                        <input type="text" id="newTagId" readonly>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">INSTRUMENT NAME *</label>
-                        <input type="text" id="newInstrumentName" >
-                    </div>
-                    <div>
-                        <label class="field-label">INSTRUMENT TYPE *</label>
-                        <select id="newType" >
-                            <option value="">-- Select --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">AREA / LOCATION *</label>
-                        <select id="newArea" required>
-                            <option value="">-- Select --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">MANUFACTURER / MODEL</label>
-                        <input type="text" id="newModel">
-                    </div>
-                    <div>
-                        <label class="field-label">SERIAL NUMBER</label>
-                        <input type="text" id="newSerial">
-                    </div>
-                    <div>
-                        <label class="field-label">FREQUENCY (MONTHS) *</label>
-                        <input type="number" id="newFrequency" min="1" >
-                    </div>
-                    <div>
-                        <label class="field-label">LAST CALIBRATION *</label>
-                        <input type="date" id="newLastCal" >
-                    </div>
-                    <div>
-                        <label class="field-label">STATUS</label>
-                        <select id="newStatus"></select>
-                    </div>
-                    <div>
-                        <label class="field-label">RESPONSIBLE</label>
-                        <select id="newResponsible"></select>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">TOLERANCE / RANGE</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" id="newToleranceValue" step="0.01" placeholder="Value (e.g., 0.02, 1.00)" style="flex: 2;">
-                            <select id="newToleranceUnit" style="flex: 1;">
-                                <option value="">-- Unit --</option>
-                            </select>
-                        </div>
-                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Example: 0.02 + mm = "0.02 mm" stored in system</small>
-                    </div>
-                    <div class="full-width relative">
-                        <label class="field-label">ASSOCIATED ASSET ID (Technical Location)</label>
-                        <input type="text" id="newAssociatedAsset" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
-                        <div id="assetSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
-                        <small style="font-size:0.6rem; color:#6c757d; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Search by ID or Name (min 3 characters)</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" id="cancelInstBtn"><i class="fas fa-times"></i> CANCEL</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> SAVE INSTRUMENT</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- MODAL: HISTORY VIEW -->
 <div id="historyModal" class="modal-overlay">
     <div class="modal-container">
@@ -1084,7 +1004,15 @@
     function selectAsset(id, name) {
         document.getElementById('newAssociatedAsset').value = id;
         document.getElementById('assetSuggestions').style.display = 'none';
-    }    
+    }
+
+    // ============================================
+    // FUNCIÓN GLOBAL PARA SELECCIONAR PERFORMER
+    // ============================================
+    function selectPerformer(name) {
+        document.getElementById('performedBy').value = name;
+        document.getElementById('performerSuggestions').style.display = 'none';
+    }
 
     // ============================================
     // CAL MODULE
@@ -1939,25 +1867,21 @@
         });
     }
 
-    // Función global para seleccionar performer
-    function selectPerformer(name) {
-        document.getElementById('performedBy').value = name;
-        document.getElementById('performerSuggestions').style.display = 'none';
-    }   
-
     return {
         init: init,
         filter: filter,
         setupAssetSuggestions: setupAssetSuggestions,
         setupPerformerSuggestions: setupPerformerSuggestions
     };
-    })();
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() { CAL.init(); });
     } else {
         CAL.init();
-    }     
+    }
+
+    })();
+
+
 </script>
 </body>
 </html>
