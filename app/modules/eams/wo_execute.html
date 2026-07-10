@@ -862,13 +862,13 @@
         <div class="content">
             <!-- STEP 1: Context -->
             <div class="step active" id="step1">
-                <div class="wo-select-container">
-                    <label>Active Work Order</label>
-                    <select id="woSelect" onchange="loadWOContext()">
+                <div class="wo-select-container" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <label style="flex: 0 0 auto; margin-bottom: 0;">Active Work Order</label>
+                    <select id="woSelect" onchange="loadWOContext()" style="flex: 1; min-width: 180px; max-width: 380px; padding: 10px 12px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px;">
                         <option value="">-- Loading WOs --</option>
                     </select>
-                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex:0;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
-                    <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex:0;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
+                    <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="woInfo" style="display:none;">
                     <div class="info-grid">
