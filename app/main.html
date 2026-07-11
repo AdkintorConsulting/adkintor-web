@@ -195,5 +195,49 @@
     <script src="/app/js/logger.js"></script>
     <script src="/app/js/auth.js"></script>
     <script src="/app/js/layout.js"></script>
+
+    <!-- ============================================
+    SESSION MONITORING (every 30 seconds)
+    ============================================ -->
+    <script>
+        (function() {
+            console.log('[SYS] Session monitoring started...');
+            
+            setInterval(function() {
+                try {
+                    const sessionData = localStorage.getItem('adkintor_session');
+                    if (sessionData) {
+                        const session = JSON.parse(sessionData);
+                        if (session && session.timestamp) {
+                            const elapsed = Date.now() - session.timestamp;
+                            const sessionDuration = window.ADKINTOR_CONFIG?.SESSION_DURATION || (8 * 60 * 60 * 1000);
+                            
+                            if (elapsed > sessionDuration) {
+                                console.log('⏰ Session expired, logging out...');
+                                localStorage.removeItem('adkintor_session');
+                                window.location.replace('/app/index.html');
+                            } else {
+                                // ⚠️ AVISO: mostrar cuando queden 5 minutos
+                                const remaining = sessionDuration - elapsed;
+                                if (remaining < 5 * 60 * 1000 && remaining > 0) {
+                                    const minutes = Math.round(remaining / 60000);
+                                    console.log(`⚠️ Session expires in ${minutes} minutes`);
+                                    
+                                    // Mostrar toast si está disponible
+                                    if (typeof showToast === 'function') {
+                                        showToast(`⚠️ Your session will expire in ${minutes} minutes.`, 'warning');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.warn('[SYS] Error checking session:', e);
+                }
+            }, 30000);
+            
+            console.log('[SYS] Session monitoring active ✅');
+        })();
+    </script>
 </body>
 </html>
