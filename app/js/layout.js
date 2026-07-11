@@ -882,18 +882,14 @@ function openPlantLayout() {
         localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
     }
     
-    const modal = document.getElementById('iframeModal');
-    const iframe = document.getElementById('intelIframe');
+    // ✅ USAR LA MISMA FUNCIÓN QUE LOS OTROS MÓDULOS
+    openIframeModalWithTitle('Plant Layout', '/app/modules/eams/plant_layout.html');
     
-    if (modal && iframe) {
-        iframe.src = '/app/modules/eams/plant_layout.html';
-        modal.style.display = 'flex';
-        
-        const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
-        if (breadcrumbDynamic) {
-            breadcrumbDynamic.textContent = 'PLANT LAYOUT';
-            breadcrumbDynamic.style.display = 'inline';
-        }
+    // Actualizar breadcrumb
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    if (breadcrumbDynamic) {
+        breadcrumbDynamic.textContent = 'PLANT LAYOUT';
+        breadcrumbDynamic.style.display = 'inline';
     }
 }
 
@@ -908,18 +904,14 @@ function openSysWizard() {
         localStorage.setItem('eamsApiUrl', session.eamsApiUrl);
     }
     
-    const modal = document.getElementById('iframeModal');
-    const iframe = document.getElementById('intelIframe');
+    // ✅ USAR LA MISMA FUNCIÓN QUE LOS OTROS MÓDULOS
+    openIframeModalWithTitle('System Configurator', '/app/modules/eams/sys_wizard.html');
     
-    if (modal && iframe) {
-        iframe.src = '/app/modules/eams/sys_wizard.html';
-        modal.style.display = 'flex';
-        
-        const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
-        if (breadcrumbDynamic) {
-            breadcrumbDynamic.textContent = 'SYSTEM > Configurator';
-            breadcrumbDynamic.style.display = 'inline';
-        }
+    // Actualizar breadcrumb
+    const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
+    if (breadcrumbDynamic) {
+        breadcrumbDynamic.textContent = 'SYSTEM > Configurator';
+        breadcrumbDynamic.style.display = 'inline';
     }
 }
 
