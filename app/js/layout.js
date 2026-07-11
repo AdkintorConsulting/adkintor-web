@@ -261,6 +261,28 @@ function resetModalState() {
     if (maximizeBtn) maximizeBtn.innerHTML = '□';
 }
 
+function setupModalClose() {
+    // ❌ DESACTIVADO: Cierre al hacer clic fuera del modal
+    // const iframeModal = document.getElementById('iframeModal');
+    // if (iframeModal) {
+    //     iframeModal.addEventListener('click', function(e) {
+    //         if (e.target === iframeModal) {
+    //             closeIframeModal();
+    //         }
+    //     });
+    // }
+    
+    // ✅ MANTENER: Cierre del modal de documentos
+    const docModal = document.getElementById('docModal');
+    if (docModal) {
+        docModal.addEventListener('click', function(e) {
+            if (e.target === docModal) {
+                closeDocumentModal();
+            }
+        });
+    }
+}
+
 // ============================================
 // INTELLIGENCE MODAL FUNCTIONS - CORREGIDAS
 // ============================================
