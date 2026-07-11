@@ -812,3 +812,73 @@ body {
     overflow: hidden;
     display: flex;
 }
+
+/* ============================================
+   MODAL - MINIMIZADO
+   ============================================ */
+
+/* Estado minimizado: solo la barra de título */
+.modal-container.minimized {
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    width: 320px !important;
+    min-width: 200px !important;
+    max-width: 320px !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    border-radius: 8px 8px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.25) !important;
+    border: 1px solid #2a2f4a !important;
+    border-bottom: none !important;
+    align-self: flex-end !important;
+    margin: 0 !important;
+}
+
+/* Ocultar el body cuando está minimizado */
+.modal-container.minimized .modal-body {
+    display: none !important;
+}
+
+/* El header se vuelve clickeable para restaurar */
+.modal-container.minimized .modal-header {
+    cursor: pointer !important;
+    border-bottom: none !important;
+    min-height: 42px !important;
+    padding: 4px 12px !important;
+}
+
+.modal-container.minimized .modal-header h3 {
+    display: block !important;
+    font-size: 13px !important;
+    color: #e0e0e0 !important;
+    margin: 0 !important;
+}
+
+/* El título del modal debe mostrarse cuando está minimizado */
+.modal-container.minimized .modal-header > div:first-child {
+    display: block !important;
+    font-size: 13px !important;
+    color: #8a8faa !important;
+    padding-left: 4px !important;
+}
+
+/* Transición suave al minimizar */
+.modal-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Ajuste de botones en minimizado */
+.modal-container.minimized .modal-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+}
+
+.modal-container.minimized .modal-close {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+}
