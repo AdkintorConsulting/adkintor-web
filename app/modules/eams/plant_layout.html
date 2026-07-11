@@ -655,22 +655,6 @@
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
         }
-        
-        // ✅ FORZAR LOGO Y MAXIMIZADO
-        setTimeout(function() {
-            // 1. FORZAR LOGO CORRECTO
-            const img = document.getElementById('companyLogo');
-            if (img) {
-                // Usar el mismo logo que funciona en otros módulos
-                img.src = 'https://i.imgur.com/JkK8ajf.png';
-                img.style.display = 'block';
-                console.log('[LAYOUT] Logo forzado correctamente');
-            }
-            
-            // 2. FORZAR MAXIMIZADO
-            window.parent.postMessage({ type: 'MAXIMIZE_IFRAME' }, '*');
-            console.log('[LAYOUT] Maximizado forzado');
-        }, 500);
     }
     
     if (document.readyState === 'loading') {
