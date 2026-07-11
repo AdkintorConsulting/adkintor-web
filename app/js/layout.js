@@ -261,27 +261,6 @@ function resetModalState() {
     if (maximizeBtn) maximizeBtn.innerHTML = '□';
 }
 
-function setupModalClose() {
-    // Close modal when clicking outside content
-    const iframeModal = document.getElementById('iframeModal');
-    if (iframeModal) {
-        iframeModal.addEventListener('click', function(e) {
-            if (e.target === iframeModal) {
-                closeIframeModal();
-            }
-        });
-    }
-    
-    const docModal = document.getElementById('docModal');
-    if (docModal) {
-        docModal.addEventListener('click', function(e) {
-            if (e.target === docModal) {
-                closeDocumentModal();
-            }
-        });
-    }
-}
-
 // ============================================
 // INTELLIGENCE MODAL FUNCTIONS - CORREGIDAS
 // ============================================
