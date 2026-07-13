@@ -28,7 +28,7 @@
             margin-right: 12px;
             color: #1a1a2e;
         }
-        .module-card {
+        .kpi-card {
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
@@ -38,68 +38,40 @@
             max-width: 400px;
             margin: 0 auto;
         }
-        .module-card:hover {
+        .kpi-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.1);
             border-color: #1a1a2e;
         }
-        .module-card i {
+        .kpi-card i {
             font-size: 3rem;
             color: #1a1a2e;
             margin-bottom: 1rem;
         }
-        .module-card h3 {
+        .kpi-card h3 {
             color: #1a1a2e;
             font-size: 1.2rem;
         }
-        .module-card p {
+        .kpi-card p {
             color: #888;
             font-size: 0.8rem;
             margin-top: 0.5rem;
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            display: none;
-            z-index: 1000;
-        }
-        .toast.error {
-            background: #dc3545;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="dispatcher">
-        <h2><i class="fas fa-chart-pie"></i> KPI Foresight</h2>
-        <div class="module-card" id="openModuleBtn">
-            <i class="fas fa-chart-pie"></i>
-            <h3>Open KPI Foresight</h3>
-            <p>View KPI metrics</p>
+        <h2><i class="fas fa-chart-line"></i> KPI FORESIGHT</h2>
+        <div class="kpi-card" id="openKpiBtn">
+            <i class="fas fa-chart-line"></i>
+            <h3>Open KPI Dashboard</h3>
+            <p>View maintenance performance KPIs</p>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
-
 <script>
-    function showMessage(message, isError = false) {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            toast.textContent = message;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
-    }
-
-    function openModule() {
+    function openKpi() {
         window.parent.postMessage({
             type: 'openIframeModal',
             title: 'KPI Foresight',
@@ -107,7 +79,7 @@
         }, '*');
     }
     
-    document.getElementById('openModuleBtn').onclick = openModule;
+    document.getElementById('openKpiBtn').onclick = openKpi;
 </script>
 </body>
 </html>
