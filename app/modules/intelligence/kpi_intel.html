@@ -1170,9 +1170,32 @@
       }
       
       try {
+          // ✅ Set current month/year
+          var today = new Date();
+          var currentMonth = today.getMonth() + 1;
+          var currentYear = today.getFullYear();
+          
+          var monthSelect = document.getElementById('monthSelect');
+          var yearSelect = document.getElementById('yearSelect');
+          if (monthSelect) monthSelect.value = currentMonth;
+          if (yearSelect) yearSelect.value = currentYear;
+          
+          // ✅ Setup event listeners
+          setupEventListeners();
+          
+          // ✅ Request logo and version from parent
+          if (window.parent !== window) {
+              window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+              window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+          }
+          
+          // ✅ Load data
           await loadData();
+          
           hideLoading();
           showToast('KPI Dashboard loaded successfully ✅', 'success');
+          // document.getElementById('footer-status').innerText = 'Ready'; // ← Eliminar
+          
       } catch(err) {
           hideLoading();
           showToast('Error loading data: ' + err.message, 'error');
