@@ -288,7 +288,7 @@ function setupModalClose() {
 // ============================================
 
 function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
-    // Mapear módulos de Intelligence a sus dispatchers
+    // Mapear módulos a sus dispatchers
     const dispatcherMap = {
         'kpi_intel': '/app/modules/intelligence/kpi_dispatcher.html',
         'wo_intel': '/app/modules/intelligence/wo_dispatcher.html',
