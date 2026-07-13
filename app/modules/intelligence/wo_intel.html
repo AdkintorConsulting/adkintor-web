@@ -578,14 +578,7 @@
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
-      <div class="header">
-        <div class="logo-area">
-          <h1>🔧 WO Intelligence</h1>
-          <p>Prioritization · Workload · Smart Alerts</p>
-        </div>
-        <div><button id="exportBtn" class="adk-btn adk-btn-primary">📑 EXPORT PDF</button></div>
-      </div>
-      
+
       <div class="last-updated" id="lastUpdated">--</div>
       
       <div class="tabs">
@@ -607,6 +600,7 @@
             <div>
               <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
               <button id="showAllBtn" class="adk-btn adk-btn-primary">📋 Show All</button>
+              <button id="exportBtn" class="adk-btn adk-btn-primary">📑 EXPORT PDF</button>
             </div>
           </div>
           <div id="prioritiesList"></div>
@@ -1214,7 +1208,7 @@
       
       hideLoading();
       showToast('WO Intelligence loaded successfully ✅', 'success');
-      document.getElementById('footer-status').innerText = 'Ready';
+      //document.getElementById('footer-status').innerText = 'Ready';
       
     } catch(err) {
       hideLoading();
