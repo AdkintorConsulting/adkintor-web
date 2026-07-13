@@ -1173,32 +1173,6 @@
           await loadData();
           hideLoading();
           showToast('KPI Dashboard loaded successfully ✅', 'success');
-          
-          // ✅ ELIMINAR EL FALLBACK DEL LOGO
-          // El logo llega del padre a través de postMessage (SET_COMPANY_LOGO)
-          // ============================================
-          // FALLBACK - CARGAR LOGO DESDE SESIÓN
-          // ============================================
-          setTimeout(function() {
-              const img = document.getElementById('companyLogo');
-              // Solo si el logo NO se ha cargado (sigue oculto)
-              if (img && img.style.display !== 'block') {
-                  try {
-                      const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                      if (session) {
-                          // Buscar logo en diferentes campos posibles
-                          const logoUrl = session.companyLogo || session.logoUrl;
-                          if (logoUrl) {
-                              img.src = logoUrl;
-                              img.style.display = 'block';
-                              console.log('[KPI] Logo cargado desde sesión (fallback)');
-                          }
-                      }
-                  } catch(e) {
-                      console.warn('[KPI] Error en fallback de logo:', e);
-                  }
-              }
-          }, 500);    
       } catch(err) {
           hideLoading();
           showToast('Error loading data: ' + err.message, 'error');
