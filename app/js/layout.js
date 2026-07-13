@@ -288,28 +288,9 @@ function setupModalClose() {
 // ============================================
 
 function openIntelligenceModal(moduleName, moduleUrl, moduleTitle) {
-    // Mapear módulos a sus dispatchers
-    const dispatcherMap = {
-        'kpi_intel': '/app/modules/intelligence/kpi_dispatcher.html',
-        'wo_intel': '/app/modules/intelligence/wo_dispatcher.html',
-        'pvt_intel': '/app/modules/intelligence/pvt_dispatcher.html',
-        'stk_intel': '/app/modules/intelligence/stk_dispatcher.html',
-        'cal_intel': '/app/modules/intelligence/cal_dispatcher.html',
-        'consulting': '/app/modules/intelligence/consulting_dispatcher.html'
-    };
-    
-    // Si existe dispatcher, usarlo
-    if (dispatcherMap[moduleName]) {
-        openIframeModalWithTitle(moduleTitle, dispatcherMap[moduleName]);
-    } else {
-        // Fallback: abrir directamente
-        const modal = document.getElementById('iframeModal');
-        const iframe = document.getElementById('intelIframe');
-        if (modal && iframe) {
-            iframe.src = moduleUrl;
-            modal.style.display = 'flex';
-        }
-    }
+    // ✅ Todos los módulos de FORESIGHT abren directo (sin dispatcher)
+    // Como Plant Layout y Sys Wizard
+    openIframeModalWithTitle(moduleTitle, moduleUrl);
 }
 
 function showPlaceholderInModal(moduleTitle) {
