@@ -1376,3 +1376,51 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast(`Welcome back, ${name}! 👋`, 'info', 3000);
     }, 500);
 });
+
+// ============================================
+// ESCUCHAR MENSAJES DE LOS DISPATCHERS
+// ============================================
+window.addEventListener('message', function(event) {
+    const data = event.data;
+    
+    // ✅ Manejar mensajes de dispatchers (openIframeModal)
+    if (data.type === 'openIframeModal') {
+        console.log('[LAYOUT] Abriendo modal desde dispatcher:', data.title);
+        openIframeModalWithTitle(data.title, data.url);
+        return;
+    }
+    
+    // ✅ Manejar cierre de iframe
+    if (data === 'closeIframe' || (data.type === 'closeIframe')) {
+        closeIframeModal();
+        return;
+    }
+    
+    // ✅ Manejar solicitud de logo
+    if (data.type === 'REQUEST_LOGO') {
+        // Reenviar el logo al módulo que lo pide
+        const logoImg = document.getElementById('companyLogo');
+        if (logoImg && logoImg.src) {
+            event.source.postMessage({
+                type: 'SET_COMPANY_LOGO',
+                logoUrl: logoImg.src
+            }, '*');
+        }
+        return;
+    }
+    
+    // ✅ Manejar solicitud de versión
+    if (data.type === 'REQUEST_VERSION') {
+        const versionSpan = document.getElementById('eamsVersion');
+        if (versionSpan) {
+            event.source.postMessage({
+                type: 'SET_VERSION',
+                version: versionSpan.innerText
+            }, '*');
+        }
+        return;
+    }
+    
+    // ✅ Manejar otros mensajes que ya existen
+    // (El código existente para otros mensajes puede ir aquí)
+});
