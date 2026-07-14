@@ -93,19 +93,19 @@
        LOADING OVERLAY - ESTÁNDAR ADKINTOR (DARK)
        ============================================ */
     #loadingOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(4px);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      gap: 12px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 10, 15, 0.95);
+        backdrop-filter: blur(4px);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        gap: 12px;
     }
     
     #loadingOverlay.visible {
@@ -126,12 +126,16 @@
     }
     
     .loading-content {
-      text-align: center;
-      background: var(--bg-card);
-      padding: 30px 40px;
-      border-radius: 16px;
-      border: 1px solid var(--accent-color);
-      box-shadow: 0 0 20px var(--accent-glow);
+        text-align: center;
+        background: var(--bg-card);
+        padding: 30px 40px;
+        border-radius: 16px;
+        border: 1px solid var(--accent-color);
+        box-shadow: 0 0 20px var(--accent-glow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     
     /* ============================================
@@ -562,7 +566,7 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-tasks"></i> WO Intelligence</span>
+      <span class="module-title"><i class="fas fa-tasks"></i> WO Foresight</span>
     </div>
     <div class="header-right">
       <span class="user-badge" id="userDisplay">Loading...</span>
@@ -572,36 +576,35 @@
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">WO Intelligence</span>
+    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">WO Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
-
-      <div class="last-updated" id="lastUpdated">--</div>
-      
-      <div class="tabs">
+       <div class="tabs">
         <button class="tab-btn active" data-tab="priorities">🎯 Priorities</button>
         <button class="tab-btn" data-tab="mytasks">📋 My Tasks</button>
-        <button class="tab-btn" data-tab="workload">📊 Workload</button>
-        <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>
+         <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>
       </div>
       
       <div class="content-panel">
         <!-- TAB 1: PRIORITIES -->
         <div id="priorities-tab" class="tab-pane active">
           <div class="flex-between">
-            <div class="stats-grid" style="width: 60%;">
-              <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
-              <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
-              <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
-            </div>
-            <div>
-              <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-              <button id="showAllBtn" class="adk-btn adk-btn-primary">📋 Show All</button>
-              <button id="exportBtn" class="adk-btn adk-btn-primary">📑 EXPORT PDF</button>
-            </div>
+              <div class="stats-grid" style="width: 60%;">
+                  <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
+                  <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
+                  <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
+                  <div class="adk-card"><div class="label">Open</div><div class="value" id="openCount">-</div></div>
+                  <div class="adk-card"><div class="label">In Progress</div><div class="value" id="inProgressCount">-</div></div>
+                  <div class="adk-card"><div class="label">Completed</div><div class="value" id="completedCount">-</div></div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                  <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+                  <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
+                  <button id="exportBtn" class="adk-btn adk-btn-secondary">📑 Export</button>
+              </div>
           </div>
           <div id="prioritiesList"></div>
         </div>
@@ -619,12 +622,7 @@
           </div>
           <div id="tasksList"></div>
         </div>
-        
-        <!-- TAB 3: WORKLOAD -->
-        <div id="workload-tab" class="tab-pane">
-          <div id="workloadList"></div>
-        </div>
-        
+      
         <!-- TAB 4: ALERTS -->
         <div id="alerts-tab" class="tab-pane">
           <div id="alertsList"></div>
@@ -815,50 +813,38 @@
   // TAB FUNCTION
   // ============================================
   function showTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-    document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
-    
-    var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
-    if (clickedBtn) clickedBtn.classList.add('active');
-    
-    var targetPane = document.getElementById(tabId + '-tab');
-    if (targetPane) targetPane.classList.add('active');
-    
-    if (tabId === 'workload' && !cachedData.workload) {
-      loadWorkload();
-    } else if (tabId === 'alerts' && !cachedData.alerts) {
-      loadAlerts();
-    }
+      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
+      
+      var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      var targetPane = document.getElementById(tabId + '-tab');
+      if (targetPane) targetPane.classList.add('active');
+      
+      // ✅ Solo Alerts (Workload eliminado)
+      if (tabId === 'alerts' && !cachedData.alerts) {
+          loadAlerts();
+      }
   }
   
-  function checkAllDataLoaded() {
-    if (allDataLoaded.priorities && allDataLoaded.users && allDataLoaded.workload && allDataLoaded.alerts) {
-      hideLoading();
-    } else {
-      setTimeout(function() {
-        if (allDataLoaded.priorities && allDataLoaded.users && allDataLoaded.workload && allDataLoaded.alerts) {
-          hideLoading();
-        }
-      }, 10000);
-    }
-  }
-  
+ 
   // ============================================
   // LOAD DATA FUNCTIONS
   // ============================================
   async function loadPriorities() {
-    try {
-      var data = await callApi('getSimplePriorities', []);
-      renderPriorities(data);
-      allDataLoaded.priorities = true;
-      checkAllDataLoaded();
-    } catch (error) {
+      try {
+          var data = await callApi('getPrioritizedWOs', [false, 14]);  // ← 14 días
+          renderPriorities(data);
+          allDataLoaded.priorities = true;
+          // checkAllDataLoaded();  ← ELIMINAR
+      } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
       document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       allDataLoaded.priorities = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     }
   }
   
@@ -875,14 +861,14 @@
         }
       }
       allDataLoaded.users = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadUsers', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
       console.error('Error loading users:', error);
       allDataLoaded.users = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     }
   }
   
@@ -913,11 +899,11 @@
       cachedData.workload = workload;
       renderWorkload(workload);
       allDataLoaded.workload = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     } catch (error) {
       document.getElementById('workloadList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       allDataLoaded.workload = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     }
   }
   
@@ -928,7 +914,7 @@
       cachedData.alerts = alerts;
       renderAlerts(alerts);
       allDataLoaded.alerts = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
       hideLoading();
     } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
@@ -937,20 +923,20 @@
       hideLoading();
       document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
       allDataLoaded.alerts = true;
-      checkAllDataLoaded();
+      // checkAllDataLoaded();  ← ELIMINAR
     }
   }
   
   async function loadAllWOs() {
-    await logForesight('WO', 'LOAD_ALL_WOS', 'User requested to view all Work Orders (full mode)');
-    
-    showLoading('Loading all work orders...');
-    try {
-      var data = await callApi('getPrioritizedWOsFull', []);
-      renderPriorities(data);
-      hideLoading();
-      showToast('All WOs loaded successfully', 'success');
-    } catch (error) {
+      await logForesight('WO', 'LOAD_ALL_WOS', 'User requested to view all Work Orders (full mode)');
+      
+      showLoading('Loading all work orders...');
+      try {
+          var data = await callApi('getPrioritizedWOs', [false, 0]);  // ← 0 = sin límite
+          renderPriorities(data);
+          hideLoading();
+          showToast('All WOs loaded successfully', 'success');
+      } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadAllWOs', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
@@ -967,7 +953,6 @@
     
     await loadPriorities();
     await loadUsers();
-    await loadWorkload();
     await loadAlerts();
     
     showToast('Data refreshed successfully', 'success');
@@ -977,46 +962,77 @@
   // RENDER FUNCTIONS
   // ============================================
   function renderPriorities(data) {
-    var wos = Array.isArray(data) ? data : (data?.wos || []);
-    var lastUpdated = data?.lastUpdated;
-    
-    if (lastUpdated) {
-      var lastUpdatedElem = document.getElementById('lastUpdated');
-      if (lastUpdatedElem) {
-        lastUpdatedElem.innerText = 'Updated: ' + new Date(lastUpdated).toLocaleString();
-      }
-    }
-    
-    var activeCountElem = document.getElementById('activeCount');
-    var highCountElem = document.getElementById('highCount');
-    var holdCountElem = document.getElementById('holdCount');
-    
-    if (activeCountElem) activeCountElem.innerText = wos.length;
-    if (highCountElem) highCountElem.innerText = wos.filter(function(w) { return w.score >= 80; }).length;
-    if (holdCountElem) holdCountElem.innerText = wos.filter(function(w) { return w.status === 'ON HOLD' || w.missingParts; }).length;
-    
-    if (!wos.length) {
-      document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders</div>';
-      return;
-    }
-    
-    var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>#</th><th>WO #</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
-    html += '</thead><tbody>';
-    
-    for (var i = 0; i < wos.length; i++) {
-      var wo = wos[i];
-      var statusBadge = '';
-      if (wo.missingParts) statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
-      else if (wo.status === 'OPEN') statusBadge = '<span class="badge adk-badge-primary">🟡 OPEN</span>';
-      else if (wo.status === 'IN PROGRESS') statusBadge = '<span class="badge adk-badge-success">🔵 IN PROGRESS</span>';
-      else if (wo.status === 'ON HOLD') statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
-      else statusBadge = '<span class="badge adk-badge-gray">' + (wo.status || '-') + '</span>';
+      var wos = Array.isArray(data) ? data : (data?.wos || []);
+      var lastUpdated = data?.lastUpdated;
       
-      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel || wo.priority || '-') + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
-    }
-    html += '</tbody></table></div>';
-    document.getElementById('prioritiesList').innerHTML = html;
+      if (lastUpdated) {
+          var lastUpdatedElem = document.getElementById('lastUpdated');
+          if (lastUpdatedElem) {
+              lastUpdatedElem.innerText = 'Updated: ' + new Date(lastUpdated).toLocaleString();
+          }
+      }
+      
+      // Contadores
+      var activeCount = wos.length;
+      var highCount = wos.filter(function(w) { return w.score >= 80; }).length;
+      var holdCount = wos.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
+      
+      var openCount = wos.filter(function(w) { 
+          var status = (w.status || '').toUpperCase();
+          return status === 'OPEN';
+      }).length;
+      
+      var inProgressCount = wos.filter(function(w) { 
+          var status = (w.status || '').toUpperCase();
+          return status === 'IN PROGRESS';
+      }).length;
+      
+      var completedCount = wos.filter(function(w) { 
+          var status = (w.status || '').toUpperCase();
+          return status === 'COMPLETED';
+      }).length;
+      
+      // Actualizar tarjetas
+      document.getElementById('activeCount').innerText = activeCount;
+      document.getElementById('highCount').innerText = highCount;
+      document.getElementById('holdCount').innerText = holdCount;
+      document.getElementById('openCount').innerText = openCount;
+      document.getElementById('inProgressCount').innerText = inProgressCount;
+      document.getElementById('completedCount').innerText = completedCount;
+      
+      if (!wos.length) {
+          document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders</div>';
+          return;
+      }
+      
+      // Tabla con columna Creation Date
+      var html = '<div class="table-wrapper"><table><thead>';
+      html += '<tr><th>#</th><th>WO #</th><th>Creation Date</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
+      html += '</thead><tbody>';
+      
+      for (var i = 0; i < wos.length; i++) {
+          var wo = wos[i];
+          var statusUpper = (wo.status || '').toUpperCase();
+          var statusBadge = '';
+          
+          if (wo.missingParts) {
+              statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+          } else if (statusUpper === 'OPEN') {
+              statusBadge = '<span class="badge adk-badge-primary">🟡 OPEN</span>';
+          } else if (statusUpper === 'IN PROGRESS') {
+              statusBadge = '<span class="badge adk-badge-success">🔵 IN PROGRESS</span>';
+          } else if (statusUpper === 'COMPLETED') {
+              statusBadge = '<span class="badge adk-badge-success">✅ COMPLETED</span>';
+          } else if (statusUpper === 'ON HOLD') {
+              statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+          } else {
+              statusBadge = '<span class="badge adk-badge-gray">' + (wo.status || '-') + '</span>';
+          }
+          
+          html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + escapeHtml(wo.creationDate || '-') + '</td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel || wo.priority || '-') + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
+      }
+      html += '</tbody></table></div>';
+      document.getElementById('prioritiesList').innerHTML = html;
   }
   
   function renderTasksList(tasks) {
@@ -1143,77 +1159,39 @@
   // MAIN INIT
   // ============================================
   async function init() {
-    loadUser();
-    showLoading('Loading WO Intelligence...');
-    loadApiUrl();
-    
-    if (!EAMS_API_URL) {
-      hideLoading();
-      showToast('API URL not configured. Please login.', 'error');
-      return;
-    }
-    
-    try {
-      // Log dashboard open
-      await logForesight('WO', 'OPEN_DASHBOARD', 'User accessed WO Intelligence Dashboard');
+      loadUser();
+      showLoading('Loading WO Intelligence...');
+      loadApiUrl();
       
-      // Setup buttons
-      var refreshBtn = document.getElementById('refreshBtn');
-      var exportBtnElem = document.getElementById('exportBtn');
-      var printTasksBtn = document.getElementById('printTasksBtn');
-      var userSelect = document.getElementById('userSelect');
-      var showAllBtn = document.getElementById('showAllBtn');
-      
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() { refreshAllData(); });
+      if (!EAMS_API_URL) {
+          hideLoading();
+          showToast('API URL not configured. Please login.', 'error');
+          return;
       }
       
-      if (showAllBtn) {
-        showAllBtn.addEventListener('click', function() { loadAllWOs(); });
+      try {
+          await logForesight('WO', 'OPEN_DASHBOARD', 'User accessed WO Intelligence Dashboard');
+          
+          // Setup buttons y tabs...
+          
+          // ✅ Carga principal: solo Priorities (con filtro de 14 días)
+          allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+          
+          // Cargar Priorities primero (con días limitados)
+          await loadPriorities();
+          hideLoading();
+          showToast('WO Foresight loaded successfully ✅', 'success');
+          
+          // ✅ Carga en segundo plano: Users, Alerts
+          setTimeout(function() {
+              loadUsers();
+              loadAlerts();
+          }, 500);
+          
+      } catch(err) {
+          hideLoading();
+          showToast('Error loading data: ' + err.message, 'error');
       }
-      
-      if (exportBtnElem) {
-        exportBtnElem.addEventListener('click', function() { exportToPDF(); });
-      }
-      
-      if (printTasksBtn) {
-        printTasksBtn.addEventListener('click', function() { printTasks(); });
-      }
-      
-      if (userSelect) {
-        userSelect.addEventListener('change', function() { loadTasks(); });
-      }
-      
-      // Setup tabs
-      document.querySelectorAll('.tab-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var tabId = this.getAttribute('data-tab');
-          showTab(tabId);
-        });
-      });
-      
-      // Request logo and version from parent
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
-        window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
-      }
-      
-      // Load all data
-      allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
-      
-      await loadPriorities();
-      await loadUsers();
-      await loadWorkload();
-      await loadAlerts();
-      
-      hideLoading();
-      showToast('WO Intelligence loaded successfully ✅', 'success');
-      //document.getElementById('footer-status').innerText = 'Ready';
-      
-    } catch(err) {
-      hideLoading();
-      showToast('Error loading data: ' + err.message, 'error');
-    }
   }
   
   // Iniciar cuando el DOM esté listo
