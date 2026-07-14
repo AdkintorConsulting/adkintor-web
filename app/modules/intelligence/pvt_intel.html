@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - PVT Intelligence</title>
+  <title>FORESIGHT - PVT Foresight</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -521,6 +521,18 @@
       gap: 12px;
       font-family: 'Inter', sans-serif;
     }
+
+    .adk-btn-secondary {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .adk-btn-secondary:hover {
+        background: var(--bg-hover);
+        border-color: var(--accent-color);
+        transform: scale(1.02);
+    }    
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -578,6 +590,14 @@
       
       <div class="content-panel">
         <div id="coverage-tab" class="tab-pane active">
+          <!-- Tarjetas de conteo -->
+          <div class="stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
+              <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
+              <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
+              <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
+              <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
+              <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
+          </div>
           <div class="adk-card">
             <div class="card-header">📊 Strategy Coverage by Technical Location</div>
             <div class="card-body" id="coverageContent"></div>
@@ -807,12 +827,15 @@
       var targetPane = document.getElementById(tabId + '-tab');
       if (targetPane) targetPane.classList.add('active');
       
-      // ✅ Carga bajo demanda
+      // ✅ Mostrar spinner antes de cargar
       if (tabId === 'orphans' && !cachedData.orphansLoaded) {
+          document.getElementById('orphansContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading orphan activities...</p></div>';
           loadOrphans();
       } else if (tabId === 'effectiveness' && !cachedData.effectivenessLoaded) {
+          document.getElementById('effectivenessContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading PM effectiveness...</p></div>';
           loadEffectiveness();
       } else if (tabId === 'failing' && !cachedData.failingLoaded) {
+          document.getElementById('failingContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading failing components...</p></div>';
           loadFailing();
       }
   }
@@ -888,7 +911,7 @@
   }
   
   async function refreshAll() {
-    await logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Intelligence Dashboard');
+    await logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Foresight Dashboard');
     
     showLoading('Loading PVT data...');
     try {
@@ -917,7 +940,7 @@
       }
       
       var html = '<div class="table-wrapper"><table><thead>';
-      html += '<tr><th>Technical Location</th><th>Criticality</th><th>Components</th><th>Covered</th><th>Coverage</th></tr>';
+      html += '<tr><th>Technical Location</th><th>Criticality</th><th>Components</th><th>Comp Coverage</th><th>Strategies</th><th>Strat Coverage</th><th>Total Coverage</th></tr>';
       html += '</thead><tbody>';
       
       for (var i = 0; i < data.length; i++) {
@@ -931,12 +954,10 @@
           else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
           else if (item.criticality === 'C - STANDAR') critClass = 'adk-badge-primary';
           
-          // ✅ Mostrar ID + Nombre
           var displayName = item.tlId + ' - ' + escapeHtml(item.tlName);
           
-          html += '<tr><td>' + escapeHtml(displayName) + '</td><td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td><td>' + item.totalComponents + '</td><td>' + item.coveredComponents + '</td><td>';
+          html += '<tr><td>' + escapeHtml(displayName) + '</td><td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td><td>' + item.coveredComponents + '/' + item.totalComponents + '</td><td>' + item.componentPercent + '%</td><td>' + item.coveredStrategies + '/' + item.totalStrategies + '</td><td>' + item.strategyPercent + '%</td><td>';
           
-          // ✅ Si 0%, no mostrar barra
           if (item.percent === 0) {
               html += '<span style="color: var(--text-secondary);">0%</span>';
           } else {
@@ -1033,9 +1054,9 @@
           else if (criticalityDisplay === 'C') criticalityDisplay = 'C - STANDAR';
           
           var critClass = 'adk-badge-success';
-          if (criticalityDisplay === 'A - CRITICAL') critClass = 'adk-badge-danger';
-          else if (criticalityDisplay === 'B - IMPORTANT') critClass = 'adk-badge-warning';
-          else if (criticalityDisplay === 'C - STANDAR') critClass = 'adk-badge-primary';
+          if (item.criticality === 'A - CRITICAL') critClass = 'adk-badge-danger';
+          else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
+          else if (item.criticality === 'C - STANDAR') critClass = 'adk-badge-primary';  // ← Celeste
           
           html += '<tr><td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td><td class="col-code">' + escapeHtml(item.componentName) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge ' + critClass + '">' + escapeHtml(criticalityDisplay) + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.suggestedFrequency) + '</span></td></tr>';
       }
@@ -1120,7 +1141,7 @@
     
     for (var i = 0; i < duplicateData.length; i++) {
       var d = duplicateData[i];
-      modalHtml += '<tr><td class="col-code">' + escapeHtml(d.assetId) + '</td><td class="col-task">' + escapeHtml(d.task) + '</td><td>' + escapeHtml(d.strategies.join(', ')) + '</td></tr>';
+      modalHtml += '<tr><td class="col-code">' + escapeHtml(d.assetId + ' (TL: ' + d.tlId + ')') + '</td><td class="col-task">' + escapeHtml(d.task) + '</td><td>' + escapeHtml(d.strategyId) + ' (' + d.count + 'x)</td></tr>';
     }
     
     modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and unify duplicate tasks into a single strategy.</div></div></div></div>';
