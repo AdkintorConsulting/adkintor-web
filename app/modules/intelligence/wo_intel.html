@@ -363,10 +363,10 @@
     
     /* Stats grid */
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);  /* ← 6 columnas */
+        gap: 12px;
+        margin-bottom: 20px;
     }
     
     /* Alert cards */
@@ -443,25 +443,25 @@
     
     /* Cards */
     .adk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 8px;  /* ← Padding más compacto */
+        text-align: center;
     }
-    
-    .adk-card .label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      font-family: 'Inter', sans-serif;
-    }
-    
+
     .adk-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent-color);
-      font-family: 'Inter', sans-serif;
+        font-size: 22px;  /* ← Tamaño más pequeño */
+        font-weight: 700;
+        color: var(--accent-color);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .adk-card .label {
+        font-size: 10px;  /* ← Más pequeño */
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        font-family: 'Inter', sans-serif;
     }
     
     /* Progress bar */
@@ -592,14 +592,14 @@
         <!-- TAB 1: PRIORITIES -->
         <div id="priorities-tab" class="tab-pane active">
           <div class="flex-between">
-              <div class="stats-grid" style="width: 60%;">
-                  <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
-                  <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
-                  <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
-                  <div class="adk-card"><div class="label">Open</div><div class="value" id="openCount">-</div></div>
-                  <div class="adk-card"><div class="label">In Progress</div><div class="value" id="inProgressCount">-</div></div>
-                  <div class="adk-card"><div class="label">Completed</div><div class="value" id="completedCount">-</div></div>
-              </div>
+            <div class="stats-grid" style="width: 100%;">
+                <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
+                <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
+                <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
+                <div class="adk-card"><div class="label">Open</div><div class="value" id="openCount">-</div></div>
+                <div class="adk-card"><div class="label">In Progress</div><div class="value" id="inProgressCount">-</div></div>
+                <div class="adk-card"><div class="label">Completed</div><div class="value" id="completedCount">-</div></div>
+            </div>
               <div style="display: flex; gap: 8px;">
                   <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
                   <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
@@ -822,8 +822,16 @@
       var targetPane = document.getElementById(tabId + '-tab');
       if (targetPane) targetPane.classList.add('active');
       
-      // ✅ Solo Alerts (Workload eliminado)
-      if (tabId === 'alerts' && !cachedData.alerts) {
+      // ✅ Carga bajo demanda
+      if (tabId === 'mytasks' && !cachedData.users) {
+          loadUsers();
+      } else if (tabId === 'mytasks' && cachedData.users) {
+          // Ya tiene usuarios, cargar tareas del primer usuario seleccionado
+          var select = document.getElementById('userSelect');
+          if (select && select.value) {
+              loadTasks();
+          }
+      } else if (tabId === 'alerts' && !cachedData.alerts) {
           loadAlerts();
       }
   }
@@ -849,20 +857,23 @@
   }
   
   async function loadUsers() {
-    try {
-      var users = await callApi('getTechniciansAndSupervisor', []);
-      cachedData.users = users;
-      var userSelect = document.getElementById('userSelect');
-      if (userSelect && users) {
-        userSelect.innerHTML = '<option value="">-- Select user --</option>';
-        for (var i = 0; i < users.length; i++) {
-          var user = users[i];
-          userSelect.innerHTML += '<option value="' + user.email + '">👤 ' + user.name + ' (' + user.role + ')</option>';
-        }
-      }
-      allDataLoaded.users = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-    } catch (error) {
+      try {
+          var users = await callApi('getTechniciansAndSupervisor', []);
+          cachedData.users = users;  // ← Guardar en cachedData
+          var userSelect = document.getElementById('userSelect');
+          if (userSelect && users) {
+              userSelect.innerHTML = '<option value="">-- Select user --</option>';
+              for (var i = 0; i < users.length; i++) {
+                  var user = users[i];
+                  userSelect.innerHTML += '<option value="' + user.email + '">👤 ' + user.name + ' (' + user.role + ')</option>';
+              }
+          }
+          allDataLoaded.users = true;
+          // ✅ Si hay un usuario seleccionado, cargar tareas
+          if (userSelect && userSelect.value) {
+              loadTasks();
+          }
+      } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadUsers', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
@@ -908,15 +919,13 @@
   }
   
   async function loadAlerts() {
-    showLoading('Loading alerts...');
-    try {
-      var alerts = await callApi('getAlerts', []);
-      cachedData.alerts = alerts;
-      renderAlerts(alerts);
-      allDataLoaded.alerts = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-      hideLoading();
-    } catch (error) {
+      // No mostrar loading para no bloquear
+      try {
+          var alerts = await callApi('getAlerts', []);
+          cachedData.alerts = alerts;
+          renderAlerts(alerts);
+          allDataLoaded.alerts = true;
+      } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadAlerts', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
@@ -1005,11 +1014,11 @@
           return;
       }
       
-      // Tabla con columna Creation Date
+      // Tabla con columna Creation Date (formato YYYY-MM-DD)
       var html = '<div class="table-wrapper"><table><thead>';
       html += '<tr><th>#</th><th>WO #</th><th>Creation Date</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
       html += '</thead><tbody>';
-      
+
       for (var i = 0; i < wos.length; i++) {
           var wo = wos[i];
           var statusUpper = (wo.status || '').toUpperCase();
@@ -1029,7 +1038,18 @@
               statusBadge = '<span class="badge adk-badge-gray">' + (wo.status || '-') + '</span>';
           }
           
-          html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + escapeHtml(wo.creationDate || '-') + '</td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel || wo.priority || '-') + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
+          // ✅ Formatear fecha sin hora
+          var dateStr = wo.creationDate || '-';
+          if (dateStr !== '-') {
+              try {
+                  var dateObj = new Date(dateStr);
+                  if (!isNaN(dateObj.getTime())) {
+                      dateStr = dateObj.toLocaleDateString('en-CA'); // YYYY-MM-DD
+                  }
+              } catch(e) {}
+          }
+          
+          html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + escapeHtml(dateStr) + '</td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel || wo.priority || '-') + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
       }
       html += '</tbody></table></div>';
       document.getElementById('prioritiesList').innerHTML = html;
@@ -1160,7 +1180,7 @@
   // ============================================
   async function init() {
       loadUser();
-      showLoading('Loading WO Intelligence...');
+      showLoading('Loading WO Foresight...');
       loadApiUrl();
       
       if (!EAMS_API_URL) {
@@ -1170,22 +1190,73 @@
       }
       
       try {
-          await logForesight('WO', 'OPEN_DASHBOARD', 'User accessed WO Intelligence Dashboard');
+          await logForesight('WO', 'OPEN_DASHBOARD', 'User accessed WO Foresight Dashboard');
           
-          // Setup buttons y tabs...
+          // ✅ Configurar botones ANTES de cargar datos
+          var refreshBtn = document.getElementById('refreshBtn');
+          var showAllBtn = document.getElementById('showAllBtn');
+          var exportBtn = document.getElementById('exportBtn');
+          var printTasksBtn = document.getElementById('printTasksBtn');
+          var userSelect = document.getElementById('userSelect');
           
-          // ✅ Carga principal: solo Priorities (con filtro de 14 días)
+          console.log('[WO] refreshBtn:', refreshBtn);
+          console.log('[WO] showAllBtn:', showAllBtn);
+          console.log('[WO] exportBtn:', exportBtn);
+          
+          if (refreshBtn) {
+              refreshBtn.addEventListener('click', function() { 
+                  console.log('[WO] Refresh clicked');
+                  refreshAllData(); 
+              });
+          }
+          
+          if (showAllBtn) {
+              showAllBtn.addEventListener('click', function() { 
+                  console.log('[WO] Show All clicked');
+                  loadAllWOs(); 
+              });
+          }
+          
+          if (exportBtn) {
+              exportBtn.addEventListener('click', function() { 
+                  console.log('[WO] Export clicked');
+                  exportToPDF(); 
+              });
+          }
+          
+          if (printTasksBtn) {
+              printTasksBtn.addEventListener('click', function() { 
+                  console.log('[WO] Print Tasks clicked');
+                  printTasks(); 
+              });
+          }
+          
+          if (userSelect) {
+              userSelect.addEventListener('change', function() { 
+                  console.log('[WO] User changed:', this.value);
+                  loadTasks(); 
+              });
+          }
+          
+          // ✅ Tabs
+          document.querySelectorAll('.tab-btn').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                  var tabId = this.getAttribute('data-tab');
+                  console.log('[WO] Tab clicked:', tabId);
+                  showTab(tabId);
+              });
+          });
+          
+          // ✅ Carga principal: solo Priorities
           allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
           
-          // Cargar Priorities primero (con días limitados)
           await loadPriorities();
           hideLoading();
           showToast('WO Foresight loaded successfully ✅', 'success');
           
-          // ✅ Carga en segundo plano: Users, Alerts
+          // ✅ Carga en segundo plano: Users (para que estén listos cuando se necesiten)
           setTimeout(function() {
               loadUsers();
-              loadAlerts();
           }, 500);
           
       } catch(err) {
