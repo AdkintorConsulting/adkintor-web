@@ -354,172 +354,200 @@
       to { opacity: 1; } 
     }
     
-    /* Cards */
+    /* ============================================
+       STATS GRID - 5 COLUMNAS PARA PVT
+       ============================================ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    /* ============================================
+       CARDS DE CONTEO (igual que WO)
+       ============================================ */
     .adk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      margin-bottom: 20px;
-      overflow: hidden;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 8px;
+        text-align: center;
     }
-    
-    .card-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      font-weight: 600;
-      font-size: 16px;
-      background: rgba(0,0,0,0.2);
-      font-family: 'Inter', sans-serif;
+
+    .adk-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent-color);
+        font-family: 'Inter', sans-serif;
     }
-    
-    .card-body {
-      padding: 20px;
+
+    .adk-card .label {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        font-family: 'Inter', sans-serif;
     }
-    
-    /* Tables */
+
+    /* ============================================
+       CONTENEDORES GRANDES (tablas)
+       ============================================ */
+    .card-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .card-container .card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 600;
+        font-size: 16px;
+        background: rgba(0,0,0,0.2);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .card-container .card-body {
+        padding: 20px;
+        text-align: left;
+    }
+
+    /* ============================================
+       TABLAS - ALINEACIÓN IZQUIERDA
+       ============================================ */
     .table-wrapper {
-      overflow-x: auto;
-      margin-top: 16px;
+        overflow-x: auto;
+        margin-top: 16px;
+        text-align: left;
     }
-    
+
     table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        text-align: left;
     }
-    
+
+    th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
     th {
-      text-align: left;
-      padding: 12px;
-      background: rgba(0,0,0,0.2);
-      font-weight: 600;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
+        background: rgba(0,0,0,0.2);
+        font-weight: 600;
+        color: var(--text-secondary);
     }
-    
-    td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-      vertical-align: middle;
-    }
-    
+
     tr:hover {
-      background: rgba(0, 229, 255, 0.05);
+        background: rgba(0, 229, 255, 0.05);
     }
-    
+
     /* Badges */
     .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-      font-family: 'Inter', sans-serif;
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
     }
-    
+
     .adk-badge-danger { background: rgba(255,82,82,0.2); color: #ff5252; border: 1px solid #ff5252; }
     .adk-badge-warning { background: rgba(255,183,77,0.2); color: #ffb74d; border: 1px solid #ffb74d; }
     .adk-badge-success { background: rgba(0,230,118,0.2); color: #00e676; border: 1px solid #00e676; }
     .adk-badge-primary { background: rgba(0,229,255,0.2); color: #00e5ff; border: 1px solid #00e5ff; }
-    
+
     /* Progress bar */
     .progress-container {
-      background: var(--bg-hover);
-      border-radius: 20px;
-      overflow: hidden;
-      width: 100px;
+        background: var(--bg-hover);
+        border-radius: 20px;
+        overflow: hidden;
+        width: 100px;
     }
-    
+
     .progress-fill {
-      padding: 4px 8px;
-      font-size: 10px;
-      text-align: center;
-      color: #0a0a0f;
-      font-weight: bold;
-      font-family: 'Inter', sans-serif;
+        padding: 4px 8px;
+        font-size: 10px;
+        text-align: center;
+        color: #0a0a0f;
+        font-weight: bold;
+        font-family: 'Inter', sans-serif;
     }
-    
+
     .progress-green { background: var(--success); }
     .progress-yellow { background: var(--warning); }
     .progress-red { background: var(--danger); }
-    
+
     /* Columns */
     .col-code { font-family: monospace; font-size: 12px; }
     .col-task { max-width: 300px; white-space: normal; word-wrap: break-word; }
     .col-suggestion { max-width: 250px; white-space: normal; word-wrap: break-word; }
-    
+
     /* Modal */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
     }
-    
+
     .modal-content {
-      background: var(--bg-card);
-      border-radius: 12px;
-      max-width: 800px;
-      width: 90%;
-      max-height: 80vh;
-      overflow: auto;
-      border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        border-radius: 12px;
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
+        overflow: auto;
+        border: 1px solid var(--border-color);
     }
-    
+
     .modal-header {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      font-family: 'Inter', sans-serif;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        font-family: 'Inter', sans-serif;
     }
-    
+
     .modal-body { padding: 16px; }
     .close-btn { cursor: pointer; font-size: 24px; }
-    
+
     .link {
-      color: var(--accent-color);
-      cursor: pointer;
-      text-decoration: underline;
+        color: var(--accent-color);
+        cursor: pointer;
+        text-decoration: underline;
     }
-    
+
     .adk-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
     }
-    
+
     .adk-btn-primary {
-      background: var(--accent-color);
-      color: var(--bg-primary);
+        background: var(--accent-color);
+        color: var(--bg-primary);
     }
-    
+
     .adk-btn-primary:hover {
-      opacity: 0.9;
-      transform: scale(1.02);
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-    
-    .adk-alert-warning {
-      background: rgba(255, 183, 77, 0.1);
-      border: 1px solid var(--warning);
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: 'Inter', sans-serif;
+        opacity: 0.9;
+        transform: scale(1.02);
+        box-shadow: 0 0 10px var(--accent-glow);
     }
 
     .adk-btn-secondary {
@@ -532,37 +560,20 @@
         background: var(--bg-hover);
         border-color: var(--accent-color);
         transform: scale(1.02);
-    } 
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
     }
 
-    .adk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 12px 8px;
-      text-align: center;
+    .adk-alert-warning {
+        background: rgba(255, 183, 77, 0.1);
+        border: 1px solid var(--warning);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Inter', sans-serif;
     }
 
-    .adk-card .value {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--accent-color);
-      font-family: 'Inter', sans-serif;
-    }
-
-    .adk-card .label {
-      font-size: 10px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
-      font-family: 'Inter', sans-serif;
-    }       
-    
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
     ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
@@ -603,62 +614,70 @@
   
   <!-- CUERPO -->
   <div class="module-body">
-    <div class="dashboard-container">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="coverage">📊 Strategy Coverage</button>
-        <button class="tab-btn" data-tab="orphans">🗑️ Orphan Activities</button>
-        <button class="tab-btn" data-tab="alerts">🚨 Alerts</button>
-      </div>
+      <div class="dashboard-container">
+          <div class="tabs">
+              <button class="tab-btn active" data-tab="coverage">📊 Strategy Coverage</button>
+              <button class="tab-btn" data-tab="orphans">🗑️ Orphan Activities</button>
+              <button class="tab-btn" data-tab="alerts">🚨 Alerts</button>
+          </div>
 
-      <!-- ✅ BOTONES DEBAJO DE TABS -->
-      <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-          <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
-          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-      </div>      
-      <div class="content-panel">
-        
-        <!-- TAB 1: COVERAGE -->
-        <div id="coverage-tab" class="tab-pane active">
-          <div class="stats-grid">
-            <div class="adk-card"><div class="label">Tech Locations</div><div class="value" id="tlCount">-</div></div>
-            <div class="adk-card"><div class="label">Main Equip</div><div class="value" id="mainEquipCount">-</div></div>
-            <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
-            <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
-            <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
+          <!-- ✅ BOTONES DEBAJO DE TABS -->
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
+              <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+              <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
           </div>
-          <div class="adk-card">
-            <div class="card-header">📊 Strategy Coverage by Technical Location</div>
-            <div class="card-body" id="coverageContent"></div>
+
+          <div class="content-panel">
+              
+              <!-- TAB 1: COVERAGE -->
+              <div id="coverage-tab" class="tab-pane active">
+                  <!-- Tarjetas de conteo (5) -->
+                  <div class="stats-grid">
+                      <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
+                      <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
+                      <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
+                      <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
+                      <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
+                  </div>
+
+                  <div class="card-container">
+                      <div class="card-header">📊 Strategy Coverage by Technical Location</div>
+                      <div class="card-body" id="coverageContent"></div>
+                  </div>
+              </div>
+              <!-- FIN TAB 1 -->
+
+              <!-- TAB 2: ORPHANS -->
+              <div id="orphans-tab" class="tab-pane">
+                  <div id="duplicateWarning" class="adk-alert-warning" style="display: none;">
+                      <span>⚠️</span>
+                      <span id="duplicateWarningText"></span>
+                      <span class="link" id="viewDuplicatesLink">View details →</span>
+                  </div>
+
+                  <div class="card-container">
+                      <div class="card-header">🗑️ Orphan Activities (No active strategy)</div>
+                      <div class="card-body" id="orphansContent"></div>
+                  </div>
+              </div>
+              <!-- FIN TAB 2 -->
+
+              <!-- TAB 3: ALERTS -->
+              <div id="alerts-tab" class="tab-pane">
+                  <div class="card-container">
+                      <div class="card-header">🚨 PMs executed but failures continue</div>
+                      <div class="card-body" id="alertsEffectivenessContent"></div>
+                  </div>
+
+                  <div class="card-container">
+                      <div class="card-header">🚨 Components failing without PM</div>
+                      <div class="card-body" id="alertsFailingContent"></div>
+                  </div>
+              </div>
+              <!-- FIN TAB 3 -->
+
           </div>
-        </div>
-        
-        <!-- TAB 2: ORPHANS -->
-        <div id="orphans-tab" class="tab-pane">
-          <div id="duplicateWarning" class="adk-alert-warning" style="display: none;">
-            <span>⚠️</span>
-            <span id="duplicateWarningText"></span>
-            <span class="link" id="viewDuplicatesLink">View details →</span>
-          </div>
-          <div class="adk-card">
-            <div class="card-header">🗑️ Orphan Activities (No active strategy)</div>
-            <div class="card-body" id="orphansContent"></div>
-          </div>
-        </div>
-        
-        <!-- TAB 3: ALERTS -->
-        <div id="alerts-tab" class="tab-pane">
-          <div class="adk-card">
-            <div class="card-header">🚨 PMs executed but failures continue</div>
-            <div class="card-body" id="alertsEffectivenessContent"></div>
-          </div>
-          <div class="adk-card">
-            <div class="card-header">🚨 Components failing without PM</div>
-            <div class="card-body" id="alertsFailingContent"></div>
-          </div>
-        </div>
-        
-      </div>    
-    </div>
+      </div>
   </div>
   
   <!-- FOOTER - ESTÁNDAR ADKINTOR (DARK) -->
