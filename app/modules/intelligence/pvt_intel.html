@@ -578,8 +578,7 @@
       <div class="tabs">
         <button class="tab-btn active" data-tab="coverage">📊 Strategy Coverage</button>
         <button class="tab-btn" data-tab="orphans">🗑️ Orphan Activities</button>
-        <button class="tab-btn" data-tab="effectiveness">🎯 PM Effectiveness</button>
-        <button class="tab-btn" data-tab="failing">⚠️ Failing Components</button>
+        <button class="tab-btn" data-tab="alerts">🚨 Alerts</button>
       </div>
 
       <!-- ✅ BOTONES DEBAJO DE TABS -->
@@ -587,16 +586,16 @@
           <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
           <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
       </div>      
-      
       <div class="content-panel">
+        
+        <!-- TAB 1: COVERAGE -->
         <div id="coverage-tab" class="tab-pane active">
-          <!-- Tarjetas de conteo -->
           <div class="stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
-              <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
-              <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
-              <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
-              <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
-              <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
+            <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
+            <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
+            <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
+            <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
+            <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
           </div>
           <div class="adk-card">
             <div class="card-header">📊 Strategy Coverage by Technical Location</div>
@@ -604,6 +603,7 @@
           </div>
         </div>
         
+        <!-- TAB 2: ORPHANS -->
         <div id="orphans-tab" class="tab-pane">
           <div id="duplicateWarning" class="adk-alert-warning" style="display: none;">
             <span>⚠️</span>
@@ -616,20 +616,19 @@
           </div>
         </div>
         
-        <div id="effectiveness-tab" class="tab-pane">
+        <!-- TAB 3: ALERTS -->
+        <div id="alerts-tab" class="tab-pane">
           <div class="adk-card">
-            <div class="card-header">🎯 PM Effectiveness - PMs executed but failures continue</div>
-            <div class="card-body" id="effectivenessContent"></div>
+            <div class="card-header">🚨 PMs executed but failures continue</div>
+            <div class="card-body" id="alertsEffectivenessContent"></div>
+          </div>
+          <div class="adk-card">
+            <div class="card-header">🚨 Components failing without PM</div>
+            <div class="card-body" id="alertsFailingContent"></div>
           </div>
         </div>
         
-        <div id="failing-tab" class="tab-pane">
-          <div class="adk-card">
-            <div class="card-header">⚠️ Failing Components Without PM Activity</div>
-            <div class="card-body" id="failingContent"></div>
-          </div>
-        </div>
-      </div>
+      </div>    
     </div>
   </div>
   
@@ -809,36 +808,99 @@
   var failingData = [];
 
   var cachedData = {
-      orphansLoaded: false,
-      effectivenessLoaded: false,
-      failingLoaded: false
+    orphansLoaded: false,
+    alertsLoaded: false
   };
   
   // ============================================
   // TAB FUNCTION
   // ============================================
   function showTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-      document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
-      
-      var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
-      if (clickedBtn) clickedBtn.classList.add('active');
-      
-      var targetPane = document.getElementById(tabId + '-tab');
-      if (targetPane) targetPane.classList.add('active');
-      
-      // ✅ Mostrar spinner antes de cargar
-      if (tabId === 'orphans' && !cachedData.orphansLoaded) {
-          document.getElementById('orphansContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading orphan activities...</p></div>';
-          loadOrphans();
-      } else if (tabId === 'effectiveness' && !cachedData.effectivenessLoaded) {
-          document.getElementById('effectivenessContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading PM effectiveness...</p></div>';
-          loadEffectiveness();
-      } else if (tabId === 'failing' && !cachedData.failingLoaded) {
-          document.getElementById('failingContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading failing components...</p></div>';
-          loadFailing();
-      }
+    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
+    
+    var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+    if (clickedBtn) clickedBtn.classList.add('active');
+    
+    var targetPane = document.getElementById(tabId + '-tab');
+    if (targetPane) targetPane.classList.add('active');
+    
+    // Cargar datos según tab
+    if (tabId === 'orphans' && !cachedData.orphansLoaded) {
+      document.getElementById('orphansContent').innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 16px;"><div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite;"></div><p style="color: var(--text-secondary); font-size: 14px;">Loading orphan activities...</p></div>';
+      loadOrphans();
+    } else if (tabId === 'alerts' && !cachedData.alertsLoaded) {
+      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 16px;"><div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite;"></div><p style="color: var(--text-secondary); font-size: 14px;">Loading PM effectiveness alerts...</p></div>';
+      document.getElementById('alertsFailingContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading failing components alerts...</p></div>';
+      loadAlerts();
+    }
   }
+
+  async function loadAlerts() {
+    try {
+      // Cargar effectiveness para alerts
+      var effectiveness = await callApi('pvtGetPMEffectiveness', []);
+      renderAlertsEffectiveness(Array.isArray(effectiveness) ? effectiveness : []);
+      
+      // Cargar failing para alerts
+      var failing = await callApi('pvtGetFailingComponents', []);
+      renderAlertsFailing(Array.isArray(failing) ? failing : []);
+      
+      cachedData.alertsLoaded = true;
+    } catch (error) {
+      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading alerts: ' + error.message + '</div>';
+      showToast('Error loading alerts', 'error');
+    }
+  }  
+
+  function renderAlertsEffectiveness(data) {
+    var container = document.getElementById('alertsEffectivenessContent');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="padding: 20px;">✅ No ineffective PMs found</div>';
+      return;
+    }
+    
+    var html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Component</th><th>TL</th><th>Criticality</th><th>Frequency</th><th>Failures</th><th>MTBF</th><th>Suggestion</th></tr>';
+    html += '</thead><tbody>';
+    
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var severityClass = 'adk-badge-success';
+      if (item.severity === 'high') severityClass = 'adk-badge-danger';
+      else if (item.severity === 'medium') severityClass = 'adk-badge-warning';
+      
+      html += '<tr><td class="col-code">' + escapeHtml(item.componentId) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge ' + severityClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td><td><span class="badge adk-badge-primary">' + escapeHtml(item.frequency) + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td class="col-suggestion">' + escapeHtml(item.suggestion) + '</td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  }
+
+  function renderAlertsFailing(data) {
+    var container = document.getElementById('alertsFailingContent');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="padding: 20px;">✅ No failing components without PM found</div>';
+      return;
+    }
+    
+    var html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Failures</th><th>MTBF</th><th>Suggested Freq</th></tr>';
+    html += '</thead><tbody>';
+    
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var priorityClass = 'adk-badge-success';
+      if (item.priority === 'CRITICAL') priorityClass = 'adk-badge-danger';
+      else if (item.priority === 'HIGH') priorityClass = 'adk-badge-warning';
+      else if (item.priority === 'MEDIUM') priorityClass = 'adk-badge-warning';
+      
+      html += '<tr><td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td><td class="col-code">' + escapeHtml(item.componentName) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.criticality || 'C') + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.suggestedFrequency) + '</span></td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  }  
   
   // ============================================
   // LOAD DATA FUNCTIONS
@@ -848,6 +910,45 @@
       var coverage = await callApi('pvtGetStrategyCoverage', []);
       coverageData = Array.isArray(coverage) ? coverage : [];
       renderCoverage(coverageData);
+      
+      // ✅ CONTEO DE ACTIVOS PARA LAS TARJETAS
+      try {
+        var assetData = await callApi('getLegacySheetAsObjects', ['ASSET_REGISTER']);
+        if (assetData && Array.isArray(assetData)) {
+          var counts = {
+            tl: 0,
+            mainEquip: 0,
+            subAssembly: 0,
+            auxiliary: 0,
+            component: 0
+          };
+          
+          for (var i = 0; i < assetData.length; i++) {
+            var row = assetData[i];
+            var assetType = row['Asset Type'] || '';
+            var status = row['Status'] || '';
+            
+            // Solo contar activos activos
+            if (status === 'INACTIVE' || status === 'DECOMMISSIONED') continue;
+            
+            if (assetType === 'Technical Location') counts.tl++;
+            else if (assetType === 'Main Equipment') counts.mainEquip++;
+            else if (assetType === 'Sub-Assembly') counts.subAssembly++;
+            else if (assetType === 'Auxiliary') counts.auxiliary++;
+            else if (assetType === 'Component') counts.component++;
+          }
+          
+          document.getElementById('tlCount').innerText = counts.tl;
+          document.getElementById('mainEquipCount').innerText = counts.mainEquip;
+          document.getElementById('subAssemblyCount').innerText = counts.subAssembly;
+          document.getElementById('auxiliaryCount').innerText = counts.auxiliary;
+          document.getElementById('componentCount').innerText = counts.component;
+        }
+      } catch (countError) {
+        console.warn('[PVT] Could not load asset counts:', countError);
+        // Mantener el "-" si falla
+      }
+      
     } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('PVT_INTEL', 'loadCoverage', error.message).catch(function(e) { console.warn('[PVT] Error log failed:', e); });
@@ -883,44 +984,20 @@
     }
   }
   
-  async function loadEffectiveness() {
-    try {
-      var effectiveness = await callApi('pvtGetPMEffectiveness', []);
-      effectivenessData = Array.isArray(effectiveness) ? effectiveness : [];
-      renderEffectiveness(effectivenessData);
-      cachedData.effectivenessLoaded = true;  // ← AGREGAR
-    } catch (error) {
-      document.getElementById('effectivenessContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">❌ Error loading PM effectiveness: ' + error.message + '</div>';
-      showToast('Error loading PM effectiveness', 'error');
-    }
-  }
-  
-  async function loadFailing() {
-    try {
-      var failing = await callApi('pvtGetFailingComponents', []);
-      failingData = Array.isArray(failing) ? failing : [];
-      renderFailing(failingData);
-      cachedData.failingLoaded = true;  // ← AGREGAR
-    } catch (error) {
-      if (window.Logger && typeof Logger.error === 'function') {
-        Logger.error('PVT_INTEL', 'loadFailing', error.message).catch(function(e) { console.warn('[PVT] Error log failed:', e); });
-      }
-      document.getElementById('failingContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">❌ Error loading failing components: ' + error.message + '</div>';
-      showToast('Error loading failing components', 'error');
-    }
-  }
-  
+ 
   async function refreshAll() {
     await logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Foresight Dashboard');
     
     showLoading('Loading PVT data...');
     try {
-      await Promise.all([
-        loadCoverage(),
-        loadOrphans(),
-        loadEffectiveness(),
-        loadFailing()
-      ]);
+      await loadCoverage();
+      // Recargar orphans y alerts en segundo plano
+      cachedData.orphansLoaded = false;
+      cachedData.alertsLoaded = false;
+      setTimeout(function() {
+        loadOrphans();
+        loadAlerts();
+      }, 300);
       hideLoading();
       showToast('Data updated successfully', 'success');
     } catch(err) {
@@ -933,42 +1010,38 @@
   // RENDER FUNCTIONS
   // ============================================
   function renderCoverage(data) {
-      var container = document.getElementById('coverageContent');
-      if (!data || data.length === 0) {
-          container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No TLs found</div>';
-          return;
-      }
+    var container = document.getElementById('coverageContent');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No TLs found</div>';
+      return;
+    }
+    
+    var html = '<div class="table-wrapper"><table><thead>';
+    html += '<tr><th>Technical Location</th><th>Criticality</th><th>Components</th><th>Strategies</th><th>Coverage</th></tr>';
+    html += '</thead><tbody>';
+    
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var progressClass = 'progress-green';
+      if (item.percent < 50) progressClass = 'progress-red';
+      else if (item.percent < 80) progressClass = 'progress-yellow';
       
-      var html = '<div class="table-wrapper"><table><thead>';
-      html += '<tr><th>Technical Location</th><th>Criticality</th><th>Components</th><th>Comp Coverage</th><th>Strategies</th><th>Strat Coverage</th><th>Total Coverage</th></tr>';
-      html += '</thead><tbody>';
+      var critClass = 'adk-badge-success';
+      if (item.criticality === 'A - CRITICAL') critClass = 'adk-badge-danger';
+      else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
       
-      for (var i = 0; i < data.length; i++) {
-          var item = data[i];
-          var progressClass = 'progress-green';
-          if (item.percent < 50) progressClass = 'progress-red';
-          else if (item.percent < 80) progressClass = 'progress-yellow';
-          
-          var critClass = 'adk-badge-success';
-          if (item.criticality === 'A - CRITICAL') critClass = 'adk-badge-danger';
-          else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
-          else if (item.criticality === 'C - STANDAR') critClass = 'adk-badge-primary';
-          
-          var displayName = item.tlId + ' - ' + escapeHtml(item.tlName);
-          
-          html += '<tr><td>' + escapeHtml(displayName) + '</td><td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td><td>' + item.coveredComponents + '/' + item.totalComponents + '</td><td>' + item.componentPercent + '%</td><td>' + item.coveredStrategies + '/' + item.totalStrategies + '</td><td>' + item.strategyPercent + '%</td><td>';
-          
-          if (item.percent === 0) {
-              html += '<span style="color: var(--text-secondary);">0%</span>';
-          } else {
-              html += '<div class="progress-container"><div class="progress-fill ' + progressClass + '" style="width: ' + item.percent + '%;">' + item.percent + '%</div></div>';
-          }
-          
-          html += '</td></tr>';
-      }
+      var displayName = item.tlId + ' - ' + escapeHtml(item.tlName);
       
-      html += '</tbody></table></div>';
-      container.innerHTML = html;
+      html += '<tr><td>' + escapeHtml(displayName) + '</td>';
+      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td>';
+      html += '<td>' + item.coveredComponents + '/' + item.totalComponents + '</td>';
+      html += '<td>' + item.coveredStrategies + '/' + item.totalStrategies + '</td>';
+      html += '<td><div class="progress-container"><div class="progress-fill ' + progressClass + '" style="width: ' + item.percent + '%;">' + item.percent + '%</div></div></td>';
+      html += '</tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
   }
   
   function renderOrphans(data) {
@@ -996,74 +1069,23 @@
     container.innerHTML = html;
   }
   
-  function renderEffectiveness(data) {
-    var container = document.getElementById('effectivenessContent');
-    if (!data || data.length === 0) {
-      container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No ineffective PMs found</div>';
-      return;
-    }
-    
-    var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Component</th><th>TL</th><th>Criticality</th><th>Frequency</th><th>Failures</th><th>MTBF</th><th>Suggestion</th></tr>';
-    html += '</thead><tbody>';
-    
-    for (var i = 0; i < data.length; i++) {
-        var item = data[i];
-        
-        // ✅ Normalizar criticality
-        var criticalityDisplay = item.criticality || 'C';
-        if (criticalityDisplay === 'A') criticalityDisplay = 'A - CRITICAL';
-        else if (criticalityDisplay === 'B') criticalityDisplay = 'B - IMPORTANT';
-        else if (criticalityDisplay === 'C') criticalityDisplay = 'C - STANDAR';
-        
-        var severityClass = 'adk-badge-success';
-        if (item.severity === 'high') severityClass = 'adk-badge-danger';
-        else if (item.severity === 'medium') severityClass = 'adk-badge-warning';
-        
-        html += '<tr><td class="col-code">' + escapeHtml(item.componentId) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge ' + severityClass + '">' + escapeHtml(criticalityDisplay) + '</span></td><td><span class="badge adk-badge-primary">' + escapeHtml(item.frequency) + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td class="col-suggestion">' + escapeHtml(item.suggestion) + '</td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    container.innerHTML = html;
-  }
   
-  function renderFailing(data) {
-      var container = document.getElementById('failingContent');
-      if (!data || data.length === 0) {
-          container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No failing components without PM found</div>';
-          return;
-      }
+  async function loadAlerts() {
+    try {
+      // Cargar effectiveness
+      var effectiveness = await callApi('pvtGetPMEffectiveness', []);
+      effectivenessData = Array.isArray(effectiveness) ? effectiveness : [];
+      renderEffectivenessForAlerts(effectivenessData);
       
-      var html = '<div class="table-wrapper"><table><thead>';
-      html += '<tr><th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Failures</th><th>MTBF</th><th>Suggested Freq</th></tr>';
-      html += '</thead><tbody>';
-      
-      for (var i = 0; i < data.length; i++) {
-          var item = data[i];
-          
-          // ✅ Definir priorityClass ANTES de usarlo
-          var priorityClass = 'adk-badge-success';
-          if (item.priority === 'CRITICAL') priorityClass = 'adk-badge-danger';
-          else if (item.priority === 'HIGH') priorityClass = 'adk-badge-warning';
-          else if (item.priority === 'MEDIUM') priorityClass = 'adk-badge-warning';
-          
-          // ✅ Normalizar criticality
-          var criticalityDisplay = item.criticality || 'C';
-          if (criticalityDisplay === 'A') criticalityDisplay = 'A - CRITICAL';
-          else if (criticalityDisplay === 'B') criticalityDisplay = 'B - IMPORTANT';
-          else if (criticalityDisplay === 'C') criticalityDisplay = 'C - STANDAR';
-          
-          var critClass = 'adk-badge-success';
-          if (item.criticality === 'A - CRITICAL') critClass = 'adk-badge-danger';
-          else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
-          else if (item.criticality === 'C - STANDAR') critClass = 'adk-badge-primary';  // ← Celeste
-          
-          html += '<tr><td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td><td class="col-code">' + escapeHtml(item.componentName) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge ' + critClass + '">' + escapeHtml(criticalityDisplay) + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.suggestedFrequency) + '</span></td></tr>';
-      }
-      
-      html += '</tbody></table></div>';
-      container.innerHTML = html;
+      // Cargar failing
+      var failing = await callApi('pvtGetFailingComponents', []);
+      failingData = Array.isArray(failing) ? failing : [];
+      renderFailingForAlerts(failingData);
+    } catch (error) {
+      showToast('Error loading alerts: ' + error.message, 'error');
+    }
   }
+
   
   // ============================================
   // UTILITIES
@@ -1137,11 +1159,20 @@
     
     logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
     
-    var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found in multiple strategies:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>Task</th><th>Strategies</th></tr></thead><tbody>';
+    var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found in multiple strategies:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>Task</th><th>Strategies (Frequency)</th></tr></thead><tbody>';
     
     for (var i = 0; i < duplicateData.length; i++) {
       var d = duplicateData[i];
-      modalHtml += '<tr><td class="col-code">' + escapeHtml(d.assetId + ' (TL: ' + d.tlId + ')') + '</td><td class="col-task">' + escapeHtml(d.task) + '</td><td>' + escapeHtml(d.strategyId) + ' (' + d.count + 'x)</td></tr>';
+      // Mostrar estrategias con sus frecuencias
+      var stratDisplay = '';
+      if (d.frequencies && d.frequencies.length > 0) {
+        stratDisplay = d.frequencies.map(function(f) {
+          return f.strategyId + ' → ' + f.frequency;
+        }).join(' | ');
+      } else {
+        stratDisplay = d.strategies.join(' | ');
+      }
+      modalHtml += '<tr><td class="col-code">' + escapeHtml(d.assetId + ' (TL: ' + d.tlId + ')') + '</td><td class="col-task">' + escapeHtml(d.task) + '</td><td>' + escapeHtml(stratDisplay) + '</td></tr>';
     }
     
     modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and unify duplicate tasks into a single strategy.</div></div></div></div>';
