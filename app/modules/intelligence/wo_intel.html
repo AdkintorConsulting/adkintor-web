@@ -603,7 +603,7 @@
               <div style="display: flex; gap: 8px;">
                   <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
                   <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
-                  <button id="exportBtn" class="adk-btn adk-btn-secondary">📑 Export</button>
+                  <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
               </div>
           </div>
           <div id="prioritiesList"></div>
@@ -841,10 +841,15 @@
   // ============================================
   async function loadPriorities() {
       try {
-          var data = await callApi('getPrioritizedWOs', [false, 14]);  // ← 14 días
-          renderPriorities(data);
+          // Obtener datos filtrados (14 días) para la tabla
+          var data = await callApi('getPrioritizedWOs', [false, 14]);
+          
+          // Obtener totales absolutos (sin filtrar) para las tarjetas
+          var allData = await callApi('getPrioritizedWOs', [false, 0]);
+          
+          // ✅ Renderizar con datos filtrados para tabla, pero totales absolutos
+          renderPriorities(data, allData);
           //allDataLoaded.priorities = true;
-          // checkAllDataLoaded();  ← ELIMINAR
       } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
@@ -956,38 +961,33 @@
   // ============================================
   // RENDER FUNCTIONS
   // ============================================
-  function renderPriorities(data) {
-      var wos = Array.isArray(data) ? data : (data?.wos || []);
-      var lastUpdated = data?.lastUpdated;
+  function renderPriorities(filteredData, allData) {
+      // Si no hay allData, usar filteredData
+      var totalWos = allData || filteredData;
+      var wos = Array.isArray(filteredData) ? filteredData : (filteredData?.wos || []);
+      var totalWosArray = Array.isArray(totalWos) ? totalWos : (totalWos?.wos || []);
       
-      if (lastUpdated) {
-          var lastUpdatedElem = document.getElementById('lastUpdated');
-          if (lastUpdatedElem) {
-              lastUpdatedElem.innerText = 'Updated: ' + new Date(lastUpdated).toLocaleString();
-          }
-      }
+      // ✅ Contadores sobre TOTALES (sin filtro)
+      var activeCount = totalWosArray.length;
+      var highCount = totalWosArray.filter(function(w) { return w.score >= 80; }).length;
+      var holdCount = totalWosArray.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
       
-      // Contadores
-      var activeCount = wos.length;
-      var highCount = wos.filter(function(w) { return w.score >= 80; }).length;
-      var holdCount = wos.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
-      
-      var openCount = wos.filter(function(w) { 
+      var openCount = totalWosArray.filter(function(w) { 
           var status = (w.status || '').toUpperCase();
           return status === 'OPEN';
       }).length;
       
-      var inProgressCount = wos.filter(function(w) { 
+      var inProgressCount = totalWosArray.filter(function(w) { 
           var status = (w.status || '').toUpperCase();
           return status === 'IN PROGRESS';
       }).length;
       
-      var completedCount = wos.filter(function(w) { 
+      var completedCount = totalWosArray.filter(function(w) { 
           var status = (w.status || '').toUpperCase();
           return status === 'COMPLETED';
       }).length;
       
-      // Actualizar tarjetas
+      // Actualizar tarjetas con números ABSOLUTOS
       document.getElementById('activeCount').innerText = activeCount;
       document.getElementById('highCount').innerText = highCount;
       document.getElementById('holdCount').innerText = holdCount;
@@ -995,8 +995,9 @@
       document.getElementById('inProgressCount').innerText = inProgressCount;
       document.getElementById('completedCount').innerText = completedCount;
       
+      // ✅ Tabla con datos FILTRADOS (14 días o 0)
       if (!wos.length) {
-          document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders</div>';
+          document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders in the selected period</div>';
           return;
       }
       
@@ -1108,26 +1109,58 @@
     printWindow.print();
   }
   
-  async function exportToPDF() {
-    await logForesight('WO', 'EXPORT_PDF', 'WO Intelligence PDF export');
-    
-    showLoading('Generating PDF...');
-    try {
-      var result = await callApi('exportWOPDF', []);
-      hideLoading();
-      if (result && result.url) {
-        window.open(result.url, '_blank');
-        showToast('PDF generated successfully', 'success');
-      } else {
-        showToast('PDF export not yet implemented for WO', 'info');
+  function printPrioritiesPDF() {
+      var prioritiesContent = document.getElementById('prioritiesList').innerHTML;
+      var statsContent = document.querySelector('.stats-grid').innerHTML;
+      
+      if (!prioritiesContent || prioritiesContent.indexOf('No active work orders') !== -1) {
+          showToast('No data to print', 'error');
+          return;
       }
-    } catch (error) {
-      if (window.Logger && typeof Logger.error === 'function') {
-        Logger.error('WO_INTEL', 'exportPDF', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+      
+      var printWindow = window.open('', '_blank');
+      if (!printWindow) {
+          showToast('Popup blocked. Please allow popups.', 'error');
+          return;
       }
-      hideLoading();
-      showToast('PDF export failed: ' + error.message, 'error');
-    }
+      
+      var now = new Date().toLocaleString();
+      var title = document.querySelector('.module-title').innerText || 'WO Foresight';
+      
+      printWindow.document.write('<!DOCTYPE html><html><head><title>Priorities Report</title>');
+      printWindow.document.write('<style>');
+      printWindow.document.write('body{font-family:"Inter",sans-serif;padding:20px;background:white;color:#0a0a0f;}');
+      printWindow.document.write('h1{color:#0a0a0f;font-size:24px;margin-bottom:4px;}');
+      printWindow.document.write('.subtitle{color:#666;font-size:13px;margin-bottom:20px;}');
+      printWindow.document.write('.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;}');
+      printWindow.document.write('.stat-card{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center;}');
+      printWindow.document.write('.stat-card .value{font-size:24px;font-weight:700;color:#0a0a0f;}');
+      printWindow.document.write('.stat-card .label{font-size:11px;color:#64748b;}');
+      printWindow.document.write('table{border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;}');
+      printWindow.document.write('th{background:#f1f3f4;text-align:left;padding:10px 12px;border-bottom:2px solid #e2e8f0;}');
+      printWindow.document.write('td{padding:10px 12px;border-bottom:1px solid #e2e8f0;}');
+      printWindow.document.write('.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:500;}');
+      printWindow.document.write('.badge-warning{background:#fff3cd;color:#856404;}');
+      printWindow.document.write('.badge-primary{background:#dbeafe;color:#1e40af;}');
+      printWindow.document.write('.badge-success{background:#d1fae5;color:#065f46;}');
+      printWindow.document.write('.badge-gray{background:#f1f3f4;color:#64748b;}');
+      printWindow.document.write('.footer{margin-top:30px;font-size:11px;color:#9aa0a6;border-top:1px solid #e2e8f0;padding-top:12px;text-align:center;}');
+      printWindow.document.write('@media print{body{padding:0;} .no-print{display:none;}}');
+      printWindow.document.write('</style></head><body>');
+      
+      printWindow.document.write('<h1>📋 WO Priorities Report</h1>');
+      printWindow.document.write('<div class="subtitle">Generated: ' + now + '</div>');
+      
+      // Stats
+      printWindow.document.write('<div class="stats-grid">' + statsContent + '</div>');
+      
+      // Table
+      printWindow.document.write(prioritiesContent);
+      
+      printWindow.document.write('<div class="footer">WO Foresight - Adkintor EAMS</div>');
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
   }
   
   function escapeHtml(str) {
@@ -1160,13 +1193,13 @@
           // ✅ Configurar botones ANTES de cargar datos
           var refreshBtn = document.getElementById('refreshBtn');
           var showAllBtn = document.getElementById('showAllBtn');
-          var exportBtn = document.getElementById('exportBtn');
+          var printPdfBtn = document.getElementById('printPdfBtn');
           var printTasksBtn = document.getElementById('printTasksBtn');
           var userSelect = document.getElementById('userSelect');
           
           console.log('[WO] refreshBtn:', refreshBtn);
           console.log('[WO] showAllBtn:', showAllBtn);
-          console.log('[WO] exportBtn:', exportBtn);
+          console.log('[WO] printPdfBtn:', printPdfBtn);
           
           if (refreshBtn) {
               refreshBtn.addEventListener('click', function() { 
@@ -1182,10 +1215,10 @@
               });
           }
           
-          if (exportBtn) {
-              exportBtn.addEventListener('click', function() { 
-                  console.log('[WO] Export clicked');
-                  exportToPDF(); 
+          if (printPdfBtn) {
+              printPdfBtn.addEventListener('click', function() { 
+                  console.log('[WO] Print PDF clicked');
+                  printPrioritiesPDF(); 
               });
           }
           
@@ -1213,8 +1246,6 @@
           });
           
           // ✅ Carga principal: solo Priorities
-          //allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
-          
           await loadPriorities();
           hideLoading();
           showToast('WO Foresight loaded successfully ✅', 'success');
