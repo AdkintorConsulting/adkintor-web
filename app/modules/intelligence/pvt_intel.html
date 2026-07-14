@@ -532,7 +532,36 @@
         background: var(--bg-hover);
         border-color: var(--accent-color);
         transform: scale(1.02);
-    }    
+    } 
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .adk-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .adk-card .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-color);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .adk-card .label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      font-family: 'Inter', sans-serif;
+    }       
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -590,9 +619,9 @@
         
         <!-- TAB 1: COVERAGE -->
         <div id="coverage-tab" class="tab-pane active">
-          <div class="stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
-            <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
-            <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
+          <div class="stats-grid">
+            <div class="adk-card"><div class="label">Tech Locations</div><div class="value" id="tlCount">-</div></div>
+            <div class="adk-card"><div class="label">Main Equip</div><div class="value" id="mainEquipCount">-</div></div>
             <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
             <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
             <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
@@ -825,14 +854,17 @@
     var targetPane = document.getElementById(tabId + '-tab');
     if (targetPane) targetPane.classList.add('active');
     
-    // Cargar datos según tab
+    // Cargar datos según tab con overlay completo
     if (tabId === 'orphans' && !cachedData.orphansLoaded) {
-      document.getElementById('orphansContent').innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 16px;"><div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite;"></div><p style="color: var(--text-secondary); font-size: 14px;">Loading orphan activities...</p></div>';
-      loadOrphans();
+      showLoading('Loading orphan activities...');
+      loadOrphans().finally(function() {
+        hideLoading();
+      });
     } else if (tabId === 'alerts' && !cachedData.alertsLoaded) {
-      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 16px;"><div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite;"></div><p style="color: var(--text-secondary); font-size: 14px;">Loading PM effectiveness alerts...</p></div>';
-      document.getElementById('alertsFailingContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading failing components alerts...</p></div>';
-      loadAlerts();
+      showLoading('Loading alerts...');
+      loadAlerts().finally(function() {
+        hideLoading();
+      });
     }
   }
 
@@ -1047,22 +1079,28 @@
   function renderOrphans(data) {
     var container = document.getElementById('orphansContent');
     if (!data.orphans || data.orphans.length === 0) {
-      container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No orphan activities found</div>';
+      container.innerHTML = '<div style="padding: 20px;">✅ No orphan activities found</div>';
       return;
     }
     
     var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Asset ID</th><th>Strategy ID</th><th>Frequency</th><th>Task</th></tr>';
+    html += '<tr><th>Asset ID</th><th>TL</th><th>Strategy ID</th><th>Frequency</th><th>Task</th></tr>';
     html += '</thead><tbody>';
     
     var limit = Math.min(data.orphans.length, 50);
     for (var i = 0; i < limit; i++) {
       var item = data.orphans[i];
-      html += '<tr><td class="col-code">' + escapeHtml(item.assetId + ' - ' + item.assetName) + '</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.strategyId) + '</span></td><td>' + escapeHtml(item.frequency) + '</td><td class="col-task">' + escapeHtml(item.task) + '</td></tr>';
+      html += '<tr>';
+      html += '<td class="col-code">' + escapeHtml(item.assetId + ' - ' + item.assetName) + '</td>';
+      html += '<td class="col-code">' + escapeHtml(item.tlId || 'Unknown') + '</td>';
+      html += '<td><span class="badge adk-badge-primary">' + escapeHtml(item.strategyId) + '</span></td>';
+      html += '<td>' + escapeHtml(item.frequency) + '</td>';
+      html += '<td class="col-task">' + escapeHtml(item.task) + '</td>';
+      html += '</tr>';
     }
     
     if (data.orphans.length > 50) {
-      html += '<tr><td colspan="4" style="padding: 10px; text-align: center;">... and ' + (data.orphans.length - 50) + ' more</td></tr>';
+      html += '<tr><td colspan="5" style="padding: 10px; text-align: center;">... and ' + (data.orphans.length - 50) + ' more</td></tr>';
     }
     
     html += '</tbody></table></div>';
@@ -1072,17 +1110,16 @@
   
   async function loadAlerts() {
     try {
-      // Cargar effectiveness
       var effectiveness = await callApi('pvtGetPMEffectiveness', []);
-      effectivenessData = Array.isArray(effectiveness) ? effectiveness : [];
-      renderEffectivenessForAlerts(effectivenessData);
+      renderAlertsEffectiveness(Array.isArray(effectiveness) ? effectiveness : []);
       
-      // Cargar failing
       var failing = await callApi('pvtGetFailingComponents', []);
-      failingData = Array.isArray(failing) ? failing : [];
-      renderFailingForAlerts(failingData);
+      renderAlertsFailing(Array.isArray(failing) ? failing : []);
+      
+      cachedData.alertsLoaded = true;
     } catch (error) {
-      showToast('Error loading alerts: ' + error.message, 'error');
+      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading alerts: ' + error.message + '</div>';
+      showToast('Error loading alerts', 'error');
     }
   }
 
@@ -1159,23 +1196,23 @@
     
     logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
     
-    var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found in multiple strategies:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>Task</th><th>Strategies (Frequency)</th></tr></thead><tbody>';
+    var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times in the same frequency:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Strategies</th></tr></thead><tbody>';
     
     for (var i = 0; i < duplicateData.length; i++) {
       var d = duplicateData[i];
-      // Mostrar estrategias con sus frecuencias
-      var stratDisplay = '';
-      if (d.frequencies && d.frequencies.length > 0) {
-        stratDisplay = d.frequencies.map(function(f) {
-          return f.strategyId + ' → ' + f.frequency;
-        }).join(' | ');
-      } else {
-        stratDisplay = d.strategies.join(' | ');
-      }
-      modalHtml += '<tr><td class="col-code">' + escapeHtml(d.assetId + ' (TL: ' + d.tlId + ')') + '</td><td class="col-task">' + escapeHtml(d.task) + '</td><td>' + escapeHtml(stratDisplay) + '</td></tr>';
+      var stratDisplay = d.frequencies.map(function(f) {
+        return f.strategyId;
+      }).join(' | ');
+      modalHtml += '<tr>';
+      modalHtml += '<td class="col-code">' + escapeHtml(d.assetId) + '</td>';
+      modalHtml += '<td class="col-code">' + escapeHtml(d.tlId) + '</td>';
+      modalHtml += '<td><span class="badge adk-badge-primary">' + escapeHtml(d.frequency) + '</span></td>';
+      modalHtml += '<td class="col-task">' + escapeHtml(d.task) + '</td>';
+      modalHtml += '<td>' + escapeHtml(stratDisplay) + '</td>';
+      modalHtml += '</tr>';
     }
     
-    modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and unify duplicate tasks into a single strategy.</div></div></div></div>';
+    modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and unify duplicate tasks in the same frequency into a single strategy.</div></div></div></div>';
     
     var modalDiv = document.createElement('div');
     modalDiv.innerHTML = modalHtml;
