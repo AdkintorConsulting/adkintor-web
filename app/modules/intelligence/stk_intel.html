@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - Inventory Intelligence</title>
+  <title>FORESIGHT - Inventory Foresight</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     /* ============================================
-       FORESIGHT DARK MODE THEME (ORIGINAL)
+       FORESIGHT DARK MODE THEME
        ============================================ */
     :root {
       --bg-primary: #0a0a0f;
@@ -39,7 +39,7 @@
     }
     
     /* ============================================
-       TOAST - ESTÁNDAR ADKINTOR (DARK)
+       TOAST
        ============================================ */
     #toastContainer {
       position: fixed;
@@ -89,7 +89,7 @@
     }
     
     /* ============================================
-       LOADING OVERLAY - ESTÁNDAR ADKINTOR (DARK)
+       LOADING OVERLAY
        ============================================ */
     #loadingOverlay {
       position: fixed;
@@ -138,7 +138,7 @@
     }
     
     /* ============================================
-       HEADER - ESTÁNDAR ADKINTOR (DARK)
+       HEADER
        ============================================ */
     .module-header {
       display: flex;
@@ -193,7 +193,7 @@
     }
     
     /* ============================================
-       BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK)
+       BREADCRUMBS
        ============================================ */
     .breadcrumbs {
       padding: 8px 24px;
@@ -216,7 +216,7 @@
     }
     
     /* ============================================
-       FOOTER - ESTÁNDAR ADKINTOR (DARK)
+       FOOTER
        ============================================ */
     .module-footer {
       display: flex;
@@ -268,9 +268,6 @@
       background: var(--bg-primary);
     }
     
-    /* ============================================
-       DASHBOARD CONTAINER (ORIGINAL)
-       ============================================ */
     .dashboard-container {
       display: flex;
       flex-direction: column;
@@ -278,37 +275,98 @@
       margin: 0 auto;
     }
     
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
+    /* ============================================
+       STATS GRID - 4 COLUMNAS (igual que WO/PVT)
+       ============================================ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
     }
-    
-    .logo-area h1 { 
-      font-size: 20px; 
-      color: var(--accent-color); 
-      margin-bottom: 4px; 
-      font-family: 'Inter', sans-serif;
+
+    /* ============================================
+       CARDS DE CONTEO (igual que WO/PVT)
+       ============================================ */
+    .adk-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 8px;
+        text-align: center;
     }
-    
-    .logo-area p { 
-      font-size: 11px; 
-      color: var(--text-secondary); 
-      font-family: 'Inter', sans-serif;
+
+    .adk-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent-color);
+        font-family: 'Inter', sans-serif;
     }
-    
-    .header-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
+
+    .adk-card .label {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        font-family: 'Inter', sans-serif;
     }
-    
-    .last-updated {
-      font-size: 11px;
-      color: var(--text-secondary);
+
+    /* ============================================
+       CONTENEDORES GRANDES (tablas)
+       ============================================ */
+    .card-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .card-container .card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 600;
+        font-size: 16px;
+        background: rgba(0,0,0,0.2);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .card-container .card-body {
+        padding: 20px;
+        text-align: left;
+    }
+
+    /* ============================================
+       TABLAS - ALINEACIÓN IZQUIERDA
+       ============================================ */
+    .table-wrapper {
+        overflow-x: auto;
+        margin-top: 16px;
+        text-align: left;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        text-align: left;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    th {
+        background: rgba(0,0,0,0.2);
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    tr:hover {
+        background: rgba(0, 229, 255, 0.05);
     }
     
     /* Tabs */
@@ -362,99 +420,6 @@
     @keyframes fadeIn { 
       from { opacity: 0; } 
       to { opacity: 1; } 
-    }
-    
-    /* Summary Cards */
-    .summary-grid {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-    
-    .summary-card {
-      flex: 1;
-      min-width: 160px;
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 12px 16px;
-      border: 1px solid var(--border-color);
-    }
-    
-    .summary-card h3 {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
-      font-weight: 500;
-      text-transform: uppercase;
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .summary-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent-color);
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .summary-card .sub {
-      font-size: 10px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-    
-    /* Cards */
-    .adk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    
-    .card-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      font-weight: 600;
-      font-size: 16px;
-      background: rgba(0,0,0,0.2);
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .card-body {
-      padding: 20px;
-    }
-    
-    /* Tables */
-    .table-wrapper {
-      overflow-x: auto;
-      margin-top: 16px;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
-    }
-    
-    th {
-      text-align: left;
-      padding: 12px;
-      background: rgba(0,0,0,0.2);
-      font-weight: 600;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-      vertical-align: middle;
-    }
-    
-    tr:hover {
-      background: rgba(0, 229, 255, 0.05);
     }
     
     /* Badges */
@@ -527,11 +492,12 @@
     .adk-btn-secondary {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      color: white;
+      color: var(--text-primary);
     }
     
     .adk-btn-secondary:hover {
-      background: var(--border-color);
+      background: var(--bg-hover);
+      border-color: var(--accent-color);
       transform: scale(1.02);
     }
     
@@ -557,10 +523,10 @@
 <!-- CONTENIDO -->
 <div class="module-wrapper">
   
-  <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
+  <!-- HEADER -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-boxes"></i> Inventory Intelligence</span>
+      <span class="module-title"><i class="fas fa-boxes"></i> Inventory Foresight</span>
     </div>
     <div class="header-right">
       <span class="user-badge" id="userDisplay">Loading...</span>
@@ -568,33 +534,14 @@
     </div>
   </div>
   
-  <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
+  <!-- BREADCRUMBS -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">Inventory Intelligence</span>
+    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">Inventory Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
-      <div class="header">
-        <div class="logo-area">
-          <h1>📦 Inventory Intelligence</h1>
-          <p>Maintenance Supervisor View · Read Only Recommendations</p>
-        </div>
-        <div class="header-actions">
-          <span id="lastUpdatedText" class="last-updated"></span>
-          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-          <button id="printBtn" class="adk-btn adk-btn-primary">🖨️ Print PDF</button>
-        </div>
-      </div>
-      
-      <!-- Summary Cards -->
-      <div id="summaryCards" class="summary-grid">
-        <div class="summary-card"><h3>Total SKUs</h3><div class="value">--</div></div>
-        <div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value">--</div><div class="sub">-- overdue | -- out of stock</div></div>
-        <div class="summary-card"><h3>📦 Pending POs</h3><div class="value">--</div></div>
-        <div class="summary-card"><h3>💡 Optimizations</h3><div class="value">--</div></div>
-      </div>
       
       <!-- Tabs -->
       <div class="tabs">
@@ -603,31 +550,49 @@
         <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
         <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
       </div>
+
+      <!-- Botones debajo de tabs -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
+          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+          <button id="printBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+      </div>
+      
+      <!-- Summary Cards (4 columnas) -->
+      <div id="summaryCards" class="stats-grid">
+        <div class="adk-card"><div class="label">Total SKUs</div><div class="value" id="totalSKUs">--</div></div>
+        <div class="adk-card"><div class="label">Critical Alerts</div><div class="value" id="criticalAlerts">--</div></div>
+        <div class="adk-card"><div class="label">Pending POs</div><div class="value" id="pendingPOsCount">--</div></div>
+        <div class="adk-card"><div class="label">Optimizations</div><div class="value" id="optimizationsCount">--</div></div>
+      </div>
       
       <div class="content-panel">
+        <!-- TAB 1: ALERTS -->
         <div id="alerts-tab" class="tab-pane active">
-          <div class="adk-card">
+          <div class="card-container">
             <div class="card-header">⚠️ Critical Alerts</div>
             <div class="card-body" id="alertsContent"></div>
           </div>
         </div>
         
+        <!-- TAB 2: PENDING POs -->
         <div id="pending-tab" class="tab-pane">
-          <div class="adk-card">
+          <div class="card-container">
             <div class="card-header">📦 Pending Purchase Orders</div>
             <div class="card-body" id="pendingPOsContent"></div>
           </div>
         </div>
         
+        <!-- TAB 3: OPTIMIZE STOCK -->
         <div id="optimize-tab" class="tab-pane">
-          <div class="adk-card">
+          <div class="card-container">
             <div class="card-header">📊 Stock Optimization Suggestions</div>
             <div class="card-body" id="optimizationContent"></div>
           </div>
         </div>
         
+        <!-- TAB 4: OBSOLETE PARTS -->
         <div id="obsolete-tab" class="tab-pane">
-          <div class="adk-card">
+          <div class="card-container">
             <div class="card-header">🗑️ Obsolete Parts</div>
             <div class="card-body" id="obsoleteContent"></div>
           </div>
@@ -636,7 +601,7 @@
     </div>
   </div>
   
-  <!-- FOOTER - ESTÁNDAR ADKINTOR (DARK) -->
+  <!-- FOOTER -->
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
@@ -685,7 +650,7 @@
   }
   
   // ============================================
-  // TOAST (usa ModuleBase si existe)
+  // TOAST
   // ============================================
   function showToast(message, type = 'info') {
     if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
@@ -809,6 +774,12 @@
   var pendingPOsData = [];
   var obsoletePartsData = [];
   
+  var cachedData = {
+      pendingLoaded: false,
+      optimizeLoaded: false,
+      obsoleteLoaded: false
+  };
+  
   // ============================================
   // TAB FUNCTION
   // ============================================
@@ -821,6 +792,21 @@
     
     var targetPane = document.getElementById(tabId + '-tab');
     if (targetPane) targetPane.classList.add('active');
+    
+    // ✅ Carga bajo demanda con spinner
+    if (tabId === 'pending' && !cachedData.pendingLoaded) {
+        document.getElementById('pendingPOsContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading pending POs...</p></div>';
+        renderPendingPOSTab(currentData.pendingPOs);
+        cachedData.pendingLoaded = true;
+    } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
+        document.getElementById('optimizationContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p></div>';
+        renderOptimizationTab(currentData.stockOptimizations, currentData.config);
+        cachedData.optimizeLoaded = true;
+    } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
+        document.getElementById('obsoleteContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p></div>';
+        renderObsoleteTab(currentData.obsoleteParts, currentData.config);
+        cachedData.obsoleteLoaded = true;
+    }
   }
   
   // ============================================
@@ -829,8 +815,7 @@
   async function refreshAllData() {
     showLoading('Loading inventory data...');
     
-    // Log dashboard access
-    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Intelligence Dashboard');
+    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
     
     try {
       var data = await callApi('STK_getIntelligenceData', []);
@@ -842,19 +827,22 @@
       }
       
       currentData = data;
-      var lastUpdatedSpan = document.getElementById('lastUpdatedText');
-      if (lastUpdatedSpan) {
-        lastUpdatedSpan.innerText = 'Updated: ' + new Date(data.lastUpdated).toLocaleString();
-      }
+      
+      // ✅ Resetear caché
+      cachedData = {
+          pendingLoaded: false,
+          optimizeLoaded: false,
+          obsoleteLoaded: false
+      };
       
       renderSummaryCards(data);
       renderAlertsTab(data.alerts);
-      renderPendingPOSTab(data.pendingPOs);
-      renderOptimizationTab(data.stockOptimizations, data.config);
-      renderObsoleteTab(data.obsoleteParts, data.config);
+      
+      // ✅ Solo cargar el primer tab (Alerts)
+      // Los demás tabs se cargan bajo demanda con showTab()
       
       hideLoading();
-      showToast('Data loaded successfully', 'success');
+      showToast('Inventory Foresight loaded successfully ✅', 'success');
       
       await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (data.summary?.totalSKUs || 0) + ', Pending POs: ' + (data.pendingPOs?.length || 0));
     } catch (error) {
@@ -872,12 +860,10 @@
     var pendingCount = data.pendingPOs?.length || 0;
     var optCount = data.stockOptimizations?.length || 0;
     
-    var summaryHtml = 
-      '<div class="summary-card"><h3>Total SKUs</h3><div class="value">' + (data.summary?.totalSKUs || 0) + '</div></div>' +
-      '<div class="summary-card"><h3>⚠️ Critical Alerts</h3><div class="value" style="color:var(--warning);">' + (overdueCount + outOfStockCount) + '</div><div class="sub">' + overdueCount + ' overdue | ' + outOfStockCount + ' out of stock</div></div>' +
-      '<div class="summary-card"><h3>📦 Pending POs</h3><div class="value">' + pendingCount + '</div></div>' +
-      '<div class="summary-card"><h3>💡 Optimizations</h3><div class="value">' + optCount + '</div></div>';
-    document.getElementById('summaryCards').innerHTML = summaryHtml;
+    document.getElementById('totalSKUs').innerText = data.summary?.totalSKUs || 0;
+    document.getElementById('criticalAlerts').innerText = overdueCount + outOfStockCount;
+    document.getElementById('pendingPOsCount').innerText = pendingCount;
+    document.getElementById('optimizationsCount').innerText = optCount;
   }
   
   function renderAlertsTab(alerts) {
@@ -893,7 +879,7 @@
       }
       html += '</tbody></table></div>';
     } else {
-      html += '<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success); padding:20px;">✅ No critical overdue purchase orders.</div>';
+      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; margin-bottom:16px;">✅ No critical overdue purchase orders.</div>';
     }
     
     html += '<h3 style="margin:24px 0 12px 0; color:var(--danger); font-family:\'Inter\',sans-serif;">🔴 Out of Stock - Critical Parts</h3>';
@@ -905,7 +891,7 @@
       }
       html += '</tbody></table></div>';
     } else {
-      html += '<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success); padding:20px;">✅ No critical parts out of stock.</div>';
+      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts out of stock.</div>';
     }
     
     container.innerHTML = html;
@@ -916,7 +902,7 @@
     pendingPOsData = pendingPOs || [];
     
     if (pendingPOsData.length === 0) {
-      container.innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding:20px;">📭 No pending purchase orders.</div>';
+      container.innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">📭 No pending purchase orders.</div>';
       return;
     }
     
@@ -941,7 +927,7 @@
     if (filter === 'overdue') filtered = filtered.filter(function(po) { return po.isOverdue; });
     
     if (filtered.length === 0) {
-      document.getElementById('pendingPOsTable').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding:20px;">No POs match filter.</div>';
+      document.getElementById('pendingPOsTable').innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">No POs match filter.</div>';
       return;
     }
     
@@ -960,10 +946,10 @@
   function renderOptimizationTab(optimizations, config) {
     var container = document.getElementById('optimizationContent');
     
-    var html = '<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
     
     if (!optimizations || optimizations.length === 0) {
-      html += '<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success); padding:20px;">✅ All min stock levels appear optimal.</div>';
+      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ All min stock levels appear optimal.</div>';
       container.innerHTML = html;
       return;
     }
@@ -980,7 +966,7 @@
     }
     
     html += '</tbody></table></div>';
-    html += '<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
+    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
     container.innerHTML = html;
   }
   
@@ -1006,10 +992,10 @@
     var filtered = obsoletePartsData.filter(function(p) { return p.monthsInactive >= monthsFilter; });
     var totalValue = obsoletePartsData.reduce(function(sum, p) { return sum + p.stockValue; }, 0);
     
-    var html = '<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
+    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
     
     if (filtered.length === 0) {
-      html += '<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success); padding:20px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
+      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
       document.getElementById('obsoleteTable').innerHTML = html;
       return;
     }
@@ -1022,7 +1008,7 @@
     }
     
     html += '</tbody></table></div>';
-    html += '<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
+    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
     
     document.getElementById('obsoleteTable').innerHTML = html;
   }
@@ -1032,10 +1018,10 @@
     var filtered = obsoletePartsData.filter(function(p) { return p.monthsInactive >= monthsFilter; });
     var totalValue = obsoletePartsData.reduce(function(sum, p) { return sum + p.stockValue; }, 0);
     
-    var html = '<div class="adk-card" style="margin-bottom:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
+    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
     
     if (filtered.length === 0) {
-      html += '<div class="adk-card" style="background:rgba(0,230,118,0.1); border-color:var(--success); padding:20px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
+      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
       document.getElementById('obsoleteTable').innerHTML = html;
       return;
     }
@@ -1048,7 +1034,7 @@
     }
     
     html += '</tbody></table></div>';
-    html += '<div class="adk-card" style="margin-top:16px; background:rgba(0,229,255,0.05); padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
+    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
     
     document.getElementById('obsoleteTable').innerHTML = html;
   }
@@ -1056,7 +1042,7 @@
   async function printToPDF() {
     showLoading('Generating PDF report...');
     
-    await logForesight('STK', 'EXPORT_PDF', 'Inventory Intelligence PDF export');
+    await logForesight('STK', 'EXPORT_PDF', 'Inventory Foresight PDF export');
     
     try {
       var html = await callApi('STK_getPrintView', []);
@@ -1107,8 +1093,7 @@
     }
     
     try {
-      // Log dashboard open
-      await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Intelligence Dashboard');
+      await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
       
       // Setup buttons
       var refreshBtn = document.getElementById('refreshBtn');
@@ -1143,12 +1128,11 @@
         window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
       }
       
-      // Initial load
+      // Initial load - solo primer tab
       await refreshAllData();
       
       hideLoading();
-      showToast('Inventory Intelligence loaded successfully ✅', 'success');
-      document.getElementById('footer-status').innerText = 'Ready';
+      showToast('Inventory Foresight loaded successfully ✅', 'success');
       
     } catch(err) {
       hideLoading();
