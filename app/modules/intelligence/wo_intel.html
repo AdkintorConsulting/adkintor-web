@@ -803,11 +803,10 @@
   var cachedData = {
     priorities: null,
     users: null,
-    workload: null,
     alerts: null
   };
   
-  var allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+  //var allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
   
   // ============================================
   // TAB FUNCTION
@@ -844,14 +843,14 @@
       try {
           var data = await callApi('getPrioritizedWOs', [false, 14]);  // ← 14 días
           renderPriorities(data);
-          allDataLoaded.priorities = true;
+          //allDataLoaded.priorities = true;
           // checkAllDataLoaded();  ← ELIMINAR
       } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
       document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
-      allDataLoaded.priorities = true;
+      //allDataLoaded.priorities = true;
       // checkAllDataLoaded();  ← ELIMINAR
     }
   }
@@ -868,7 +867,7 @@
                   userSelect.innerHTML += '<option value="' + user.email + '">👤 ' + user.name + ' (' + user.role + ')</option>';
               }
           }
-          allDataLoaded.users = true;
+          //allDataLoaded.users = true;
           // ✅ Si hay un usuario seleccionado, cargar tareas
           if (userSelect && userSelect.value) {
               loadTasks();
@@ -878,7 +877,7 @@
         Logger.error('WO_INTEL', 'loadUsers', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
       console.error('Error loading users:', error);
-      allDataLoaded.users = true;
+      //allDataLoaded.users = true;
       // checkAllDataLoaded();  ← ELIMINAR
     }
   }
@@ -903,37 +902,22 @@
     }
   }
   
-  async function loadWorkload() {
-    document.getElementById('workloadList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">Loading workload data...</div>';
-    try {
-      var workload = await callApi('getPreventiveWorkload', []);
-      cachedData.workload = workload;
-      renderWorkload(workload);
-      allDataLoaded.workload = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-    } catch (error) {
-      document.getElementById('workloadList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
-      allDataLoaded.workload = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-    }
-  }
-  
   async function loadAlerts() {
-      // No mostrar loading para no bloquear
+      showLoading('Loading alerts...');
       try {
           var alerts = await callApi('getAlerts', []);
           cachedData.alerts = alerts;
           renderAlerts(alerts);
-          allDataLoaded.alerts = true;
+          //allDataLoaded.alerts = true;
+          hideLoading();
       } catch (error) {
-      if (window.Logger && typeof Logger.error === 'function') {
-        Logger.error('WO_INTEL', 'loadAlerts', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+          if (window.Logger && typeof Logger.error === 'function') {
+              Logger.error('WO_INTEL', 'loadAlerts', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+          }
+          hideLoading();
+          document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
+          //allDataLoaded.alerts = true;
       }
-      hideLoading();
-      document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
-      allDataLoaded.alerts = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-    }
   }
   
   async function loadAllWOs() {
@@ -955,16 +939,18 @@
   }
   
   async function refreshAllData() {
-    await logForesight('WO', 'REFRESH_DATA', 'User manually refreshed dashboard data');
-    
-    showLoading('Refreshing data...');
-    allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
-    
-    await loadPriorities();
-    await loadUsers();
-    await loadAlerts();
-    
-    showToast('Data refreshed successfully', 'success');
+      await logForesight('WO', 'REFRESH_DATA', 'User manually refreshed dashboard data');
+      
+      showLoading('Refreshing data...');
+      //allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+      
+      await loadPriorities();
+      await loadUsers();
+      await loadAlerts();
+      
+      // ✅ FALTA ESTO:
+      hideLoading();
+      showToast('Data refreshed successfully', 'success');
   }
   
   // ============================================
@@ -1076,27 +1062,6 @@
     }
     html += '</tbody></table></div>';
     document.getElementById('tasksList').innerHTML = html;
-  }
-  
-  function renderWorkload(workload) {
-    if (!workload || !workload.length) {
-      document.getElementById('workloadList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No workload data available</div>';
-      return;
-    }
-    
-    var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Technician</th><th>Shift</th><th>Scope</th><th>Preventive Hours</th><th>Available Hours</th><th>Utilization</th></tr>';
-    html += '</thead><tbody>';
-    
-    for (var i = 0; i < workload.length; i++) {
-      var tech = workload[i];
-      var pct = Math.min(tech.utilization || 0, 100);
-      var barColor = pct > 80 ? 'var(--danger)' : (pct > 50 ? 'var(--warning)' : 'var(--success)');
-      
-      html += '<tr><td><strong>' + escapeHtml(tech.name) + '</strong></td><td>' + escapeHtml(tech.shift || 'DAY') + '</td><td>' + escapeHtml(tech.scope || 'FULL') + '</td><td>' + (tech.preventiveHours || 0) + 'h</td><td>' + (tech.availableHours || 0) + 'h</td><td><div class="progress-bar-container"><div class="progress-bar-fill" style="background:' + barColor + '; width:' + pct + '%;">' + pct + '%</div></div></td></tr>';
-    }
-    html += '</tbody></table></div>';
-    document.getElementById('workloadList').innerHTML = html;
   }
   
   function renderAlerts(alerts) {
@@ -1248,7 +1213,7 @@
           });
           
           // ✅ Carga principal: solo Priorities
-          allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
+          //allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
           
           await loadPriorities();
           hideLoading();
