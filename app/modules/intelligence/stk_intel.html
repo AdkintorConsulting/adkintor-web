@@ -545,10 +545,10 @@
       
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
         <button class="tab-btn" data-tab="pending">📦 Pending POs</button>
         <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
         <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
+        <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
       </div>
 
       <!-- Botones debajo de tabs -->
@@ -784,74 +784,77 @@
   // TAB FUNCTION
   // ============================================
   function showTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-    document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
-    
-    var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
-    if (clickedBtn) clickedBtn.classList.add('active');
-    
-    var targetPane = document.getElementById(tabId + '-tab');
-    if (targetPane) targetPane.classList.add('active');
-    
-    // ✅ Carga bajo demanda con spinner
-    if (tabId === 'pending' && !cachedData.pendingLoaded) {
-        document.getElementById('pendingPOsContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading pending POs...</p></div>';
-        renderPendingPOSTab(currentData.pendingPOs);
-        cachedData.pendingLoaded = true;
-    } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
-        document.getElementById('optimizationContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p></div>';
-        renderOptimizationTab(currentData.stockOptimizations, currentData.config);
-        cachedData.optimizeLoaded = true;
-    } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
-        document.getElementById('obsoleteContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p></div>';
-        renderObsoleteTab(currentData.obsoleteParts, currentData.config);
-        cachedData.obsoleteLoaded = true;
-    }
+      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
+      
+      var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      var targetPane = document.getElementById(tabId + '-tab');
+      if (targetPane) targetPane.classList.add('active');
+      
+      // ✅ Validar que currentData existe
+      if (!currentData) {
+          showToast('Data not loaded yet. Please wait or refresh.', 'warning');
+          return;
+      }
+      
+      // ✅ Carga bajo demanda con spinner
+      if (tabId === 'pending' && !cachedData.pendingLoaded) {
+          document.getElementById('pendingPOsContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading pending POs...</p></div>';
+          renderPendingPOSTab(currentData.pendingPOs);
+          cachedData.pendingLoaded = true;
+      } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
+          document.getElementById('optimizationContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p></div>';
+          renderOptimizationTab(currentData.stockOptimizations, currentData.config);
+          cachedData.optimizeLoaded = true;
+      } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
+          document.getElementById('obsoleteContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p></div>';
+          renderObsoleteTab(currentData.obsoleteParts, currentData.config);
+          cachedData.obsoleteLoaded = true;
+      }
   }
   
   // ============================================
   // DATA LOADING FUNCTIONS
   // ============================================
-  async function refreshAllData() {
-    showLoading('Loading inventory data...');
-    
-    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
-    
-    try {
-      var data = await callApi('STK_getIntelligenceData', []);
+  async function refreshAllData(showAll = false, offset = 0) {
+      showLoading('Loading inventory data...');
       
-      if (!data || data.error) {
-        showToast(data?.error || 'No data received', 'error');
-        hideLoading();
-        return;
+      await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
+      
+      try {
+          var limit = 50;
+          var data = await callApi('STK_getIntelligenceData', [limit, offset, showAll]);
+          
+          if (!data || data.error) {
+              showToast(data?.error || 'No data received', 'error');
+              hideLoading();
+              return;
+          }
+          
+          currentData = data;
+          
+          cachedData = {
+              pendingLoaded: false,
+              optimizeLoaded: false,
+              obsoleteLoaded: false
+          };
+          
+          renderSummaryCards(data);
+          renderAlertsTab(data.alerts);
+          
+          hideLoading();
+          showToast('Inventory Foresight loaded successfully ✅', 'success');
+          
+          await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (data.summary?.totalSKUs || 0) + ', Pending POs: ' + (data.pendingPOs?.length || 0));
+      } catch (error) {
+          hideLoading();
+          console.error('Load data error:', error);
+          showToast('Failed to load: ' + error.message, 'error');
+          
+          await logForesight('STK', 'DATA_ERROR', error.message);
       }
-      
-      currentData = data;
-      
-      // ✅ Resetear caché
-      cachedData = {
-          pendingLoaded: false,
-          optimizeLoaded: false,
-          obsoleteLoaded: false
-      };
-      
-      renderSummaryCards(data);
-      renderAlertsTab(data.alerts);
-      
-      // ✅ Solo cargar el primer tab (Alerts)
-      // Los demás tabs se cargan bajo demanda con showTab()
-      
-      hideLoading();
-      showToast('Inventory Foresight loaded successfully ✅', 'success');
-      
-      await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (data.summary?.totalSKUs || 0) + ', Pending POs: ' + (data.pendingPOs?.length || 0));
-    } catch (error) {
-      hideLoading();
-      console.error('Load data error:', error);
-      showToast('Failed to load: ' + error.message, 'error');
-      
-      await logForesight('STK', 'DATA_ERROR', error.message);
-    }
   }
   
   function renderSummaryCards(data) {
@@ -898,22 +901,41 @@
   }
   
   function renderPendingPOSTab(pendingPOs) {
-    var container = document.getElementById('pendingPOsContent');
-    pendingPOsData = pendingPOs || [];
-    
-    if (pendingPOsData.length === 0) {
-      container.innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">📭 No pending purchase orders.</div>';
-      return;
-    }
-    
-    var html = '<div class="filter-bar"><label>🔍 Filter:</label><select id="poFilter"><option value="all">All POs</option><option value="critical">Critical Only</option><option value="overdue">Overdue Only</option></select></div><div id="pendingPOsTable"></div>';
-    container.innerHTML = html;
-    
-    var poFilter = document.getElementById('poFilter');
-    if (poFilter) {
-      poFilter.addEventListener('change', function() { filterPendingPOs(); });
-    }
-    filterPendingPOs();
+      var container = document.getElementById('pendingPOsContent');
+      pendingPOsData = pendingPOs || [];
+      
+      if (pendingPOsData.length === 0) {
+          container.innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">📭 No pending purchase orders.</div>';
+          return;
+      }
+      
+      var totalPending = currentData?.totalPending || pendingPOsData.length;
+      var showAll = currentData?.showAll || false;
+      var showingCount = pendingPOsData.length;
+      
+      var html = '<div class="filter-bar"><label>🔍 Filter:</label><select id="poFilter"><option value="all">All POs</option><option value="critical">Critical Only</option><option value="overdue">Overdue Only</option></select>';
+      
+      // ✅ Botón Show All
+      if (!showAll && totalPending > showingCount) {
+          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalPending + ')</button>';
+      }
+      html += '</div><div id="pendingPOsTable"></div>';
+      
+      container.innerHTML = html;
+      
+      var poFilter = document.getElementById('poFilter');
+      if (poFilter) {
+          poFilter.addEventListener('change', function() { filterPendingPOs(); });
+      }
+      
+      var showAllBtn = document.getElementById('showAllPendingBtn');
+      if (showAllBtn) {
+          showAllBtn.addEventListener('click', function() { 
+              refreshAllData(true, 0); 
+          });
+      }
+      
+      filterPendingPOs();
   }
   
   function filterPendingPOs() {
@@ -944,44 +966,78 @@
   }
   
   function renderOptimizationTab(optimizations, config) {
-    var container = document.getElementById('optimizationContent');
-    
-    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
-    
-    if (!optimizations || optimizations.length === 0) {
-      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ All min stock levels appear optimal.</div>';
-      container.innerHTML = html;
-      return;
-    }
-    
-    html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
-    
-    for (var i = 0; i < optimizations.length; i++) {
-      var opt = optimizations[i];
-      var actionColor = opt.action === 'increase' ? 'var(--warning)' : 'var(--success)';
-      var actionIcon = opt.action === 'increase' ? '⬆️' : '⬇️';
-      var critClass = opt.criticality === 'A' ? 'badge adk-badge-danger' : (opt.criticality === 'B' ? 'badge adk-badge-warning' : 'badge adk-badge-success');
+      var container = document.getElementById('optimizationContent');
       
-      html += '<tr><td><strong>' + escapeHtml(opt.sku) + '</strong></td><td>' + escapeHtml(opt.description || '-') + '</td><td>' + opt.consumptionPerWeek + '</td><td>' + opt.leadTimeWeeks + '</td><td>' + opt.currentMinStock + '</td><td><strong style="color:' + actionColor + '">' + opt.suggestedMinStock + '</strong></td><td>' + actionIcon + ' ' + opt.percentDiff + '%</td><td><span class="' + critClass + '">' + (opt.criticality || 'C') + '</span></td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
-    container.innerHTML = html;
+      var totalOptimizations = currentData?.totalOptimizations || optimizations?.length || 0;
+      var showAll = currentData?.showAll || false;
+      var showingCount = optimizations?.length || 0;
+      
+      var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+      
+      // ✅ Botón Show All
+      if (!showAll && totalOptimizations > showingCount) {
+          html += '<div style="margin-bottom:16px; text-align:right;"><button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalOptimizations + ')</button></div>';
+      }
+      
+      if (!optimizations || optimizations.length === 0) {
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ All min stock levels appear optimal.</div>';
+          container.innerHTML = html;
+          return;
+      }
+      
+      html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
+      
+      for (var i = 0; i < optimizations.length; i++) {
+          var opt = optimizations[i];
+          var actionColor = opt.action === 'increase' ? 'var(--warning)' : 'var(--success)';
+          var actionIcon = opt.action === 'increase' ? '⬆️' : '⬇️';
+          var critClass = opt.criticality === 'A' ? 'badge adk-badge-danger' : (opt.criticality === 'B' ? 'badge adk-badge-warning' : 'badge adk-badge-success');
+          
+          html += '<tr><td><strong>' + escapeHtml(opt.sku) + '</strong></td><td>' + escapeHtml(opt.description || '-') + '</td><td>' + opt.consumptionPerWeek + '</td><td>' + opt.leadTimeWeeks + '</td><td>' + opt.currentMinStock + '</td><td><strong style="color:' + actionColor + '">' + opt.suggestedMinStock + '</strong></td><td>' + actionIcon + ' ' + opt.percentDiff + '%</td><td><span class="' + critClass + '">' + (opt.criticality || 'C') + '</span></td></tr>';
+      }
+      
+      html += '</tbody></table></div>';
+      html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
+      container.innerHTML = html;
+      
+      var showAllBtn = document.getElementById('showAllOptimizeBtn');
+      if (showAllBtn) {
+          showAllBtn.addEventListener('click', function() { 
+              refreshAllData(true, 0); 
+          });
+      }
   }
   
   function renderObsoleteTab(obsoleteData, config) {
-    var container = document.getElementById('obsoleteContent');
-    obsoletePartsData = obsoleteData.parts || [];
-    var monthsDefault = config?.obsoleteMonths || 12;
-    
-    container.innerHTML = '<div class="filter-bar"><label>⏱️ Months without consumption:</label><input type="number" id="obsoleteMonths" value="' + monthsDefault + '" min="3" max="36" step="3" style="width:80px;"><button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button></div><div id="obsoleteTable"></div>';
-    
-    var applyBtn = document.getElementById('applyObsoleteFilterBtn');
-    if (applyBtn) {
-      applyBtn.addEventListener('click', function() { applyObsoleteFilter(); });
-    }
-    renderObsoleteTable();
+      var container = document.getElementById('obsoleteContent');
+      obsoletePartsData = obsoleteData.parts || [];
+      var monthsDefault = config?.obsoleteMonths || 12;
+      
+      var totalObsolete = currentData?.totalObsolete || obsoletePartsData.length;
+      var showAll = currentData?.showAll || false;
+      var showingCount = obsoletePartsData.length;
+      
+      container.innerHTML = '<div class="filter-bar"><label>⏱️ Months without consumption:</label><input type="number" id="obsoleteMonths" value="' + monthsDefault + '" min="3" max="36" step="3" style="width:80px;"><button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button>';
+      
+      // ✅ Botón Show All
+      if (!showAll && totalObsolete > showingCount) {
+          container.innerHTML += '<button id="showAllObsoleteBtn" class="adk-btn adk-btn-secondary" style="margin-left:12px;">📋 Show All (' + totalObsolete + ')</button>';
+      }
+      container.innerHTML += '</div><div id="obsoleteTable"></div>';
+      
+      var applyBtn = document.getElementById('applyObsoleteFilterBtn');
+      if (applyBtn) {
+          applyBtn.addEventListener('click', function() { applyObsoleteFilter(); });
+      }
+      
+      var showAllBtn = document.getElementById('showAllObsoleteBtn');
+      if (showAllBtn) {
+          showAllBtn.addEventListener('click', function() { 
+              refreshAllData(true, 0); 
+          });
+      }
+      
+      renderObsoleteTable();
   }
   
   function applyObsoleteFilter() {
