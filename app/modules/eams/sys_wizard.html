@@ -820,11 +820,6 @@
                     <div class="module-name">CALIBRATION</div>
                     <div class="module-desc">Instrument Types, Responsibles</div>
                 </div>
-                <div class="module-card" data-module="SYS">
-                    <div class="module-icon">⚙️</div>
-                    <div class="module-name">SYSTEM</div>
-                    <div class="module-desc">Budget Configuration</div>
-                </div>
             </div>
         </div>
 
@@ -1259,7 +1254,7 @@
         const modifyBtn = document.getElementById('modifyBtn');
         const addBtn = document.getElementById('addRowBtn');
         
-        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
         
         if (isEntityEditable) {
             modifyBtn.style.display = 'inline-block';
@@ -1285,7 +1280,7 @@
     function enableEditMode() {
         editMode = true;
         const addBtn = document.getElementById('addRowBtn');
-        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
         if (!isLogoUrl && !selectedEntity.disableAddRow) {
             addBtn.style.display = 'inline-block';
         } else {
@@ -1556,7 +1551,7 @@
             }
             
             // Action buttons
-            const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'logo_url');
+            const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
             if (editMode && isEntityEditable && !selectedEntity.disableDelete && !isLogoUrl) {
                 headerHtml += '<td><button class="btn-danger" onclick="deleteRow(' + idx + ')"><i class="fas fa-trash"></i></button></td>';
             } else {
@@ -1906,12 +1901,12 @@
     // ============================================
     // INITIALIZATION
     // ============================================
-    
     function init() {
+        showLoading('Loading Universal Configurator...');
         loadUser();
         loadApiUrlAndUser();
         goToStep(1);
-        document.getElementById('footer-status').innerText = 'Ready';
+        hideLoading();
         showToast('Universal Configurator loaded successfully ✅', 'success');
     }
     
