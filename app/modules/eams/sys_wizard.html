@@ -736,6 +736,18 @@
                 height: 22px;
                 font-size: 0.6rem;
             }
+
+            #addRowBtn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: #e2e8f0;
+                color: #94a3b8;
+            }
+
+            #addRowBtn:disabled:hover {
+                background: #e2e8f0;
+                transform: none;
+            }
         }
     </style>
 </head>
@@ -792,8 +804,8 @@
             <div class="module-grid" id="moduleGrid">
                 <div class="module-card" data-module="HUB">
                     <div class="module-icon">🔐</div>
-                    <div class="module-name">ACCESS HUB</div>
-                    <div class="module-desc">Roles, Permissions, Logo</div>
+                    <div class="module-name">PLANT LAYOUT</div>
+                    <div class="module-desc">Roles, Permissions, Plant Layout</div>
                 </div>
                 <div class="module-card" data-module="AST">
                     <div class="module-icon">🏭</div>
@@ -1217,7 +1229,7 @@
     function selectEntity(entityId) {
         selectedEntity = moduleData.entities.find(function(e) { return e.id === entityId; });
         
-        // Budget editor special case
+        // Budget editor special case (eliminado si ya no existe SYS)
         if (selectedModule === 'SYS' && selectedEntity.id === 'budget_amounts') {
             goToStep(3);
             loadBudgetEditor();
@@ -1254,15 +1266,22 @@
         const modifyBtn = document.getElementById('modifyBtn');
         const addBtn = document.getElementById('addRowBtn');
         
-        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
+        const isPlantLayout = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
         
         if (isEntityEditable) {
+            // MODIFY siempre visible y habilitado
             modifyBtn.style.display = 'inline-block';
             modifyBtn.onclick = enableEditMode;
-            if (isLogoUrl || selectedEntity.disableAddRow) {
+            
+            // ADD ROW: visible pero DESHABILITADO inicialmente
+            if (isPlantLayout || selectedEntity.disableAddRow) {
                 addBtn.style.display = 'none';
             } else {
                 addBtn.style.display = 'inline-block';
+                addBtn.disabled = true;
+                addBtn.style.opacity = '0.5';
+                addBtn.style.cursor = 'not-allowed';
+                addBtn.title = 'Click MODIFY first to enable adding rows';
             }
         } else {
             modifyBtn.style.display = 'none';
@@ -1280,12 +1299,15 @@
     function enableEditMode() {
         editMode = true;
         const addBtn = document.getElementById('addRowBtn');
-        const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
-        if (!isLogoUrl && !selectedEntity.disableAddRow) {
-            addBtn.style.display = 'inline-block';
-        } else {
-            addBtn.style.display = 'none';
+        const isPlantLayout = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
+        
+        if (!isPlantLayout && !selectedEntity.disableAddRow) {
+            addBtn.disabled = false;
+            addBtn.style.opacity = '1';
+            addBtn.style.cursor = 'pointer';
+            addBtn.title = 'Add new row';
         }
+        
         renderEntityEditor();
         showToast('Edit mode enabled. You can now modify values.', 'success');
     }
