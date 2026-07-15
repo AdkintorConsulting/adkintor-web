@@ -1215,34 +1215,24 @@
       
       logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
       
-      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Type</th><th>Details</th></tr></thead><tbody>';
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Count</th><th>Type</th></tr></thead><tbody>';
       
       for (var i = 0; i < duplicateData.length; i++) {
           var d = duplicateData[i];
           
-          // ✅ Mostrar el tipo
           var typeLabel = d.type === 'duplicate_across_strategies' 
               ? '<span style="color: #f59e0b;">⚠️ Different Strategies</span>' 
               : '<span style="color: #ef4444;">⚠️ Same Strategy</span>';
           
-          var stratDisplay = '';
-          if (d.frequencies && d.frequencies.length > 0) {
-              stratDisplay = d.frequencies.map(function(f) {
-                  return f.strategyId + ' → ' + f.frequency;
-              }).join(' | ');
-          } else if (d.strategies) {
-              stratDisplay = d.strategies.join(' | ');
-          } else {
-              stratDisplay = d.strategyId || '-';
-          }
+          var stratDisplay = d.strategies ? d.strategies.join(' | ') : '-';
           
           modalHtml += '<tr>' +
               '<td class="col-code">' + escapeHtml(d.assetId) + '</td>' +
               '<td class="col-code">' + escapeHtml(d.tlId || 'Unknown') + '</td>' +
               '<td><span class="badge adk-badge-primary">' + escapeHtml(d.frequency) + '</span></td>' +
               '<td class="col-task">' + escapeHtml(d.task) + '</td>' +
+              '<td><span class="badge adk-badge-warning">' + d.count + 'x</span></td>' +
               '<td>' + typeLabel + '</td>' +
-              '<td>' + escapeHtml(stratDisplay) + '</td>' +
           '</tr>';
       }
       
