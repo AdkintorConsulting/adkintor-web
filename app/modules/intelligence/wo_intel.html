@@ -841,16 +841,11 @@
   // ============================================
   async function loadPriorities() {
       try {
-          // Obtener datos filtrados (14 días) para la tabla
           var data = await callApi('getPrioritizedWOs', [false, 14]);
-          
-          // Obtener totales absolutos (sin filtrar) para las tarjetas
-          var allData = await callApi('getPrioritizedWOs', [false, 0]);
-          
-          // ✅ Renderizar con datos filtrados para tabla, pero totales absolutos
-          renderPriorities(data, allData);
-          //allDataLoaded.priorities = true;
+          // Usamos data para todo, tanto tabla como totales
+          renderPriorities(data);
       } catch (error) {
+
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
@@ -961,33 +956,19 @@
   // ============================================
   // RENDER FUNCTIONS
   // ============================================
-  function renderPriorities(filteredData, allData) {
-      // Si no hay allData, usar filteredData
-      var totalWos = allData || filteredData;
-      var wos = Array.isArray(filteredData) ? filteredData : (filteredData?.wos || []);
-      var totalWosArray = Array.isArray(totalWos) ? totalWos : (totalWos?.wos || []);
+  function renderPriorities(data) {
+      // data ES el array de WOs (filtrado por 14 días)
+      var wos = Array.isArray(data) ? data : (data?.wos || []);
       
-      // ✅ Contadores sobre TOTALES (sin filtro)
-      var activeCount = totalWosArray.length;
-      var highCount = totalWosArray.filter(function(w) { return w.score >= 80; }).length;
-      var holdCount = totalWosArray.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
+      // Contadores sobre los mismos datos (NO hay dos llamadas)
+      var activeCount = wos.length;
+      var highCount = wos.filter(function(w) { return w.score >= 80; }).length;
+      var holdCount = wos.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
+      var openCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'OPEN'; }).length;
+      var inProgressCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'IN PROGRESS'; }).length;
+      var completedCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'COMPLETED'; }).length;
       
-      var openCount = totalWosArray.filter(function(w) { 
-          var status = (w.status || '').toUpperCase();
-          return status === 'OPEN';
-      }).length;
-      
-      var inProgressCount = totalWosArray.filter(function(w) { 
-          var status = (w.status || '').toUpperCase();
-          return status === 'IN PROGRESS';
-      }).length;
-      
-      var completedCount = totalWosArray.filter(function(w) { 
-          var status = (w.status || '').toUpperCase();
-          return status === 'COMPLETED';
-      }).length;
-      
-      // Actualizar tarjetas con números ABSOLUTOS
+      // Actualizar tarjetas
       document.getElementById('activeCount').innerText = activeCount;
       document.getElementById('highCount').innerText = highCount;
       document.getElementById('holdCount').innerText = holdCount;
@@ -995,13 +976,12 @@
       document.getElementById('inProgressCount').innerText = inProgressCount;
       document.getElementById('completedCount').innerText = completedCount;
       
-      // ✅ Tabla con datos FILTRADOS (14 días o 0)
+      // Tabla con los mismos datos
       if (!wos.length) {
           document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders in the selected period</div>';
           return;
       }
       
-      // Tabla con columna Creation Date (formato YYYY-MM-DD)
       var html = '<div class="table-wrapper"><table><thead>';
       html += '<tr><th>#</th><th>WO #</th><th>Creation Date</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
       html += '</thead><tbody>';
@@ -1025,13 +1005,13 @@
               statusBadge = '<span class="badge adk-badge-gray">' + (wo.status || '-') + '</span>';
           }
           
-          // ✅ Formatear fecha sin hora
+          // Formatear fecha sin hora
           var dateStr = wo.creationDate || '-';
           if (dateStr !== '-') {
               try {
                   var dateObj = new Date(dateStr);
                   if (!isNaN(dateObj.getTime())) {
-                      dateStr = dateObj.toLocaleDateString('en-CA'); // YYYY-MM-DD
+                      dateStr = dateObj.toLocaleDateString('en-CA');
                   }
               } catch(e) {}
           }
@@ -1104,7 +1084,7 @@
       return;
     }
     
-    printWindow.document.write('<!DOCTYPE html><html><head><title>Tasks Report</title><style>body{font-family:"Inter",sans-serif;padding:20px;background:white;}table{border-collapse:collapse;width:100%;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#00e5ff;color:#0a0a0f;}h1{color:#00e5ff;}</style></head><body><h1>📋 Tasks Report</h1><p>Generated: ' + new Date().toLocaleString() + '</p>' + tasksContent + '<p style="margin-top:20px;font-size:12px;color:#666;">WO Intelligence - Adkintor FORESIGHT</p></body></html>');
+    printWindow.document.write('<!DOCTYPE html><html><head><title>Tasks Report</title><style>body{font-family:"Inter",sans-serif;padding:20px;background:white;}table{border-collapse:collapse;width:100%;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#00e5ff;color:#0a0a0f;}h1{color:#00e5ff;}</style></head><body><h1>📋 Tasks Report</h1><p>Generated: ' + new Date().toLocaleString() + '</p>' + tasksContent + '<p style="margin-top:20px;font-size:12px;color:#666;">Work Order Analysis - Adkintor Foresight</p></body></html>');
     printWindow.document.close();
     printWindow.print();
   }
