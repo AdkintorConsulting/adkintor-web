@@ -777,7 +777,8 @@
   var cachedData = {
       alertsLoaded: false,
       optimizeLoaded: false,
-      obsoleteLoaded: false
+      obsoleteLoaded: false,
+      alertsData: null
   };
   
   // ============================================
@@ -806,24 +807,67 @@
                   '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
                   '<p style="color: var(--text-secondary); margin-top: 12px;">Loading alerts...</p>' +
               '</div>';
-          renderAlertsTab(currentData.alerts);
-          cachedData.alertsLoaded = true;
+          
+          // Cargar alerts
+          callApi('STK_getAlertsData', []).then(function(alertsData) {
+              if (alertsData && !alertsData.error) {
+                  cachedData.alertsData = alertsData;
+                  cachedData.alertsLoaded = true;
+                  renderAlertsTab(alertsData);
+              } else {
+                  document.getElementById('alertsContent').innerHTML = 
+                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading alerts.</div>';
+              }
+          }).catch(function(err) {
+              document.getElementById('alertsContent').innerHTML = 
+                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+          });
+          
       } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
           document.getElementById('optimizationContent').innerHTML = 
               '<div style="padding: 30px; text-align: center;">' +
                   '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
                   '<p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p>' +
               '</div>';
-          renderOptimizationTab(currentData.stockOptimizations, currentData.config);
-          cachedData.optimizeLoaded = true;
+          
+          var showAll = currentData.showAll || false;
+          callApi('STK_getOptimizationsData', [showAll ? 0 : 20, 0, showAll]).then(function(optData) {
+              if (optData && !optData.error) {
+                  currentData.stockOptimizations = optData;
+                  currentData.totalOptimizations = optData.length || 0;
+                  cachedData.optimizeLoaded = true;
+                  renderOptimizationTab(optData, currentData.config);
+              } else {
+                  document.getElementById('optimizationContent').innerHTML = 
+                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading optimizations.</div>';
+              }
+          }).catch(function(err) {
+              document.getElementById('optimizationContent').innerHTML = 
+                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+          });
+          
       } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
           document.getElementById('obsoleteContent').innerHTML = 
               '<div style="padding: 30px; text-align: center;">' +
                   '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
                   '<p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p>' +
               '</div>';
-          renderObsoleteTab(currentData.obsoleteParts, currentData.config);
-          cachedData.obsoleteLoaded = true;
+          
+          var showAll = currentData.showAll || false;
+          callApi('STK_getObsoletePartsData', [showAll ? 0 : 20, 0, showAll]).then(function(obsData) {
+              if (obsData && !obsData.error) {
+                  currentData.obsoleteParts = obsData;
+                  currentData.totalObsolete = obsData.parts?.length || 0;
+                  cachedData.obsoleteLoaded = true;
+                  renderObsoleteTab(obsData, currentData.config);
+              } else {
+                  document.getElementById('obsoleteContent').innerHTML = 
+                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading obsolete parts.</div>';
+              }
+          }).catch(function(err) {
+              document.getElementById('obsoleteContent').innerHTML = 
+                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+          });
       }
   }
   
@@ -836,44 +880,69 @@
       await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
       
       try {
-          var data = await callApi('STK_getIntelligenceData', [showAll]);
-          
-          if (!data || data.error) {
-              showToast(data?.error || 'No data received', 'error');
+          // ✅ Cargar Summary (siempre)
+          var summary = await callApi('STK_getSummaryData', []);
+          if (!summary || summary.error) {
+              showToast(summary?.error || 'Error loading summary', 'error');
               hideLoading();
               return;
           }
           
-          currentData = data;
+          // ✅ Cargar Pending POs (Tab 1)
+          var pendingData = await callApi('STK_getPendingPOsData', [showAll ? 0 : 20, 0, showAll]);
+          if (!pendingData || pendingData.error) {
+              showToast(pendingData?.error || 'Error loading POs', 'error');
+              hideLoading();
+              return;
+          }
+          
+          // ✅ Cargar Alerts (Tab 2) - en segundo plano
+          var alertsData = null;
+          setTimeout(async function() {
+              alertsData = await callApi('STK_getAlertsData', []);
+              if (alertsData && !alertsData.error) {
+                  cachedData.alertsData = alertsData;
+                  cachedData.alertsLoaded = true;
+                  // Si el tab Alerts está activo, renderizar
+                  if (document.querySelector('.tab-btn[data-tab="alerts"]').classList.contains('active')) {
+                      renderAlertsTab(alertsData);
+                  }
+              }
+          }, 300);
+          
+          // ✅ Guardar en currentData
+          currentData = {
+              summary: summary,
+              pendingPOs: pendingData,
+              alerts: alertsData || { overduePOs: [], outOfStockCritical: [] },
+              stockOptimizations: [],
+              obsoleteParts: { parts: [], totalValue: 0 },
+              totalPending: pendingData.length || 0,
+              totalOptimizations: 0,
+              totalObsolete: 0,
+              config: { safetyFactor: 1.5, obsoleteMonths: 12 },
+              showAll: showAll,
+              lastUpdated: new Date().toISOString()
+          };
           
           cachedData = {
               alertsLoaded: false,
               optimizeLoaded: false,
-              obsoleteLoaded: false
+              obsoleteLoaded: false,
+              alertsData: null
           };
           
-          renderSummaryCards(data);
-          
-          // ✅ SOLO Pending POs (tab 1)
-          renderPendingPOSTab(data.pendingPOs);
+          renderSummaryCards(currentData);
+          renderPendingPOSTab(pendingData);
           
           hideLoading();
           showToast('Inventory Foresight loaded successfully ✅', 'success');
           
-          // ✅ Carga en segundo plano: Alerts (tab 2)
-          setTimeout(function() {
-              if (data.alerts) {
-                  renderAlertsTab(data.alerts);
-                  cachedData.alertsLoaded = true;
-              }
-          }, 500);
-          
-          await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (data.summary?.totalSKUs || 0) + ', Pending POs: ' + (data.pendingPOs?.length || 0));
+          await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (summary.totalSKUs || 0) + ', Pending POs: ' + (pendingData?.length || 0));
       } catch (error) {
           hideLoading();
           console.error('Load data error:', error);
           showToast('Failed to load: ' + error.message, 'error');
-          
           await logForesight('STK', 'DATA_ERROR', error.message);
       }
   }
