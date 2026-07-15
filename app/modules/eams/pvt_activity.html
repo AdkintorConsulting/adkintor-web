@@ -633,7 +633,7 @@
             background: white;
             border-radius: 12px;
             width: 560px;
-            max-width: 92%;
+            width: 100%;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -1880,78 +1880,86 @@ async function updateDashboard() {
             return;
         }
         
+        // ✅ Mostrar confirmación PRIMERO
         showConfirmModal(
             'Reassign "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.strategyId + ' to ' + newStrategyId + '?',
             '⚠️ Reassign Activity',
             function() {
-                // Código que estaba dentro del if
-                performReassign(index);
+                // ✅ Ejecutar acción SOLO después de confirmar
+                performReassign(orphan, newStrategyId);
             }
         );
-        
+    }
+
+    function performReassign(orphan, newStrategyId) {
         showLoading('Reassigning activity...');
-        try {
-            var payload = {
-                assetId: orphan.assetId,
-                oldStrategyId: orphan.strategyId,
-                newStrategyId: newStrategyId,
-                equipment: orphan.equipment,
-                instruction: orphan.instruction,
-                frequency: null // Will be updated from the new strategy
-            };
-            
-            var result = await callApi('PVT_reassignOrphanActivity', [payload]);
-            hideLoading();
-            if (result.status === 'success') {
-                showToast(result.message, 'success');
-                // Refresh orphan list and activities
-                openOrphanModal();
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
-            } else {
-                showToast('Error: ' + result.message, 'error');
-            }
-        } catch (e) {
-            hideLoading();
-            showToast('Error: ' + e.message, 'error');
-        }
+        
+        var payload = {
+            assetId: orphan.assetId,
+            oldStrategyId: orphan.strategyId,
+            newStrategyId: newStrategyId,
+            equipment: orphan.equipment,
+            instruction: orphan.instruction,
+            frequency: null
+        };
+        
+        callApi('PVT_reassignOrphanActivity', [payload])
+            .then(function(result) {
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    openOrphanModal();
+                    loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                }
+            })
+            .catch(function(e) {
+                hideLoading();
+                showToast('Error: ' + e.message, 'error');
+            });
     }
 
     async function deleteOrphan(index) {
         var orphan = orphanData[index];
         if (!orphan) return;
         
+        // ✅ Mostrar confirmación PRIMERO
         showConfirmModal(
             'Delete orphan activity: "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.assetId + '?',
             '⚠️ Delete Activity',
             function() {
-                // Código que estaba dentro del if
-                performDelete(index);
+                // ✅ Ejecutar acción SOLO después de confirmar
+                performDelete(orphan);
             }
         );
-        
+    }
+
+    function performDelete(orphan) {
         showLoading('Deleting activity...');
-        try {
-            var payload = {
-                assetId: orphan.assetId,
-                strategyId: orphan.strategyId,
-                equipment: orphan.equipment,
-                instruction: orphan.instruction
-            };
-            
-            var result = await callApi('PVT_deleteOrphanActivity', [payload]);
-            hideLoading();
-            if (result.status === 'success') {
-                showToast(result.message, 'success');
-                // Refresh orphan list and activities
-                openOrphanModal();
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
-            } else {
-                showToast('Error: ' + result.message, 'error');
-            }
-        } catch (e) {
-            hideLoading();
-            showToast('Error: ' + e.message, 'error');
-        }
+        
+        var payload = {
+            assetId: orphan.assetId,
+            strategyId: orphan.strategyId,
+            equipment: orphan.equipment,
+            instruction: orphan.instruction
+        };
+        
+        callApi('PVT_deleteOrphanActivity', [payload])
+            .then(function(result) {
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    openOrphanModal();
+                    loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                }
+            })
+            .catch(function(e) {
+                hideLoading();
+                showToast('Error: ' + e.message, 'error');
+            });
     }
 
     function closeOrphanModal() {
