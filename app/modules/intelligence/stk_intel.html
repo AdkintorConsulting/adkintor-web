@@ -1042,16 +1042,23 @@
       return;
     }
     
-    // ✅ Eliminar columna Items
-    var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Days Until Expected</th><th>Status</th></tr></thead><tbody>';
+    // ✅ Mostrar la fecha REAL
+    var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Expected Delivery Date</th><th>Status</th></tr></thead><tbody>';
     
     for (var i = 0; i < filtered.length; i++) {
       var po = filtered[i];
       var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
-      var daysUntilExpected = (po.daysUntilExpected !== undefined && po.daysUntilExpected !== '--') ? po.daysUntilExpected : '--';
       
-      // ✅ Eliminar columna Items
-      html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + daysUntilExpected + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
+      // ✅ Formatear fecha a YYYY-MM-DD
+      var expectedDate = '--';
+      if (po.expectedDate) {
+        var d = new Date(po.expectedDate);
+        if (!isNaN(d.getTime())) {
+          expectedDate = d.toISOString().split('T')[0];
+        }
+      }
+      
+      html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + expectedDate + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
     }
     
     html += '</tbody></table></div>';
