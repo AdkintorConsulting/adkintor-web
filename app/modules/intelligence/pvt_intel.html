@@ -1215,7 +1215,7 @@
       
       logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
       
-      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequencies</th><th>Strategies</th><th>Count</th></tr></thead><tbody>';
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; width: 95%;"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequencies</th><th>Strategies</th><th>Count</th></tr></thead><tbody>';
       
       for (var i = 0; i < duplicateData.length; i++) {
           var d = duplicateData[i];
