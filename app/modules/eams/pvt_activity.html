@@ -1,962 +1,2105 @@
-/**
- * ============================================
- * PVT_Activity.gs - ADKINTOR EAMS v1.0.0
- * ============================================
- * DESCRIPCIÓN: Gestión de actividades y estrategias
- *              de mantenimiento preventivo.
- *              CRUD completo, clonación, jerarquía,
- *              estadísticas de progreso.
- * AUTOR: Mauricio
- * VERSIÓN: 1.0.0
- * ÚLTIMA MODIFICACIÓN: 2026-06-15
- * ============================================
- */
-
-// ============================================
-// FUNCIONES DE APERTURA Y NAVEGACIÓN
-// ============================================
-
-function PVT_getTLAutocompletar(query) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-    const data = sheet.getDataRange().getValues();
-    const q = query.toLowerCase();
-    const suggestions = new Set();
-    
-    for (let i = 1; i < data.length; i++) {
-      const assetId = String(data[i][2]);
-      const tlName = String(data[i][3]);
-      if (assetId.toLowerCase().includes(q) || tlName.toLowerCase().includes(q)) {
-        suggestions.add(`${assetId} | ${tlName}`);
-      }
-    }
-    return Array.from(suggestions).slice(0, 15);
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getTLAutocompletar', e.toString());
-    return [];
-  }
-}
-
-function PVT_searchUniqueStrategies(selectedTL) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-    const data = sheet.getDataRange().getValues();
-    
-    const tlId = selectedTL.split(' | ')[0].trim().toLowerCase();
-    const uniqueMap = new Map();
-    
-    for (let i = 1; i < data.length; i++) {
-      const currentSheetTlId = String(data[i][2]).trim().toLowerCase();
-      
-      if (currentSheetTlId === tlId) {
-        const strategyId = data[i][4];
-        if (!uniqueMap.has(strategyId)) {
-          uniqueMap.set(strategyId, {
-            assetId: data[i][2],
-            tlName: data[i][3],
-            strategyId: strategyId,
-            frequency: data[i][6]
-          });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Activity Master Builder - ADKINTOR EAMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================
+           BASE
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
-      }
-    }
-    
-    return { status: "success", data: Array.from(uniqueMap.values()) };
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_searchUniqueStrategies', e.toString());
-    return { status: "error", message: e.toString() };
-  }
-}
-
-// ============================================
-// FUNCIONES DE JERARQUÍA Y EQUIPOS
-// ============================================
-
-function getAllDescendants(parentId, regData, headers) {
-  const idIdx = headers.indexOf("Asset ID");
-  const nameIdx = headers.indexOf("Equipment Name");
-  const parentIdx = headers.indexOf("Parent Asset ID");
-  const typeIdx = headers.indexOf("Asset Type");
-  const categoryIdx = headers.indexOf("Category / Subtype");
-  
-  let results = [];
-  
-  for (let i = 0; i < regData.length; i++) {
-    const row = regData[i];
-    const currentParentId = String(row[parentIdx] || '').trim();
-    const assetType = String(row[typeIdx] || '').trim();
-    
-    if (currentParentId === String(parentId).trim() && assetType !== 'Technical Location') {
-      results.push({
-        id: row[idIdx],
-        name: row[nameIdx],
-        type: assetType,
-        category: row[categoryIdx] || ''
-      });
-      
-      const children = getAllDescendants(row[idIdx], regData, headers);
-      results = results.concat(children);
-    }
-  }
-  
-  return results;
-}
-
-function PVT_getHierarchyTree() {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const regSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
-    const regData = regSheet.getDataRange().getValues();
-    const headers = regData[0];
-    
-    const areaIdx = headers.indexOf("Area");
-    const idIdx = headers.indexOf("Asset ID");
-    const nameIdx = headers.indexOf("Equipment Name");
-    const typeIdx = headers.indexOf("Asset Type");
-    const statusIdx = headers.indexOf("Status");
-    
-    const tree = {};
-    
-    for (let i = 1; i < regData.length; i++) {
-      const row = regData[i];
-      const assetId = String(row[idIdx]);
-      const area = String(row[areaIdx] || "Unassigned");
-      const name = String(row[nameIdx]);
-      const type = String(row[typeIdx]);
-      const status = String(row[statusIdx]).trim().toUpperCase();
-      
-      if (type === "Technical Location" && (status === "ACTIVE-PM" || status === "ACTIVO-PM")) {
-        if (!tree[area]) tree[area] = [];
-        tree[area].push({ label: `${assetId} - ${name}`, id: assetId });
-      }
-    }
-    return tree;
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getHierarchyTree', e.toString());
-    return {};
-  }
-}
-
-// ============================================
-// FUNCIÓN PRINCIPAL - CARGAR ESTRATEGIA
-// ============================================
-
-function PVT_getStrategyContent(strategyId, assetId) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const regSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
-    const actSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-    
-    const regData = regSheet.getDataRange().getValues();
-    const headers = regData[0];
-    
-    // Get ALL descendants (children) of the selected TL
-    const equipmentList = getAllDescendants(assetId, regData.slice(1), headers);
-    
-    // Extract just the asset IDs of children
-    const childAssetIds = equipmentList.map(e => e.id);
-    
-    const actData = actSheet.getDataRange().getValues();
-    const actHeaders = actData[0];
-    
-    const assetIdIdx = actHeaders.indexOf("Asset ID");
-    const strategyIdx = actHeaders.indexOf("Strategy ID Reference");
-    const equipIdx = actHeaders.indexOf("Asset_Name");
-    const instrIdx = actHeaders.indexOf("Activity_Task");
-    const stdIdx = actHeaders.indexOf("Acceptance_Standard");
-    const timeIdx = actHeaders.indexOf("Est_Time_HR");
-    
-    // Search for activities where Asset ID is ANY child of the TL
-    const tasks = actData.slice(1)
-      .filter(row => {
-        const rowAssetId = String(row[assetIdIdx]).trim();
-        const rowStrategyId = String(row[strategyIdx]).trim();
-        // Check if this row's Asset ID is a child of the selected TL
-        const isChild = childAssetIds.includes(rowAssetId);
-        return isChild && rowStrategyId === String(strategyId).trim();
-      })
-      .map(row => ({
-        assetId: row[assetIdIdx] || "",  // ✅ AGREGAR assetId
-        equipment: row[equipIdx] || "",
-        instruction: row[instrIdx] || "",
-        standard: row[stdIdx] || "",
-        timeHr: row[timeIdx] || 0
-      }));
-    
-    // Also include the TL itself as an "equipment" option for creating new activities
-    const allEquipment = [...equipmentList];
-    
-    return { status: "success", equipment: allEquipment, existingTasks: tasks };
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getStrategyContent', e.toString());
-    return { status: "error", message: e.message, equipment: [], existingTasks: [] };
-  }
-}
-
-// ============================================
-// CLONADOR - BUSCAR EQUIPOS SIMILARES
-// ============================================
-
-function PVT_getSimilarAssetsWithContext(equipmentName, frequency, currentAssetId) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const regSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
-    const planSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-    
-    const regData = regSheet.getDataRange().getValues();
-    const headers = regData[0];
-    
-    const idIdx = headers.indexOf("Asset ID");
-    const nameIdx = headers.indexOf("Equipment Name");
-    const parentIdx = headers.indexOf("Parent Asset ID");
-    const categoryIdx = headers.indexOf("Category / Subtype");
-    const areaIdx = headers.indexOf("Area");
-    const assetTypeIdx = headers.indexOf("Asset Type");
-    const statusIdx = headers.indexOf("Status");
-    
-    // 1. Obtener el equipo actual usando su ID (preciso)
-    let currentAsset = null;
-    for (let i = 1; i < regData.length; i++) {
-      if (String(regData[i][idIdx]).trim() === currentAssetId) {
-        currentAsset = regData[i];
-        break;
-      }
-    }
-    
-    if (!currentAsset) {
-      console.error("No se encontró equipo con ID:", currentAssetId);
-      return [];
-    }
-    
-    const targetCategory = String(currentAsset[categoryIdx]).trim();
-    const currentArea = String(currentAsset[areaIdx]);
-    const currentAssetType = String(currentAsset[assetTypeIdx]);
-    const currentStatus = String(currentAsset[statusIdx]).trim().toUpperCase();
-    
-    // 2. Buscar clones: misma categoría, misma área, activos
-    const planData = planSheet.getDataRange().getValues();
-    const results = [];
-    
-    for (let i = 1; i < regData.length; i++) {
-      const row = regData[i];
-      const category = String(row[categoryIdx]).trim();
-      const area = String(row[areaIdx]);
-      const assetType = String(row[assetTypeIdx]);
-      const equipName = String(row[nameIdx]).trim();
-      const equipId = String(row[idIdx]).trim();
-      const status = String(row[statusIdx]).trim().toUpperCase();
-      
-      // Filtros básicos
-      if (assetType === 'Technical Location') continue;
-      if (assetType === 'Main Equipmentcolum') continue;
-      if (status !== 'ACTIVE' && status !== 'ACTIVO') continue;
-      if (equipId === currentAssetId) continue;
-      
-      // Misma categoría y misma área
-      if (category === targetCategory && area === currentArea) {
         
-        // Encontrar TL raíz
-        let tlId = String(row[parentIdx]);
-        let found = false;
-        let maxDepth = 10;
-        let depth = 0;
+        /* ============================================
+           WRAPPER
+           ============================================ */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f6f9;
+        }
         
-        while (!found && depth < maxDepth) {
-          for (let j = 1; j < regData.length; j++) {
-            const assetRow = regData[j];
-            const assetId = String(assetRow[idIdx]).trim();
-            const assetTypeCheck = String(assetRow[assetTypeIdx]);
-            
-            if (assetId === tlId) {
-              if (assetTypeCheck === 'Technical Location') {
-                found = true;
-                break;
-              } else {
-                tlId = String(assetRow[parentIdx]).trim();
-                break;
-              }
+        /* ============================================
+           CABECERA - AZUL OSCURO
+           ============================================ */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #1a1a2e;
+            border-bottom: 2px solid #2a2f4a;
+            flex-shrink: 0;
+            min-height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-badge {
+            font-size: 12px;
+            color: #e0e0e0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .company-logo {
+            height: 32px;
+            width: auto;
+            display: none;
+        }
+        
+        /* ============================================
+           BREADCRUMBS
+           ============================================ */
+        .breadcrumbs {
+            padding: 8px 20px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .breadcrumbs .current {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           CUERPO
+           ============================================ */
+        .module-body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+            background: #f4f6f9;
+            display: flex;
+        }
+        
+        /* ============================================
+           FOOTER - BLANCO (SOLO CONNECTED + VERSIÓN)
+           ============================================ */
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+        }
+        
+        .footer-version {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           LOADING OVERLAY
+           ============================================ */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 246, 249, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;  
+            gap: 12px;
+        }
+        
+        #loadingOverlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           TOAST - ARRIBA DERECHA
+           ============================================ */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 360px;
+            pointer-events: none;
+        }
+        
+        #toastContainer .toast {
+            pointer-events: auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: toastSlideIn 0.3s ease-out;
+        }
+        
+        #toastContainer .toast-success { background: #22c55e; }
+        #toastContainer .toast-error { background: #dc3545; }
+        #toastContainer .toast-warning { background: #f59e0b; }
+        #toastContainer .toast-info { background: #1a1a2e; }
+        
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* ============================================
+           ESTILOS ESPECÍFICOS DEL MÓDULO
+           ============================================ */
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left: 4px solid #22c55e;
+            margin: 12px 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .stats-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #22c55e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .stats-numbers {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 4px 0;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-fill {
+            background: #22c55e;
+            height: 100%;
+            width: 0%;
+            transition: width 0.6s ease;
+            border-radius: 3px;
+        }
+
+        .tree-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 12px 12px 12px;
+        }
+
+        .tree-header {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 0 8px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tree-area {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-top: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .tree-area:hover {
+            background: #e2e8f0;
+        }
+
+        .tree-area::after {
+            content: '▶';
+            font-size: 0.65rem;
+            transition: transform 0.2s;
+            color: #64748b;
+        }
+
+        .tree-area.active::after {
+            transform: rotate(90deg);
+        }
+
+        .tree-content {
+            display: none;
+            margin-left: 10px;
+            border-left: 1px solid #e2e8f0;
+            padding-left: 10px;
+        }
+
+        .tree-content.show {
+            display: block;
+        }
+
+        .tree-item {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+            border-radius: 4px;
+            margin: 3px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tree-item:hover {
+            background: #eef2ff;
+            color: #1a1a2e;
+            font-weight: 500;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .top-panel {
+            background: white;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+
+        .top-panel h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+
+        #search-input {
+            flex: 1;
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #search-input:focus {
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
+
+        #search-input:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+        }
+
+        .btn-build {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-build:hover:not(:disabled) {
+            background: #2c2c4e;
+        }
+
+        .btn-build:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-build i {
+            margin-right: 4px;
+        }
+
+        #suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0 0 8px 8px;
+            display: none;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 8px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #f1f5f9;
+        }
+
+        .bottom-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .results-table th {
+            background: #f8fafc;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            border-bottom: 2px solid #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .results-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .results-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .btn-primary {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2c2c4e;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-primary i,
+        .btn-secondary i,
+        .btn-danger i {
+            margin-right: 4px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .icon-btn-edit:hover {
+            background: #eef2ff;
+            color: #1a1a2e;
+        }
+
+        .icon-btn-delete:hover {
+            background: #fef2f2;
+            color: #dc3545;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: #64748b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .empty-state i {
+            opacity: 0.3;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 2rem;
+        }
+
+        .info-card {
+            background: #eef2ff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #1a1a2e;
+            margin: 12px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .info-card div {
+            margin: 2px 0;
+        }
+
+        .info-card i {
+            width: 18px;
+            color: #1a1a2e;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 560px;
+            max-width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: #64748b;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #dc3545;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: white;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .clone-section {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 12px 0;
+        }
+
+        .clone-section h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.8rem;
+            color: #b45309;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .clone-group {
+            margin-bottom: 10px;
+        }
+
+        .clone-group-title {
+            font-weight: 600;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            padding-left: 6px;
+            border-left: 3px solid #fcd34d;
+            color: #92400e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .clone-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0 4px 12px;
+        }
+
+        .clone-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #1a1a2e;
+            flex-shrink: 0;
+        }
+
+        .clone-item span {
+            flex: 1;
+            font-size: 0.75rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .summary-badge {
+            background: #eef2ff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 12px;
+            text-align: center;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: none;
+        }
+
+        .loading-clones {
+            padding: 16px;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 260px;
             }
-          }
-          depth++;
+            .modal-container {
+                width: 90%;
+            }
         }
-        
-        // Verificar si el TL tiene la misma frecuencia
-        let hasStrategy = false;
-        let strategyId = null;
-        let tlName = null;
-        
-        for (let k = 1; k < planData.length; k++) {
-          const planTlId = String(planData[k][2]).trim();
-          const planFreq = String(planData[k][6]);
-          
-          if (planTlId === tlId && planFreq === frequency) {
-            hasStrategy = true;
-            strategyId = planData[k][4];
-            tlName = planData[k][3];
-            break;
-          }
-        }
-        
-        if (hasStrategy) {
-          results.push({
-            id: equipId,
-            name: equipName,
-            tlId: tlId,
-            tlName: tlName || tlId,
-            strategyId: strategyId || `STRAT-${frequency.toUpperCase()}`,
-            category: category,
-            area: area,
-            isSameTL: (tlId === String(currentAsset[parentIdx]).trim())
-          });
-        }
-      }
-    }
-    
-    return results;
-    
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getSimilarAssetsWithContext', e.toString());
-    return [];
-  }
-}
 
-// ============================================
-// FUNCIONES DE ESTADÍSTICAS
-// ============================================
-
-function PVT_getProgressStats() {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const plannerSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-    const activitySheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-    const assetSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
-    
-    if (!plannerSheet || !activitySheet || !assetSheet) {
-      return { total: 0, done: 0, pending: 0, percent: 0 };
-    }
-    
-    const plannerData = plannerSheet.getDataRange().getValues();
-    const activityData = activitySheet.getDataRange().getValues();
-    const assetData = assetSheet.getDataRange().getValues();
-    const assetHeaders = assetData[0];
-    
-    const idIdx = assetHeaders.indexOf("Asset ID");
-    const parentIdx = assetHeaders.indexOf("Parent Asset ID");
-    const typeIdx = assetHeaders.indexOf("Asset Type");
-    
-    // ============================================
-    // PASO 1: Construir mapa de hijos por TL (incluyendo nietos)
-    // ============================================
-    const childrenByTL = new Map(); // TL -> Set de hijos
-    
-    function addDescendants(parentId, allChildren) {
-      for (let i = 1; i < assetData.length; i++) {
-        const row = assetData[i];
-        const currentParentId = String(row[parentIdx] || '').trim();
-        const assetType = String(row[typeIdx] || '').trim();
-        const childId = String(row[idIdx]).trim();
-        
-        if (currentParentId === parentId && assetType !== 'Technical Location' && childId) {
-          if (!allChildren.has(childId)) {
-            allChildren.add(childId);
-            addDescendants(childId, allChildren);
-          }
+        @media (max-width: 650px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .top-panel {
+                padding: 10px 14px;
+            }
+            .top-panel h2 {
+                font-size: 0.85rem;
+            }
+            .bottom-panel {
+                padding: 10px 14px;
+            }
+            .search-container {
+                flex-direction: column;
+            }
+            .btn-build {
+                padding: 8px;
+                width: 100%;
+            }
+         
         }
-      }
-    }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span style="color: #666; font-size: 13px;">Loading Activity Builder...</span>
+</div>
+
+<!-- TOAST -->
+<div id="toastContainer"></div>
+
+<!-- CONTENIDO -->
+<div class="module-wrapper">
     
-    for (let i = 1; i < assetData.length; i++) {
-      const row = assetData[i];
-      const assetType = String(row[typeIdx] || '').trim();
-      const assetId = String(row[idIdx]).trim();
-      
-      if (assetType === 'Technical Location' && assetId) {
-        const children = new Set();
-        addDescendants(assetId, children);
-        childrenByTL.set(assetId, children);
-      }
+    <!-- CABECERA -->
+    <div class="module-header">
+        <div class="header-left">
+            <span class="module-title">Activity Master Builder</span>
+        </div>
+        <div class="header-right">
+            <span class="user-badge" id="userDisplay">Loading...</span>
+            <img class="company-logo" id="companyLogo" src="" alt="Logo">
+        </div>
+    </div>
+    
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Activity Builder</span>
+    </div>
+    
+    <!-- CUERPO -->
+    <div class="module-body">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="stats-card">
+                    <div class="stats-label"><i class="fas fa-chart-line"></i> Strategy Progress</div>
+                    <div class="stats-numbers"><span id="stat-done">0</span> / <span id="stat-total">0</span></div>
+                    <div class="progress-bar"><div id="stat-bar" class="progress-fill"></div></div>
+                    <div style="font-size: 0.7rem; margin-top: 4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><span id="stat-perc">0</span>% Complete</div>
+                </div>
+                
+                <div class="tree-container custom-scroll">
+                    <div class="tree-header"><i class="fas fa-sitemap"></i> Asset Hierarchy</div>
+                    <div id="hierarchy-tree"></div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="top-panel">
+                    <h2><i class="fas fa-tools"></i> Activity Master Builder</h2>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
+                        <button class="btn-build" onclick="executeSearch()"><i class="fas fa-search"></i> Search</button>
+                        <button class="btn-build" onclick="refreshModule()" style="background: #6c757d;"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <div id="suggestions" class="custom-scroll"></div>
+                    </div>
+                </div>
+                
+                <div class="bottom-panel">
+                    <!-- Results View -->
+                    <div id="resultsView">
+                        <div class="results-card">
+                            <table class="results-table" id="resultsTable" style="display: none;">
+                                <thead>
+                                    <tr><th>Asset ID</th><th>Technical Location</th><th>Strategy ID</th><th>Frequency</th><th></th></tr>
+                                </thead>
+                                <tbody id="resultsBody"></tbody>
+                            </table>
+                            <div id="noResultsMsg" class="empty-state" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                <p>No strategies found for this Technical Location.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Editor View -->
+                    <div id="editorView" style="display: none;">
+                        <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 16px 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-secondary" onclick="openOrphanModal()" style="background: #f59e0b; color: white;"><i class="fas fa-trash-alt"></i> Orphan Activities</button>
+                                    <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
+                                </div>
+                            </div>
+                            
+                            <div class="info-card">
+                                <div><i class="fas fa-fingerprint"></i> <strong>ID:</strong> <span id="head-id"></span></div>
+                                <div><i class="fas fa-tag"></i> <strong>Name:</strong> <span id="head-name"></span></div>
+                                <div><i class="fas fa-clock"></i> <strong>Frequency:</strong> <span id="head-freq"></span></div>
+                            </div>
+                            
+                            <div style="margin-bottom: 16px; margin-top: 16px;">
+                                <h3 style="margin: 0; font-size: 0.9rem; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-list"></i> Existing Activities</h3>
+                            </div>
+                            
+                            <div id="activitiesTableContainer" style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                                    <thead>
+                                        <tr style="background: #f8fafc; border-bottom: 2px solid #1a1a2e;">
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Equipment</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Instruction</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Standard</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Hours</th>
+                                            <th style="padding: 8px 12px; text-align: center; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activitiesTableBody">
+                                        <tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ORPHAN ACTIVITIES MODAL                      -->
+    <div id="orphanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 750px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash-alt" style="color: #f59e0b;"></i> Orphan Activities</h3>
+                <span class="modal-close" onclick="closeOrphanModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">
+                    These activities have a <strong>Strategy ID</strong> that no longer exists in the active plan for this Technical Location.
+                    <br>You can <strong>reassign</strong> them to an active strategy or <strong>delete</strong> them.
+                </p>
+                <div id="orphanListContainer">
+                    <div style="text-align: center; padding: 20px; color: #64748b;">
+                        <i class="fas fa-spinner fa-pulse"></i> Loading orphan activities...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeOrphanModal()">Close</button>
+            </div>
+        </div>
+    </div>    
+
+    <!-- FOOTER - SOLO CONNECTED + VERSIÓN -->
+    <div class="module-footer">
+        <span>
+            <span class="status-dot connected"></span>
+            <span>Connected</span>
+        </span>
+        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+    </div>
+    
+</div>
+
+<script>
+    // ============================================
+    // RECIBIR MENSAJES DEL PADRE
+    // ============================================
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            const img = document.getElementById('companyLogo');
+            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+        }
+        if (data.type === 'SET_VERSION' && data.version) {
+            const el = document.getElementById('eamsVersion');
+            if (el) el.innerText = data.version;
+        }
+    });
+    
+    // ============================================
+    // CARGAR USUARIO (email)
+    // ============================================
+    function loadUser() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                document.getElementById('userDisplay').innerText = session.email;
+            }
+        } catch(e) {}
     }
     
     // ============================================
-    // PASO 2: Construir mapa de qué estrategias están definidas para cada TL
+    // TOAST (usa ModuleBase si existe)
     // ============================================
-    // Estructura: requiredMap[TL][strategyId] = Set de hijos que DEBEN tener actividad
-    const requiredMap = new Map(); // TL -> Map(strategyId -> Set de hijos requeridos)
+    function showToast(message, type = 'info') {
+        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+            ModuleBase.showToast(message, type);
+            return;
+        }
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    }
     
-    for (let i = 1; i < plannerData.length; i++) {
-      const row = plannerData[i];
-      const year = row[0];
-      const tlId = String(row[2] || '').trim();
-      const strategyId = String(row[4] || '').trim();
-      
-      if (!year || !tlId || !strategyId) continue;
-      
-      if (!requiredMap.has(tlId)) {
-        requiredMap.set(tlId, new Map());
-      }
-      
-      const tlStrategies = requiredMap.get(tlId);
-      if (!tlStrategies.has(strategyId)) {
-        // Obtener los hijos que deben tener actividad para esta estrategia
-        const requiredChildren = new Set();
-        const children = childrenByTL.get(tlId) || new Set();
-        
-        // Si el TL tiene hijos, cada hijo es un requerimiento
-        if (children.size > 0) {
-          children.forEach(child => requiredChildren.add(child));
+    // ============================================
+    // LOADING
+    // ============================================
+    function showLoading(msg) {
+        const overlay = document.getElementById('loadingOverlay');
+        const span = overlay.querySelector('span');
+        if (span) span.innerText = msg || 'Loading...';
+        overlay.classList.add('visible');
+    }
+    
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('visible');
+    }
+    
+    // ============================================
+    // CERRAR MODAL
+    // ============================================
+    function closeModal() {
+        window.parent.postMessage('closeIframe', '*');
+    }
+
+    // ============================================
+    // API CONFIGURATION
+    // ============================================
+    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+    let EAMS_API_URL = null;
+
+    function loadApiUrl() {
+        const session = localStorage.getItem('adkintor_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                EAMS_API_URL = sessionData.eamsApiUrl;
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+            } catch(e) {
+                console.error('Error parsing session:', e);
+                showToast('Session error. Please log in again.', 'error');
+            }
         } else {
-          // Si no tiene hijos, el TL mismo es el requerimiento
-          requiredChildren.add(tlId);
+            showToast('Please log in to continue.', 'error');
         }
-        
-        tlStrategies.set(strategyId, requiredChildren);
-      }
     }
-    
-    // ============================================
-    // PASO 3: Construir mapa de qué estrategias tienen actividad (al menos una por hijo)
-    // ============================================
-    // Estructura: completedMap[TL][strategyId] = Set de hijos que YA tienen actividad
-    const completedMap = new Map();
-    
-    for (let i = 1; i < activityData.length; i++) {
-      const row = activityData[i];
-      const childAssetId = String(row[0] || '').trim();
-      const strategyId = String(row[6] || '').trim();
-      
-      if (!childAssetId || !strategyId) continue;
-      
-      // Encontrar a qué TL pertenece este hijo
-      let parentTL = null;
-      for (const [tlId, children] of childrenByTL.entries()) {
-        if (children.has(childAssetId) || tlId === childAssetId) {
-          parentTL = tlId;
-          break;
-        }
-      }
-      
-      if (!parentTL) continue;
-      
-      if (!completedMap.has(parentTL)) {
-        completedMap.set(parentTL, new Map());
-      }
-      
-      const tlCompleted = completedMap.get(parentTL);
-      if (!tlCompleted.has(strategyId)) {
-        tlCompleted.set(strategyId, new Set());
-      }
-      
-      // Marcar que este hijo tiene actividad para esta estrategia
-      tlCompleted.get(strategyId).add(childAssetId);
-    }
-    
-    // ============================================
-    // PASO 4: Calcular progreso total
-    // ============================================
-    let totalRequired = 0;
-    let totalCompleted = 0;
-    
-    for (const [tlId, tlStrategies] of requiredMap.entries()) {
-      const tlCompleted = completedMap.get(tlId) || new Map();
-      
-      for (const [strategyId, requiredChildren] of tlStrategies.entries()) {
-        const completedChildren = tlCompleted.get(strategyId) || new Set();
-        
-        // Total requerido = número de hijos (cada hijo debe tener al menos una actividad)
-        const requiredCount = requiredChildren.size;
-        // Completado = número de hijos que tienen al menos una actividad
-        let completedCount = 0;
-        
-        for (const child of requiredChildren) {
-          if (completedChildren.has(child)) {
-            completedCount++;
-          }
-        }
-        
-        totalRequired += requiredCount;
-        totalCompleted += completedCount;
-      }
-    }
-    
-    const percent = totalRequired > 0 ? ((totalCompleted / totalRequired) * 100).toFixed(1) : 0;
-    
-    console.log(`📊 PVT_getProgressStats: Total requerido=${totalRequired}, Completado=${totalCompleted}, ${percent}%`);
-    
-    return {
-      total: totalRequired,
-      done: totalCompleted,
-      pending: totalRequired - totalCompleted,
-      percent: percent
-    };
-    
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getProgressStats', e.toString());
-    return { total: 0, done: 0, pending: 0, percent: 0 };
-  }
-}
 
-// ============================================
-// CRUD OPERACIONES
-// ============================================
-
-function PVT_createActivity(payload) {
-  return runWithLock("ACTIVITY_CREATE", function() {
-    try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-      
-      const email = getCurrentUserEmail();
-      const now = new Date();
-      const rowsToAdd = [];
-      
-      // 1. Actividad original
-      rowsToAdd.push([
-        payload.assetId,
-        payload.frequency,
-        payload.equipment,
-        payload.instruction,
-        payload.standard || "",
-        parseFloat(payload.timeHr) || 0,
-        payload.strategyId,
-        now,
-        email
-      ]);
-      
-      // 2. Clones seleccionados
-      if (payload.cloneTo && payload.cloneTo.length > 0) {
-        for (let clone of payload.cloneTo) {
-          const existingData = sheet.getDataRange().getValues();
-          let alreadyExists = false;
-          
-          for (let i = 1; i < existingData.length; i++) {
-            if (String(existingData[i][0]) === clone.assetId &&
-                String(existingData[i][6]) === clone.strategyId &&
-                String(existingData[i][2]) === clone.equipment &&
-                String(existingData[i][3]) === payload.instruction) {
-              alreadyExists = true;
-              break;
-            }
-          }
-          
-          if (!alreadyExists) {
-            rowsToAdd.push([
-              clone.assetId,
-              payload.frequency,
-              clone.equipment,
-              payload.instruction,
-              payload.standard || "",
-              parseFloat(payload.timeHr) || 0,
-              clone.strategyId,
-              now,
-              email
-            ]);
-          }
-        }
-      }
-      
-      if (rowsToAdd.length > 0) {
-        sheet.getRange(sheet.getLastRow() + 1, 1, rowsToAdd.length, 9).setValues(rowsToAdd);
-      }
-      
-      // ==== AUDIT LOG - ACTIVITY CREATE ====
-      try {
-        const activityDetails = `Activity created | Asset: ${payload.assetId} | Equipment: ${payload.equipment} | Frequency: ${payload.frequency} | Strategy: ${payload.strategyId} | Instruction: ${payload.instruction.substring(0, 100)} | Clones: ${payload.cloneTo?.length || 0}`;
-        logCreate('PVT', `${payload.strategyId}-${payload.assetId}`, activityDetails);
-      } catch(e) {
-        console.error('Audit log error: ' + e.toString());
-      }
-      // ==== FIN AUDIT LOG ====
-      
-      return { 
-        status: "success", 
-        message: `Created: 1 original + ${payload.cloneTo?.length || 0} clones` 
-      };
-    } catch (e) {
-      logSystemError('PVT_ACT', 'PVT_createActivity', e.toString());
-      return { status: "error", message: "Create Failed: " + e.message };
-    }
-  });
-}
-
-function PVT_updateActivity(payload) {
-  return runWithLock("ACTIVITY_UPDATE", function() {
-    try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-      
-      const email = getCurrentUserEmail();
-      const now = new Date();
-      const allData = sheet.getDataRange().getValues();
-      
-      // 1. Actualizar la actividad original
-      for (let i = 1; i < allData.length; i++) {
-        const row = allData[i];
-        if (String(row[0]) === payload.originalAssetId &&
-            String(row[6]) === payload.originalStrategyId &&
-            String(row[2]) === payload.originalEquipment &&
-            String(row[3]) === payload.originalInstruction) {
-          
-          if (payload.equipment !== payload.originalEquipment) {
-            sheet.getRange(i + 1, 3).setValue(payload.equipment);
-          }
-          
-          sheet.getRange(i + 1, 4).setValue(payload.instruction);
-          sheet.getRange(i + 1, 5).setValue(payload.standard || "");
-          sheet.getRange(i + 1, 6).setValue(parseFloat(payload.timeHr) || 0);
-          sheet.getRange(i + 1, 8).setValue(now);
-          sheet.getRange(i + 1, 9).setValue(email);
-          break;
-        }
-      }
-      
-      // 2. Propagar a clones seleccionados
-      if (payload.propagateTo && payload.propagateTo.length > 0) {
-        for (let prop of payload.propagateTo) {
-          let found = false;
-          for (let i = 1; i < allData.length; i++) {
-            const row = allData[i];
-            // CORREGIDO: Usar prop.assetId en lugar de prop.tlId
-            if (String(row[0]) === prop.assetId &&
-                String(row[6]) === prop.strategyId &&
-                String(row[2]) === prop.equipment &&
-                String(row[3]) === payload.originalInstruction) {
-              
-              if (payload.equipment !== payload.originalEquipment) {
-                sheet.getRange(i + 1, 3).setValue(payload.equipment);
-              }
-              
-              sheet.getRange(i + 1, 4).setValue(payload.instruction);
-              sheet.getRange(i + 1, 5).setValue(payload.standard || "");
-              sheet.getRange(i + 1, 6).setValue(parseFloat(payload.timeHr) || 0);
-              sheet.getRange(i + 1, 8).setValue(now);
-              sheet.getRange(i + 1, 9).setValue(email);
-              found = true;
-              break;
-            }
-          }
-          
-          // Si el clon no existe, CREAR nuevo
-          if (!found) {
-            // CORREGIDO: Usar prop.assetId en lugar de prop.tlId
-            const newRow = [
-              prop.assetId,
-              payload.frequency,
-              prop.equipment,
-              payload.instruction,
-              payload.standard || "",
-              parseFloat(payload.timeHr) || 0,
-              prop.strategyId,
-              now,
-              email
-            ];
-            sheet.appendRow(newRow);
-          }
-        }
-      }
-      
-      // ==== AUDIT LOG - ACTIVITY UPDATE ====
-      try {
-        const changes = [];
-        if (payload.equipment !== payload.originalEquipment) changes.push(`Equipment: ${payload.originalEquipment} → ${payload.equipment}`);
-        if (payload.instruction !== payload.originalInstruction) changes.push(`Instruction changed`);
-        if (payload.standard !== undefined) changes.push(`Standard updated`);
-        if (payload.timeHr !== undefined) changes.push(`Time: ${payload.timeHr} hrs`);
-        
-        const activityDetails = `Activity updated | Asset: ${payload.assetId} | Strategy: ${payload.strategyId} | Changes: ${changes.join(', ') || 'Multiple'} | Propagated to: ${payload.propagateTo?.length || 0} clones`;
-        logModify('PVT', `${payload.strategyId}-${payload.assetId}`, 'Multiple', null, null, activityDetails);
-      } catch(e) {
-        console.error('Audit log error: ' + e.toString());
-      }
-      // ==== FIN AUDIT LOG ====
-      
-      return { 
-        status: "success", 
-        message: `Updated: 1 original + ${payload.propagateTo?.length || 0} clones` 
-      };
-    } catch (e) {
-      logSystemError('PVT_ACT', 'PVT_updateActivity', e.toString());
-      return { status: "error", message: "Update Failed: " + e.message };
-    }
-  });
-}
-
-function PVT_deleteActivity(payload) {
-  return runWithLock("ACTIVITY_DELETE", function() {
-    try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-      
-      const allData = sheet.getDataRange().getValues();
-      const rowsToDelete = [];
-      
-      for (let i = 1; i < allData.length; i++) {
-        const row = allData[i];
-        const currentAssetId = String(row[0]);
-        const currentStrategyId = String(row[6]);
-        const currentEquipment = String(row[2]);
-        const currentInstruction = String(row[3]);
-        
-        // Actividad original (SIEMPRE se elimina)
-        if (currentAssetId === payload.originalAssetId &&
-            currentStrategyId === payload.originalStrategyId &&
-            currentEquipment === payload.originalEquipment &&
-            currentInstruction === payload.originalInstruction) {
-          rowsToDelete.push(i + 1);
-          continue;
+    async function callApi(action, args) {
+        if (args === undefined) args = [];
+        if (!EAMS_API_URL) {
+            throw new Error('API URL not configured. Please log in.');
         }
         
-        // Clones seleccionados - CORREGIDO: Usar del.assetId
-        if (payload.deleteFrom && payload.deleteFrom.length > 0) {
-          for (let del of payload.deleteFrom) {
-            if (currentAssetId === del.assetId &&
-                currentStrategyId === del.strategyId &&
-                currentEquipment === del.equipment &&
-                currentInstruction === payload.originalInstruction) {
-              rowsToDelete.push(i + 1);
-              break;
-            }
-          }
-        }
-      }
-      
-      const uniqueRows = [...new Set(rowsToDelete)].sort((a, b) => b - a);
-      for (let rowNum of uniqueRows) {
-        sheet.deleteRow(rowNum);
-      }
-      
-      // ==== AUDIT LOG - ACTIVITY DELETE ====
-      try {
-        const activityDetails = `Activity deleted | Original Asset: ${payload.originalAssetId} | Strategy: ${payload.originalStrategyId} | Instruction: ${payload.originalInstruction.substring(0, 100)} | Also deleted from: ${payload.deleteFrom?.length || 0} clones`;
-        logDelete('PVT', `${payload.originalStrategyId}-${payload.originalAssetId}`, activityDetails);
-      } catch(e) {
-        console.error('Audit log error: ' + e.toString());
-      }
-      // ==== FIN AUDIT LOG ====
-      
-      return { 
-        status: "success", 
-        message: `Deleted: 1 original + ${payload.deleteFrom?.length || 0} clones` 
-      };
-    } catch (e) {
-      logSystemError('PVT_ACT', 'PVT_deleteActivity', e.toString());
-      return { status: "error", message: "Delete Failed: " + e.message };
-    }
-  });
-}
-
-// ============================================================
-// ORPHAN ACTIVITIES MANAGEMENT
-// ============================================================
-
-/**
- * Obtener actividades huérfanas para un TL específico
- * Una actividad es huérfana si su Strategy ID Reference NO existe en MAINT_PLANNER para ese TL
- */
-function PVT_getOrphanActivitiesForTL(tlId) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const actSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-    const planSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-    const assetSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
-    
-    if (!actSheet || !planSheet || !assetSheet) {
-      return { status: "error", message: "Required sheets not found", orphans: [] };
-    }
-    
-    // 1. Get active strategies for this TL from MAINT_PLANNER
-    const planData = planSheet.getDataRange().getValues();
-    const activeStrategies = new Set();
-    const currentYear = new Date().getFullYear();
-    
-    for (let i = 1; i < planData.length; i++) {
-      const row = planData[i];
-      const year = row[0];
-      const status = row[7];
-      if (status === 'EXPIRED') continue;
-      if (year && year < currentYear - 1) continue;
-      
-      const assetId = String(row[2]).trim();
-      const strategyId = String(row[4]).trim();
-      if (assetId === tlId && strategyId) {
-        activeStrategies.add(strategyId);
-      }
-    }
-    
-    if (activeStrategies.size === 0) {
-      return { status: "success", orphans: [], activeStrategies: [], message: "No active strategies found for this TL" };
-    }
-    
-    // 2. Get ALL descendants (children) of this TL
-    const regData = assetSheet.getDataRange().getValues();
-    const headers = regData[0];
-    const descendants = getAllDescendants(tlId, regData.slice(1), headers);
-    const childAssetIds = descendants.map(e => e.id);
-    childAssetIds.push(tlId); // Include the TL itself
-    
-    // 3. Get activities from MAINT_ACTIVITIES
-    const actData = actSheet.getDataRange().getValues();
-    const actHeaders = actData[0];
-    
-    const assetIdIdx = actHeaders.indexOf("Asset ID");
-    const strategyIdx = actHeaders.indexOf("Strategy ID Reference");
-    const equipIdx = actHeaders.indexOf("Asset_Name");
-    const instrIdx = actHeaders.indexOf("Activity_Task");
-    const stdIdx = actHeaders.indexOf("Acceptance_Standard");
-    const timeIdx = actHeaders.indexOf("Est_Time_HR");
-    
-    // 4. Find orphans: activities where Asset ID is a child of this TL, but Strategy ID is NOT active
-    const orphans = [];
-    for (let i = 1; i < actData.length; i++) {
-      const row = actData[i];
-      const assetId = String(row[assetIdIdx]).trim();
-      const strategyId = String(row[strategyIdx]).trim();
-      
-      // Check if this activity belongs to this TL (asset is a child or the TL itself)
-      if (!childAssetIds.includes(assetId)) continue;
-      if (!strategyId) continue;
-      
-      // Check if strategy is active
-      const isActive = activeStrategies.has(strategyId);
-      
-      if (!isActive) {
-        orphans.push({
-          assetId: assetId,
-          equipment: String(row[equipIdx] || ''),
-          instruction: String(row[instrIdx] || ''),
-          standard: String(row[stdIdx] || ''),
-          timeHr: row[timeIdx] || 0,
-          strategyId: strategyId
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: EAMS_API_URL,
+                payload: { action: action, args: args }
+            })
         });
-      }
+        
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+        return result.data;
     }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function sanitizeInput(str) {
+        if (!str) return '';
+        return String(str).replace(/[=+\-@\t\n\r]/g, ' ').trim();
+    }
+
+    // ============================================
+    // GLOBAL STATE
+    // ============================================
+    var currentContext = {};
+    var equipmentList = [];
+    var existingTasks = [];
+    var currentCloneTargets = [];
+    var currentEditTask = null;
+    var currentEditCloneTargets = [];
+    var currentDeleteTask = null;
+    var currentDeleteCloneTargets = [];
+    var isInEditorMode = false;
+    var suggestionTimeout = null;
+
+    // ============================================
+    // INITIALIZATION - CON SPINNER
+    // ============================================
+async function init() {
+    // ✅ PRIMERO: Mostrar el spinner
+    showLoading('Loading Activity Builder...');
     
-    return {
-      status: "success",
-      orphans: orphans,
-      activeStrategies: Array.from(activeStrategies),
-      message: `Found ${orphans.length} orphan activities`
-    };
+    // ✅ Cargar todo antes de ocultar el spinner
+    loadUser();
+    loadApiUrl();
     
-  } catch (e) {
-    logSystemError('PVT_ACT', 'PVT_getOrphanActivitiesForTL', e.toString());
-    return { status: "error", message: e.toString(), orphans: [] };
-  }
+    if (EAMS_API_URL) {
+        await updateDashboard();      // ✅ Espera a que termine
+        await loadHierarchyTree();    // ✅ Espera a que termine
+        hideLoading();                // ✅ Ahora sí, se oculta al final
+        showToast('Activity Builder loaded successfully ✅', 'success');
+        console.log('[Activity Builder] Ready');
+    } else {
+        hideLoading();
+        showToast('API URL not configured. Please log in first.', 'error');
+        document.getElementById('footer-status').innerText = 'Not Configured';
+    }
 }
 
-/**
- * Reassign an orphan activity to a new strategy
- */
-function PVT_reassignOrphanActivity(payload) {
-  return runWithLock("ORPHAN_REASSIGN", function() {
+async function updateDashboard() {
     try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-      const planSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_PLANNER);
-      
-      const { assetId, oldStrategyId, newStrategyId, equipment, instruction, frequency } = payload;
-      
-      // Validate that new strategy exists for this TL
-      const planData = planSheet.getDataRange().getValues();
-      let strategyExists = false;
-      for (let i = 1; i < planData.length; i++) {
-        const row = planData[i];
-        if (String(row[2]).trim() === assetId && String(row[4]).trim() === newStrategyId) {
-          strategyExists = true;
-          break;
+        var stats = await callApi('PVT_getProgressStats', []);
+        if (stats) {
+            document.getElementById('stat-total').innerText = stats.total || 0;
+            document.getElementById('stat-done').innerText = stats.done || 0;
+            document.getElementById('stat-perc').innerText = stats.percent || 0;
+            document.getElementById('stat-bar').style.width = (stats.percent || 0) + '%';
         }
-      }
-      
-      if (!strategyExists) {
-        return { status: "error", message: `Strategy ${newStrategyId} does not exist for this asset` };
-      }
-      
-      // Update the activity
-      const actData = sheet.getDataRange().getValues();
-      let updated = false;
-      
-      for (let i = 1; i < actData.length; i++) {
-        const row = actData[i];
-        if (String(row[0]).trim() === assetId &&
-            String(row[6]).trim() === oldStrategyId &&
-            String(row[2]).trim() === equipment &&
-            String(row[3]).trim() === instruction) {
-          
-          // Update Strategy ID Reference and Frequency
-          sheet.getRange(i + 1, 7).setValue(newStrategyId); // Strategy ID Reference
-          if (frequency) {
-            sheet.getRange(i + 1, 2).setValue(frequency); // Frequency
-          }
-          
-          // Update Last Update
-          sheet.getRange(i + 1, 8).setValue(new Date());
-          sheet.getRange(i + 1, 9).setValue(getCurrentUserEmail());
-          
-          updated = true;
-          break;
-        }
-      }
-      
-      if (!updated) {
-        return { status: "error", message: "Activity not found" };
-      }
-      
-      // Audit log
-      const details = `Orphan reassigned | Asset: ${assetId} | Old Strategy: ${oldStrategyId} → New Strategy: ${newStrategyId} | Equipment: ${equipment}`;
-      logModify('PVT', `${oldStrategyId}→${newStrategyId}`, 'Reassign', null, null, details);
-      
-      return { status: "success", message: `Activity reassigned to ${newStrategyId}` };
-      
     } catch (e) {
-      logSystemError('PVT_ACT', 'PVT_reassignOrphanActivity', e.toString());
-      return { status: "error", message: e.toString() };
+        console.error('Error loading stats:', e);
     }
-  });
 }
 
-/**
- * Delete an orphan activity
- */
-function PVT_deleteOrphanActivity(payload) {
-  return runWithLock("ORPHAN_DELETE", function() {
-    try {
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const sheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.MAINT_ACTIVITIES);
-      
-      const { assetId, strategyId, equipment, instruction } = payload;
-      
-      const actData = sheet.getDataRange().getValues();
-      let deleted = false;
-      let rowToDelete = -1;
-      
-      for (let i = 1; i < actData.length; i++) {
-        const row = actData[i];
-        if (String(row[0]).trim() === assetId &&
-            String(row[6]).trim() === strategyId &&
-            String(row[2]).trim() === equipment &&
-            String(row[3]).trim() === instruction) {
-          rowToDelete = i + 1;
-          deleted = true;
-          break;
+    async function loadHierarchyTree() {
+        try {
+            var tree = await callApi('PVT_getHierarchyTree', []);
+            var html = '';
+            var areaKeys = Object.keys(tree);
+            for (var i = 0; i < areaKeys.length; i++) {
+                var area = areaKeys[i];
+                html += '<div class="tree-area" onclick="toggleArea(this)">' + escapeHtml(area) + '</div>';
+                html += '<div class="tree-content">';
+                for (var j = 0; j < tree[area].length; j++) {
+                    var item = tree[area][j];
+                    html += '<div class="tree-item" onclick="selectFromTree(\'' + escapeHtml(item.id) + '\')">' + escapeHtml(item.label) + '</div>';
+                }
+                html += '</div>';
+            }
+            document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No active Technical Locations found.</div>';
+        } catch (e) {
+            console.error('Error loading hierarchy:', e);
+            document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading hierarchy</div>';
         }
-      }
-      
-      if (!deleted) {
-        return { status: "error", message: "Activity not found" };
-      }
-      
-      sheet.deleteRow(rowToDelete);
-      
-      // Audit log
-      const details = `Orphan deleted | Asset: ${assetId} | Strategy: ${strategyId} | Equipment: ${equipment}`;
-      logDelete('PVT', `${strategyId}-${assetId}`, details);
-      
-      return { status: "success", message: "Activity deleted successfully" };
-      
-    } catch (e) {
-      logSystemError('PVT_ACT', 'PVT_deleteOrphanActivity', e.toString());
-      return { status: "error", message: e.toString() };
     }
-  });
-}
+
+    function toggleArea(el) {
+        el.classList.toggle('active');
+        var content = el.nextElementSibling;
+        if (content) content.classList.toggle('show');
+    }
+
+    function selectFromTree(assetId) {
+        document.getElementById('search-input').value = assetId;
+    }
+
+    // ============================================
+    // AUTOCOMPLETE
+    // ============================================
+    async function getSuggestions(val) {
+        var suggestionsDiv = document.getElementById('suggestions');
+        if (val.length < 3) {
+            suggestionsDiv.style.display = 'none';
+            return;
+        }
+        
+        if (suggestionTimeout) clearTimeout(suggestionTimeout);
+        suggestionTimeout = setTimeout(async function() {
+            try {
+                var list = await callApi('PVT_getTLAutocompletar', [val]);
+                if (list && list.length > 0) {
+                    var html = '';
+                    for (var i = 0; i < list.length; i++) {
+                        html += '<div class="suggestion-item" onclick="selectTL(\'' + escapeHtml(list[i]) + '\')">' + escapeHtml(list[i]) + '</div>';
+                    }
+                    suggestionsDiv.innerHTML = html;
+                    suggestionsDiv.style.display = 'block';
+                } else {
+                    suggestionsDiv.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error getting suggestions:', e);
+                suggestionsDiv.style.display = 'none';
+            }
+        }, 300);
+    }
+
+    function selectTL(val) {
+        document.getElementById('search-input').value = val;
+        document.getElementById('suggestions').style.display = 'none';
+    }
+
+    // ============================================
+    // SEARCH
+    // ============================================
+    async function executeSearch() {
+        var val = document.getElementById('search-input').value;
+        if (!val) return;
+        
+        showLoading('Searching strategies...');
+        try {
+            var res = await callApi('PVT_searchUniqueStrategies', [val]);
+            hideLoading();
+            
+            var tbody = document.getElementById('resultsBody');
+            var table = document.getElementById('resultsTable');
+            var noResults = document.getElementById('noResultsMsg');
+            tbody.innerHTML = '';
+            
+            if (res.status === 'success' && res.data && res.data.length > 0) {
+                table.style.display = 'table';
+                noResults.style.display = 'none';
+                var html = '';
+                for (var i = 0; i < res.data.length; i++) {
+                    var row = res.data[i];
+                    html += '<tr>' +
+                        '<td>' + escapeHtml(row.assetId) + '</td>' +
+                        '<td>' + escapeHtml(row.tlName) + '</td>' +
+                        '<td><strong>' + escapeHtml(row.strategyId) + '</strong></td>' +
+                        '<td>' + escapeHtml(row.frequency) + '</td>' +
+                        '<td><button class="btn-build" onclick="loadStrategy(\'' + escapeHtml(row.strategyId) + '\',\'' + escapeHtml(row.assetId) + '\',\'' + escapeHtml(row.frequency) + '\',\'' + escapeHtml(row.tlName) + '\')">BUILD</button></td>' +
+                    '</tr>';
+                }
+                tbody.innerHTML = html;
+                showToast('Found ' + res.data.length + ' strategies', 'success');
+            } else {
+                table.style.display = 'none';
+                noResults.style.display = 'block';
+                showToast('No strategies found for this Technical Location.', 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    // ============================================
+    // LOAD STRATEGY
+    // ============================================
+    async function loadStrategy(sid, aid, freq, name) {
+        showLoading('Loading strategy...');
+        currentContext = { strategyId: sid, assetId: aid, frequency: freq, tlName: name };
+        document.getElementById('head-id').innerText = aid;
+        document.getElementById('head-name').innerText = name;
+        document.getElementById('head-freq').innerText = freq;
+        
+        try {
+            var res = await callApi('PVT_getStrategyContent', [sid, aid]);
+            hideLoading();
+            
+            if (res.status === 'success') {
+                equipmentList = res.equipment || [];
+                existingTasks = res.existingTasks || [];
+                
+                document.getElementById('resultsView').style.display = 'none';
+                document.getElementById('editorView').style.display = 'block';
+                
+                isInEditorMode = true;
+                document.querySelector('.tree-container').style.pointerEvents = 'none';
+                document.querySelector('.tree-container').style.opacity = '0.6';
+                document.getElementById('search-input').disabled = true;
+                document.querySelector('.search-container button').disabled = true;
+                
+                renderActivitiesTable();
+            } else {
+                showToast('Error: ' + res.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function renderActivitiesTable() {
+        var tbody = document.getElementById('activitiesTableBody');
+        if (!tbody) return;
+        
+        if (!existingTasks || existingTasks.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>';
+            return;
+        }
+        
+        var html = '';
+        for (var i = 0; i < existingTasks.length; i++) {
+            var task = existingTasks[i];
+            html += '<tr style="border-bottom: 1px solid #e2e8f0;">' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.assetId || '') + ' (' + escapeHtml(task.equipment || '') + ')</td>' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.instruction || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + escapeHtml(task.standard || '') + '</td>' +
+                '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
+                '<td style="padding: 8px 12px; text-align: center;">' +
+                    '<div style="display: flex; gap: 6px; justify-content: center;">' +
+                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    function backToResults() {
+        document.getElementById('editorView').style.display = 'none';
+        document.getElementById('resultsView').style.display = 'block';
+        existingTasks = [];
+        equipmentList = [];
+        
+        isInEditorMode = false;
+        document.querySelector('.tree-container').style.pointerEvents = 'auto';
+        document.querySelector('.tree-container').style.opacity = '1';
+        document.getElementById('search-input').disabled = false;
+        document.querySelector('.search-container button').disabled = false;
+    }
+
+    // ============================================
+    // CREATE MODAL
+    // ============================================
+    function openCreateModal() {
+        currentCloneTargets = [];
+        
+        var equipOptions = '';
+        for (var i = 0; i < equipmentList.length; i++) {
+            var e = equipmentList[i];
+            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '">' + escapeHtml(e.id) + ' (' + escapeHtml(e.name) + ')</option>';
+        }
+        
+        var modalHtml = 
+            '<div class="modal-overlay" id="createModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-plus-circle"></i> Create New Activity</h3>' +
+                        '<span class="modal-close" onclick="closeCreateModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div class="form-group">' +
+                            '<label>Equipment *</label>' +
+                            '<select id="create-equipment" onchange="onCreateEquipmentChange()">' +
+                                '<option value="">Select equipment...</option>' +
+                                equipOptions +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Instruction *</label>' +
+                            '<textarea id="create-instruction" rows="2" placeholder="Describe the activity..."></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Acceptance Standard</label>' +
+                            '<textarea id="create-standard" rows="2" placeholder="What does success look like?"></textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Est. Time (Hours) *</label>' +
+                            '<input type="number" id="create-time" step="0.25" min="0.25" max="24" value="0.5">' +
+                        '</div>' +
+                        '<div id="create-clone-section" class="clone-section" style="display: none;">' +
+                            '<h4><i class="fas fa-copy"></i> Clone this activity to:</h4>' +
+                            '<div id="create-clone-list"></div>' +
+                        '</div>' +
+                        '<div id="create-summary" class="summary-badge"></div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>' +
+                        '<button class="btn-primary" onclick="submitCreate()">Create Activity</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    async function onCreateEquipmentChange() {
+        var select = document.getElementById('create-equipment');
+        var selectedId = select.value;
+        var selectedOption = select.options[select.selectedIndex];
+        var selectedName = selectedOption?.getAttribute('data-name') || selectedId;
+        
+        if (!selectedId) {
+            document.getElementById('create-clone-section').style.display = 'none';
+            return;
+        }
+        
+        var cloneDiv = document.getElementById('create-clone-list');
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        document.getElementById('create-clone-section').style.display = 'block';
+        
+        try {
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [selectedName, currentContext.frequency, selectedId]);
+            currentCloneTargets = results || [];
+            renderCloneList('create-clone-list', currentCloneTargets, 'create');
+            updateCreateSummary();
+        } catch (e) {
+            console.error('Error loading clones:', e);
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+        }
+    }
+
+    function renderCloneList(containerId, targets, mode) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        
+        if (!targets || targets.length === 0) {
+            container.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No similar equipment found.</div>';
+            return;
+        }
+        
+        // ✅ Determinar qué función de resumen llamar según el modo
+        var summaryFn = mode === 'create' ? 'updateCreateSummary()' : 'updateEditSummary()';
+        
+        var sameTL = targets.filter(function(t) { return t.isSameTL; });
+        var otherTLs = targets.filter(function(t) { return !t.isSameTL; });
+        
+        var html = '';
+        
+        if (sameTL.length > 0) {
+            html += '<div class="clone-group">' +
+                '<div class="clone-group-title">📌 Same TL (' + escapeHtml(currentContext.assetId) + ')</div>';
+            for (var i = 0; i < sameTL.length; i++) {
+                var t = sameTL[i];
+                var globalIdx = targets.indexOf(t);
+                html += '<div class="clone-item">' +
+                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
+                    '<span>' + escapeHtml(t.name) + '</span>' +
+                '</div>';
+            }
+            html += '</div>';
+        }
+        
+        if (otherTLs.length > 0) {
+            var tlGroups = {};
+            for (var i = 0; i < otherTLs.length; i++) {
+                var t = otherTLs[i];
+                if (!tlGroups[t.tlId]) tlGroups[t.tlId] = { tlName: t.tlName, equipments: [] };
+                tlGroups[t.tlId].equipments.push(t);
+            }
+            
+            var tlKeys = Object.keys(tlGroups);
+            for (var i = 0; i < tlKeys.length; i++) {
+                var tlId = tlKeys[i];
+                var group = tlGroups[tlId];
+                html += '<div class="clone-group">' +
+                    '<div class="clone-group-title">🏭 ' + escapeHtml(group.tlName) + ' (' + escapeHtml(tlId) + ')</div>';
+                for (var j = 0; j < group.equipments.length; j++) {
+                    var t = group.equipments[j];
+                    var globalIdx = targets.indexOf(t);
+                    html += '<div class="clone-item">' +
+                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
+                        '<span>' + escapeHtml(t.id) + ' (' + escapeHtml(t.name) + ')</span>' +
+                    '</div>';
+                }
+                html += '</div>';
+            }
+        }
+        
+        container.innerHTML = html;
+    }
+
+    function updateCreateSummary() {
+        var checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
+        var selectedCount = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) selectedCount++;
+        }
+        var summary = document.getElementById('create-summary');
+        
+        // ✅ Verificar que summary existe antes de usarlo
+        if (!summary) return;
+        
+        if (selectedCount > 0) {
+            summary.style.display = 'block';
+            summary.innerHTML = '📊 Summary: Will create 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
+        } else {
+            summary.style.display = 'none';
+        }
+    }
+
+    async function submitCreate() {
+        var equipmentSelect = document.getElementById('create-equipment');
+        var selectedEquipmentId = equipmentSelect.value;
+        var selectedOption = equipmentSelect.options[equipmentSelect.selectedIndex];
+        var selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
+        var instruction = sanitizeInput(document.getElementById('create-instruction').value);
+        var standard = sanitizeInput(document.getElementById('create-standard').value);
+        var timeHr = document.getElementById('create-time').value;
+        
+        if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
+        if (!instruction) { showToast('Please enter instruction', 'error'); return; }
+        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
+        
+        var selectedEquipment = null;
+        for (var i = 0; i < equipmentList.length; i++) {
+            if (equipmentList[i].id === selectedEquipmentId) {
+                selectedEquipment = equipmentList[i];
+                break;
+            }
+        }
+        var selectedAssetId = selectedEquipment ? selectedEquipment.id : currentContext.assetId;
+        
+        var checkboxes = document.querySelectorAll('#create-clone-list input[type="checkbox"]');
+        var cloneTo = [];
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                cloneTo.push({
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
+                });
+            }
+        }
+        
+        var payload = {
+            assetId: selectedAssetId,
+            strategyId: currentContext.strategyId,
+            frequency: currentContext.frequency,
+            equipment: selectedEquipmentName,
+            instruction: instruction,
+            standard: standard,
+            timeHr: timeHr,
+            cloneTo: cloneTo
+        };
+        
+        showLoading('Creating activity...');
+        try {
+            var res = await callApi('PVT_createActivity', [payload]);
+            hideLoading();
+            if (res.status === 'success') {
+                showToast(res.message, 'success');
+                closeCreateModal();
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+            } else {
+                showToast('Error: ' + res.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function closeCreateModal() {
+        var modal = document.getElementById('createModal');
+        if (modal) modal.remove();
+    }
+
+    // ============================================
+    // EDIT MODAL
+    // ============================================
+    function openEditModal(task) {
+        currentEditTask = task;
+        currentEditCloneTargets = [];
+        
+        var equipOptions = '';
+        for (var i = 0; i < equipmentList.length; i++) {
+            var e = equipmentList[i];
+            var selected = e.name === task.equipment ? 'selected' : '';
+            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '" ' + selected + '>' + escapeHtml(e.name) + '</option>';
+        }
+        
+        var modalHtml = 
+            '<div class="modal-overlay" id="editModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-edit"></i> Edit Activity</h3>' +
+                        '<span class="modal-close" onclick="closeEditModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div class="form-group">' +
+                            '<label>Equipment *</label>' +
+                            '<select id="edit-equipment" onchange="onEditEquipmentChange()">' +
+                                equipOptions +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Instruction *</label>' +
+                            '<textarea id="edit-instruction" rows="2">' + escapeHtml(task.instruction) + '</textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Acceptance Standard</label>' +
+                            '<textarea id="edit-standard" rows="2">' + escapeHtml(task.standard || '') + '</textarea>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                            '<label>Est. Time (Hours) *</label>' +
+                            '<input type="number" id="edit-time" step="0.25" min="0.25" max="24" value="' + task.timeHr + '">' +
+                        '</div>' +
+                        '<div id="edit-clone-section" class="clone-section" style="display: none;">' +
+                            '<h4><i class="fas fa-copy"></i> Propagate this change to:</h4>' +
+                            '<div id="edit-clone-list"></div>' +
+                        '</div>' +
+                        '<div id="edit-summary" class="summary-badge"></div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeEditModal()">Cancel</button>' +
+                        '<button class="btn-primary" onclick="submitEdit()">Save Changes</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        setTimeout(function() { onEditEquipmentChange(); }, 100);
+    }
+
+    async function onEditEquipmentChange() {
+        var select = document.getElementById('edit-equipment');
+        var selectedOption = select.options[select.selectedIndex];
+        var equipment = selectedOption?.getAttribute('data-name') || select.value;
+        var selectedEquipmentId = select.value;  // ✅ Obtener el ID del equipo seleccionado
+        
+        if (!equipment) {
+            document.getElementById('edit-clone-section').style.display = 'none';
+            return;
+        }
+        
+        var cloneDiv = document.getElementById('edit-clone-list');
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        document.getElementById('edit-clone-section').style.display = 'block';
+        
+        try {
+            // ✅ Usar selectedEquipmentId (el equipo actual) como tercer parámetro
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, selectedEquipmentId]);
+            currentEditCloneTargets = results || [];
+            renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
+            updateEditSummary();
+        } catch (e) {
+            console.error('Error loading clones:', e);
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+        }
+    }
+
+    function updateEditSummary() {
+        var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
+        var selectedCount = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) selectedCount++;
+        }
+        var summary = document.getElementById('edit-summary');
+        
+        // ✅ Verificar que summary existe antes de usarlo
+        if (!summary) return;
+        
+        if (selectedCount > 0) {
+            summary.style.display = 'block';
+            summary.innerHTML = '📊 Summary: Will update 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
+        } else {
+            summary.style.display = 'none';
+        }
+    }
+
+    async function submitEdit() {
+        var select = document.getElementById('edit-equipment');
+        var selectedEquipmentId = select.value;
+        var selectedOption = select.options[select.selectedIndex];
+        var selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
+        var instruction = sanitizeInput(document.getElementById('edit-instruction').value);
+        var standard = sanitizeInput(document.getElementById('edit-standard').value);
+        var timeHr = document.getElementById('edit-time').value;
+        
+        if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
+        if (!instruction) { showToast('Please enter instruction', 'error'); return; }
+        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
+        
+        var propagateTo = [];
+        var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                propagateTo.push({
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
+                });
+            }
+        }
+        
+        var payload = {
+            originalAssetId: currentEditTask.assetId || currentContext.assetId,  // ✅ Usar assetId de la tarea
+            originalStrategyId: currentContext.strategyId,
+            originalEquipment: currentEditTask.equipment,
+            originalInstruction: currentEditTask.instruction,
+            assetId: currentEditTask.assetId || currentContext.assetId,          // ✅ Usar assetId de la tarea
+            strategyId: currentContext.strategyId,
+            frequency: currentContext.frequency,
+            equipment: selectedEquipmentName,
+            instruction: instruction,
+            standard: standard,
+            timeHr: timeHr,
+            propagateTo: propagateTo
+        };
+        
+        showLoading('Updating activity...');
+        try {
+            var res = await callApi('PVT_updateActivity', [payload]);
+            hideLoading();
+            if (res.status === 'success') {
+                showToast(res.message, 'success');
+                closeEditModal();
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+            } else {
+                showToast('Error: ' + res.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function closeEditModal() {
+        var modal = document.getElementById('editModal');
+        if (modal) modal.remove();
+    }
+
+    // ============================================
+    // ORPHAN ACTIVITIES FUNCTIONS
+    // ============================================
+
+    var orphanData = [];
+
+    async function openOrphanModal() {
+        var modal = document.getElementById('orphanModal');
+        if (!modal) return;
+        
+        modal.style.display = 'flex';
+        document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Loading orphan activities...</div>';
+        
+        try {
+            var result = await callApi('PVT_getOrphanActivitiesForTL', [currentContext.assetId]);
+            if (result.status === 'success') {
+                orphanData = result.orphans || [];
+                var activeStrategies = result.activeStrategies || [];
+                
+                if (orphanData.length === 0) {
+                    document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 30px; color: #22c55e;"><i class="fas fa-check-circle" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i> No orphan activities found for this TL.</div>';
+                    return;
+                }
+                
+                renderOrphanList(orphanData, activeStrategies);
+            } else {
+                document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">Error: ' + escapeHtml(result.message || 'Unknown error') + '</div>';
+            }
+        } catch (e) {
+            document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">Error: ' + escapeHtml(e.message) + '</div>';
+        }
+    }
+
+    function renderOrphanList(orphans, activeStrategies) {
+        var container = document.getElementById('orphanListContainer');
+        
+        var html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">';
+        html += '<thead><tr style="background: #f8fafc; border-bottom: 2px solid #1a1a2e;">' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Asset</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Instruction</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Current Strategy</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Reassign To</th>' +
+            '<th style="padding: 8px 10px; text-align: center; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Actions</th>' +
+        '</tr></thead><tbody>';
+        
+        for (var i = 0; i < orphans.length; i++) {
+            var o = orphans[i];
+            var stratOptions = '';
+            for (var j = 0; j < activeStrategies.length; j++) {
+                var sel = (activeStrategies[j] === o.strategyId) ? 'selected' : '';
+                stratOptions += '<option value="' + escapeHtml(activeStrategies[j]) + '" ' + sel + '>' + escapeHtml(activeStrategies[j]) + '</option>';
+            }
+            
+            html += '<tr style="border-bottom: 1px solid #e2e8f0;">' +
+                '<td style="padding: 8px 10px;">' + escapeHtml(o.assetId) + '<br><span style="font-size:0.6rem; color:#64748b;">' + escapeHtml(o.equipment) + '</span></td>' +
+                '<td style="padding: 8px 10px; max-width: 180px;">' + escapeHtml(o.instruction) + '</td>' +
+                '<td style="padding: 8px 10px;"><span class="badge" style="background:#fef2f2; color:#dc3545; padding:2px 8px; border-radius:4px; font-size:0.65rem;">' + escapeHtml(o.strategyId) + '</span></td>' +
+                '<td style="padding: 8px 10px;">' +
+                    '<select id="orphan-select-' + i + '" style="padding:4px 8px; border:1px solid #e2e8f0; border-radius:4px; font-size:0.7rem; width:100%;">' +
+                        stratOptions +
+                    '</select>' +
+                '</td>' +
+                '<td style="padding: 8px 10px; text-align: center;">' +
+                    '<button class="btn-primary" style="font-size:0.6rem; padding:4px 10px; background:#1a1a2e;" onclick="reassignOrphan(' + i + ')"><i class="fas fa-check"></i> Reassign</button> ' +
+                    '<button class="btn-danger" style="font-size:0.6rem; padding:4px 10px;" onclick="deleteOrphan(' + i + ')"><i class="fas fa-trash"></i></button>' +
+                '</td>' +
+            '</tr>';
+        }
+        
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    async function reassignOrphan(index) {
+        var orphan = orphanData[index];
+        if (!orphan) return;
+        
+        var select = document.getElementById('orphan-select-' + index);
+        if (!select) return;
+        
+        var newStrategyId = select.value;
+        if (newStrategyId === orphan.strategyId) {
+            showToast('Same strategy selected. No changes made.', 'warning');
+            return;
+        }
+        
+        if (!confirm('Reassign "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.strategyId + ' to ' + newStrategyId + '?')) {
+            return;
+        }
+        
+        showLoading('Reassigning activity...');
+        try {
+            var payload = {
+                assetId: orphan.assetId,
+                oldStrategyId: orphan.strategyId,
+                newStrategyId: newStrategyId,
+                equipment: orphan.equipment,
+                instruction: orphan.instruction,
+                frequency: null // Will be updated from the new strategy
+            };
+            
+            var result = await callApi('PVT_reassignOrphanActivity', [payload]);
+            hideLoading();
+            if (result.status === 'success') {
+                showToast(result.message, 'success');
+                // Refresh orphan list and activities
+                openOrphanModal();
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+            } else {
+                showToast('Error: ' + result.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    async function deleteOrphan(index) {
+        var orphan = orphanData[index];
+        if (!orphan) return;
+        
+        if (!confirm('Delete orphan activity: "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.assetId + '?')) {
+            return;
+        }
+        
+        showLoading('Deleting activity...');
+        try {
+            var payload = {
+                assetId: orphan.assetId,
+                strategyId: orphan.strategyId,
+                equipment: orphan.equipment,
+                instruction: orphan.instruction
+            };
+            
+            var result = await callApi('PVT_deleteOrphanActivity', [payload]);
+            hideLoading();
+            if (result.status === 'success') {
+                showToast(result.message, 'success');
+                // Refresh orphan list and activities
+                openOrphanModal();
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+            } else {
+                showToast('Error: ' + result.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function closeOrphanModal() {
+        var modal = document.getElementById('orphanModal');
+        if (modal) modal.style.display = 'none';
+    }    
+
+    // ============================================
+    // DELETE MODAL
+    // ============================================
+    function openDeleteModal(task) {
+        currentDeleteTask = task;
+        currentDeleteCloneTargets = [];
+        
+        var modalHtml = 
+            '<div class="modal-overlay" id="deleteModal">' +
+                '<div class="modal-container">' +
+                    '<div class="modal-header">' +
+                        '<h3><i class="fas fa-trash-alt" style="color: #dc3545;"></i> Delete Activity</h3>' +
+                        '<span class="modal-close" onclick="closeDeleteModal()">&times;</span>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                        '<div style="background: #fef2f2; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif; font-size:0.8rem;">' +
+                            '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Are you sure you want to delete:<br>' +
+                            '<strong>' + escapeHtml(task.equipment) + ' | ' + escapeHtml(task.instruction) + ' | ' + task.timeHr + ' hrs</strong>' +
+                        '</div>' +
+                        '<div id="delete-clone-section" class="clone-section">' +
+                            '<h4><i class="fas fa-copy"></i> Also delete from:</h4>' +
+                            '<div id="delete-clone-list"><div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                        '<button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>' +
+                        '<button class="btn-danger" onclick="submitDelete()">Delete Activity</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        (async function() {
+            try {
+                var results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, currentContext.assetId]);
+                currentDeleteCloneTargets = results || [];
+                renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
+            } catch (e) {
+                console.error('Error loading clones for delete:', e);
+                var container = document.getElementById('delete-clone-list');
+                if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+            }
+        })();
+    }
+
+    // ============================================
+    // REFRESH MODULE
+    // ============================================
+    function refreshModule() {
+        // Si está en modo editor, preguntar antes de salir
+        if (isInEditorMode) {
+            if (confirm('You are currently editing an activity. Refreshing will take you back to the results view. Continue?')) {
+                backToResults();
+                // Recargar árbol y dashboard
+                loadHierarchyTree();
+                updateDashboard();
+                document.getElementById('search-input').value = '';
+                showToast('Module refreshed successfully ✅', 'success');
+            }
+        } else {
+            // Recargar árbol y dashboard
+            loadHierarchyTree();
+            updateDashboard();
+            document.getElementById('search-input').value = '';
+            // Ocultar resultados
+            document.getElementById('resultsTable').style.display = 'none';
+            document.getElementById('noResultsMsg').style.display = 'block';
+            showToast('Module refreshed successfully ✅', 'success');
+        }
+    }
+
+    async function submitDelete() {
+        var deleteFrom = [];
+        var checkboxes = document.querySelectorAll('#delete-clone-list input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                deleteFrom.push({
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
+                });
+            }
+        }
+        
+        var payload = {
+            originalAssetId: currentContext.assetId,
+            originalStrategyId: currentContext.strategyId,
+            originalEquipment: currentDeleteTask.equipment,
+            originalInstruction: currentDeleteTask.instruction,
+            deleteFrom: deleteFrom
+        };
+        
+        showLoading('Deleting activity...');
+        try {
+            var res = await callApi('PVT_deleteActivity', [payload]);
+            hideLoading();
+            if (res.status === 'success') {
+                showToast(res.message, 'success');
+                closeDeleteModal();
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+            } else {
+                showToast('Error: ' + res.message, 'error');
+            }
+        } catch (e) {
+            hideLoading();
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function closeDeleteModal() {
+        var modal = document.getElementById('deleteModal');
+        if (modal) modal.remove();
+    }
+
+    // ============================================
+    // EXPORT GLOBAL FUNCTIONS
+    // ============================================
+    window.selectTL = selectTL;
+    window.toggleArea = toggleArea;
+    window.selectFromTree = selectFromTree;
+    window.renderCloneList = renderCloneList;
+    window.updateCreateSummary = updateCreateSummary;
+    window.updateEditSummary = updateEditSummary;
+    window.executeSearch = executeSearch;
+    window.loadStrategy = loadStrategy;
+    window.backToResults = backToResults;
+    window.openCreateModal = openCreateModal;
+    window.onCreateEquipmentChange = onCreateEquipmentChange;
+    window.submitCreate = submitCreate;
+    window.closeCreateModal = closeCreateModal;
+    window.openEditModal = openEditModal;
+    window.onEditEquipmentChange = onEditEquipmentChange;
+    window.submitEdit = submitEdit;
+    window.closeEditModal = closeEditModal;
+    window.openDeleteModal = openDeleteModal;
+    window.submitDelete = submitDelete;
+    window.closeDeleteModal = closeDeleteModal;
+
+    // ============================================
+    // EVENTOS - AUTOCOMPLETE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                getSuggestions(e.target.value);
+            });
+        }
+        
+        document.addEventListener('click', function(e) {
+            var suggestions = document.getElementById('suggestions');
+            var input = document.getElementById('search-input');
+            if (suggestions && input && !suggestions.contains(e.target) && e.target !== input) {
+                suggestions.style.display = 'none';
+            }
+        });
+    });
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+</script>
+</body>
+</html>
