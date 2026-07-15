@@ -833,6 +833,7 @@
           var showAll = currentData.showAll || false;
           callApi('STK_getOptimizationsData', [showAll ? 0 : 20, 0, showAll]).then(function(optData) {
               if (optData && !optData.error) {
+                  // ✅ GUARDAR CORRECTAMENTE
                   currentData.stockOptimizations = optData;
                   currentData.totalOptimizations = optData.length || 0;
                   cachedData.optimizeLoaded = true;
@@ -856,6 +857,7 @@
           var showAll = currentData.showAll || false;
           callApi('STK_getObsoletePartsData', [showAll ? 0 : 20, 0, showAll]).then(function(obsData) {
               if (obsData && !obsData.error) {
+                  // ✅ GUARDAR CORRECTAMENTE
                   currentData.obsoleteParts = obsData;
                   currentData.totalObsolete = obsData.parts?.length || 0;
                   cachedData.obsoleteLoaded = true;
@@ -880,7 +882,7 @@
       await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
       
       try {
-          // ✅ Cargar Summary (siempre)
+          // ✅ Cargar Summary
           var summary = await callApi('STK_getSummaryData', []);
           if (!summary || summary.error) {
               showToast(summary?.error || 'Error loading summary', 'error');
@@ -888,7 +890,7 @@
               return;
           }
           
-          // ✅ Cargar Pending POs (Tab 1)
+          // ✅ Cargar Pending POs
           var pendingData = await callApi('STK_getPendingPOsData', [showAll ? 0 : 20, 0, showAll]);
           if (!pendingData || pendingData.error) {
               showToast(pendingData?.error || 'Error loading POs', 'error');
@@ -896,24 +898,11 @@
               return;
           }
           
-          // ✅ Cargar Alerts (Tab 2) - en segundo plano
-          setTimeout(async function() {
-              alertsData = await callApi('STK_getAlertsData', []);
-              if (alertsData && !alertsData.error) {
-                  currentData.alerts = alertsData;  // ← ACTUALIZAR currentData
-                  cachedData.alertsData = alertsData;
-                  cachedData.alertsLoaded = true;
-                  if (document.querySelector('.tab-btn[data-tab="alerts"]').classList.contains('active')) {
-                      renderAlertsTab(alertsData);
-                  }
-              }
-          }, 300);
-          
-          // ✅ Guardar en currentData
+          // ✅ Guardar en currentData (inicial)
           currentData = {
               summary: summary,
               pendingPOs: pendingData,
-              alerts: { overduePOs: [], outOfStockCritical: [] },  // ← Inicializar vacío
+              alerts: { overduePOs: [], outOfStockCritical: [] },
               stockOptimizations: [],
               obsoleteParts: { parts: [], totalValue: 0 },
               totalPending: pendingData.length || 0,
@@ -936,6 +925,24 @@
           
           hideLoading();
           showToast('Inventory Foresight loaded successfully ✅', 'success');
+          
+          // ✅ Cargar Alerts en segundo plano
+          setTimeout(async function() {
+              try {
+                  var alertsData = await callApi('STK_getAlertsData', []);
+                  if (alertsData && !alertsData.error) {
+                      currentData.alerts = alertsData;
+                      cachedData.alertsData = alertsData;
+                      cachedData.alertsLoaded = true;
+                      renderSummaryCards(currentData);  // ← ACTUALIZAR TARJETAS
+                      if (document.querySelector('.tab-btn[data-tab="alerts"]').classList.contains('active')) {
+                          renderAlertsTab(alertsData);
+                      }
+                  }
+              } catch(e) {
+                  console.warn('[STK] Error loading alerts in background:', e);
+              }
+          }, 300);
           
           await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (summary.totalSKUs || 0) + ', Pending POs: ' + (pendingData?.length || 0));
       } catch (error) {
@@ -1043,22 +1050,15 @@
     }
     
     // ✅ Mostrar la fecha REAL
-    var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Expected Delivery Date</th><th>Status</th></tr></thead><tbody>';
-    
+    var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Days Until Expected</th><th>Status</th></tr></thead><tbody>';
+
     for (var i = 0; i < filtered.length; i++) {
-      var po = filtered[i];
-      var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
-      
-      // ✅ Formatear fecha a YYYY-MM-DD
-      var expectedDate = '--';
-      if (po.expectedDate) {
-        var d = new Date(po.expectedDate);
-        if (!isNaN(d.getTime())) {
-          expectedDate = d.toISOString().split('T')[0];
-        }
-      }
-      
-      html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + expectedDate + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
+        var po = filtered[i];
+        var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
+        
+        var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
+        
+        html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + daysUntilExpected + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
     }
     
     html += '</tbody></table></div>';
