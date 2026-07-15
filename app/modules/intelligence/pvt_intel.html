@@ -664,15 +664,10 @@
 
               <!-- TAB 3: ALERTS -->
               <div id="alerts-tab" class="tab-pane">
-                  <div class="card-container">
-                      <div class="card-header">🚨 PMs executed but failures continue</div>
-                      <div class="card-body" id="alertsEffectivenessContent"></div>
-                  </div>
-
-                  <div class="card-container">
-                      <div class="card-header">🚨 Components failing without PM</div>
-                      <div class="card-body" id="alertsFailingContent"></div>
-                  </div>
+                <div class="card-container">
+                  <div class="card-header">🚨 Recommendations</div>
+                  <div class="card-body" id="recommendationsContent"></div>
+                </div>
               </div>
               <!-- FIN TAB 3 -->
 
@@ -851,9 +846,7 @@
   // ============================================
   var duplicateData = [];
   var coverageData = [];
-  var orphanData = {};
-  var effectivenessData = [];
-  var failingData = [];
+  var orphanData = [];
 
   var cachedData = {
     orphansLoaded: false,
@@ -889,70 +882,53 @@
 
   async function loadAlerts() {
     try {
-      // Cargar effectiveness para alerts
-      var effectiveness = await callApi('pvtGetPMEffectiveness', []);
-      renderAlertsEffectiveness(Array.isArray(effectiveness) ? effectiveness : []);
-      
-      // Cargar failing para alerts
-      var failing = await callApi('pvtGetFailingComponents', []);
-      renderAlertsFailing(Array.isArray(failing) ? failing : []);
-      
+      var recommendations = await callApi('pvtGetRecommendations', []);
+      renderRecommendations(Array.isArray(recommendations) ? recommendations : []);
       cachedData.alertsLoaded = true;
     } catch (error) {
-      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading alerts: ' + error.message + '</div>';
-      showToast('Error loading alerts', 'error');
+      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading recommendations: ' + error.message + '</div>';
+      showToast('Error loading recommendations', 'error');
     }
-  }  
-
-  function renderAlertsEffectiveness(data) {
-    var container = document.getElementById('alertsEffectivenessContent');
-    if (!data || data.length === 0) {
-      container.innerHTML = '<div style="padding: 20px;">✅ No ineffective PMs found</div>';
-      return;
-    }
-    
-    var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Component</th><th>TL</th><th>Criticality</th><th>Frequency</th><th>Failures</th><th>MTBF</th><th>Suggestion</th></tr>';
-    html += '</thead><tbody>';
-    
-    for (var i = 0; i < data.length; i++) {
-      var item = data[i];
-      var severityClass = 'adk-badge-success';
-      if (item.severity === 'high') severityClass = 'adk-badge-danger';
-      else if (item.severity === 'medium') severityClass = 'adk-badge-warning';
-      
-      html += '<tr><td class="col-code">' + escapeHtml(item.componentId) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge ' + severityClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td><td><span class="badge adk-badge-primary">' + escapeHtml(item.frequency) + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td class="col-suggestion">' + escapeHtml(item.suggestion) + '</td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    container.innerHTML = html;
   }
 
-  function renderAlertsFailing(data) {
-    var container = document.getElementById('alertsFailingContent');
+  function renderRecommendations(data) {
+    var container = document.getElementById('recommendationsContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div style="padding: 20px;">✅ No failing components without PM found</div>';
+      container.innerHTML = '<div style="padding: 20px;">✅ No recommendations at this time</div>';
       return;
     }
     
-    var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Failures</th><th>MTBF</th><th>Suggested Freq</th></tr>';
-    html += '</thead><tbody>';
+    var html = '<div class="table-wrapper"><table><thead><tr>';
+    html += '<th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Issue</th><th>Recommendation</th><th>Failures (90d)</th>';
+    html += '</tr></thead><tbody>';
     
     for (var i = 0; i < data.length; i++) {
       var item = data[i];
+      
       var priorityClass = 'adk-badge-success';
       if (item.priority === 'CRITICAL') priorityClass = 'adk-badge-danger';
       else if (item.priority === 'HIGH') priorityClass = 'adk-badge-warning';
       else if (item.priority === 'MEDIUM') priorityClass = 'adk-badge-warning';
       
-      html += '<tr><td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td><td class="col-code">' + escapeHtml(item.componentName) + '</td><td class="col-code">' + escapeHtml(item.tlId) + '</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.criticality || 'C') + '</span></td><td>' + item.failures + '</td><td>' + item.mtbfDays + ' days</td><td><span class="badge adk-badge-primary">' + escapeHtml(item.suggestedFrequency) + '</span></td></tr>';
+      var critClass = 'adk-badge-success';
+      if (item.criticality === 'A - CRITICAL') critClass = 'adk-badge-danger';
+      else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
+      
+      html += '<tr>';
+      html += '<td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td>';
+      html += '<td class="col-code">' + escapeHtml(item.componentName) + '</td>';
+      html += '<td class="col-code">' + escapeHtml(item.tlId) + '</td>';
+      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td>';
+      html += '<td>' + escapeHtml(item.issueType) + '</td>';
+      html += '<td class="col-suggestion">' + escapeHtml(item.recommendation) + '</td>';
+      html += '<td><span class="badge adk-badge-warning">' + item.failures + '</span></td>';
+      html += '</tr>';
     }
     
     html += '</tbody></table></div>';
     container.innerHTML = html;
-  }  
-  
+  } 
+ 
   // ============================================
   // LOAD DATA FUNCTIONS
   // ============================================
@@ -1129,16 +1105,12 @@
   
   async function loadAlerts() {
     try {
-      var effectiveness = await callApi('pvtGetPMEffectiveness', []);
-      renderAlertsEffectiveness(Array.isArray(effectiveness) ? effectiveness : []);
-      
-      var failing = await callApi('pvtGetFailingComponents', []);
-      renderAlertsFailing(Array.isArray(failing) ? failing : []);
-      
+      var recommendations = await callApi('pvtGetRecommendations', []);
+      renderRecommendations(Array.isArray(recommendations) ? recommendations : []);
       cachedData.alertsLoaded = true;
     } catch (error) {
-      document.getElementById('alertsEffectivenessContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading alerts: ' + error.message + '</div>';
-      showToast('Error loading alerts', 'error');
+      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading recommendations: ' + error.message + '</div>';
+      showToast('Error loading recommendations', 'error');
     }
   }
 
