@@ -1047,7 +1047,7 @@
     for (var i = 0; i < filtered.length; i++) {
       var po = filtered[i];
       var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
-      html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + po.expectedDays + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td><td>' + escapeHtml(po.itemsSummary) + '</td></tr>';
+      html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + (po.expectedDays || '--') + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td><td>' + escapeHtml(po.itemsSummary) + '</td></tr>';
     }
     
     html += '</tbody></table></div>';
