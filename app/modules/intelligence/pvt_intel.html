@@ -1215,28 +1215,41 @@
       
       logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
       
-      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Count</th><th>Type</th></tr></thead><tbody>';
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequencies</th><th>Strategies</th><th>Count</th></tr></thead><tbody>';
       
       for (var i = 0; i < duplicateData.length; i++) {
           var d = duplicateData[i];
           
-          var typeLabel = d.type === 'duplicate_across_strategies' 
-              ? '<span style="color: #f59e0b;">⚠️ Different Strategies</span>' 
-              : '<span style="color: #ef4444;">⚠️ Same Strategy</span>';
+          // Determinar color de fondo según severidad
+          var severityLabel = d.severity === '🔴' 
+              ? '<span style="color: #ef4444; font-weight: bold;">🔴 Duplicate</span>' 
+              : '<span style="color: #f59e0b; font-weight: bold;">🟡 Redundant</span>';
           
-          var stratDisplay = d.strategies ? d.strategies.join(' | ') : '-';
+          var freqDisplay = d.frequencies ? d.frequencies.join(', ') : '-';
+          var stratDisplay = d.strategies ? d.strategies.join(', ') : '-';
           
           modalHtml += '<tr>' +
+              '<td>' + severityLabel + '</td>' +
               '<td class="col-code">' + escapeHtml(d.assetId) + '</td>' +
               '<td class="col-code">' + escapeHtml(d.tlId || 'Unknown') + '</td>' +
-              '<td><span class="badge adk-badge-primary">' + escapeHtml(d.frequency) + '</span></td>' +
               '<td class="col-task">' + escapeHtml(d.task) + '</td>' +
+              '<td><span class="badge adk-badge-primary">' + escapeHtml(freqDisplay) + '</span></td>' +
+              '<td><span class="badge adk-badge-info">' + escapeHtml(stratDisplay) + '</span></td>' +
               '<td><span class="badge adk-badge-warning">' + d.count + 'x</span></td>' +
-              '<td>' + typeLabel + '</td>' +
           '</tr>';
       }
       
-      modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and remove duplicate tasks. Keep only one version.</div></div></div></div>';
+      modalHtml += '</tbody></table></div>';
+      
+      // Agregar leyenda de colores
+      modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.05); border-radius: 8px; border: 1px solid #334155; display: flex; gap: 20px; flex-wrap: wrap;">';
+      modalHtml += '<div><span style="color: #ef4444;">🔴</span> <strong>Duplicate:</strong> Same task, same frequency, same asset</div>';
+      modalHtml += '<div><span style="color: #f59e0b;">🟡</span> <strong>Redundant:</strong> Same task, same asset, different frequencies</div>';
+      modalHtml += '</div>';
+      
+      modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and remove duplicate/redundant tasks. Keep only one version.</div>';
+      
+      modalHtml += '</div></div></div>';
       
       var modalDiv = document.createElement('div');
       modalDiv.innerHTML = modalHtml;
