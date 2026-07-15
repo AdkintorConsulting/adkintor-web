@@ -1211,31 +1211,46 @@
   }
   
   function showDuplicatesModal() {
-    if (!duplicateData || duplicateData.length === 0) return;
-    
-    logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
-    
-    var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times in the same frequency:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Strategies</th></tr></thead><tbody>';
-    
-    for (var i = 0; i < duplicateData.length; i++) {
-      var d = duplicateData[i];
-      var stratDisplay = d.frequencies.map(function(f) {
-        return f.strategyId;
-      }).join(' | ');
-      modalHtml += '<tr>';
-      modalHtml += '<td class="col-code">' + escapeHtml(d.assetId) + '</td>';
-      modalHtml += '<td class="col-code">' + escapeHtml(d.tlId) + '</td>';
-      modalHtml += '<td><span class="badge adk-badge-primary">' + escapeHtml(d.frequency) + '</span></td>';
-      modalHtml += '<td class="col-task">' + escapeHtml(d.task) + '</td>';
-      modalHtml += '<td>' + escapeHtml(stratDisplay) + '</td>';
-      modalHtml += '</tr>';
-    }
-    
-    modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(255,82,82,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and unify duplicate tasks in the same frequency into a single strategy.</div></div></div></div>';
-    
-    var modalDiv = document.createElement('div');
-    modalDiv.innerHTML = modalHtml;
-    document.body.appendChild(modalDiv);
+      if (!duplicateData || duplicateData.length === 0) return;
+      
+      logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
+      
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Asset ID</th><th>TL</th><th>Frequency</th><th>Task</th><th>Type</th><th>Details</th></tr></thead><tbody>';
+      
+      for (var i = 0; i < duplicateData.length; i++) {
+          var d = duplicateData[i];
+          
+          // ✅ Mostrar el tipo
+          var typeLabel = d.type === 'duplicate_across_strategies' 
+              ? '<span style="color: #f59e0b;">⚠️ Different Strategies</span>' 
+              : '<span style="color: #ef4444;">⚠️ Same Strategy</span>';
+          
+          var stratDisplay = '';
+          if (d.frequencies && d.frequencies.length > 0) {
+              stratDisplay = d.frequencies.map(function(f) {
+                  return f.strategyId + ' → ' + f.frequency;
+              }).join(' | ');
+          } else if (d.strategies) {
+              stratDisplay = d.strategies.join(' | ');
+          } else {
+              stratDisplay = d.strategyId || '-';
+          }
+          
+          modalHtml += '<tr>' +
+              '<td class="col-code">' + escapeHtml(d.assetId) + '</td>' +
+              '<td class="col-code">' + escapeHtml(d.tlId || 'Unknown') + '</td>' +
+              '<td><span class="badge adk-badge-primary">' + escapeHtml(d.frequency) + '</span></td>' +
+              '<td class="col-task">' + escapeHtml(d.task) + '</td>' +
+              '<td>' + typeLabel + '</td>' +
+              '<td>' + escapeHtml(stratDisplay) + '</td>' +
+          '</tr>';
+      }
+      
+      modalHtml += '</tbody></table></div><div style="margin-top: 20px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and remove duplicate tasks. Keep only one version.</div></div></div></div>';
+      
+      var modalDiv = document.createElement('div');
+      modalDiv.innerHTML = modalHtml;
+      document.body.appendChild(modalDiv);
   }
   
   function closeDuplicatesModal(event) {
