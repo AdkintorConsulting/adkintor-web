@@ -546,9 +546,9 @@
       <!-- Tabs -->
       <div class="tabs">
         <button class="tab-btn" data-tab="pending">📦 Pending POs</button>
+        <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
         <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
         <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
-        <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
       </div>
 
       <!-- Botones debajo de tabs -->
@@ -566,36 +566,36 @@
       </div>
       
       <div class="content-panel">
-        <!-- TAB 1: ALERTS -->
-        <div id="alerts-tab" class="tab-pane active">
-          <div class="card-container">
-            <div class="card-header">⚠️ Critical Alerts</div>
-            <div class="card-body" id="alertsContent"></div>
-          </div>
+        <!-- TAB 1: PENDING POs -->
+        <div id="pending-tab" class="tab-pane active">
+            <div class="card-container">
+                <div class="card-header">📦 Pending Purchase Orders</div>
+                <div class="card-body" id="pendingPOsContent"></div>
+            </div>
         </div>
-        
-        <!-- TAB 2: PENDING POs -->
-        <div id="pending-tab" class="tab-pane">
-          <div class="card-container">
-            <div class="card-header">📦 Pending Purchase Orders</div>
-            <div class="card-body" id="pendingPOsContent"></div>
-          </div>
+
+        <!-- TAB 2: ALERTS -->
+        <div id="alerts-tab" class="tab-pane">
+            <div class="card-container">
+                <div class="card-header">⚠️ Critical Alerts</div>
+                <div class="card-body" id="alertsContent"></div>
+            </div>
         </div>
-        
+
         <!-- TAB 3: OPTIMIZE STOCK -->
         <div id="optimize-tab" class="tab-pane">
-          <div class="card-container">
-            <div class="card-header">📊 Stock Optimization Suggestions</div>
-            <div class="card-body" id="optimizationContent"></div>
-          </div>
+            <div class="card-container">
+                <div class="card-header">📊 Stock Optimization Suggestions</div>
+                <div class="card-body" id="optimizationContent"></div>
+            </div>
         </div>
-        
+
         <!-- TAB 4: OBSOLETE PARTS -->
         <div id="obsolete-tab" class="tab-pane">
-          <div class="card-container">
-            <div class="card-header">🗑️ Obsolete Parts</div>
-            <div class="card-body" id="obsoleteContent"></div>
-          </div>
+            <div class="card-container">
+                <div class="card-header">🗑️ Obsolete Parts</div>
+                <div class="card-body" id="obsoleteContent"></div>
+            </div>
         </div>
       </div>
     </div>
@@ -775,7 +775,7 @@
   var obsoletePartsData = [];
   
   var cachedData = {
-      pendingLoaded: false,
+      alertsLoaded: false,
       optimizeLoaded: false,
       obsoleteLoaded: false
   };
@@ -800,16 +800,28 @@
       }
       
       // ✅ Carga bajo demanda con spinner
-      if (tabId === 'pending' && !cachedData.pendingLoaded) {
-          document.getElementById('pendingPOsContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading pending POs...</p></div>';
-          renderPendingPOSTab(currentData.pendingPOs);
-          cachedData.pendingLoaded = true;
+      if (tabId === 'alerts' && !cachedData.alertsLoaded) {
+          document.getElementById('alertsContent').innerHTML = 
+              '<div style="padding: 30px; text-align: center;">' +
+                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
+                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading alerts...</p>' +
+              '</div>';
+          renderAlertsTab(currentData.alerts);
+          cachedData.alertsLoaded = true;
       } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
-          document.getElementById('optimizationContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p></div>';
+          document.getElementById('optimizationContent').innerHTML = 
+              '<div style="padding: 30px; text-align: center;">' +
+                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
+                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p>' +
+              '</div>';
           renderOptimizationTab(currentData.stockOptimizations, currentData.config);
           cachedData.optimizeLoaded = true;
       } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
-          document.getElementById('obsoleteContent').innerHTML = '<div style="padding: 30px; text-align: center;"><div class="loading-spinner" style="margin: 0 auto;"></div><p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p></div>';
+          document.getElementById('obsoleteContent').innerHTML = 
+              '<div style="padding: 30px; text-align: center;">' +
+                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
+                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p>' +
+              '</div>';
           renderObsoleteTab(currentData.obsoleteParts, currentData.config);
           cachedData.obsoleteLoaded = true;
       }
@@ -818,14 +830,13 @@
   // ============================================
   // DATA LOADING FUNCTIONS
   // ============================================
-  async function refreshAllData(showAll = false, offset = 0) {
-    showLoading('Loading inventory data...');
-    
-    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
-    
-    try {
-      var limit = showAll ? 9999 : 10;
-      var data = await callApi('STK_getIntelligenceData', [limit, offset, showAll]);
+  async function refreshAllData(showAll = false) {
+      showLoading('Loading inventory data...');
+      
+      await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
+      
+      try {
+          var data = await callApi('STK_getIntelligenceData', [showAll]);
           
           if (!data || data.error) {
               showToast(data?.error || 'No data received', 'error');
@@ -836,16 +847,26 @@
           currentData = data;
           
           cachedData = {
-              pendingLoaded: false,
+              alertsLoaded: false,
               optimizeLoaded: false,
               obsoleteLoaded: false
           };
           
           renderSummaryCards(data);
-          renderAlertsTab(data.alerts);
+          
+          // ✅ SOLO Pending POs (tab 1)
+          renderPendingPOSTab(data.pendingPOs);
           
           hideLoading();
           showToast('Inventory Foresight loaded successfully ✅', 'success');
+          
+          // ✅ Carga en segundo plano: Alerts (tab 2)
+          setTimeout(function() {
+              if (data.alerts) {
+                  renderAlertsTab(data.alerts);
+                  cachedData.alertsLoaded = true;
+              }
+          }, 500);
           
           await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (data.summary?.totalSKUs || 0) + ', Pending POs: ' + (data.pendingPOs?.length || 0));
       } catch (error) {
@@ -909,7 +930,7 @@
           return;
       }
       
-      console.log('[STK] totalPending:', currentData?.totalPending);
+      var totalPending = currentData?.totalPending || pendingPOsData.length;
       var showAll = currentData?.showAll || false;
       var showingCount = pendingPOsData.length;
       
@@ -917,7 +938,7 @@
       
       // ✅ Botón Show All
       if (!showAll && totalPending > showingCount) {
-          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalPending + ')</button>';
+          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All (' + totalPending + ')</button>';
       }
       html += '</div><div id="pendingPOsTable"></div>';
       
@@ -931,7 +952,7 @@
       var showAllBtn = document.getElementById('showAllPendingBtn');
       if (showAllBtn) {
           showAllBtn.addEventListener('click', function() { 
-              refreshAllData(true, 0); 
+              refreshAllData(true); 
           });
       }
       
@@ -964,7 +985,7 @@
     html += '</tbody></table></div>';
     document.getElementById('pendingPOsTable').innerHTML = html;
   }
-  
+
   function renderOptimizationTab(optimizations, config) {
       var container = document.getElementById('optimizationContent');
       
@@ -1003,7 +1024,7 @@
       var showAllBtn = document.getElementById('showAllOptimizeBtn');
       if (showAllBtn) {
           showAllBtn.addEventListener('click', function() { 
-              refreshAllData(true, 0); 
+              refreshAllData(true); 
           });
       }
   }
@@ -1017,13 +1038,15 @@
       var showAll = currentData?.showAll || false;
       var showingCount = obsoletePartsData.length;
       
-      container.innerHTML = '<div class="filter-bar"><label>⏱️ Months without consumption:</label><input type="number" id="obsoleteMonths" value="' + monthsDefault + '" min="3" max="36" step="3" style="width:80px;"><button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button>';
+      var html = '<div class="filter-bar"><label>⏱️ Months without consumption:</label><input type="number" id="obsoleteMonths" value="' + monthsDefault + '" min="3" max="36" step="3" style="width:80px;"><button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button>';
       
       // ✅ Botón Show All
       if (!showAll && totalObsolete > showingCount) {
-          container.innerHTML += '<button id="showAllObsoleteBtn" class="adk-btn adk-btn-secondary" style="margin-left:12px;">📋 Show All (' + totalObsolete + ')</button>';
+          html += '<button id="showAllObsoleteBtn" class="adk-btn adk-btn-secondary" style="margin-left:12px;">📋 Show All (' + totalObsolete + ')</button>';
       }
-      container.innerHTML += '</div><div id="obsoleteTable"></div>';
+      html += '</div><div id="obsoleteTable"></div>';
+      
+      container.innerHTML = html;
       
       var applyBtn = document.getElementById('applyObsoleteFilterBtn');
       if (applyBtn) {
@@ -1033,7 +1056,7 @@
       var showAllBtn = document.getElementById('showAllObsoleteBtn');
       if (showAllBtn) {
           showAllBtn.addEventListener('click', function() { 
-              refreshAllData(true, 0); 
+              refreshAllData(true); 
           });
       }
       
