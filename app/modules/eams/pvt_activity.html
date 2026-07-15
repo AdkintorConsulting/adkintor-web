@@ -999,7 +999,24 @@
                 <button class="btn-secondary" onclick="closeOrphanModal()">Close</button>
             </div>
         </div>
-    </div>    
+    </div> 
+    
+    <!-- CONFIRM MODAL - PERSONALIZADO               -->
+    <div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="confirmTitle"><i class="fas fa-question-circle" style="color: #f59e0b;"></i> Confirm</h3>
+                <span class="modal-close" onclick="closeConfirmModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage" style="font-size: 0.9rem; color: #1e293b;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn-primary" id="confirmYesBtn" style="background: #dc3545;">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>       
 
     <!-- FOOTER - SOLO CONNECTED + VERSIÓN -->
     <div class="module-footer">
@@ -1863,9 +1880,14 @@ async function updateDashboard() {
             return;
         }
         
-        if (!confirm('Reassign "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.strategyId + ' to ' + newStrategyId + '?')) {
-            return;
-        }
+        showConfirmModal(
+            'Reassign "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.strategyId + ' to ' + newStrategyId + '?',
+            '⚠️ Reassign Activity',
+            function() {
+                // Código que estaba dentro del if
+                performReassign(index);
+            }
+        );
         
         showLoading('Reassigning activity...');
         try {
@@ -1898,9 +1920,14 @@ async function updateDashboard() {
         var orphan = orphanData[index];
         if (!orphan) return;
         
-        if (!confirm('Delete orphan activity: "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.assetId + '?')) {
-            return;
-        }
+        showConfirmModal(
+            'Delete orphan activity: "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.assetId + '?',
+            '⚠️ Delete Activity',
+            function() {
+                // Código que estaba dentro del if
+                performDelete(index);
+            }
+        );
         
         showLoading('Deleting activity...');
         try {
@@ -1930,7 +1957,49 @@ async function updateDashboard() {
     function closeOrphanModal() {
         var modal = document.getElementById('orphanModal');
         if (modal) modal.style.display = 'none';
-    }    
+    } 
+
+    // ============================================
+    // CONFIRM MODAL PERSONALIZADO
+    // ============================================
+
+    var confirmCallback = null;
+
+    function showConfirmModal(message, title, callback) {
+        var modal = document.getElementById('confirmModal');
+        if (!modal) return;
+        
+        document.getElementById('confirmMessage').innerText = message || 'Are you sure?';
+        if (title) document.getElementById('confirmTitle').innerHTML = title;
+        
+        confirmCallback = callback;
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+    }
+
+    function closeConfirmModal() {
+        var modal = document.getElementById('confirmModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+        }
+        confirmCallback = null;
+    }
+
+    function confirmYes() {
+        if (typeof confirmCallback === 'function') {
+            confirmCallback();
+        }
+        closeConfirmModal();
+    }
+
+    // Configurar el botón Yes
+    document.addEventListener('DOMContentLoaded', function() {
+        var yesBtn = document.getElementById('confirmYesBtn');
+        if (yesBtn) {
+            yesBtn.addEventListener('click', confirmYes);
+        }
+    });       
 
     // ============================================
     // DELETE MODAL
@@ -1982,16 +2051,18 @@ async function updateDashboard() {
     // REFRESH MODULE
     // ============================================
     function refreshModule() {
-        // Si está en modo editor, preguntar antes de salir
         if (isInEditorMode) {
-            if (confirm('You are currently editing an activity. Refreshing will take you back to the results view. Continue?')) {
-                backToResults();
-                // Recargar árbol y dashboard
-                loadHierarchyTree();
-                updateDashboard();
-                document.getElementById('search-input').value = '';
-                showToast('Module refreshed successfully ✅', 'success');
-            }
+            showConfirmModal(
+                'You are currently editing an activity. Refreshing will take you back to the results view. Continue?',
+                '⚠️ Refresh',
+                function() {
+                    backToResults();
+                    loadHierarchyTree();
+                    updateDashboard();
+                    document.getElementById('search-input').value = '';
+                    showToast('Module refreshed successfully ✅', 'success');
+                }
+            );
         } else {
             // Recargar árbol y dashboard
             loadHierarchyTree();
