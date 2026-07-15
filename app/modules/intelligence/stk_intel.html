@@ -819,13 +819,13 @@
   // DATA LOADING FUNCTIONS
   // ============================================
   async function refreshAllData(showAll = false, offset = 0) {
-      showLoading('Loading inventory data...');
-      
-      await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
-      
-      try {
-          var limit = 50;
-          var data = await callApi('STK_getIntelligenceData', [limit, offset, showAll]);
+    showLoading('Loading inventory data...');
+    
+    await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
+    
+    try {
+      var limit = showAll ? 9999 : 10;
+      var data = await callApi('STK_getIntelligenceData', [limit, offset, showAll]);
           
           if (!data || data.error) {
               showToast(data?.error || 'No data received', 'error');
@@ -909,7 +909,7 @@
           return;
       }
       
-      var totalPending = currentData?.totalPending || pendingPOsData.length;
+      console.log('[STK] totalPending:', currentData?.totalPending);
       var showAll = currentData?.showAll || false;
       var showingCount = pendingPOsData.length;
       
