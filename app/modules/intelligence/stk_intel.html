@@ -545,10 +545,10 @@
       
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab-btn" data-tab="pending">📦 Pending POs</button>
-        <button class="tab-btn active" data-tab="alerts">⚠️ Alerts & Urgent</button>
-        <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
-        <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
+          <button class="tab-btn active" data-tab="pending">📦 Pending POs</button>
+          <button class="tab-btn" data-tab="alerts">⚠️ Alerts & Urgent</button>
+          <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
+          <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
       </div>
 
       <!-- Botones debajo de tabs -->
@@ -897,13 +897,12 @@
           }
           
           // ✅ Cargar Alerts (Tab 2) - en segundo plano
-          var alertsData = null;
           setTimeout(async function() {
               alertsData = await callApi('STK_getAlertsData', []);
               if (alertsData && !alertsData.error) {
+                  currentData.alerts = alertsData;  // ← ACTUALIZAR currentData
                   cachedData.alertsData = alertsData;
                   cachedData.alertsLoaded = true;
-                  // Si el tab Alerts está activo, renderizar
                   if (document.querySelector('.tab-btn[data-tab="alerts"]').classList.contains('active')) {
                       renderAlertsTab(alertsData);
                   }
@@ -914,7 +913,7 @@
           currentData = {
               summary: summary,
               pendingPOs: pendingData,
-              alerts: alertsData || { overduePOs: [], outOfStockCritical: [] },
+              alerts: { overduePOs: [], outOfStockCritical: [] },  // ← Inicializar vacío
               stockOptimizations: [],
               obsoleteParts: { parts: [], totalValue: 0 },
               totalPending: pendingData.length || 0,
