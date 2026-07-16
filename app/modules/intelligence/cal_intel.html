@@ -482,6 +482,7 @@
       margin-bottom: 20px;
       flex-wrap: wrap;
       align-items: center;
+      text-align: left;
     }
     
     select, button {
@@ -589,7 +590,15 @@
       <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
           <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
           <button id="printBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
-      </div>      
+      </div> 
+
+      <!-- Summary Cards (4 columnas) -->
+      <div id="summaryCards" class="stats-grid">
+          <div class="adk-card"><div class="label">Total Instruments</div><div class="value" id="totalInstruments">--</div></div>
+          <div class="adk-card"><div class="label">Overdue</div><div class="value" id="overdueCount">--</div></div>
+          <div class="adk-card"><div class="label">Urgent (≤7d)</div><div class="value" id="urgentCount">--</div></div>
+          <div class="adk-card"><div class="label">Last Failed</div><div class="value" id="failedCount">--</div></div>
+      </div>           
       
       <div class="content-panel">
         <div id="dashboard-tab" class="tab-pane active">
@@ -789,7 +798,7 @@
           loadDashboard();
       } else if (tabId === 'overdue') {
           showLoading('Loading overdue list...');
-          callApi('getOverdueAndDueList', []).then(function(list) {
+          callApi('CAL_getOverdueAndDueList', []).then(function(list) {
               renderOverdueList(list);
               hideLoading();
           }).catch(function(err) {
@@ -799,7 +808,7 @@
           });
       } else if (tabId === 'trends') {
           showLoading('Loading instruments...');
-          callApi('getInstrumentsForTrend', []).then(function(instruments) {
+          callApi('CAL_getInstrumentsForTrend', []).then(function(instruments) {
               renderTrendSelector(instruments);
               hideLoading();
           }).catch(function(err) {
@@ -830,7 +839,7 @@
   async function loadDashboard() {
     showLoading('Loading dashboard...');
     try {
-      var data = await callApi('getCALDashboardData', []);
+      var data = await callApi('CAL_getDashboardData', []);
       if (data && data.success) {
         renderDashboard(data);
         await logForesight('CAL', 'DASHBOARD_LOADED', 'Total: ' + data.summary?.total + ', Overdue: ' + data.summary?.overdue);
@@ -850,17 +859,25 @@
       var s = data.summary;
       var audit = data.audit;
       
-      // ✅ ACTUALIZAR TARJETAS CON IDs
-      document.getElementById('totalInstruments').innerText = s.total || 0;
-      document.getElementById('overdueCount').innerText = s.overdue || 0;
-      document.getElementById('urgentCount').innerText = s.urgent || 0;
-      document.getElementById('failedCount').innerText = s.failed || 0;
+      // ✅ ACTUALIZAR TARJETAS CON VALIDACIÓN
+      var totalEl = document.getElementById('totalInstruments');
+      if (totalEl) totalEl.innerText = s.total || 0;
+      
+      var overdueEl = document.getElementById('overdueCount');
+      if (overdueEl) overdueEl.innerText = s.overdue || 0;
+      
+      var urgentEl = document.getElementById('urgentCount');
+      if (urgentEl) urgentEl.innerText = s.urgent || 0;
+      
+      var failedEl = document.getElementById('failedCount');
+      if (failedEl) failedEl.innerText = s.failed || 0;
       
       var html = '';
       
       if (data.failedAlerts && data.failedAlerts.length > 0) {
           html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
-          for (const alert of data.failedAlerts) {
+          for (var i = 0; i < data.failedAlerts.length; i++) {
+              var alert = data.failedAlerts[i];
               html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
           }
           html += '</div></div>';
@@ -872,7 +889,8 @@
       }
       html += '</ul></div></div>';
       
-      document.getElementById('dashboardContent').innerHTML = html;
+      var contentEl = document.getElementById('dashboardContent');
+      if (contentEl) contentEl.innerHTML = html;
   }
   
   // ============================================
@@ -937,7 +955,7 @@
     
     showLoading('Analyzing trend...');
     try {
-      var trend = await callApi('getCALTrendData', [tagId]);
+      var trend = await callApi('CAL_getCALTrendData', [tagId]);
       
       await logForesight('CAL', 'TREND_ANALYZED', 'Instrument: ' + tagId + ', Trend: ' + trend.trend);
       
@@ -999,7 +1017,7 @@
     
     showLoading('Generating PDF...');
     try {
-      var htmlContent = await callApi('generateAuditPDF', []);
+      var htmlContent = await callApi('CAL_generateAuditPDF', []);
       var win = window.open('', '_blank');
       if (!win) {
         showToast('Popup blocked. Please allow popups.', 'error');
