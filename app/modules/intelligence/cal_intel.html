@@ -583,8 +583,8 @@
     <div class="dashboard-container">
       <div class="tabs">
         <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
-        <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
         <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
+        <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>        
       </div>
 
       <!-- Botones debajo de tabs -->
@@ -605,8 +605,8 @@
         <div id="dashboard-tab" class="tab-pane active">
           <div id="dashboardContent"></div>
         </div>
-        <div id="overdue-tab" class="tab-pane">
-          <div id="overdueContent"></div>
+        <div id="alerts-tab" class="tab-pane">
+          <div id="alertsContent"></div>
         </div>
         <div id="trends-tab" class="tab-pane">
           <div id="trendsContent"></div>
@@ -797,14 +797,14 @@
       // ✅ Spinner de pantalla completa
       if (tabId === 'dashboard') {
           loadDashboard();
-      } else if (tabId === 'overdue') {
-          showLoading('Loading overdue list...');
+      } else if (tabId === 'alerts') {
+          showLoading('Loading alerts...');
           callApi('CAL_getOverdueAndDueList', []).then(function(list) {
-              renderOverdueList(list);
+              renderAlertsList(list);
               hideLoading();
           }).catch(function(err) {
               hideLoading();
-              document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
+              document.getElementById('alertsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
               showToast(err.message, 'error');
           });
       } else if (tabId === 'trends') {
@@ -884,11 +884,27 @@
           html += '</div></div>';
       }
       
-      html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body"><ul style="margin-left: 20px;">';
+      // ✅ AUDIT RECOMMENDATIONS con mejor presentación
+      html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body">';
+      
       for (var i = 0; i < audit.recommendations.length; i++) {
-          html += '<li>' + escapeHtml(audit.recommendations[i]) + '</li>';
+          var rec = audit.recommendations[i];
+          var isOverdue = rec.indexOf('🔴') !== -1;
+          var isMissing = rec.indexOf('📄') !== -1;
+          var isSuccess = rec.indexOf('✅') !== -1;
+          
+          var borderColor = isOverdue ? 'var(--danger)' : (isMissing ? 'var(--warning)' : (isSuccess ? 'var(--success)' : 'var(--info)'));
+          var bgColor = isOverdue ? 'rgba(255,82,82,0.1)' : (isMissing ? 'rgba(255,183,77,0.1)' : (isSuccess ? 'rgba(0,230,118,0.1)' : 'rgba(0,229,255,0.05)'));
+          
+          // Si es un ítem con viñeta (•), mostrarlo como sub-item
+          if (rec.indexOf('  •') !== -1 || rec.indexOf('•') !== -1) {
+              html += '<div style="padding: 4px 0 4px 24px; font-size: 13px; color: var(--text-secondary); border-left: 2px solid ' + borderColor + '; margin-left: 16px; padding-left: 12px;">' + escapeHtml(rec.trim()) + '</div>';
+          } else {
+              html += '<div style="background: ' + bgColor + '; border-left: 4px solid ' + borderColor + '; padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; font-weight: 500; font-size: 13px;">' + escapeHtml(rec) + '</div>';
+          }
       }
-      html += '</ul></div></div>';
+      
+      html += '</div></div>';
       
       var contentEl = document.getElementById('dashboardContent');
       if (contentEl) contentEl.innerHTML = html;
@@ -897,13 +913,13 @@
   // ============================================
   // TAB 2: OVERDUE & DUE (≤30 DAYS)
   // ============================================
-  function renderOverdueList(list) {
+  function renderAlertsList(list) {
     if (!list || list.length === 0) {
-      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No instruments overdue or due in the next 30 days.</div>';
+      document.getElementById('alertsContent').innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No instruments overdue or due in the next 30 days.</div>';
       return;
     }
     
-    var html = '<div class="adk-card"><div class="card-header">📋 INSTRUMENTS (Overdue + Next 30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
+    var html = '<div class="adk-card"><div class="card-header">⚠️ ALERTS - Overdue & Due (≤30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
     
     for (var i = 0; i < list.length; i++) {
       var item = list[i];
@@ -915,7 +931,7 @@
     }
     
     html += '</tbody></table></div></div>';
-    document.getElementById('overdueContent').innerHTML = html;
+    document.getElementById('alertsContent').innerHTML = html;
   }
   
   // ============================================
@@ -1083,7 +1099,7 @@
                   var tabId = this.getAttribute('data-tab');
                   var tabNames = {
                       'dashboard': 'Dashboard & Audit',
-                      'overdue': 'Overdue & Due',
+                      'alerts': 'Alerts',
                       'trends': 'Drifting Trends'
                   };
                   logForesight('CAL', 'CHANGE_TAB', 'User switched to: ' + (tabNames[tabId] || tabId));
