@@ -836,7 +836,8 @@
               document.getElementById('optimizationContent').innerHTML = 
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
-  }
+      }
+  }  // ← ESTA LLAVE CIERRA showTab
   
   // ============================================
   // DATA LOADING FUNCTIONS
@@ -1216,6 +1217,7 @@
   } else {
     init();
   }
+
 </script>
 </body>
 </html>
