@@ -546,9 +546,8 @@
       <!-- Tabs -->
       <div class="tabs">
           <button class="tab-btn active" data-tab="pending">📦 Pending POs</button>
-          <button class="tab-btn" data-tab="alerts">⚠️ Alerts & Urgent</button>
           <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
-          <button class="tab-btn" data-tab="obsolete">🗑️ Obsolete Parts</button>
+          <button class="tab-btn" data-tab="alerts">⚠️ Alerts & Urgent</button>
       </div>
 
       <!-- Botones debajo de tabs -->
@@ -591,12 +590,6 @@
         </div>
 
         <!-- TAB 4: OBSOLETE PARTS -->
-        <div id="obsolete-tab" class="tab-pane">
-            <div class="card-container">
-                <div class="card-header">🗑️ Obsolete Parts</div>
-                <div class="card-body" id="obsoleteContent"></div>
-            </div>
-        </div>
       </div>
     </div>
   </div>
@@ -843,28 +836,6 @@
               document.getElementById('optimizationContent').innerHTML = 
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
-          
-      } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
-          showLoading('Loading obsolete parts...');
-          var showAll = currentData.showAll || false;
-          callApi('STK_getObsoletePartsData', [showAll ? 0 : 20, 0, showAll]).then(function(obsData) {
-              if (obsData && !obsData.error) {
-                  currentData.obsoleteParts = obsData;
-                  currentData.totalObsolete = obsData.parts?.length || 0;
-                  cachedData.obsoleteLoaded = true;
-                  renderObsoleteTab(obsData, currentData.config);
-                  hideLoading();
-              } else {
-                  hideLoading();
-                  document.getElementById('obsoleteContent').innerHTML = 
-                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading obsolete parts.</div>';
-              }
-          }).catch(function(err) {
-              hideLoading();
-              document.getElementById('obsoleteContent').innerHTML = 
-                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
-          });
-      }
   }
   
   // ============================================
@@ -965,13 +936,12 @@
       
       html += '<h3 style="margin:0 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">🔴 Critical Overdue Purchase Orders</h3>';
       
-      // ✅ MOSTRAR SOLO 20
       var overduePOs = (alerts.overduePOs || []).slice(0, 20);
       if (overduePOs.length > 0) {
-          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Since</th><th>Status</th></tr></thead><tbody>';
+          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Overdue</th><th>Recommendation</th></tr></thead><tbody>';
           for (var i = 0; i < overduePOs.length; i++) {
               var po = overduePOs[i];
-              html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.items) + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
+              html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td>' + escapeHtml(po.issueDate || '--') + '</td><td>' + escapeHtml(po.expectedDate || '--') + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
           }
           html += '</tbody></table></div>';
           if (alerts.overduePOs.length > 20) {
@@ -1042,7 +1012,7 @@
           var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
           var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
           
-          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + (po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '--') + '</td><td>' + (po.expectedDate ? new Date(po.expectedDate).toLocaleDateString() : '--') + '</td><td>' + po.daysSinceIssue + 'd</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
+          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + (po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '--') + '</td><td>' + (po.expectedDate ? new Date(po.expectedDate).toLocaleDateString() : '--') + '</td><td>' + po.daysSinceIssue + 'd</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.statusDisplay || po.status) + '</span></td></tr>';
       }
       
       html += '</tbody></table></div>';
@@ -1079,7 +1049,11 @@
           
           var categoryFilter = document.getElementById('categoryFilter');
           if (categoryFilter) {
-              categoryFilter.addEventListener('change', function() { applyOptimizationFilter(); });
+              categoryFilter.addEventListener('change', function() { 
+                  var selectedCategory = this.value;
+                  logForesight('STK', 'FILTER_OPTIMIZE', 'Filter by category: ' + selectedCategory);
+                  applyOptimizationFilter();
+              });
           }
           
           var showAllBtn = document.getElementById('showAllOptimizeBtn');
@@ -1089,6 +1063,8 @@
           
           // ✅ Guardar datos para filtro
           window._optimizationData = optimizations;
+          
+          // ✅ Aplicar filtro inicial (muestra vacío si no hay datos)
           applyOptimizationFilter();
       }).catch(function(err) {
           // Fallback - mostrar sin filtro
@@ -1133,96 +1109,7 @@
       html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
       container.innerHTML = html;
   }
-    
-  function renderObsoleteTab(obsoleteData, config) {
-      var container = document.getElementById('obsoleteContent');
-      obsoletePartsData = obsoleteData.parts || [];
-      var monthsDefault = config?.obsoleteMonths || 12;
-      
-      var totalObsolete = currentData?.totalObsolete || obsoletePartsData.length;
-      var showAll = currentData?.showAll || false;
-      var showingCount = obsoletePartsData.length;
-      
-      var html = '<div class="filter-bar"><label>⏱️ Months without consumption:</label><input type="number" id="obsoleteMonths" value="' + monthsDefault + '" min="3" max="36" step="3" style="width:80px;"><button id="applyObsoleteFilterBtn" class="adk-btn adk-btn-secondary">Apply Filter</button>';
-      
-      // ✅ Botón Show All
-      if (!showAll && totalObsolete > showingCount) {
-          html += '<button id="showAllObsoleteBtn" class="adk-btn adk-btn-secondary" style="margin-left:12px;">📋 Show All (' + totalObsolete + ')</button>';
-      }
-      html += '</div><div id="obsoleteTable"></div>';
-      
-      container.innerHTML = html;
-      
-      var applyBtn = document.getElementById('applyObsoleteFilterBtn');
-      if (applyBtn) {
-          applyBtn.addEventListener('click', function() { applyObsoleteFilter(); });
-      }
-      
-      var showAllBtn = document.getElementById('showAllObsoleteBtn');
-      if (showAllBtn) {
-          showAllBtn.addEventListener('click', function() { 
-              refreshAllData(true); 
-          });
-      }
-      
-      renderObsoleteTable();
-  }
-  
-  function applyObsoleteFilter() {
-    var monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
-    
-    logForesight('STK', 'FILTER_OBSOLETE', 'Obsolete filter applied: ' + monthsFilter + '+ months');
-    
-    var filtered = obsoletePartsData.filter(function(p) { return p.monthsInactive >= monthsFilter; });
-    var totalValue = obsoletePartsData.reduce(function(sum, p) { return sum + p.stockValue; }, 0);
-    
-    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
-    
-    if (filtered.length === 0) {
-      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
-      document.getElementById('obsoleteTable').innerHTML = html;
-      return;
-    }
-    
-    html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Stock</th><th>Value ($)</th><th>Last Consumption</th><th>Months Inactive</th></tr></thead><tbody>';
-    
-    for (var i = 0; i < filtered.length; i++) {
-      var part = filtered[i];
-      html += '<tr><td><strong>' + escapeHtml(part.sku) + '</strong></td><td>' + escapeHtml(part.description || '-') + '</td><td>' + part.currentStock + '</td><td>$' + part.stockValue.toLocaleString() + '</td><td>' + (part.lastConsumptionDate || 'Never') + '</td><td style="color:var(--warning);">' + part.monthsInactive + '</td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
-    
-    document.getElementById('obsoleteTable').innerHTML = html;
-  }
-  
-  function renderObsoleteTable() {
-    var monthsFilter = parseInt(document.getElementById('obsoleteMonths')?.value || 12);
-    var filtered = obsoletePartsData.filter(function(p) { return p.monthsInactive >= monthsFilter; });
-    var totalValue = obsoletePartsData.reduce(function(sum, p) { return sum + p.stockValue; }, 0);
-    
-    var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💰 Total capital locked: <strong>$' + totalValue.toLocaleString() + '</strong></div>';
-    
-    if (filtered.length === 0) {
-      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No parts inactive for ' + monthsFilter + '+ months.</div>';
-      document.getElementById('obsoleteTable').innerHTML = html;
-      return;
-    }
-    
-    html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Stock</th><th>Value ($)</th><th>Last Consumption</th><th>Months Inactive</th></tr></thead><tbody>';
-    
-    for (var i = 0; i < filtered.length; i++) {
-      var part = filtered[i];
-      html += '<tr><td><strong>' + escapeHtml(part.sku) + '</strong></td><td>' + escapeHtml(part.description || '-') + '</td><td>' + part.currentStock + '</td><td>$' + part.stockValue.toLocaleString() + '</td><td>' + (part.lastConsumptionDate || 'Never') + '</td><td style="color:var(--warning);">' + part.monthsInactive + '</td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 Recommendation: Review these parts. Consider reducing min stock or marking for disposal.</div>';
-    
-    document.getElementById('obsoleteTable').innerHTML = html;
-  }
-  
+ 
   async function printToPDF() {
     showLoading('Generating PDF report...');
     
@@ -1299,7 +1186,6 @@
             'alerts': 'Alerts & Urgent',
             'pending': 'Pending POs',
             'optimize': 'Optimize Stock',
-            'obsolete': 'Obsolete Parts'
           };
           logForesight('STK', 'CHANGE_TAB', 'User switched to: ' + (tabNames[tabId] || tabId));
           showTab(tabId);
