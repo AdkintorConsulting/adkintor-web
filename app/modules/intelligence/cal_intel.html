@@ -354,35 +354,37 @@
       to { opacity: 1; } 
     }
     
-    /* Stats Grid */
+    /* Stats Grid - 4 columnas (igual que WO/PVT/STK) */
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
     }
-    
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
+
+    /* Cards de conteo (igual que WO/PVT/STK) */
+    .adk-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 8px;
+        text-align: center;
     }
-    
-    .stat-value {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--accent-color);
-      font-family: 'Inter', sans-serif;
+
+    .adk-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent-color);
+        font-family: 'Inter', sans-serif;
     }
-    
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-      font-family: 'Inter', sans-serif;
-    }
+
+    .adk-card .label {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        font-family: 'Inter', sans-serif;
+    } font-family: 'Inter', sans-serif;
+
     
     /* Cards */
     .adk-card {
@@ -523,6 +525,18 @@
     .trend-deviation {
       font-family: monospace;
     }
+
+    .adk-btn-secondary {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .adk-btn-secondary:hover {
+        background: var(--bg-hover);
+        border-color: var(--accent-color);
+        transform: scale(1.02);
+    }    
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -549,7 +563,7 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-microscope"></i> CAL Intelligence</span>
+      <span class="module-title"><i class="fas fa-microscope"></i> CAL Foresight</span>
     </div>
     <div class="header-right">
       <span class="user-badge" id="userDisplay">Loading...</span>
@@ -559,25 +573,23 @@
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">CAL Intelligence</span>
+    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">CAL Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
-      <div class="header">
-        <div class="logo-area">
-          <h1>🔧 CAL Intelligence</h1>
-          <p>Calibration Management Dashboard</p>
-        </div>
-        <div><button id="exportBtn" class="adk-btn adk-btn-primary">📑 AUDIT PDF</button></div>
-      </div>
-      
       <div class="tabs">
         <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
         <button class="tab-btn" data-tab="overdue">📋 Overdue & Due (≤30 days)</button>
         <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
       </div>
+
+      <!-- Botones debajo de tabs -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
+          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+          <button id="printBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+      </div>      
       
       <div class="content-panel">
         <div id="dashboard-tab" class="tab-pane active">
@@ -763,23 +775,54 @@
   // TAB FUNCTION
   // ============================================
   function showTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-    document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
-    
-    var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
-    if (clickedBtn) clickedBtn.classList.add('active');
-    
-    var targetPane = document.getElementById(tabId + '-tab');
-    if (targetPane) targetPane.classList.add('active');
-    
-    if (tabId === 'dashboard') {
-      loadDashboard();
-    } else if (tabId === 'overdue') {
-      loadOverdueList();
-    } else if (tabId === 'trends') {
-      loadTrends();
-    }
+      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(pane) { pane.classList.remove('active'); });
+      
+      var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      var targetPane = document.getElementById(tabId + '-tab');
+      if (targetPane) targetPane.classList.add('active');
+      
+      // ✅ Spinner de pantalla completa
+      if (tabId === 'dashboard') {
+          loadDashboard();
+      } else if (tabId === 'overdue') {
+          showLoading('Loading overdue list...');
+          callApi('getOverdueAndDueList', []).then(function(list) {
+              renderOverdueList(list);
+              hideLoading();
+          }).catch(function(err) {
+              hideLoading();
+              document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
+              showToast(err.message, 'error');
+          });
+      } else if (tabId === 'trends') {
+          showLoading('Loading instruments...');
+          callApi('getInstrumentsForTrend', []).then(function(instruments) {
+              renderTrendSelector(instruments);
+              hideLoading();
+          }).catch(function(err) {
+              hideLoading();
+              document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
+              showToast(err.message, 'error');
+          });
+      }
   }
+
+  async function refreshAllData() {
+      await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
+      
+      showLoading('Refreshing data...');
+      try {
+          await loadDashboard();
+          hideLoading();
+          showToast('Data refreshed successfully', 'success');
+      } catch(err) {
+          hideLoading();
+          showToast('Error refreshing: ' + err.message, 'error');
+      }
+  }  
   
   // ============================================
   // TAB 1: DASHBOARD & AUDIT
@@ -804,50 +847,38 @@
   }
   
   function renderDashboard(data) {
-    var s = data.summary;
-    var audit = data.audit;
-    
-    var html = '<div class="stats-grid">' +
-      '<div class="stat-card"><div class="stat-value">' + s.total + '</div><div class="stat-label">Total Instruments</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:var(--danger);">' + s.overdue + '</div><div class="stat-label">🔴 Overdue</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:var(--warning);">' + s.urgent + '</div><div class="stat-label">🟡 Due ≤30d</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:#a855f7;">' + s.failed + '</div><div class="stat-label">❌ Failed Last Cal</div></div>' +
-      '</div>';
-    
-    if (data.failedAlerts && data.failedAlerts.length > 0) {
-      html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
-      for (var i = 0; i < data.failedAlerts.length; i++) {
-        var alert = data.failedAlerts[i];
-        html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
+      var s = data.summary;
+      var audit = data.audit;
+      
+      // ✅ ACTUALIZAR TARJETAS CON IDs
+      document.getElementById('totalInstruments').innerText = s.total || 0;
+      document.getElementById('overdueCount').innerText = s.overdue || 0;
+      document.getElementById('urgentCount').innerText = s.urgent || 0;
+      document.getElementById('failedCount').innerText = s.failed || 0;
+      
+      var html = '';
+      
+      if (data.failedAlerts && data.failedAlerts.length > 0) {
+          html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
+          for (var i = 0; i < data.failedAlerts.length; i++) {
+              var alert = data.failedAlerts[i];
+              html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
+          }
+          html += '</div></div>';
       }
-      html += '</div></div>';
-    }
-    
-    html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body"><ul style="margin-left: 20px;">';
-    for (var i = 0; i < audit.recommendations.length; i++) {
-      html += '<li>' + escapeHtml(audit.recommendations[i]) + '</li>';
-    }
-    html += '</ul></div></div>';
-    
-    document.getElementById('dashboardContent').innerHTML = html;
+      
+      html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body"><ul style="margin-left: 20px;">';
+      for (var i = 0; i < audit.recommendations.length; i++) {
+          html += '<li>' + escapeHtml(audit.recommendations[i]) + '</li>';
+      }
+      html += '</ul></div></div>';
+      
+      document.getElementById('dashboardContent').innerHTML = html;
   }
   
   // ============================================
   // TAB 2: OVERDUE & DUE (≤30 DAYS)
   // ============================================
-  async function loadOverdueList() {
-    showLoading('Loading overdue list...');
-    try {
-      var list = await callApi('getOverdueAndDueList', []);
-      renderOverdueList(list);
-      hideLoading();
-    } catch (error) {
-      hideLoading();
-      document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
-      showToast(error.message, 'error');
-    }
-  }
-  
   function renderOverdueList(list) {
     if (!list || list.length === 0) {
       document.getElementById('overdueContent').innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No instruments overdue or due in the next 30 days.</div>';
@@ -872,19 +903,6 @@
   // ============================================
   // TAB 3: DRIFTING TRENDS
   // ============================================
-  async function loadTrends() {
-    showLoading('Loading instruments...');
-    try {
-      var instruments = await callApi('getInstrumentsForTrend', []);
-      renderTrendSelector(instruments);
-      hideLoading();
-    } catch (error) {
-      hideLoading();
-      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
-      showToast(error.message, 'error');
-    }
-  }
-  
   function renderTrendSelector(instruments) {
     if (!instruments || instruments.length === 0) {
       document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="padding: 20px;">📊 No instruments with 2+ calibrations found.</div>';
@@ -1016,57 +1034,60 @@
   // MAIN INIT
   // ============================================
   async function init() {
-    loadUser();
-    showLoading('Loading calibration data...');
-    loadApiUrl();
-    
-    if (!EAMS_API_URL) {
-      hideLoading();
-      showToast('API URL not configured. Please login.', 'error');
-      return;
-    }
-    
-    try {
-      // Log dashboard open
-      await logForesight('CAL', 'OPEN_DASHBOARD', 'User accessed CAL Intelligence Dashboard');
+      loadUser();
+      showLoading('Loading calibration data...');
+      loadApiUrl();
       
-      // Setup export button
-      var exportBtn = document.getElementById('exportBtn');
-      if (exportBtn) {
-        exportBtn.addEventListener('click', function() { exportPDF(); });
+      if (!EAMS_API_URL) {
+          hideLoading();
+          showToast('API URL not configured. Please login.', 'error');
+          return;
       }
       
-      // Setup tabs
-      document.querySelectorAll('.tab-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var tabId = this.getAttribute('data-tab');
-          var tabNames = {
-            'dashboard': 'Dashboard & Audit',
-            'overdue': 'Overdue & Due',
-            'trends': 'Drifting Trends'
-          };
-          logForesight('CAL', 'CHANGE_TAB', 'User switched to: ' + (tabNames[tabId] || tabId));
-          showTab(tabId);
-        });
-      });
-      
-      // Request logo and version from parent
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
-        window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+      try {
+          await logForesight('CAL', 'OPEN_DASHBOARD', 'User accessed CAL Foresight Dashboard');
+          
+          // Setup buttons
+          var refreshBtn = document.getElementById('refreshBtn');
+          var printBtn = document.getElementById('printBtn');
+          
+          if (refreshBtn) {
+              refreshBtn.addEventListener('click', function() { refreshAllData(); });
+          }
+          
+          if (printBtn) {
+              printBtn.addEventListener('click', function() { exportPDF(); });
+          }
+          
+          // Setup tabs
+          document.querySelectorAll('.tab-btn').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                  var tabId = this.getAttribute('data-tab');
+                  var tabNames = {
+                      'dashboard': 'Dashboard & Audit',
+                      'overdue': 'Overdue & Due',
+                      'trends': 'Drifting Trends'
+                  };
+                  logForesight('CAL', 'CHANGE_TAB', 'User switched to: ' + (tabNames[tabId] || tabId));
+                  showTab(tabId);
+              });
+          });
+          
+          // Request logo and version from parent
+          if (window.parent !== window) {
+              window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
+              window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
+          }
+          
+          // ✅ Cargar solo el primer tab (Dashboard)
+          await loadDashboard();
+          hideLoading();
+          showToast('CAL Foresight loaded successfully ✅', 'success');
+          
+      } catch(err) {
+          hideLoading();
+          showToast('Error loading data: ' + err.message, 'error');
       }
-      
-      // Initial load
-      await loadDashboard();
-      
-      hideLoading();
-      showToast('CAL Intelligence loaded successfully ✅', 'success');
-      document.getElementById('footer-status').innerText = 'Ready';
-      
-    } catch(err) {
-      hideLoading();
-      showToast('Error loading data: ' + err.message, 'error');
-    }
   }
   
   // Iniciar cuando el DOM esté listo
