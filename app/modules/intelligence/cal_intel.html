@@ -860,8 +860,7 @@
       
       if (data.failedAlerts && data.failedAlerts.length > 0) {
           html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
-          for (var i = 0; i < data.failedAlerts.length; i++) {
-              var alert = data.failedAlerts[i];
+          for (const alert of data.failedAlerts) {
               html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
           }
           html += '</div></div>';
