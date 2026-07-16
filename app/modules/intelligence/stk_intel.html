@@ -1021,60 +1021,94 @@
   }
 
   function renderOptimizationTab(optimizations, config) {
-      var container = document.getElementById('optimizationContent');
+        var container = document.getElementById('optimizationContent');
+        
+        // ✅ Guardar configuración
+        window._optimizationConfig = config || { safetyFactor: 1.5 };
+        
+        // ✅ Mostrar SOLO el dropdown + mensaje "Select a category"
+        var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+        
+        // ✅ Dropdown de categorías (se carga al abrir)
+        html += '<div class="filter-bar"><label>📂 Category:</label><select id="categoryFilter"><option value="all">All Categories</option></select>';
+        html += '<button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All</button>';
+        html += '</div><div id="optimizationTable"></div>';
+        
+        container.innerHTML = html;
+        
+        // ✅ Cargar categorías en el dropdown
+        callApi('STK_getCategoriesData', []).then(function(categories) {
+            var select = document.getElementById('categoryFilter');
+            if (!select) return;
+            
+            // Limpiar y agregar opciones
+            select.innerHTML = '<option value="all">All Categories</option>';
+            if (categories && categories.length > 0) {
+                for (var i = 0; i < categories.length; i++) {
+                    select.innerHTML += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
+                }
+            }
+            
+            // ✅ Mostrar mensaje inicial
+            document.getElementById('optimizationTable').innerHTML = 
+                '<div style="background:rgba(0,229,255,0.05); border:1px solid var(--info); border-radius:8px; padding:16px; text-align:center; color: var(--text-secondary);">📊 Select a category to view stock optimization suggestions.</div>';
+            
+            // ✅ Evento al cambiar categoría
+            select.addEventListener('change', function() {
+                var category = this.value;
+                logForesight('STK', 'FILTER_OPTIMIZE', 'Filter by category: ' + category);
+                loadOptimizationsByCategory(category);
+            });
+        }).catch(function(err) {
+            console.error('[STK] Error loading categories:', err);
+            document.getElementById('optimizationTable').innerHTML = 
+                '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading categories: ' + err.message + '</div>';
+        });
+        
+        // ✅ Evento Show All
+        var showAllBtn = document.getElementById('showAllOptimizeBtn');
+        if (showAllBtn) {
+            showAllBtn.addEventListener('click', function() { 
+                logForesight('STK', 'SHOW_ALL_OPTIMIZE', 'User clicked Show All');
+                // Cambiar dropdown a "All Categories" y cargar todo
+                var select = document.getElementById('categoryFilter');
+                if (select) select.value = 'all';
+                loadOptimizationsByCategory('all', true);
+            });
+        }
+    }
+
+  // ✅ NUEVA FUNCIÓN: Cargar optimizaciones por categoría
+  function loadOptimizationsByCategory(category, showAll = false) {
+      var tableContainer = document.getElementById('optimizationTable');
+      if (!tableContainer) return;
       
-      var totalOptimizations = currentData?.totalOptimizations || optimizations?.length || 0;
-      var showAll = currentData?.showAll || false;
-      var showingCount = optimizations?.length || 0;
+      // ✅ Mostrar spinner de carga
+      tableContainer.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="loading-spinner" style="margin: 0 auto;"></div><div style="color: var(--text-secondary); margin-top: 10px;">Loading optimizations...</div></div>';
       
-      // ✅ Cargar categorías
-      callApi('STK_getCategoriesData', []).then(function(categories) {
-          console.log('[STK] Categories loaded:', categories);
-          var categoryOptions = '<option value="all">All Categories</option>';
-          if (categories && categories.length > 0) {
-              for (var i = 0; i < categories.length; i++) {
-                  categoryOptions += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
-              }
-          } else {
-              // ✅ Si no hay categorías, mostrar mensaje
-              categoryOptions += '<option value="all" disabled>No categories found</option>';
+      var limit = showAll ? 0 : 20;
+      var offset = 0;
+      
+      callApi('STK_getOptimizationsByCategory', [category, limit, offset]).then(function(result) {
+          if (!result || !result.data) {
+              tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading optimizations.</div>';
+              return;
           }
           
-          var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+          var data = result.data || [];
+          var total = result.total || 0;
           
-          // ✅ Filtro por categoría
-          html += '<div class="filter-bar"><label>📂 Category:</label><select id="categoryFilter">' + categoryOptions + '</select>';
-          
-          if (!showAll && totalOptimizations > showingCount) {
-              html += '<button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All (' + totalOptimizations + ')</button>';
-          }
-          html += '</div><div id="optimizationTable"></div>';
-          
-          container.innerHTML = html;
-          
-          var categoryFilter = document.getElementById('categoryFilter');
-          if (categoryFilter) {
-              categoryFilter.addEventListener('change', function() { 
-                  var selectedCategory = this.value;
-                  logForesight('STK', 'FILTER_OPTIMIZE', 'Filter by category: ' + selectedCategory);
-                  applyOptimizationFilter();
-              });
+          if (data.length === 0) {
+              tableContainer.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; text-align:center;">✅ No optimizations found for this category.</div>';
+              return;
           }
           
-          var showAllBtn = document.getElementById('showAllOptimizeBtn');
-          if (showAllBtn) {
-              showAllBtn.addEventListener('click', function() { refreshAllData(true); });
-          }
+          // ✅ Renderizar tabla
+          renderOptimizationTable(data, total, showAll);
           
-          // ✅ Guardar datos para filtro
-          window._optimizationData = optimizations;
-          console.log('[STK] Optimization data stored:', optimizations ? optimizations.length : 0, 'items');
-          
-          // ✅ Aplicar filtro inicial
-          applyOptimizationFilter();
       }).catch(function(err) {
-          // Fallback - mostrar sin filtro
-          renderOptimizationTable(optimizations);
+          console.error('[STK] Error loading optimizations:', err);
+          tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
       });
   }
 
@@ -1091,7 +1125,7 @@
       renderOptimizationTable(data);
   }
 
-  function renderOptimizationTable(optimizations) {
+  function renderOptimizationTable(optimizations, total, showAll) {
       var container = document.getElementById('optimizationTable');
       if (!container) return;
       
@@ -1100,7 +1134,8 @@
           return;
       }
       
-      var html = '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
+      var html = '<div style="margin-bottom:12px; font-size:13px; color: var(--text-secondary);">Showing ' + optimizations.length + ' of ' + (total || optimizations.length) + ' optimizations</div>';
+      html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Category</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
       
       for (var i = 0; i < optimizations.length; i++) {
           var opt = optimizations[i];
@@ -1108,7 +1143,7 @@
           var actionIcon = opt.action === 'increase' ? '⬆️' : '⬇️';
           var critClass = opt.criticality === 'A' ? 'badge adk-badge-danger' : (opt.criticality === 'B' ? 'badge adk-badge-warning' : 'badge adk-badge-success');
           
-          html += '<tr><td><strong>' + escapeHtml(opt.sku) + '</strong></td><td>' + escapeHtml(opt.description || '-') + '</td><td>' + opt.consumptionPerWeek + '</td><td>' + opt.leadTimeWeeks + '</td><td>' + opt.currentMinStock + '</td><td><strong style="color:' + actionColor + '">' + opt.suggestedMinStock + '</strong></td><td>' + actionIcon + ' ' + opt.percentDiff + '%</td><td><span class="' + critClass + '">' + (opt.criticality || 'C') + '</span></td></tr>';
+          html += '<tr><td><strong>' + escapeHtml(opt.sku) + '</strong></td><td>' + escapeHtml(opt.description || '-') + '</td><td>' + escapeHtml(opt.category || '-') + '</td><td>' + opt.consumptionPerWeek + '</td><td>' + opt.leadTimeWeeks + '</td><td>' + opt.currentMinStock + '</td><td><strong style="color:' + actionColor + '">' + opt.suggestedMinStock + '</strong></td><td>' + actionIcon + ' ' + opt.percentDiff + '%</td><td><span class="' + critClass + '">' + (opt.criticality || 'C') + '</span></td></tr>';
       }
       
       html += '</tbody></table></div>';
