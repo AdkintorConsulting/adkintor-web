@@ -794,79 +794,69 @@
       var targetPane = document.getElementById(tabId + '-tab');
       if (targetPane) targetPane.classList.add('active');
       
-      // ✅ Validar que currentData existe
       if (!currentData) {
           showToast('Data not loaded yet. Please wait or refresh.', 'warning');
           return;
       }
       
-      // ✅ Carga bajo demanda con spinner
+      // ✅ Spinner de pantalla completa (igual que el inicio)
       if (tabId === 'alerts' && !cachedData.alertsLoaded) {
-          document.getElementById('alertsContent').innerHTML = 
-              '<div style="padding: 30px; text-align: center;">' +
-                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
-                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading alerts...</p>' +
-              '</div>';
-          
-          // Cargar alerts
+          showLoading('Loading alerts...');
           callApi('STK_getAlertsData', []).then(function(alertsData) {
               if (alertsData && !alertsData.error) {
                   cachedData.alertsData = alertsData;
                   cachedData.alertsLoaded = true;
                   renderAlertsTab(alertsData);
+                  hideLoading();
               } else {
+                  hideLoading();
                   document.getElementById('alertsContent').innerHTML = 
                       '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading alerts.</div>';
               }
           }).catch(function(err) {
+              hideLoading();
               document.getElementById('alertsContent').innerHTML = 
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
           
       } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
-          document.getElementById('optimizationContent').innerHTML = 
-              '<div style="padding: 30px; text-align: center;">' +
-                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
-                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading optimization suggestions...</p>' +
-              '</div>';
-          
+          showLoading('Loading optimization suggestions...');
           var showAll = currentData.showAll || false;
           callApi('STK_getOptimizationsData', [showAll ? 0 : 20, 0, showAll]).then(function(optData) {
               if (optData && !optData.error) {
-                  // ✅ GUARDAR CORRECTAMENTE
                   currentData.stockOptimizations = optData;
                   currentData.totalOptimizations = optData.length || 0;
                   cachedData.optimizeLoaded = true;
                   renderOptimizationTab(optData, currentData.config);
+                  hideLoading();
               } else {
+                  hideLoading();
                   document.getElementById('optimizationContent').innerHTML = 
                       '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading optimizations.</div>';
               }
           }).catch(function(err) {
+              hideLoading();
               document.getElementById('optimizationContent').innerHTML = 
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
           
       } else if (tabId === 'obsolete' && !cachedData.obsoleteLoaded) {
-          document.getElementById('obsoleteContent').innerHTML = 
-              '<div style="padding: 30px; text-align: center;">' +
-                  '<div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px;"></div>' +
-                  '<p style="color: var(--text-secondary); margin-top: 12px;">Loading obsolete parts...</p>' +
-              '</div>';
-          
+          showLoading('Loading obsolete parts...');
           var showAll = currentData.showAll || false;
           callApi('STK_getObsoletePartsData', [showAll ? 0 : 20, 0, showAll]).then(function(obsData) {
               if (obsData && !obsData.error) {
-                  // ✅ GUARDAR CORRECTAMENTE
                   currentData.obsoleteParts = obsData;
                   currentData.totalObsolete = obsData.parts?.length || 0;
                   cachedData.obsoleteLoaded = true;
                   renderObsoleteTab(obsData, currentData.config);
+                  hideLoading();
               } else {
+                  hideLoading();
                   document.getElementById('obsoleteContent').innerHTML = 
                       '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading obsolete parts.</div>';
               }
           }).catch(function(err) {
+              hideLoading();
               document.getElementById('obsoleteContent').innerHTML = 
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
@@ -966,34 +956,40 @@
   }
   
   function renderAlertsTab(alerts) {
-    var container = document.getElementById('alertsContent');
-    var html = '';
-    
-    html += '<h3 style="margin:0 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">🔴 Critical Overdue Purchase Orders</h3>';
-    if (alerts.overduePOs && alerts.overduePOs.length > 0) {
-      html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Overdue</th><th>Items</th><th>Recommendation</th></tr></thead><tbody>';
-      for (var i = 0; i < alerts.overduePOs.length; i++) {
-        var po = alerts.overduePOs[i];
-        html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.items) + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
+      var container = document.getElementById('alertsContent');
+      var html = '';
+      
+      html += '<h3 style="margin:0 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">🔴 Critical Overdue Purchase Orders</h3>';
+      
+      // ✅ MOSTRAR SOLO 20
+      var overduePOs = (alerts.overduePOs || []).slice(0, 20);
+      if (overduePOs.length > 0) {
+          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Overdue</th><th>Items</th><th>Recommendation</th></tr></thead><tbody>';
+          for (var i = 0; i < overduePOs.length; i++) {
+              var po = overduePOs[i];
+              html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.items) + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
+          }
+          html += '</tbody></table></div>';
+          if (alerts.overduePOs.length > 20) {
+              html += '<div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">Showing 20 of ' + alerts.overduePOs.length + ' overdue POs.</div>';
+          }
+      } else {
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; margin-bottom:16px;">✅ No critical overdue purchase orders.</div>';
       }
-      html += '</tbody></table></div>';
-    } else {
-      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; margin-bottom:16px;">✅ No critical overdue purchase orders.</div>';
-    }
-    
-    html += '<h3 style="margin:24px 0 12px 0; color:var(--danger); font-family:\'Inter\',sans-serif;">🔴 Out of Stock - Critical Parts</h3>';
-    if (alerts.outOfStockCritical && alerts.outOfStockCritical.length > 0) {
-      html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>';
-      for (var i = 0; i < alerts.outOfStockCritical.length; i++) {
-        var item = alerts.outOfStockCritical[i];
-        html += '<tr><td><strong>' + escapeHtml(item.sku) + '</strong></td><td>' + escapeHtml(item.description || '-') + '</td><td>' + item.minStock + '</td><td>' + escapeHtml(item.recommendation) + '</td></tr>';
+      
+      html += '<h3 style="margin:24px 0 12px 0; color:var(--danger); font-family:\'Inter\',sans-serif;">🔴 Out of Stock - Critical Parts</h3>';
+      if (alerts.outOfStockCritical && alerts.outOfStockCritical.length > 0) {
+          html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>';
+          for (var i = 0; i < alerts.outOfStockCritical.length; i++) {
+              var item = alerts.outOfStockCritical[i];
+              html += '<tr><td><strong>' + escapeHtml(item.sku) + '</strong></td><td>' + escapeHtml(item.description || '-') + '</td><td>' + item.minStock + '</td><td>' + escapeHtml(item.recommendation) + '</td></tr>';
+          }
+          html += '</tbody></table></div>';
+      } else {
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts out of stock.</div>';
       }
-      html += '</tbody></table></div>';
-    } else {
-      html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts out of stock.</div>';
-    }
-    
-    container.innerHTML = html;
+      
+      container.innerHTML = html;
   }
   
   function renderPendingPOSTab(pendingPOs) {
@@ -1009,20 +1005,15 @@
       var showAll = currentData?.showAll || false;
       var showingCount = pendingPOsData.length;
       
-      var html = '<div class="filter-bar"><label>🔍 Filter:</label><select id="poFilter"><option value="all">All POs</option><option value="critical">Critical Only</option><option value="overdue">Overdue Only</option></select>';
+      // ✅ ELIMINAR FILTRO, DEJAR SOLO SHOW ALL
+      var html = '<div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">';
       
-      // ✅ Botón Show All
       if (!showAll && totalPending > showingCount) {
-          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All (' + totalPending + ')</button>';
+          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalPending + ')</button>';
       }
       html += '</div><div id="pendingPOsTable"></div>';
       
       container.innerHTML = html;
-      
-      var poFilter = document.getElementById('poFilter');
-      if (poFilter) {
-          poFilter.addEventListener('change', function() { filterPendingPOs(); });
-      }
       
       var showAllBtn = document.getElementById('showAllPendingBtn');
       if (showAllBtn) {
@@ -1031,38 +1022,27 @@
           });
       }
       
-      filterPendingPOs();
+      renderPendingTable(pendingPOsData);
   }
-  
-  function filterPendingPOs() {
-    var filter = document.getElementById('poFilter')?.value || 'all';
-    
-    logForesight('STK', 'FILTER_PENDING_POS', 'Filter applied: ' + filter);
-    
-    var filtered = pendingPOsData;
-    
-    if (filter === 'critical') filtered = filtered.filter(function(po) { return po.hasCritical; });
-    if (filter === 'overdue') filtered = filtered.filter(function(po) { return po.isOverdue; });
-    
-    if (filtered.length === 0) {
-      document.getElementById('pendingPOsTable').innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">No POs match filter.</div>';
-      return;
-    }
-    
-    // ✅ Mostrar la fecha REAL
-    var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Days Until Expected</th><th>Status</th></tr></thead><tbody>';
 
-    for (var i = 0; i < filtered.length; i++) {
-        var po = filtered[i];
-        var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
-        
-        var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
-        
-        html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + daysUntilExpected + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
-    }
-    
-    html += '</tbody></table></div>';
-    document.getElementById('pendingPOsTable').innerHTML = html;
+  function renderPendingTable(data) {
+      if (data.length === 0) {
+          document.getElementById('pendingPOsTable').innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">No POs match filter.</div>';
+          return;
+      }
+      
+      var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Days Until Expected</th><th>Status</th></tr></thead><tbody>';
+
+      for (var i = 0; i < data.length; i++) {
+          var po = data[i];
+          var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
+          var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
+          
+          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + daysUntilExpected + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
+      }
+      
+      html += '</tbody></table></div>';
+      document.getElementById('pendingPOsTable').innerHTML = html;
   }
 
   function renderOptimizationTab(optimizations, config) {
@@ -1072,20 +1052,69 @@
       var showAll = currentData?.showAll || false;
       var showingCount = optimizations?.length || 0;
       
-      var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+      // ✅ Cargar categorías
+      callApi('STK_getCategoriesData', []).then(function(categories) {
+          var categoryOptions = '<option value="all">All Categories</option>';
+          if (categories && categories.length > 0) {
+              for (var i = 0; i < categories.length; i++) {
+                  categoryOptions += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
+              }
+          }
+          
+          var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+          
+          // ✅ Filtro por categoría
+          html += '<div class="filter-bar"><label>📂 Category:</label><select id="categoryFilter">' + categoryOptions + '</select>';
+          
+          if (!showAll && totalOptimizations > showingCount) {
+              html += '<button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All (' + totalOptimizations + ')</button>';
+          }
+          html += '</div><div id="optimizationTable"></div>';
+          
+          container.innerHTML = html;
+          
+          var categoryFilter = document.getElementById('categoryFilter');
+          if (categoryFilter) {
+              categoryFilter.addEventListener('change', function() { applyOptimizationFilter(); });
+          }
+          
+          var showAllBtn = document.getElementById('showAllOptimizeBtn');
+          if (showAllBtn) {
+              showAllBtn.addEventListener('click', function() { refreshAllData(true); });
+          }
+          
+          // ✅ Guardar datos para filtro
+          window._optimizationData = optimizations;
+          applyOptimizationFilter();
+      }).catch(function(err) {
+          // Fallback - mostrar sin filtro
+          renderOptimizationTable(optimizations);
+      });
+  }
+
+  function applyOptimizationFilter() {
+      var category = document.getElementById('categoryFilter')?.value || 'all';
+      var data = window._optimizationData || [];
       
-      // ✅ Botón Show All
-      if (!showAll && totalOptimizations > showingCount) {
-          html += '<div style="margin-bottom:16px; text-align:right;"><button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalOptimizations + ')</button></div>';
+      if (category !== 'all') {
+          // ✅ Necesitas que los datos tengan categoría
+          // Si no la tienen, se puede obtener desde el backend
+          data = data.filter(function(opt) { return opt.category === category; });
       }
       
+      renderOptimizationTable(data);
+  }
+
+  function renderOptimizationTable(optimizations) {
+      var container = document.getElementById('optimizationTable');
+      if (!container) return;
+      
       if (!optimizations || optimizations.length === 0) {
-          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ All min stock levels appear optimal.</div>';
-          container.innerHTML = html;
+          container.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No optimizations for this category.</div>';
           return;
       }
       
-      html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
+      var html = '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
       
       for (var i = 0; i < optimizations.length; i++) {
           var opt = optimizations[i];
@@ -1099,15 +1128,8 @@
       html += '</tbody></table></div>';
       html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
       container.innerHTML = html;
-      
-      var showAllBtn = document.getElementById('showAllOptimizeBtn');
-      if (showAllBtn) {
-          showAllBtn.addEventListener('click', function() { 
-              refreshAllData(true); 
-          });
-      }
   }
-  
+    
   function renderObsoleteTab(obsoleteData, config) {
       var container = document.getElementById('obsoleteContent');
       obsoletePartsData = obsoleteData.parts || [];
