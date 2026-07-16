@@ -819,6 +819,10 @@
                   '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
           });
           
+      } else if (tabId === 'alerts' && cachedData.alertsLoaded) {
+          // ✅ Re-renderizar si ya está cargado
+          renderAlertsTab(cachedData.alertsData);
+          
       } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
           showLoading('Loading optimization suggestions...');
           var showAll = currentData.showAll || false;
@@ -964,7 +968,7 @@
       // ✅ MOSTRAR SOLO 20
       var overduePOs = (alerts.overduePOs || []).slice(0, 20);
       if (overduePOs.length > 0) {
-          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Overdue</th><th>Items</th><th>Recommendation</th></tr></thead><tbody>';
+          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Since</th><th>Status</th></tr></thead><tbody>';
           for (var i = 0; i < overduePOs.length; i++) {
               var po = overduePOs[i];
               html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.items) + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
@@ -1038,7 +1042,7 @@
           var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
           var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
           
-          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + po.daysSinceIssue + '</td><td>' + daysUntilExpected + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
+          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + (po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '--') + '</td><td>' + (po.expectedDate ? new Date(po.expectedDate).toLocaleDateString() : '--') + '</td><td>' + po.daysSinceIssue + 'd</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.status) + '</span></td></tr>';
       }
       
       html += '</tbody></table></div>';
