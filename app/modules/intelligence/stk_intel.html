@@ -1006,7 +1006,7 @@
           return;
       }
       
-      var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Days Since Issue</th><th>Days Until Expected</th><th>Status</th></tr></thead><tbody>';
+      var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Since</th><th>Status</th></tr></thead><tbody>';
 
       for (var i = 0; i < data.length; i++) {
           var po = data[i];
@@ -1029,11 +1029,15 @@
       
       // ✅ Cargar categorías
       callApi('STK_getCategoriesData', []).then(function(categories) {
+          console.log('[STK] Categories loaded:', categories);
           var categoryOptions = '<option value="all">All Categories</option>';
           if (categories && categories.length > 0) {
               for (var i = 0; i < categories.length; i++) {
                   categoryOptions += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
               }
+          } else {
+              // ✅ Si no hay categorías, mostrar mensaje
+              categoryOptions += '<option value="all" disabled>No categories found</option>';
           }
           
           var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
@@ -1064,8 +1068,9 @@
           
           // ✅ Guardar datos para filtro
           window._optimizationData = optimizations;
+          console.log('[STK] Optimization data stored:', optimizations ? optimizations.length : 0, 'items');
           
-          // ✅ Aplicar filtro inicial (muestra vacío si no hay datos)
+          // ✅ Aplicar filtro inicial
           applyOptimizationFilter();
       }).catch(function(err) {
           // Fallback - mostrar sin filtro
