@@ -825,9 +825,13 @@
       
       showLoading('Refreshing data...');
       try {
+          // ✅ Limpiar caché antes de recargar
+          await callApi('clearAllCache', []);
+          console.log('[CAL] Caché limpiada');
+          
           await loadDashboard();
           hideLoading();
-          showToast('Data refreshed successfully', 'success');
+          showToast('Data refreshed successfully ✅', 'success');
       } catch(err) {
           hideLoading();
           showToast('Error refreshing: ' + err.message, 'error');
