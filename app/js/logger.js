@@ -3,11 +3,15 @@
  * LOGGER MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-06-11
+ * FECHA: 2026-07-17
  * 
  * Centraliza todas las operaciones de logging hacia:
  * - EAMS: SYS_AUDIT_LOG y SYS_LOGS
  * - FORESIGHT: SYS_LOGS
+ * 
+ * Funciones: audit, error, foresight, login, logout,
+ * assetCreated, assetModified, woCreated, woClosed,
+ * woApproved, woRejected, wrap
  * ============================================
  */
 
@@ -45,7 +49,7 @@ const Logger = (function() {
             if (!sessionStr) return null;
             return JSON.parse(sessionStr);
         } catch (e) {
-            console.error('[Logger] Error getting session:', e);
+            //console.error('[Logger] Error getting session:', e);
             return null;
         }
     }
@@ -73,7 +77,7 @@ const Logger = (function() {
     async function callEamsLogging(apiFunction, args) {
         const session = getSession();
         if (!session || !session.eamsApiUrl) {
-            console.warn('[Logger] No session or EAMS API URL');
+            //console.warn('[Logger] No session or EAMS API URL');
             return false;
         }
         
@@ -90,14 +94,14 @@ const Logger = (function() {
             const result = await response.json();
             
             if (result && result.success) {
-                console.log(`[Logger] ${apiFunction} successful`);
+                //console.log(`[Logger] ${apiFunction} successful`);
                 return true;
             } else {
-                console.warn(`[Logger] ${apiFunction} failed:`, result?.error);
+                //console.warn(`[Logger] ${apiFunction} failed:`, result?.error);
                 return false;
             }
         } catch (error) {
-            console.error(`[Logger] Error calling ${apiFunction}:`, error);
+            //console.error(`[Logger] Error calling ${apiFunction}:`, error);
             return false;
         }
     }
@@ -113,7 +117,7 @@ const Logger = (function() {
     async function callForesightLogging(module, action, details, severity = 'INFO') {
         const session = getSession();
         if (!session || !session.intelligenceApiUrl) {
-            console.warn('[Logger] No session or Intelligence API URL');
+            //console.warn('[Logger] No session or Intelligence API URL');
             return false;
         }
         
@@ -138,7 +142,7 @@ const Logger = (function() {
             const result = await response.json();
             return result && result.success;
         } catch (error) {
-            console.error('[Logger] Foresight logging error:', error);
+            //console.error('[Logger] Foresight logging error:', error);
             return false;
         }
     }
