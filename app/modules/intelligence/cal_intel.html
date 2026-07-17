@@ -820,23 +820,23 @@
       }
   }
 
-  async function refreshAllData() {
-      await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
-      
-      showLoading('Refreshing data...');
-      try {
-          // ✅ Limpiar caché antes de recargar
-          await callApi('clearAllCache', []);
-          console.log('[CAL] Caché limpiada');
-          
-          await loadDashboard();
-          hideLoading();
-          showToast('Data refreshed successfully ✅', 'success');
-      } catch(err) {
-          hideLoading();
-          showToast('Error refreshing: ' + err.message, 'error');
-      }
-  }  
+    async function refreshAllData() {
+        await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
+        
+        showLoading('Refreshing data...');
+        try {
+            // ✅ Limpiar caché de CAL antes de recargar
+            await callApi('CAL_clearCache', []);
+            console.log('[CAL] Caché limpiada');
+            
+            await loadDashboard();
+            hideLoading();
+            showToast('Data refreshed successfully ✅', 'success');
+        } catch(err) {
+            hideLoading();
+            showToast('Error refreshing: ' + err.message, 'error');
+        }
+    }
   
   // ============================================
   // TAB 1: DASHBOARD & AUDIT
