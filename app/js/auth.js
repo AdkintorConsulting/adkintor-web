@@ -1,13 +1,19 @@
-// ============================================
-// ADKINTOR AUTH MODULE - VERSIÓN 2 (OPCIÓN B)
-// ============================================
-// Cambios: Usa dominio del email para buscar cliente en Master
-// Fecha: 2026-06-08
-// MODIFICADO: 2026-06-11 - Añadido logging de login/logout
+/**
+ * ============================================
+ * AUTH MODULE - ADKINTOR WEB APP
+ * ============================================
+ * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-17
+ * 
+ * Gestión de autenticación y sesión:
+ * - Login con dominio de email (Opción B)
+ * - Session management (localStorage)
+ * - Logout y limpieza de sesión
+ * ============================================
+ */
 
 (function() {
     if (window.__ADKINTOR_AUTH_LOADED__) {
-        console.log('Auth already loaded, skipping');
         return;
     }
     window.__ADKINTOR_AUTH_LOADED__ = true;
@@ -27,11 +33,9 @@
                     this.session = JSON.parse(sessionData);
                     // Check session expiration
                     if (this.session.timestamp && (Date.now() - this.session.timestamp) > window.ADKINTOR_CONFIG.SESSION_DURATION) {
-                        console.log('Session expired');
                         this.logout();
                     }
                 } catch(e) {
-                    console.error('Error parsing session:', e);
                     this.session = null;
                 }
             }
@@ -56,9 +60,8 @@
             if (email && window.Logger && typeof window.Logger.logout === 'function') {
                 try {
                     await window.Logger.logout(email);
-                    console.log('[Auth] Logout log recorded');
                 } catch(err) {
-                    console.warn('[Auth] Logout log failed (non-critical):', err);
+                    //console.warn('[Auth] Logout log failed (non-critical):', err);
                 }
             }
             // ============================================
@@ -76,11 +79,8 @@
                     return { success: false, error: 'Invalid email format' };
                 }
                 
-                console.log('1. Looking for client with domain:', emailDomain);
-                
                 // Call Master API with domain as client_id
                 const masterResponse = await this.callMasterAPI(emailDomain);
-                console.log('Master response:', masterResponse);
                 
                 // Validate Master API response
                 if (!masterResponse || masterResponse.status !== 'success') {
@@ -96,11 +96,9 @@
                     return { success: false, error: 'No API URL found for this client' };
                 }
                 
-                console.log('2. Calling Intelligence API for:', clientName);
-                
+          
                 // Call Intelligence API to validate credentials
                 const clientResponse = await this.callClientAPI(intelligenceApiUrl, email, password);
-                console.log('Intelligence response:', clientResponse);
                 
                 // Intelligence API returns { success: true, data: {...} }
                 // Verificar si data tiene status 'error'
@@ -135,24 +133,22 @@
                 // Save to localStorage
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
                 this.session = sessionData;
-                console.log('3. Login successful, session saved for:', sessionData.userName);
 
                 // ============================================
                 // NUEVO: REGISTRAR LOG DE LOGIN (no bloqueante)
                 // ============================================
                 if (window.Logger && typeof window.Logger.login === 'function') {
                     window.Logger.login(email, sessionData.role).catch(err => {
-                        console.warn('[Auth] Login log failed (non-critical):', err);
+                      //console.warn('[Auth] Login log failed (non-critical):', err);
                     });
                 } else {
-                    console.warn('[Auth] Logger not available, skipping login log');
+                    //console.warn('[Auth] Logger not available, skipping login log');
                 }
                 // ============================================
                 
                 return { success: true };
                 
             } catch (error) {
-                console.error('Login error:', error);
                 return { success: false, error: error.message || 'Connection error. Please try again.' };
             }
         },
