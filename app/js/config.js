@@ -1,6 +1,17 @@
-// ============================================
-// ADKINTOR CONFIGURATION
-// ============================================
+/**
+ * ============================================
+ * CONFIG MODULE - ADKINTOR WEB APP
+ * ============================================
+ * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-17
+ * 
+ * Configuración global de la aplicación:
+ * - Proxy URL (Cloudflare Worker)
+ * - Master API URL
+ * - Session duration
+ * - Versión dinámica desde API
+ * ============================================
+ */
 
 (function() {
     // Versión por defecto (fallback)
@@ -23,7 +34,6 @@
                 if (result.success && result.data && result.data.fullVersion) {
                     const newVersion = 'v' + result.data.fullVersion;
                     window.ADKINTOR_CONFIG.VERSION = newVersion;
-                    console.log('✅ Versión actualizada desde API:', newVersion);
                     
                     // Actualizar todos los iframes abiertos
                     document.querySelectorAll('iframe').forEach(iframe => {
@@ -36,10 +46,10 @@
                     });
                 }
             })
-            .catch(err => console.warn('Error obteniendo versión:', err));
+            //.catch(err => console.warn('Error obteniendo versión:', err));
         }
     } catch(e) {
-        console.warn('Error al obtener versión:', e);
+        //console.warn('Error al obtener versión:', e);
     }
     
     window.ADKINTOR_CONFIG = {
@@ -56,5 +66,5 @@
         VERSION: version
     };
     
-    console.log('ADKINTOR_CONFIG loaded');
+    //console.log('ADKINTOR_CONFIG loaded');
 })();
