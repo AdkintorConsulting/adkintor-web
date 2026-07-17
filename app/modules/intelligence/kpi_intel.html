@@ -775,18 +775,18 @@
       // ✅ Cargar Financial (Tab 3)
       var financialData = await callApi('KPI_getFinancial', [year, month]);
 
-      // ✅ Combinar datos
+      // ✅ Combinar datos con validación
       var data = {
         success: true,
-        period: kpiData.period,
-        kpis: kpiData.kpis,
-        topAssets: kpiData.topAssets,
-        backlog: kpiData.backlog,
-        woDistribution: kpiData.woDistribution || chartsData.woDistribution,
-        calibrations: kpiData.calibrations,
-        financial: financialData.financial,
-        topAssetsByCost: financialData.topAssetsByCost,
-        trends: chartsData.trends
+        period: kpiData.period || { monthName: 'Unknown', year: year },
+        kpis: kpiData.kpis || { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 },
+        topAssets: kpiData.topAssets || [],
+        backlog: kpiData.backlog || { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 },
+        woDistribution: kpiData.woDistribution || chartsData.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 },
+        calibrations: kpiData.calibrations || [],
+        financial: financialData.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] },
+        topAssetsByCost: financialData.topAssetsByCost || [],
+        trends: chartsData.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] }
       };
       
       if (data && data.success !== false) {
@@ -1079,30 +1079,37 @@ function renderChartsTab(data) {
   }
   
   function renderFinancialTab(data) {
-    var fin = data.financial;
+    // ✅ Validar que data.financial exista
+    var fin = data.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
     var topAssetsByCost = data.topAssetsByCost || [];
     
     var html = '<div class="adk-card" style="margin-bottom: 20px;"><div class="card-title"><i class="fas fa-dollar-sign"></i> BUDGET vs ACTUAL</div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">' +
-      '<div><div style="color:var(--text-secondary); font-size:12px;">Actual Spend</div><div style="font-size:28px; font-weight:800;">$' + fin.actual.toLocaleString() + '</div></div>' +
-      '<div><div style="color:var(--text-secondary); font-size:12px;">Budget</div><div style="font-size:28px; font-weight:800;">$' + fin.budget.toLocaleString() + '</div></div>' +
-      '<div><div style="color:var(--text-secondary); font-size:12px;">Variance</div><div style="font-size:28px; font-weight:800; color:' + (fin.variance > 0 ? 'var(--danger)' : 'var(--success)') + ';">' + (fin.variance > 0 ? '+' : '') + '$' + fin.variance.toLocaleString() + '</div></div>' +
+      '<div><div style="color:var(--text-secondary); font-size:12px;">Actual Spend</div><div style="font-size:28px; font-weight:800;">$' + (fin.actual || 0).toLocaleString() + '</div></div>' +
+      '<div><div style="color:var(--text-secondary); font-size:12px;">Budget</div><div style="font-size:28px; font-weight:800;">$' + (fin.budget || 0).toLocaleString() + '</div></div>' +
+      '<div><div style="color:var(--text-secondary); font-size:12px;">Variance</div><div style="font-size:28px; font-weight:800; color:' + ((fin.variance || 0) > 0 ? 'var(--danger)' : 'var(--success)') + ';">' + ((fin.variance || 0) > 0 ? '+' : '') + '$' + (fin.variance || 0).toLocaleString() + '</div></div>' +
       '</div></div>';
     
     html += '<div class="adk-card" style="margin-bottom: 20px;"><div class="card-title"><i class="fas fa-chart-bar"></i> SPEND BY AREA</div><table style="width:100%;"><thead><tr><th>Area</th><th>General Ledger (GL)</th><th>Amount</th></tr></thead><tbody>';
-    for (var i = 0; i < fin.areas.length; i++) {
-      var a = fin.areas[i];
-      html += '<tr><td><strong>' + escapeHtml(a.name) + '</strong></td><td>' + escapeHtml(a.gl) + '</td><td>$' + Math.round(a.actual).toLocaleString() + '</td></tr>';
+    
+    var areas = fin.areas || [];
+    if (areas.length === 0) {
+      html += '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No spend data available</td></tr>';
+    } else {
+      for (var i = 0; i < areas.length; i++) {
+        var a = areas[i];
+        html += '<tr><td><strong>' + escapeHtml(a.name || 'Unknown') + '</strong></td><td>' + escapeHtml(a.gl || '--') + '</td><td>$' + Math.round(a.actual || 0).toLocaleString() + '</td></tr>';
+      }
     }
     html += '</tbody></table></div>';
     
     html += '<div class="adk-card" style="margin-bottom: 20px;"><div class="card-title"><i class="fas fa-microchip"></i> TOP 5 ASSETS BY COST (Consumed Materials)</div>';
     if (topAssetsByCost.length === 0) {
-      html += '<div>No consumption data available</div>';
+      html += '<div style="color:var(--text-secondary);">No consumption data available</div>';
     } else {
       html += '<table style="width:100%;"><thead><tr><th>#</th><th>Asset</th><th>Cost</th></tr></thead><tbody>';
       for (var i = 0; i < topAssetsByCost.length && i < 5; i++) {
         var a = topAssetsByCost[i];
-        html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(a.assetName) + '</strong><br><small>' + escapeHtml(a.assetId) + '</small></td><td>$' + a.cost.toLocaleString() + '</td></tr>';
+        html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(a.assetName || a.assetId || 'Unknown') + '</strong><br><small>' + escapeHtml(a.assetId || '--') + '</small></td><td>$' + (a.cost || 0).toLocaleString() + '</td></tr>';
       }
       html += '</tbody></table>';
     }
