@@ -1038,19 +1038,46 @@ function renderChartsTab(data) {
       });
     }
     
-    // ✅ Maintenance Trend Chart (Corrective vs Preventive vs Others)
+    // ✅ Maintenance Trend Chart (Corrective vs Preventive vs Others) - LÍNEA DE TENDENCIA
     var maintCanvas = document.getElementById('maintenanceTrendCanvas');
     if (maintCanvas) {
       var maintCtx = maintCanvas.getContext('2d');
       if (maintChartInstance) maintChartInstance.destroy();
       maintChartInstance = new Chart(maintCtx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
           datasets: [
-            { label: 'Corrective', data: trends.correctiveTrend || Array(12).fill(0), backgroundColor: 'rgba(255,82,82,0.8)', borderColor: '#ff5252', borderWidth: 2, borderRadius: 4 },
-            { label: 'Preventive', data: trends.preventiveTrend || Array(12).fill(0), backgroundColor: 'rgba(0,230,118,0.8)', borderColor: '#00e676', borderWidth: 2, borderRadius: 4 },
-            { label: 'Others', data: trends.otherTrend || Array(12).fill(0), backgroundColor: 'rgba(148,163,184,0.8)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 4 }
+            { 
+              label: 'Corrective', 
+              data: trends.correctiveTrend || Array(12).fill(0), 
+              borderColor: '#ff5252', 
+              backgroundColor: 'rgba(255,82,82,0.1)', 
+              tension: 0.3, 
+              fill: true, 
+              pointBackgroundColor: '#ff5252', 
+              borderWidth: 2 
+            },
+            { 
+              label: 'Preventive', 
+              data: trends.preventiveTrend || Array(12).fill(0), 
+              borderColor: '#00e676', 
+              backgroundColor: 'rgba(0,230,118,0.1)', 
+              tension: 0.3, 
+              fill: true, 
+              pointBackgroundColor: '#00e676', 
+              borderWidth: 2 
+            },
+            { 
+              label: 'Others', 
+              data: trends.otherTrend || Array(12).fill(0), 
+              borderColor: '#94a3b8', 
+              backgroundColor: 'rgba(148,163,184,0.1)', 
+              tension: 0.3, 
+              fill: true, 
+              pointBackgroundColor: '#94a3b8', 
+              borderWidth: 2 
+            }
           ]
         },
         options: {
