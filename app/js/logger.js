@@ -1,368 +1,327 @@
 /**
  * ============================================
- * LOGGER MODULE - ADKINTOR WEB APP
+ * MODULE BASE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
  * FECHA: 2026-07-17
  * 
- * Centraliza todas las operaciones de logging hacia:
- * - EAMS: SYS_AUDIT_LOG y SYS_LOGS
- * - FORESIGHT: SYS_LOGS
- * 
- * Funciones: audit, error, foresight, login, logout,
- * assetCreated, assetModified, woCreated, woClosed,
- * woApproved, woRejected, wrap
+ * Archivo base para todos los módulos (EAMS y FORESIGHT):
+ * - Usuario desde localStorage
+ * - Logo desde postMessage
+ * - Versión desde postMessage
+ * - Toast notifications
+ * - API calls
+ * - Logging con usuario
+ * - Impresión estandarizada
  * ============================================
  */
 
-const Logger = (function() {
+(function() {
     'use strict';
     
-    // Configuración
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    
     const CONFIG = {
-        // Mapeo de acciones de la Web App a funciones de la API
-        ACTION_TO_API_FUNCTION: {
-            // Acciones de auditoría (EAMS SYS_AUDIT_LOG)
-            'LOGIN': 'logCreate',
-            'LOGOUT': 'logCreate',
-            'CREATE_ASSET': 'logCreate',
-            'MODIFY_ASSET': 'logModify',
-            'DELETE_ASSET': 'logDelete',
-            'CREATE_WO': 'logCreate',
-            'MODIFY_WO': 'logModify',
-            'CLOSE_WO': 'logClose',
-            'APPROVE_WO': 'logApprove',
-            'REJECT_WO': 'logReject',
-            'LOCK_PLAN': 'logLock',
-            'RELEASE_PLAN': 'logRelease',
-            'RECEIVE_STOCK': 'logReceive',
-            'CHANGE_STATUS': 'logChange'
-        }
+        PROXY_URL: window.ADKINTOR_CONFIG?.PROXY_URL || 'https://adkintor-proxy.empty-bonus-1852.workers.dev/',
+        VERSION: window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0'
     };
     
-    /**
-     * Obtiene la sesión actual del localStorage
-     */
-    function getSession() {
-        try {
-            const sessionStr = localStorage.getItem('adkintor_session');
-            if (!sessionStr) return null;
-            return JSON.parse(sessionStr);
-        } catch (e) {
-            //console.error('[Logger] Error getting session:', e);
-            return null;
+    // ============================================
+    // SESIÓN
+    // ============================================
+    
+    let session = null;
+    let userEmail = 'unknown';
+    let userName = 'User';
+    let userRole = 'VIEWER';
+    let eamsApiUrl = null;
+    let intelligenceApiUrl = null;
+    
+    try {
+        const sessionStr = localStorage.getItem('adkintor_session');
+        if (sessionStr) {
+            session = JSON.parse(sessionStr);
+            userEmail = session.email || 'unknown';
+            userName = session.userName || session.name || userEmail.split('@')[0] || 'User';
+            userRole = session.role || 'VIEWER';
+            eamsApiUrl = session.eamsApiUrl || null;
+            intelligenceApiUrl = session.intelligenceApiUrl || null;
         }
+    } catch(e) {
+        //console.warn('[ModuleBase] Error loading session:', e);
     }
     
-    /**
-     * Obtiene la IP del cliente (aproximada mediante fetch)
-     * Nota: Esto es opcional y no siempre funciona
-     */
-    async function getClientIP() {
-        try {
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            return data.ip;
-        } catch (e) {
-            return 'unknown';
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    
+    function showToast(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            // Fallback: usar el sistema de toast del padre
+            if (window.parent && window.parent.showToast) {
+                window.parent.showToast(message, type, duration);
+                return;
+            }
+            //console.warn('[ModuleBase] Toast container not found');
+            return;
         }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 350);
+        }, duration);
     }
     
-    /**
-     * Llama a la API de EAMS con la función de logging
-     * @param {string} apiFunction - Nombre de la función (logCreate, logModify, etc.)
-     * @param {Array} args - Argumentos para la función
-     * @returns {Promise<boolean>} - true si éxito, false si falló
-     */
-    async function callEamsLogging(apiFunction, args) {
-        const session = getSession();
-        if (!session || !session.eamsApiUrl) {
-            //console.warn('[Logger] No session or EAMS API URL');
-            return false;
+    // ============================================
+    // API CALLS
+    // ============================================
+    
+    async function callApi(action, args = [], apiUrl = null) {
+        const url = apiUrl || eamsApiUrl || intelligenceApiUrl;
+        if (!url) {
+            showToast('API URL not available', 'error');
+            throw new Error('API URL not available');
         }
         
         try {
-            const response = await fetch(window.PROXY_URL || 'https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
+            const response = await fetch(CONFIG.PROXY_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    targetUrl: session.eamsApiUrl,
-                    payload: { action: apiFunction, args: args }
+                    targetUrl: url,
+                    payload: { action: action, args: args }
                 })
             });
             
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const result = await response.json();
             
-            if (result && result.success) {
-                //console.log(`[Logger] ${apiFunction} successful`);
-                return true;
-            } else {
-                //console.warn(`[Logger] ${apiFunction} failed:`, result?.error);
-                return false;
+            if (result && result.status === 'error') {
+                throw new Error(result.message || 'API error');
             }
+            
+            return result;
         } catch (error) {
-            //console.error(`[Logger] Error calling ${apiFunction}:`, error);
-            return false;
+            //console.error('[ModuleBase] API call failed:', error);
+            showToast(error.message, 'error');
+            throw error;
         }
     }
     
-    /**
-     * Llama a la API de FORESIGHT para logging
-     * @param {string} module - Módulo (KPI, WO, PVT, etc.)
-     * @param {string} action - Acción realizada
-     * @param {string} details - Detalles adicionales
-     * @param {string} severity - Severidad (INFO, WARNING, ERROR)
-     * @returns {Promise<boolean>}
-     */
-    async function callForesightLogging(module, action, details, severity = 'INFO') {
-        const session = getSession();
-        if (!session || !session.intelligenceApiUrl) {
-            //console.warn('[Logger] No session or Intelligence API URL');
-            return false;
-        }
-        
+    // ============================================
+    // LOGGING (con usuario automático)
+    // ============================================
+    
+    async function logAction(action, module, entityId, details = '') {
         try {
-            // FORESIGHT: logAction(module, action, targetId, details)
-            // La función espera 4 argumentos
-            const targetId = `${action}_${Date.now()}`;
-            const fullDetails = `${details} | User: ${session.email} | Severity: ${severity}`;
-            
-            const response = await fetch(window.PROXY_URL || 'https://adkintor-proxy.empty-bonus-1852.workers.dev/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    targetUrl: session.intelligenceApiUrl,
-                    payload: { 
-                        action: 'logAction', 
-                        args: [module, action, targetId, fullDetails]
-                    }
-                })
-            });
-            
-            const result = await response.json();
-            return result && result.success;
-        } catch (error) {
-            //console.error('[Logger] Foresight logging error:', error);
+            await callApi('logCreate', [userEmail, action, module, entityId, '', '', '', details]);
+            return true;
+        } catch(e) {
+            //console.warn('[ModuleBase] Logging failed:', e);
             return false;
         }
     }
     
-    /**
-     * Registra una acción de auditoría en EAMS (SYS_AUDIT_LOG)
-     * @param {string} actionType - Tipo de acción (CREATE_ASSET, MODIFY_ASSET, etc.)
-     * @param {string} module - Módulo (AST, WO, PVT, STK, CAL)
-     * @param {string} entityId - ID de la entidad afectada
-     * @param {string} field - Campo modificado (opcional)
-     * @param {string} oldValue - Valor anterior (opcional)
-     * @param {string} newValue - Valor nuevo (opcional)
-     * @param {string} details - Detalles adicionales (opcional)
-     * @returns {Promise<boolean>}
-     */
-    async function audit(actionType, module, entityId, field = '', oldValue = '', newValue = '', details = '') {
-        const session = getSession();
-        if (!session) return false;
-        
-        // Mapear actionType a función de API
-        const apiFunction = CONFIG.ACTION_TO_API_FUNCTION[actionType] || 'logCreate';
-        
-        // Formato esperado por las funciones de logging de EAMS
-        // Basado en la estructura: Timestamp | User Email | Action | Module | Entity ID | Field | Old Value | New Value | Details
-        const args = [
-            session.email,      // email del usuario
-            actionType,         // acción (CREATE_ASSET, etc.)
-            module,             // módulo (AST, WO, etc.)
-            entityId,           // ID de la entidad
-            field,              // campo modificado
-            oldValue,           // valor anterior
-            newValue,           // valor nuevo
-            details             // detalles adicionales
-        ];
-        
-        return await callEamsLogging(apiFunction, args);
-    }
-    
-    /**
-     * Registra un error en EAMS (SYS_LOGS)
-     * @param {string} module - Módulo donde ocurrió el error
-     * @param {string} action - Acción que falló
-     * @param {string} errorMsg - Mensaje de error
-     * @param {string} level - Nivel (ERROR, WARNING, INFO)
-     * @returns {Promise<boolean>}
-     */
-    async function error(module, action, errorMsg, level = 'ERROR') {
-        const session = getSession();
-        const email = session ? session.email : 'unknown';
-        
-        // Usar logSystemError de EAMS
-        return await callEamsLogging('logSystemError', [module, action, errorMsg, level, email]);
-    }
-    
-    /**
-     * Registra un evento en FORESIGHT (SYS_LOGS)
-     * @param {string} module - Módulo (KPI, WO, PVT, STK, CAL)
-     * @param {string} action - Acción realizada
-     * @param {string} details - Detalles
-     * @param {string} severity - Severidad (INFO, WARNING, ERROR)
-     * @returns {Promise<boolean>}
-     */
-    async function foresight(module, action, details, severity = 'INFO') {
-        return await callForesightLogging(module, action, details, severity);
-    }
-    
-    /**
-     * Registra el inicio de sesión de un usuario
-     * @param {string} email - Email del usuario
-     * @param {string} role - Rol del usuario
-     * @returns {Promise<boolean>}
-     */
-    async function login(email, role) {
-        const success = await audit('LOGIN', 'SYS', email, '', '', '', `Login exitoso - Rol: ${role}`);
-        
-        // También registrar en FORESIGHT
-        await foresight('SECURITY', 'LOGIN', `Usuario ${email} inició sesión con rol ${role}`);
-        
-        return success;
-    }
-    
-    /**
-     * Registra el cierre de sesión
-     * @param {string} email - Email del usuario
-     * @returns {Promise<boolean>}
-     */
-    async function logout(email) {
-        return await audit('LOGOUT', 'SYS', email, '', '', '', 'Cierre de sesión');
-    }
-    
-    /**
-     * Registra la creación de un activo
-     * @param {string} assetId - ID del activo creado
-     * @param {Object} assetData - Datos del activo
-     * @returns {Promise<boolean>}
-     */
-    async function assetCreated(assetId, assetData) {
-        const details = JSON.stringify({
-            name: assetData.name || assetData.description,
-            type: assetData.type,
-            location: assetData.location,
-            criticality: assetData.criticality
-        });
-        return await audit('CREATE_ASSET', 'AST', assetId, '', '', '', details);
-    }
-    
-    /**
-     * Registra la modificación de un activo
-     * @param {string} assetId - ID del activo modificado
-     * @param {Array} changes - Lista de cambios [{field, oldValue, newValue}]
-     * @returns {Promise<boolean>}
-     */
-    async function assetModified(assetId, changes) {
-        // Si hay múltiples cambios, registrar el más importante o todos
-        if (changes.length === 1) {
-            const change = changes[0];
-            return await audit('MODIFY_ASSET', 'AST', assetId, change.field, change.oldValue, change.newValue, '');
-        } else if (changes.length > 1) {
-            // Registrar como cambio múltiple
-            const details = JSON.stringify(changes);
-            return await audit('MODIFY_ASSET', 'AST', assetId, 'Multiple', '', '', details);
+    async function logError(module, action, errorMsg) {
+        try {
+            await callApi('logSystemError', [module, action, errorMsg, 'ERROR', userEmail]);
+            return true;
+        } catch(e) {
+            //console.warn('[ModuleBase] Error logging failed:', e);
+            return false;
         }
-        return false;
     }
     
-    /**
-     * Registra la creación de una Orden de Trabajo
-     * @param {string} woId - ID de la WO
-     * @param {Object} woData - Datos de la WO
-     * @returns {Promise<boolean>}
-     */
-    async function woCreated(woId, woData) {
-        const details = JSON.stringify({
-            assetId: woData.assetId,
-            priority: woData.priority,
-            type: woData.type
-        });
-        return await audit('CREATE_WO', 'WO', woId, '', '', '', details);
-    }
+    // ============================================
+    // POSTMESSAGE - RECIBIR DATOS DEL PADRE
+    // ============================================
     
-    /**
-     * Registra el cierre de una WO
-     * @param {string} woId - ID de la WO
-     * @param {string} resolution - Resolución
-     * @returns {Promise<boolean>}
-     */
-    async function woClosed(woId, resolution) {
-        return await audit('CLOSE_WO', 'WO', woId, 'Status', 'Open', 'Closed', resolution);
-    }
-    
-    /**
-     * Registra la aprobación de una WO
-     * @param {string} woId - ID de la WO
-     *param {string} approvedBy - Quién aprobó
-    * @returns {Promise<boolean>}
-    */
-    async function woApproved(woId, approvedBy) {
-        const session = getSession();
-        const userEmail = session ? session.email : 'system';
-        const details = `Approved by ${approvedBy}`;
-        return await callEamsLogging('logApprove', ['WO', woId, details, userEmail]);
-    }
-    
-    /**
-     * Registra el rechazo de una WO
-     * @param {string} woId - ID de la WO
-     * @param {string} reason - Razón del rechazo
-     * @returns {Promise<boolean>}
-     */
-    async function woRejected(woId, reason) {
-        const session = getSession();
-        const userEmail = session ? session.email : 'system';
-        const details = `Rejected: ${reason}`;
-        return await callEamsLogging('logReject', ['WO', woId, details, userEmail]);
-    }
-    
-    // API pública
-    return {
-        // Genéricos
-        audit,
-        error,
-        foresight,
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (!data || typeof data !== 'object') return;
         
-        // Acciones específicas
-        login,
-        logout,
-        assetCreated,
-        assetModified,
-        woCreated,
-        woClosed,
-        woApproved,
-        woRejected,
-        
-        // Helper para try/catch automático
-        async wrap(actionName, module, fn, context = {}) {
-            try {
-                const result = await fn();
-                
-                // Si es éxito y hay contexto de logging
-                if (context.logSuccess) {
-                    await this.audit(
-                        context.actionType || 'EXECUTE',
-                        module,
-                        context.entityId || '',
-                        '',
-                        '',
-                        '',
-                        context.logSuccess
-                    );
-                }
-                
-                return result;
-            } catch (error) {
-                // Registrar el error automáticamente
-                await this.error(module, actionName, error.message);
-                throw error;
-            }
+        // Logo
+        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            document.querySelectorAll('.company-logo').forEach(img => {
+                img.src = data.logoUrl;
+                img.style.display = 'inline-block';
+            });
         }
+        
+        // Versión
+        if (data.type === 'SET_VERSION' && data.version) {
+            document.querySelectorAll('.footer-version, .version-badge').forEach(el => {
+                el.textContent = data.version;
+            });
+        }
+    });
+    
+    // ============================================
+    // INICIALIZACIÓN DEL MÓDULO
+    // ============================================
+    
+    function initModule(moduleTitle) {
+        // Mostrar usuario
+        document.querySelectorAll('.user-badge').forEach(el => {
+            el.textContent = `👤 ${userName}`;
+        });
+        
+        document.querySelectorAll('.user-email').forEach(el => {
+            el.textContent = userEmail;
+        });
+        
+        // Mostrar versión inicial (será actualizada por postMessage)
+        document.querySelectorAll('.footer-version, .version-badge').forEach(el => {
+            el.textContent = CONFIG.VERSION;
+        });
+        
+        // Ocultar loading, mostrar contenido
+        const overlay = document.getElementById('loadingOverlay');
+        const content = document.getElementById('moduleContent');
+        if (overlay) overlay.classList.add('hidden');
+        if (content) content.style.display = 'block';
+        
+        // Toast de bienvenida
+        setTimeout(() => {
+            showToast(`${moduleTitle} loaded successfully ✅`, 'success', 2000);
+        }, 300);
+        
+        // Enviar señal de que el módulo está listo
+        if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({
+                type: 'MODULE_READY',
+                module: moduleTitle,
+                user: userName
+            }, '*');
+        }
+        
+        //console.log(`[ModuleBase] ${moduleTitle} initialized for user: ${userName}`);
+    }
+    
+    // ============================================
+    // IMPRESIÓN ESTANDARIZADA
+    // ============================================
+    
+    function printModule(title, mode = 'eams') {
+        // Añadir clase para el modo (eams o foresight)
+        document.body.classList.add(`${mode}-print`);
+        
+        // Asegurar que el header de impresión existe
+        ensurePrintHeader(title);
+        
+        // Añadir footer de impresión
+        ensurePrintFooter();
+        
+        // Imprimir
+        window.print();
+        
+        // Remover clases después de imprimir
+        setTimeout(() => {
+            document.body.classList.remove('eams-print', 'foresight-print');
+        }, 1000);
+    }
+    
+    function ensurePrintHeader(title) {
+        // Verificar si ya existe
+        let header = document.querySelector('.print-header');
+        if (header) return;
+        
+        // Obtener logo
+        const logoImg = document.querySelector('.company-logo');
+        const logoSrc = logoImg ? logoImg.src : 'https://i.imgur.com/aQol7vU.png';
+        
+        // Obtener usuario y fecha
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        const timeStr = now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        // Crear header
+        header = document.createElement('div');
+        header.className = 'print-header';
+        header.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;">
+                <img class="print-logo" src="${logoSrc}" alt="Logo" onerror="this.src='https://i.imgur.com/aQol7vU.png'">
+                <span class="print-title">${title}</span>
+            </div>
+            <div class="print-meta">
+                <span>${userName} (${userEmail})</span>
+                <span>${dateStr} at ${timeStr}</span>
+            </div>
+        `;
+        
+        // Insertar al inicio del body
+        document.body.insertBefore(header, document.body.firstChild);
+    }
+    
+    function ensurePrintFooter() {
+        // Verificar si ya existe
+        let footer = document.querySelector('.print-footer');
+        if (footer) return;
+        
+        const version = CONFIG.VERSION;
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        footer = document.createElement('div');
+        footer.className = 'print-footer';
+        footer.innerHTML = `
+            <span>ADKINTOR EAMS + FORESIGHT</span>
+            <span>
+                <span class="footer-version">v${version}</span>
+                <span class="footer-date"> | ${dateStr}</span>
+            </span>
+        `;
+        
+        document.body.appendChild(footer);
+    }
+    
+    // ============================================
+    // EXPOSICIÓN PÚBLICA
+    // ============================================
+    
+    window.ModuleBase = {
+        // Datos
+        session: session,
+        userEmail: userEmail,
+        userName: userName,
+        userRole: userRole,
+        eamsApiUrl: eamsApiUrl,
+        intelligenceApiUrl: intelligenceApiUrl,
+        version: CONFIG.VERSION,
+        
+        // Funciones
+        showToast: showToast,
+        callApi: callApi,
+        logAction: logAction,
+        logError: logError,
+        initModule: initModule,
+        printModule: printModule
     };
+    
+    //console.log('[ModuleBase] Loaded successfully for user:', userName);
+    
 })();
-
-// Exponer globalmente
-window.Logger = Logger;
