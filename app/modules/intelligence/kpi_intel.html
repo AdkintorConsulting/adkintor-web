@@ -753,6 +753,7 @@
   var trendChart = null;
   var spendChartInstance = null;
   var pieChartInstance = null;
+  var maintChartInstance = null;  // ← NUEVO
   
   // ============================================
   // DATA LOADING FUNCTIONS
@@ -767,7 +768,26 @@
     await logForesight('KPI', 'OPEN_DASHBOARD', 'Dashboard opened - Period: ' + month + '/' + year);
     
     try {
-      var data = await callApi('getKPIDashboardData', [year, month]);
+      // ✅ Cargar KPIs (Tab 1)
+      var kpiData = await callApi('KPI_getKPIs', [year, month]);
+      // ✅ Cargar Charts (Tab 2)
+      var chartsData = await callApi('KPI_getCharts', [year, month]);
+      // ✅ Cargar Financial (Tab 3)
+      var financialData = await callApi('KPI_getFinancial', [year, month]);
+
+      // ✅ Combinar datos
+      var data = {
+        success: true,
+        period: kpiData.period,
+        kpis: kpiData.kpis,
+        topAssets: kpiData.topAssets,
+        backlog: kpiData.backlog,
+        woDistribution: kpiData.woDistribution || chartsData.woDistribution,
+        calibrations: kpiData.calibrations,
+        financial: financialData.financial,
+        topAssetsByCost: financialData.topAssetsByCost,
+        trends: chartsData.trends
+      };
       
       if (data && data.success !== false) {
         currentData = data;
@@ -776,7 +796,7 @@
         renderFinancialTab(data);
         
         try {
-          var compareData = await callApi('getCompareDataReal', [year, month, compareType]);
+          var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
           currentData.compareData = compareData;
           renderCompareTab(currentData);
         } catch (compareError) {
@@ -810,7 +830,7 @@
     var compareType = document.getElementById('compareSelect').value;
     
     try {
-      var data = await callApi('getCompareDataReal', [year, month, compareType]);
+      var data = await callApi('KPI_getCompare', [year, month, compareType]);
       if (currentData) {
         currentData.compareData = data;
         renderCompareTab(currentData);
@@ -829,7 +849,7 @@
     await logForesight('KPI', 'EXPORT_PDF', 'PDF Export - Period: ' + month + '/' + year);
     
     try {
-      var htmlContent = await callApi('exportToPDF', [year, month]);
+      var htmlContent = await callApi('KPI_exportPDF', [year, month]);
       hideLoading();
       
       var printWindow = window.open('', '_blank', 'width=1000,height=800,toolbars=yes');
@@ -905,13 +925,14 @@
     document.getElementById('kpiContent').innerHTML = html;
   }
   
-  function renderChartsTab(data) {
-    var trends = data.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [] };
+function renderChartsTab(data) {
+    var trends = data.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
     var woDist = data.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
     
     var html = '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-line"></i> OPERATIONAL TRENDS (Last 12 Months)</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="trendCanvas" style="max-width: 100%;"></canvas></div></div>' +
       '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-bar"></i> MONTHLY SPEND TREND</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="spendCanvas" style="max-width: 100%;"></canvas></div></div>' +
-      '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-pie"></i> WORK ORDER DISTRIBUTION</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="woPieCanvas" style="max-width: 300px;"></canvas></div></div>';
+      '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-pie"></i> WORK ORDER DISTRIBUTION</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="woPieCanvas" style="max-width: 300px;"></canvas></div></div>' +
+      '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-bar"></i> MAINTENANCE TREND (12 Months)</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="maintenanceTrendCanvas" style="max-width: 100%;"></canvas></div></div>';
     
     document.getElementById('chartsContent').innerHTML = html;
     
@@ -1012,6 +1033,45 @@
           maintainAspectRatio: true,
           plugins: { 
             legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } 
+          }
+        }
+      });
+    }
+    
+    // ✅ Maintenance Trend Chart (Corrective vs Preventive vs Others)
+    var maintCanvas = document.getElementById('maintenanceTrendCanvas');
+    if (maintCanvas) {
+      var maintCtx = maintCanvas.getContext('2d');
+      if (maintChartInstance) maintChartInstance.destroy();
+      maintChartInstance = new Chart(maintCtx, {
+        type: 'bar',
+        data: {
+          labels: trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [
+            { label: 'Corrective', data: trends.correctiveTrend || Array(12).fill(0), backgroundColor: 'rgba(255,82,82,0.8)', borderColor: '#ff5252', borderWidth: 2, borderRadius: 4 },
+            { label: 'Preventive', data: trends.preventiveTrend || Array(12).fill(0), backgroundColor: 'rgba(0,230,118,0.8)', borderColor: '#00e676', borderWidth: 2, borderRadius: 4 },
+            { label: 'Others', data: trends.otherTrend || Array(12).fill(0), backgroundColor: 'rgba(148,163,184,0.8)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { 
+            legend: { 
+              position: 'top', 
+              labels: { color: '#f1f5f9', font: { family: 'Inter' } } 
+            } 
+          },
+          scales: { 
+            y: { 
+              ticks: { color: '#94a3b8', font: { family: 'Inter' }, stepSize: 1 }, 
+              grid: { color: '#2d2d44' },
+              title: { display: true, text: 'Number of Work Orders', color: '#94a3b8', font: { family: 'Inter' } }
+            }, 
+            x: { 
+              ticks: { color: '#94a3b8', font: { family: 'Inter' } }, 
+              grid: { color: '#2d2d44' } 
+            } 
           }
         }
       });
