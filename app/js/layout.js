@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ * LAYOUT MODULE - ADKINTOR WEB APP
+ * ============================================
+ * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-17
+ * 
+ * Controlador principal de la interfaz:
+ * - Sidebar navigation (FORESIGHT modules)
+ * - EAMS dispatchers (6 módulos)
+ * - Modal management (iframe, documentos)
+ * - Breadcrumbs y navegación
+ * - Permisos y roles
+ * ============================================
+ */
+
 // PDF Documents Configuration (for future implementation)
 const pdfConfig = {
     'SOP Maintenance': { url: '', filename: 'SOP_Maintenance.pdf' },
@@ -22,7 +38,7 @@ let isSidebarCollapsed = false;
 
 // Asegurar que el Logger está disponible
 if (typeof Logger === 'undefined') {
-    console.warn('Logger not loaded, logging disabled');
+    //console.warn('Logger not loaded, logging disabled');
     window.Logger = {
         error: (...args) => console.warn('Logger unavailable:', args),
         audit: (...args) => console.warn('Logger unavailable:', args)
@@ -403,7 +419,7 @@ function handleEamsClick(module) {
             openSysWizard();
             break;
         default:
-            console.log('Unknown EAMS module:', module);
+            //console.log('Unknown EAMS module:', module);
     }
 }
 
@@ -440,7 +456,7 @@ function openAssetDispatcher() {
                 }, 100);
             })
             .catch(error => {
-                console.error('Error loading ASSET dispatcher:', error);
+                //console.error('Error loading ASSET dispatcher:', error);
                 dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Asset Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
@@ -483,7 +499,7 @@ function openWorkOrderDispatcher() {
                 }, 100);
             })
             .catch(error => {
-                console.error('Error loading WO dispatcher:', error);
+                //console.error('Error loading WO dispatcher:', error);
                 dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Work Order Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
@@ -596,7 +612,7 @@ function openPreventiveDispatcher() {
                 }, 100);
             })
             .catch(error => {
-                console.error('Error loading PVT dispatcher:', error);
+                //console.error('Error loading PVT dispatcher:', error);
                 dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Preventive Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
@@ -709,7 +725,7 @@ function openInventoryDispatcher() {
                 }, 100);
             })
             .catch(error => {
-                console.error('Error loading STK dispatcher:', error);
+                //console.error('Error loading STK dispatcher:', error);
                 dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Inventory Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
@@ -802,7 +818,7 @@ function openCalibrationDispatcher() {
                 }, 100);
             })
             .catch(error => {
-                console.error('Error loading CAL dispatcher:', error);
+                //console.error('Error loading CAL dispatcher:', error);
                 dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Calibration Dispatcher</h3><p>Please try again later</p></div>`;
             });
     }
@@ -958,7 +974,7 @@ async function loadCompanyLogoForIframe(iframe) {
         sendLogoToIframe(iframe, logoUrl);
         
     } catch (error) {
-        console.warn('Could not load company logo, using default:', error);
+        //console.warn('Could not load company logo, using default:', error);
         sendLogoToIframe(iframe, 'https://i.imgur.com/aQol7vU.png');
     }
 }
@@ -1003,9 +1019,9 @@ async function sendVersionToIframe(iframe) {
             const result = await response.json();
             if (result.success && result.data && result.data.fullVersion) {
                 version = 'v' + result.data.fullVersion;
-                console.log('✅ Versión obtenida desde API:', version);
+                //console.log('✅ Versión obtenida desde API:', version);
             } else {
-                console.warn('No se pudo obtener versión desde API, usando fallback');
+                //console.warn('No se pudo obtener versión desde API, usando fallback');
             }
         }
         
@@ -1029,7 +1045,7 @@ async function sendVersionToIframe(iframe) {
             };
         }
     } catch (error) {
-        console.warn('Error obteniendo versión:', error);
+        //console.warn('Error obteniendo versión:', error);
         // Fallback: usar la de config
         const version = window.ADKINTOR_CONFIG?.VERSION || 'v1.0.0';
         // ... enviar versión
@@ -1201,9 +1217,6 @@ async function loadUserRoleAndPermissions() {
         const userName = session.userName || session.name || session.email.split('@')[0];
         const eamsApiUrl = session.eamsApiUrl;
         
-        console.log('User role from localStorage:', userRole);
-        console.log('User name from localStorage:', userName);
-        
         currentUserRole = userRole;
         
         // Obtener permisos desde la API (SETUP_HUB)
@@ -1223,13 +1236,10 @@ async function loadUserRoleAndPermissions() {
                 
                 if (result.success && Array.isArray(result.data)) {
                     permissions = result.data;
-                    console.log('Permissions loaded from SETUP_HUB:', permissions);
                 } else {
-                    console.warn('Failed to load permissions from API, using fallback');
                     permissions = getFallbackPermissions(userRole);
                 }
             } catch (error) {
-                console.error('Error fetching permissions:', error);
                 permissions = getFallbackPermissions(userRole);
             }
         } else {
@@ -1255,7 +1265,6 @@ async function loadUserRoleAndPermissions() {
         }
         
     } catch (error) {
-        console.error('Error loading user permissions:', error);
         if (loadingDiv) {
             loadingDiv.innerHTML = `
                 <div class="welcome-message">
@@ -1287,7 +1296,6 @@ function applyPermissionsByRole() {
     const permissions = window.currentPermissions || [];
     
     if (permissions.length === 0) {
-        console.warn('No permissions loaded, hiding all buttons');
         document.querySelectorAll('.sidebar-btn, .eams-btn').forEach(btn => {
             btn.style.setProperty('display', 'none', 'important');
         });
@@ -1326,7 +1334,6 @@ function applyPermissionsByRole() {
 function showToast(message, type = 'info', duration = 3000) {
     const container = document.getElementById('toastContainer');
     if (!container) {
-        console.warn('Toast container not found');
         return;
     }
     
@@ -1366,7 +1373,7 @@ window.addEventListener('message', function(event) {
     
     // ✅ Manejar mensajes de dispatchers (openIframeModal)
     if (data.type === 'openIframeModal') {
-        console.log('[LAYOUT] Abriendo modal desde dispatcher:', data.title);
+        //console.log('[LAYOUT] Abriendo modal desde dispatcher:', data.title);
         openIframeModalWithTitle(data.title, data.url);
         return;
     }
