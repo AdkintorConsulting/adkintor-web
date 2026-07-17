@@ -982,10 +982,10 @@
         return;
       }
       
-      var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body">' +
-        '<p><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p>' +
-        '<p>📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>' +
-        '<p>📊 History: ' + trend.historyCount + ' calibrations | Deviation data: ' + trend.deviationCount + '</p>';
+      var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body" style="text-align: left;">' +
+        '<p style="text-align: left;"><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p>' +
+        '<p style="text-align: left;">📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>' +
+        '<p style="text-align: left;">📊 History: ' + trend.historyCount + ' calibrations | Deviation data: ' + trend.deviationCount + '</p>';
       
       if (trend.deviations && trend.deviations.length > 0) {
         html += '<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr>' +
@@ -1000,13 +1000,18 @@
         for (var i = 0; i < trend.deviations.length; i++) {
           var d = trend.deviations[i];
           var resultClass = d.result === 'PASS' ? 'color:var(--success);' : (d.result === 'FAIL' ? 'color:var(--danger);' : '');
+          // ✅ Formatear tolerancia si es un número
+          var toleranceDisplay = d.tolerance;
+          if (d.tolerance && !isNaN(parseFloat(d.tolerance))) {
+            toleranceDisplay = parseFloat(d.tolerance).toFixed(2);
+          }
           html += '<tr>' +
             '<td>' + new Date(d.date).toLocaleDateString() + '</td>' +
             '<td class="trend-deviation">' + (d.deviation !== null ? d.deviation.toFixed(4) : '—') + '</td>' +
             '<td>' + (d.measuredValue !== null ? d.measuredValue : '—') + '</td>' +
             '<td>' + (d.expectedValue !== null ? d.expectedValue : '—') + '</td>' +
             '<td style="' + resultClass + '">' + escapeHtml(d.result || '—') + '</td>' +
-            '<td>' + escapeHtml(d.tolerance || '—') + '</td>' +
+            '<td>' + escapeHtml(toleranceDisplay || '—') + '</td>' +
             '</tr>';
         }
         html += '</tbody></table></div>';
