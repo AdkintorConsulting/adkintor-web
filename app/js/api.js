@@ -1,6 +1,16 @@
-// ============================================
-// ADKINTOR - Capa de Comunicación API
-// ============================================
+/**
+ * ============================================
+ * API MODULE - ADKINTOR WEB APP
+ * ============================================
+ * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-17
+ * 
+ * Capa de comunicación con el proxy y APIs:
+ * - Proxy Cloudflare Worker
+ * - Master API (directorio de clientes)
+ * - Client API (EAMS y FORESIGHT)
+ * ============================================
+ */
 
 const API = {
     /**
@@ -40,7 +50,6 @@ const API = {
             
             return result;
         } catch (error) {
-            console.error('API call failed:', error);
             throw error;
         }
     },
