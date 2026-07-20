@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Layout - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/app/css/print.css">
     <style>
         /* ============================================
            BASE
@@ -296,6 +297,39 @@
             display: block;
             pointer-events: none;
         }
+
+        @media print {
+            .layout-header {
+                background: white !important;
+                color: #004a99 !important;
+                border-bottom: 2px solid #004a99 !important;
+            }
+            
+            .layout-header h2 {
+                color: #004a99 !important;
+            }
+            
+            .zoom-controls,
+            .zoom-controls button,
+            .layout-header button {
+                display: none !important;
+            }
+            
+            .viewport {
+                background: white !important;
+            }
+            
+            .image-container img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            
+            .module-header,
+            .breadcrumbs,
+            .module-footer {
+                display: none !important;
+            }
+        }        
     </style>
 </head>
 <body>
@@ -334,6 +368,9 @@
         <div class="layout-header">
             <h2><i class="fas fa-draw-polygon"></i> PLANT LAYOUT</h2>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="printReport()" style="background: white; color: #004a99; border: none; padding: 4px 16px; border-radius: 20px; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-print"></i> Print
+                </button>
                 <div class="zoom-controls">
                     <button id="zoomOutBtn">−</button>
                     <span id="zoomLevel">100%</span>
@@ -451,7 +488,23 @@
     const container = document.getElementById('imageContainer');
     const viewport = document.getElementById('viewport');
     const zoomSpan = document.getElementById('zoomLevel');
-    
+
+    // ============================================
+    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
+    // ============================================
+    function printReport() {
+        const title = 'Plant Layout';
+        const mode = 'eams';
+        
+        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            ModuleBase.printModule(title, mode);
+        } else {
+            // Fallback: imprimir directamente
+            window.print();
+        }
+    }
+    window.printReport = printReport;    
+        
     // ============================================
     // FUNCIONES BASE
     // ============================================
@@ -647,6 +700,11 @@
     // INITIALIZATION
     // ============================================
     function init() {
+        // ✅ Inicializar ModuleBase si existe
+        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
+            ModuleBase.initModule('Plant Layout');
+        }
+        
         loadUser();
         loadApiUrl();
         
