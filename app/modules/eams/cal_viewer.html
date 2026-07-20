@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calibration Viewer - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/app/css/print.css">
     <style>
         /* ============================================
            BASE
@@ -619,7 +620,7 @@
             </div>
 
             <!-- FILTERS -->
-            <div class="filter-bar">
+            <div class="filter-bar" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 16px; align-items: end;">
                 <div class="filter-group">
                     <label><i class="fas fa-search"></i> SEARCH</label>
                     <input type="text" id="searchInput" placeholder="Tag ID or Name...">
@@ -641,6 +642,12 @@
                     <select id="filterStatus">
                         <option value="">All Status</option>
                     </select>
+                </div>
+                <div class="filter-group" style="justify-content: flex-end;">
+                    <label>&nbsp;</label>
+                    <button onclick="printReport()" style="background: #1a1a2e; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background 0.2s; white-space: nowrap; height: 38px;">
+                        <i class="fas fa-print"></i> Print
+                    </button>
                 </div>
             </div>
 
@@ -747,6 +754,22 @@
             setTimeout(() => toast.remove(), 350);
         }, 4000);
     }
+
+    // ============================================
+    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
+    // ============================================
+    function printReport() {
+        const title = 'Calibration Status Report';
+        const mode = 'eams';
+        
+        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            ModuleBase.printModule(title, mode);
+        } else {
+            // Fallback: imprimir directamente
+            window.print();
+        }
+    }
+    window.printReport = printReport;    
     
     // ============================================
     // LOADING
@@ -868,150 +891,154 @@
     // ============================================
     var VIEWER = (function() {
         
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-async function init() {
-    // ✅ PRIMERO: Mostrar el spinner ANTES de cualquier otra cosa
-    showLoading('Loading calibration data...');
-    
-    loadUser();
-    loadApiUrl();
-    
-    if (!EAMS_API_URL) {
-        showToast('Session not found. Please login from the main application.', 'error');
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    async function init() {
+        // ✅ Inicializar ModuleBase si existe
+        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
+            ModuleBase.initModule('Calibration Viewer');
+        }
+        
+        showLoading('Loading calibration data...');
+        
+        loadUser();
+        loadApiUrl();
+        
+        if (!EAMS_API_URL) {
+            showToast('Session not found. Please login from the main application.', 'error');
+            hideLoading();
+            return;
+        }
+        
+        // Obtener usuario actual para logs
+        try {
+            var email = await callApi('getCurrentUserEmail', []);
+            currentUser = email || 'System';
+        } catch(e) {
+            currentUser = 'System';
+        }
+        
+        await loadConfig();
+        await loadInstruments();
+        setupEventListeners();
         hideLoading();
-        return;
+        // console.log('[CAL] Ready');  // COMENTADO
+        // showToast('Calibration Viewer loaded successfully ✅', 'success');  // ELIMINADO (innecesario)
     }
-    
-    // Obtener usuario actual para logs
-    try {
-        var email = await callApi('getCurrentUserEmail', []);
-        currentUser = email || 'System';
-    } catch(e) {
-        currentUser = 'System';
+
+    async function loadConfig() {
+        try {
+            var response = await callApi('CAL_VIEWER_getConfig', []);
+            if (response.status === "success") {
+                config = response.data;
+                populateDropdowns();
+            } else {
+                showToast(response.message || 'Config load failed', 'error');
+            }
+        } catch (error) {
+            showToast('Config load failed: ' + error.message, 'error');
+        }
     }
-    
-    await loadConfig();
-    await loadInstruments();
-    setupEventListeners();
-    hideLoading();
-    // console.log('[CAL] Ready');  // COMENTADO
-    // showToast('Calibration Viewer loaded successfully ✅', 'success');  // ELIMINADO (innecesario)
-}
 
-        async function loadConfig() {
-            try {
-                var response = await callApi('CAL_VIEWER_getConfig', []);
-                if (response.status === "success") {
-                    config = response.data;
-                    populateDropdowns();
-                } else {
-                    showToast(response.message || 'Config load failed', 'error');
-                }
-            } catch (error) {
-                showToast('Config load failed: ' + error.message, 'error');
-            }
+    function populateDropdowns() {
+        var typeFilter = document.getElementById('filterType');
+        var typeHtml = '<option value="">All Types</option>';
+        for (var i = 0; i < config.types.length; i++) {
+            typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
         }
+        typeFilter.innerHTML = typeHtml;
 
-        function populateDropdowns() {
-            var typeFilter = document.getElementById('filterType');
-            var typeHtml = '<option value="">All Types</option>';
-            for (var i = 0; i < config.types.length; i++) {
-                typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
-            }
-            typeFilter.innerHTML = typeHtml;
-
-            var areaFilter = document.getElementById('filterArea');
-            var areaHtml = '<option value="">All Areas</option>';
-            for (var i = 0; i < config.areas.length; i++) {
-                areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
-            }
-            areaFilter.innerHTML = areaHtml;
-
-            var statusFilter = document.getElementById('filterStatus');
-            var statusHtml = '<option value="">All Status</option>';
-            for (var i = 0; i < config.statuses.length; i++) {
-                statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
-            }
-            statusFilter.innerHTML = statusHtml;
+        var areaFilter = document.getElementById('filterArea');
+        var areaHtml = '<option value="">All Areas</option>';
+        for (var i = 0; i < config.areas.length; i++) {
+            areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
         }
+        areaFilter.innerHTML = areaHtml;
 
-        async function loadInstruments() {
-            try {
-                instruments = await callApi('CAL_VIEWER_getAllInstruments', []);
-                renderTable(instruments);
-                updateHeatmap(instruments);
-            } catch (error) {
-                showToast('Failed to load instruments: ' + error.message, 'error');
-                var tbody = document.getElementById('instrumentTableBody');
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-circle fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Error loading instruments: ' + error.message + '</td></tr>';
-            }
+        var statusFilter = document.getElementById('filterStatus');
+        var statusHtml = '<option value="">All Status</option>';
+        for (var i = 0; i < config.statuses.length; i++) {
+            statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
         }
+        statusFilter.innerHTML = statusHtml;
+    }
 
-        function renderTable(data) {
+    async function loadInstruments() {
+        try {
+            instruments = await callApi('CAL_VIEWER_getAllInstruments', []);
+            renderTable(instruments);
+            updateHeatmap(instruments);
+        } catch (error) {
+            showToast('Failed to load instruments: ' + error.message, 'error');
             var tbody = document.getElementById('instrumentTableBody');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-circle fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Error loading instruments: ' + error.message + '</td></tr>';
+        }
+    }
+
+    function renderTable(data) {
+        var tbody = document.getElementById('instrumentTableBody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No instruments found</td></tr>';
+            return;
+        }
+
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var inst = data[i];
+            var daysLeft = calculateDaysLeft(inst.nextCal);
+            var daysClass = '', badgeClass = '';
             
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No instruments found</td></tr>';
-                return;
+            if (daysLeft < 30) {
+                daysClass = 'badge-red';
+                badgeClass = 'badge-red';
+            } else if (daysLeft < 90) {
+                daysClass = 'badge-orange';
+                badgeClass = 'badge-orange';
+            } else {
+                daysClass = 'badge-green';
+                badgeClass = 'badge-green';
             }
 
-            var html = '';
-            for (var i = 0; i < data.length; i++) {
-                var inst = data[i];
-                var daysLeft = calculateDaysLeft(inst.nextCal);
-                var daysClass = '', badgeClass = '';
-                
-                if (daysLeft < 30) {
-                    daysClass = 'badge-red';
-                    badgeClass = 'badge-red';
-                } else if (daysLeft < 90) {
-                    daysClass = 'badge-orange';
-                    badgeClass = 'badge-orange';
-                } else {
-                    daysClass = 'badge-green';
-                    badgeClass = 'badge-green';
-                }
-
-                html += 
-                    '<tr>' +
-                        '<td><strong style="color:#1a1a2e;">' + escapeHtml(inst.tagId) + '</strong></td>' +
-                        '<td>' + escapeHtml(inst.name) + '</td>' +
-                        '<td>' + (escapeHtml(inst.type) || '-') + '</td>' +
-                        '<td>' + (escapeHtml(inst.area) || '-') + '</td>' +
-                        '<td>' + (inst.lastCal || '-') + '</td>' +
-                        '<td>' + (inst.nextCal || '-') + '</td>' +
-                        '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' days</span></td>' +
-                        '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(inst.status || 'Active') + '</span></td>' +
-                        '<td><button class="btn-history" data-tag="' + inst.tagId + '"><i class="fas fa-history"></i> HISTORY</button></td>' +
-                    '</tr>';
-            }
-            tbody.innerHTML = html;
-            
-            // Attach event listeners
-            document.querySelectorAll('.btn-history').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    showHistory(this.dataset.tag);
-                });
+            html += 
+                '<tr>' +
+                    '<td><strong style="color:#1a1a2e;">' + escapeHtml(inst.tagId) + '</strong></td>' +
+                    '<td>' + escapeHtml(inst.name) + '</td>' +
+                    '<td>' + (escapeHtml(inst.type) || '-') + '</td>' +
+                    '<td>' + (escapeHtml(inst.area) || '-') + '</td>' +
+                    '<td>' + (inst.lastCal || '-') + '</td>' +
+                    '<td>' + (inst.nextCal || '-') + '</td>' +
+                    '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' days</span></td>' +
+                    '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(inst.status || 'Active') + '</span></td>' +
+                    '<td><button class="btn-history" data-tag="' + inst.tagId + '"><i class="fas fa-history"></i> HISTORY</button></td>' +
+                '</tr>';
+        }
+        tbody.innerHTML = html;
+        
+        // Attach event listeners
+        document.querySelectorAll('.btn-history').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showHistory(this.dataset.tag);
             });
-        }
+        });
+    }
 
-        function updateHeatmap(data) {
-            var critical = 0, warning = 0, compliant = 0;
-            
-            for (var i = 0; i < data.length; i++) {
-                var days = calculateDaysLeft(data[i].nextCal);
-                if (days < 30) critical++;
-                else if (days < 90) warning++;
-                else compliant++;
-            }
-            
-            document.getElementById('criticalCount').innerText = critical;
-            document.getElementById('warningCount').innerText = warning;
-            document.getElementById('compliantCount').innerText = compliant;
+    function updateHeatmap(data) {
+        var critical = 0, warning = 0, compliant = 0;
+        
+        for (var i = 0; i < data.length; i++) {
+            var days = calculateDaysLeft(data[i].nextCal);
+            if (days < 30) critical++;
+            else if (days < 90) warning++;
+            else compliant++;
         }
+        
+        document.getElementById('criticalCount').innerText = critical;
+        document.getElementById('warningCount').innerText = warning;
+        document.getElementById('compliantCount').innerText = compliant;
+    }
 
     function filter() {
         var searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -1036,104 +1063,104 @@ async function init() {
         // Las tarjetas SIEMPRE deben mostrar datos totales
     }
 
-        // ============================================
-        // HISTORY MODAL
-        // ============================================
+    // ============================================
+    // HISTORY MODAL
+    // ============================================
 
-        async function showHistory(tagId) {
-            showLoading("Loading history...");
+    async function showHistory(tagId) {
+        showLoading("Loading history...");
+        
+        try {
+            var history = await callApi('CAL_VIEWER_getInstrumentHistory', [tagId]);
+            hideLoading();
             
-            try {
-                var history = await callApi('CAL_VIEWER_getInstrumentHistory', [tagId]);
-                hideLoading();
+            // Log de visualización
+            logCalibrationView(tagId, currentUser).catch(function(e) { /* console.warn('[CAL] View log failed:', e); */ });  // COMENTADO
+            
+            var container = document.getElementById('historyContent');
+            var title = document.getElementById('historyModalTitle');
+            title.innerText = 'Calibration History: ' + tagId;
+            
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No calibration records found</p>';
+            } else {
+                // Get instrument details from the first record
+                var inst = history[0]?.instrument;
                 
-                // Log de visualización
-                logCalibrationView(tagId, currentUser).catch(function(e) { /* console.warn('[CAL] View log failed:', e); */ });  // COMENTADO
-                
-                var container = document.getElementById('historyContent');
-                var title = document.getElementById('historyModalTitle');
-                title.innerText = 'Calibration History: ' + tagId;
-                
-                if (history.length === 0) {
-                    container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No calibration records found</p>';
-                } else {
-                    // Get instrument details from the first record
-                    var inst = history[0]?.instrument;
-                    
-                    var instrumentDetailsHtml = '';
-                    if (inst) {
-                        instrumentDetailsHtml = 
-                            '<div class="instrument-details">' +
-                                '<h4><i class="fas fa-info-circle"></i> Instrument Details</h4>' +
-                                '<div class="detail-grid">' +
-                                    '<div><span class="detail-label">Name:</span> <span class="detail-value">' + escapeHtml(inst.name || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Type:</span> <span class="detail-value">' + escapeHtml(inst.type || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Model:</span> <span class="detail-value">' + escapeHtml(inst.model || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Serial:</span> <span class="detail-value">' + escapeHtml(inst.serial || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Area:</span> <span class="detail-value">' + escapeHtml(inst.area || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Frequency:</span> <span class="detail-value">' + (inst.frequency || 'N/A') + ' months</span></div>' +
-                                    '<div><span class="detail-label">Tolerance:</span> <span class="detail-value">' + escapeHtml(inst.tolerance || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Responsible:</span> <span class="detail-value">' + escapeHtml(inst.responsible || 'N/A') + '</span></div>' +
-                                    '<div><span class="detail-label">Associated Asset:</span> <span class="detail-value">' + escapeHtml(inst.associatedAssetId || 'None') + '</span></div>' +
-                                '</div>' +
-                            '</div>';
-                    }
-                    
-                    var historyHtml = '';
-                    for (var i = 0; i < history.length; i++) {
-                        var h = history[i];
-                        historyHtml += 
-                            '<div class="history-item">' +
-                                '<div class="history-date">📅 ' + h.date + '</div>' +
-                                '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + h.result + '</div>' +
-                                '<div class="history-cert">📄 Certificate: ' + escapeHtml(h.certificate || 'N/A') + '</div>' +
-                                (h.deviation ? '<div class="deviation-value">📊 Deviation: ' + h.deviation + ' ' + escapeHtml(h.deviationUnit || '') + '</div>' : '') +
-                                '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
-                            '</div>';
-                    }
-                    
-                    container.innerHTML = instrumentDetailsHtml + '<h4 style="margin: 12px 0 8px 0; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Calibration Records</h4>' + historyHtml;
+                var instrumentDetailsHtml = '';
+                if (inst) {
+                    instrumentDetailsHtml = 
+                        '<div class="instrument-details">' +
+                            '<h4><i class="fas fa-info-circle"></i> Instrument Details</h4>' +
+                            '<div class="detail-grid">' +
+                                '<div><span class="detail-label">Name:</span> <span class="detail-value">' + escapeHtml(inst.name || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Type:</span> <span class="detail-value">' + escapeHtml(inst.type || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Model:</span> <span class="detail-value">' + escapeHtml(inst.model || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Serial:</span> <span class="detail-value">' + escapeHtml(inst.serial || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Area:</span> <span class="detail-value">' + escapeHtml(inst.area || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Frequency:</span> <span class="detail-value">' + (inst.frequency || 'N/A') + ' months</span></div>' +
+                                '<div><span class="detail-label">Tolerance:</span> <span class="detail-value">' + escapeHtml(inst.tolerance || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Responsible:</span> <span class="detail-value">' + escapeHtml(inst.responsible || 'N/A') + '</span></div>' +
+                                '<div><span class="detail-label">Associated Asset:</span> <span class="detail-value">' + escapeHtml(inst.associatedAssetId || 'None') + '</span></div>' +
+                            '</div>' +
+                        '</div>';
                 }
                 
-                document.getElementById('historyModal').classList.add('active');
-                
-            } catch (error) {
-                if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('CAL', 'viewHistory', error.message).catch(function(e) { /* console.warn('[CAL] Error log failed:', e); */ });  // COMENTADO
+                var historyHtml = '';
+                for (var i = 0; i < history.length; i++) {
+                    var h = history[i];
+                    historyHtml += 
+                        '<div class="history-item">' +
+                            '<div class="history-date">📅 ' + h.date + '</div>' +
+                            '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + h.result + '</div>' +
+                            '<div class="history-cert">📄 Certificate: ' + escapeHtml(h.certificate || 'N/A') + '</div>' +
+                            (h.deviation ? '<div class="deviation-value">📊 Deviation: ' + h.deviation + ' ' + escapeHtml(h.deviationUnit || '') + '</div>' : '') +
+                            '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
+                        '</div>';
                 }
-                hideLoading();
-                showToast("Failed to load history: " + error.message, "error");
+                
+                container.innerHTML = instrumentDetailsHtml + '<h4 style="margin: 12px 0 8px 0; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Calibration Records</h4>' + historyHtml;
             }
-        }
-
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.remove('active');
-        }
-
-        function setupEventListeners() {
-            // Filter inputs
-            document.getElementById('searchInput').addEventListener('input', function() { filter(); });
-            document.getElementById('filterType').addEventListener('change', function() { filter(); });
-            document.getElementById('filterArea').addEventListener('change', function() { filter(); });
-            document.getElementById('filterStatus').addEventListener('change', function() { filter(); });
             
-            // Modal close buttons
-            document.getElementById('closeHistoryBtn').addEventListener('click', function() { closeHistoryModal(); });
-            document.getElementById('closeHistoryFooterBtn').addEventListener('click', function() { closeHistoryModal(); });
+            document.getElementById('historyModal').classList.add('active');
             
-            // Close modal on overlay click
-            var modal = document.getElementById('historyModal');
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeHistoryModal();
-                }
-            });
+        } catch (error) {
+            if (window.Logger && typeof window.Logger.error === 'function') {
+                window.Logger.error('CAL', 'viewHistory', error.message).catch(function(e) { /* console.warn('[CAL] Error log failed:', e); */ });  // COMENTADO
+            }
+            hideLoading();
+            showToast("Failed to load history: " + error.message, "error");
         }
+    }
 
-        return {
-            init: init,
-            filter: filter
-        };
+    function closeHistoryModal() {
+        document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function setupEventListeners() {
+        // Filter inputs
+        document.getElementById('searchInput').addEventListener('input', function() { filter(); });
+        document.getElementById('filterType').addEventListener('change', function() { filter(); });
+        document.getElementById('filterArea').addEventListener('change', function() { filter(); });
+        document.getElementById('filterStatus').addEventListener('change', function() { filter(); });
+        
+        // Modal close buttons
+        document.getElementById('closeHistoryBtn').addEventListener('click', function() { closeHistoryModal(); });
+        document.getElementById('closeHistoryFooterBtn').addEventListener('click', function() { closeHistoryModal(); });
+        
+        // Close modal on overlay click
+        var modal = document.getElementById('historyModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeHistoryModal();
+            }
+        });
+    }
+
+    return {
+        init: init,
+        filter: filter
+    };
     })();
 
     if (document.readyState === 'loading') {
