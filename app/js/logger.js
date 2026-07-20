@@ -3,7 +3,7 @@
  * MODULE BASE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-17
+ * FECHA: 2026-07-20
  * 
  * Archivo base para todos los módulos (EAMS y FORESIGHT):
  * - Usuario desde localStorage
@@ -43,7 +43,7 @@
         const sessionStr = localStorage.getItem('adkintor_session');
         if (sessionStr) {
             session = JSON.parse(sessionStr);
-            userEmail = session.email || 'unknown';
+            userEmail = session.userEmail || session.email || 'unknown';  // ✅ PRIORIZAR userEmail
             userName = session.userName || session.name || userEmail.split('@')[0] || 'User';
             userRole = session.role || 'VIEWER';
             eamsApiUrl = session.eamsApiUrl || null;
@@ -71,6 +71,15 @@
         
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
+        // Asegurar que el toast tenga colores
+        const colors = {
+            success: '#28a745',
+            error: '#dc3545',
+            warning: '#ffc107',
+            info: '#17a2b8'
+        };
+        toast.style.backgroundColor = colors[type] || '#333';
+        toast.style.color = type === 'warning' ? '#000' : '#fff';
         toast.textContent = message;
         container.appendChild(toast);
         
@@ -195,9 +204,9 @@
         if (content) content.style.display = 'block';
         
         // Toast de bienvenida
-        setTimeout(() => {
-            showToast(`${moduleTitle} loaded successfully ✅`, 'success', 2000);
-        }, 300);
+        //setTimeout(() => {
+        //    showToast(`${moduleTitle} loaded successfully ✅`, 'success', 2000);
+        //}, 300);
         
         // Enviar señal de que el módulo está listo
         if (window.parent && window.parent.postMessage) {
