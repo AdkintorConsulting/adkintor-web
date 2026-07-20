@@ -742,6 +742,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -749,10 +750,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
@@ -1011,37 +1013,37 @@
     // ============================================
     async function logWOApproval(woId, approvedBy, comments) {
         if (!window.Logger || typeof window.Logger.woApproved !== 'function') {
-            console.warn('[WO] Logger not available, skipping log');
+            // console.warn('[WO] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.woApproved(woId, approvedBy);
-            console.log('[WO] WO approval logged:', woId);
+            // console.log('[WO] WO approval logged:', woId);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('WO', 'WO_APPROVED', 'WO ' + woId + ' approved by ' + approvedBy);
             }
         } catch (err) {
-            console.warn('[WO] Failed to log WO approval:', err);
+            // console.warn('[WO] Failed to log WO approval:', err);  // COMENTADO
         }
     }
 
     async function logWORejection(woId, rejectedBy, reason) {
         if (!window.Logger || typeof window.Logger.woRejected !== 'function') {
-            console.warn('[WO] Logger not available, skipping log');
+            // console.warn('[WO] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.woRejected(woId, reason);
-            console.log('[WO] WO rejection logged:', woId);
+            // console.log('[WO] WO rejection logged:', woId);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('WO', 'WO_REJECTED', 'WO ' + woId + ' rejected by ' + rejectedBy + ': ' + reason.substring(0, 100));
             }
         } catch (err) {
-            console.warn('[WO] Failed to log WO rejection:', err);
+            // console.warn('[WO] Failed to log WO rejection:', err);  // COMENTADO
         }
     }
 
@@ -1076,15 +1078,15 @@
                 renderPMs();
             }
             
-            console.log('[WO_APPROVE] Data loaded');
-            showToast('Data loaded: ' + woData.length + ' open work orders', 'success');
+            // console.log('[WO_APPROVE] Data loaded');  // COMENTADO
+            // showToast('Data loaded: ' + woData.length + ' open work orders', 'success');  // ELIMINADO
             validateFields();
             hideLoading();
             
         } catch (error) {
             hideLoading();
             showToast('Error loading data: ' + error.message, 'error');
-            console.error('Load error:', error);
+            // console.error('Load error:', error);  // COMENTADO
         }
     }
 
@@ -1238,7 +1240,7 @@
             comments: comments,
             techniciansWithEmails: techniciansWithEmails,
             realCreationDate: realCreationDate,
-            user: userEmail
+            userEmail: userEmail || 'system'  // ✅ CORREGIDO
         };
         
         try {
@@ -1254,16 +1256,16 @@
                     var singleFolio = processedFolios[i];
                     if (singleFolio && singleFolio !== '') {
                         if (action === 'APPROVED') {
-                            logWOApproval(singleFolio, actorName, comments).catch(function(e) { console.warn('[WO] Approval log failed:', e); });
+                            logWOApproval(singleFolio, actorName, comments).catch(function(e) { /* console.warn('[WO] Approval log failed:', e); */ });  // COMENTADO
                         } else if (action === 'REJECTED') {
-                            logWORejection(singleFolio, actorName, comments).catch(function(e) { console.warn('[WO] Rejection log failed:', e); });
+                            logWORejection(singleFolio, actorName, comments).catch(function(e) { /* console.warn('[WO] Rejection log failed:', e); */ });  // COMENTADO
                         }
                     }
                 }
                 
                 var emailMsg = (response.emailSent === false) ? ' ⚠️ Email notification failed.' : (response.emailSent === true ? ' 📧 Email sent.' : '');
                 showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
-                console.log('[WO_APPROVE] Processed', response.count, 'WO(s)');
+                // console.log('[WO_APPROVE] Processed', response.count, 'WO(s)');  // COMENTADO
                 
                 if (document.getElementById('folioSelect')) document.getElementById('folioSelect').value = '';
                 if (document.getElementById('comments')) document.getElementById('comments').value = '';
@@ -1288,12 +1290,12 @@
             
         } catch (error) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('WO', 'processApproval', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+                window.Logger.error('WO', 'processApproval', error.message).catch(function(e) { /* console.warn('[WO] Error log failed:', e); */ });  // COMENTADO
             }
             
             hideLoading();
             showToast('Error: ' + error.message, 'error');
-            console.error('Process error:', error);
+            // console.error('Process error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
             validateFields();
