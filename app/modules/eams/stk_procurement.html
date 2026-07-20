@@ -1275,6 +1275,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -1282,9 +1283,10 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-            } catch(e) { console.error(e); }
+            } catch(e) { /* console.error(e); */ }  // COMENTADO
         }
     }
 
@@ -1320,53 +1322,53 @@
     // ============================================
     async function logPOCreation(poNumber, vendor, totalAmount, createdBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             var details = 'PO ' + poNumber + ' created | Vendor: ' + vendor + ' | Total: $' + totalAmount;
             await window.Logger.audit('CREATE_PO', 'STK', poNumber, '', '', '', details);
-            console.log('[STK] PO creation logged:', poNumber);
+            // console.log('[STK] PO creation logged:', poNumber);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('STK', 'PO_CREATED', details);
             }
         } catch (err) {
-            console.warn('[STK] Failed to log PO creation:', err);
+            // console.warn('[STK] Failed to log PO creation:', err);  // COMENTADO
         }
     }
 
     async function logPOReceipt(poNumber, itemsReceived, totalValue, receivedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             var details = 'PO ' + poNumber + ' receipt | ' + itemsReceived + ' items | Total: $' + totalValue;
             await window.Logger.audit('RECEIVE_STOCK', 'STK', poNumber, '', '', '', details);
-            console.log('[STK] PO receipt logged:', poNumber);
+            // console.log('[STK] PO receipt logged:', poNumber);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('STK', 'PO_RECEIVED', details);
             }
         } catch (err) {
-            console.warn('[STK] Failed to log PO receipt:', err);
+            // console.warn('[STK] Failed to log PO receipt:', err);  // COMENTADO
         }
     }
 
     async function logPOCancellation(poNumber, reason, cancelledBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit('DELETE', 'STK', poNumber, '', '', '', 'PO cancelled: ' + reason);
-            console.log('[STK] PO cancellation logged:', poNumber);
+            // console.log('[STK] PO cancellation logged:', poNumber);  // COMENTADO
         } catch (err) {
-            console.warn('[STK] Failed to log PO cancellation:', err);
+            // console.warn('[STK] Failed to log PO cancellation:', err);  // COMENTADO
         }
     }
 
@@ -1926,7 +1928,7 @@
             qtyInp.value = 1;
             callApi('STK_generateServiceCode').then(function(code) {
                 if (document.getElementById(rowId)) skuInp.value = code;
-            }).catch(function(e) { console.error(e); });
+            }).catch(function(e) { /* console.error(e); */ });
         } else {
             skuInp.readOnly = false;
             skuInp.placeholder = 'SKU';
@@ -1966,9 +1968,9 @@
         (async function reloadVendors() {
             try {
                 allVendors = await callApi('STK_getExistingVendors', []);
-                console.log('🏢 Vendors recargados:', allVendors.length);
+                // console.log('🏢 Vendors recargados:', allVendors.length);  // COMENTADO
             } catch(e) {
-                console.warn('Error reloading vendors:', e);
+                // console.warn('Error reloading vendors:', e);  // COMENTADO
             }
         })();
         
@@ -2094,7 +2096,7 @@
         
         var expectedDeliveryDate = document.getElementById('expectedDeliveryDate').value;
         
-        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate, user: currentUser };
+        var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate, userEmail: currentUser || 'system' };
         showLoading('Saving...');
         try {
             var res = await callApi('STK_saveProcurementRequisition', [payload]);
@@ -2104,7 +2106,7 @@
             }
             var finalPoNumber = res.poNumber || poNumber || 'N/A';
             if (finalPoNumber !== 'N/A') {
-                logPOCreation(finalPoNumber, vendor, totalAmount, currentUser).catch(function(e) { console.warn('[STK] PO log failed:', e); });
+                logPOCreation(finalPoNumber, vendor, totalAmount, currentUser).catch(function(e) { /*console.warn('[STK] PO log failed:', e);*/ });
             }
             showToast(res.message, 'success');
             clearReqForm();
@@ -2112,7 +2114,7 @@
             hideLoading();
         } catch(err) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('STK', 'submitRequisition', err.message).catch(function(e) { console.warn('[STK] Error log failed:', e); });
+                window.Logger.error('STK', 'submitRequisition', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
             }
             hideLoading();
             showToast(err.message, 'error');
@@ -2131,7 +2133,7 @@
             items: ctx.items,
             consumptionType: consumptionType,
             woNumber: woNumber,
-            user: currentUser  // ✅ Asegurar que currentUser está aquí
+            userEmail: currentUser || 'system'  // ✅ CORREGIDO
         };
         showLoading('Processing...');
         try {
@@ -2158,7 +2160,7 @@
             notes: ctx.notes,
             items: ctx.items,
             createPO: true,
-            user: currentUser
+            userEmail: currentUser || 'system'  // ✅ CORREGIDO
         };
         showLoading('Creating temp PO...');
         try {
@@ -2188,7 +2190,7 @@
             }
             return wos;
         } catch(e) {
-            console.error(e);
+            /* console.error(e); */  // COMENTADO
             var sel = document.getElementById('woNumberSelect');
             sel.innerHTML = '<option value="">-- Error loading WOs --</option>';
             return [];
@@ -2351,7 +2353,7 @@
             for (var i = 0; i < items.length; i++) {
                 totalReceived += items[i].qtyReceived * items[i].unitPrice;
             }
-            logPOReceipt(selectedPO.poNumber, items.length, totalReceived, currentUser).catch(function(e) { console.warn('[STK] Receipt log failed:', e); });
+            logPOReceipt(selectedPO.poNumber, items.length, totalReceived, currentUser).catch(function(e) { /*console.warn('[STK] Receipt log failed:', e);*/ });
             showToast(res.message, 'success');
             document.getElementById('receiptForm').style.display = 'none';
             document.getElementById('poSearchInput').value = '';
@@ -2378,7 +2380,7 @@
             showLoading('Cancelling...');
             try {
                 var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber, noteText]);
-                logPOCancellation(selectedPO.poNumber, noteText, currentUser).catch(function(e) { console.warn('[STK] Cancel log failed:', e); });
+                logPOCancellation(selectedPO.poNumber, noteText, currentUser).catch(function(e) { /*console.warn('[STK] Cancel log failed:', e);*/ });
                 showToast(res.message, 'success');
                 // ✅ Refrescar todo
                 document.getElementById('receiptForm').style.display = 'none';
@@ -2391,7 +2393,7 @@
                 hideLoading();
             } catch(err) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('STK', 'cancelPO', err.message).catch(function(e) { console.warn('[STK] Error log failed:', e); });
+                    window.Logger.error('STK', 'cancelPO', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
                 }
                 hideLoading();
                 showToast(err.message, 'error');
@@ -2591,13 +2593,13 @@
             
             // TODO OK - ocultar spinner
             hideLoading();
-            showToast('Procurement Hub loaded successfully ✅', 'success');
-            console.log('[STK] Ready');
+            // showToast('Procurement Hub loaded successfully ✅', 'success');  // ELIMINADO
+            // console.log('[STK] Ready');  // COMENTADO
             
         } catch(err) {
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
-            console.error('Init error:', err);
+            // console.error('Init error:', err);  // COMENTADO
         }
     }
 
