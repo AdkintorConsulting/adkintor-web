@@ -3,9 +3,9 @@
  * MODULE BASE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-20
  * 
- * Archivo base para todos los módulos (EAMS y FORESIGHT)
- * Proporciona funcionalidades comunes:
+ * Archivo base para todos los módulos (EAMS y FORESIGHT):
  * - Usuario desde localStorage
  * - Logo desde postMessage
  * - Versión desde postMessage
@@ -43,14 +43,14 @@
         const sessionStr = localStorage.getItem('adkintor_session');
         if (sessionStr) {
             session = JSON.parse(sessionStr);
-            userEmail = session.email || 'unknown';
+            userEmail = session.userEmail || session.email || 'unknown';  // ✅ PRIORIZAR userEmail
             userName = session.userName || session.name || userEmail.split('@')[0] || 'User';
             userRole = session.role || 'VIEWER';
             eamsApiUrl = session.eamsApiUrl || null;
             intelligenceApiUrl = session.intelligenceApiUrl || null;
         }
     } catch(e) {
-        console.warn('[ModuleBase] Error loading session:', e);
+        //console.warn('[ModuleBase] Error loading session:', e);
     }
     
     // ============================================
@@ -65,12 +65,21 @@
                 window.parent.showToast(message, type, duration);
                 return;
             }
-            console.warn('[ModuleBase] Toast container not found');
+            //console.warn('[ModuleBase] Toast container not found');
             return;
         }
         
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
+        // Asegurar que el toast tenga colores
+        const colors = {
+            success: '#28a745',
+            error: '#dc3545',
+            warning: '#ffc107',
+            info: '#17a2b8'
+        };
+        toast.style.backgroundColor = colors[type] || '#333';
+        toast.style.color = type === 'warning' ? '#000' : '#fff';
         toast.textContent = message;
         container.appendChild(toast);
         
@@ -115,7 +124,7 @@
             
             return result;
         } catch (error) {
-            console.error('[ModuleBase] API call failed:', error);
+            //console.error('[ModuleBase] API call failed:', error);
             showToast(error.message, 'error');
             throw error;
         }
@@ -130,7 +139,7 @@
             await callApi('logCreate', [userEmail, action, module, entityId, '', '', '', details]);
             return true;
         } catch(e) {
-            console.warn('[ModuleBase] Logging failed:', e);
+            //console.warn('[ModuleBase] Logging failed:', e);
             return false;
         }
     }
@@ -140,7 +149,7 @@
             await callApi('logSystemError', [module, action, errorMsg, 'ERROR', userEmail]);
             return true;
         } catch(e) {
-            console.warn('[ModuleBase] Error logging failed:', e);
+            //console.warn('[ModuleBase] Error logging failed:', e);
             return false;
         }
     }
@@ -195,9 +204,9 @@
         if (content) content.style.display = 'block';
         
         // Toast de bienvenida
-        setTimeout(() => {
-            showToast(`${moduleTitle} loaded successfully ✅`, 'success', 2000);
-        }, 300);
+        //setTimeout(() => {
+        //    showToast(`${moduleTitle} loaded successfully ✅`, 'success', 2000);
+        //}, 300);
         
         // Enviar señal de que el módulo está listo
         if (window.parent && window.parent.postMessage) {
@@ -208,7 +217,7 @@
             }, '*');
         }
         
-        console.log(`[ModuleBase] ${moduleTitle} initialized for user: ${userName}`);
+        //console.log(`[ModuleBase] ${moduleTitle} initialized for user: ${userName}`);
     }
     
     // ============================================
@@ -322,6 +331,6 @@
         printModule: printModule
     };
     
-    console.log('[ModuleBase] Loaded successfully for user:', userName);
+    //console.log('[ModuleBase] Loaded successfully for user:', userName);
     
 })();
