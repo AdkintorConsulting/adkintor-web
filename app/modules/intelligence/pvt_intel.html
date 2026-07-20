@@ -698,7 +698,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[PVT] Logo set from parent');
+        // console.log('[PVT] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -706,7 +706,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[PVT] Version set from parent:', data.version);
+        // console.log('[PVT] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -782,14 +782,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[PVT] API URL loaded:', EAMS_API_URL);
+        // console.log('[PVT] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[PVT] Error parsing session:', e);
+        // console.error('[PVT] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[PVT] No session found');
+      // console.warn('[PVT] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -800,7 +800,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[PVT] Calling API:', action, args);
+    // console.log('[PVT] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -816,7 +816,7 @@
     }
     
     const result = await response.json();
-    console.log('[PVT] API Response:', result);
+    // console.log('[PVT] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -832,12 +832,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[PVT] Logged:', module + '/' + action);
+        // console.log('[PVT] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[PVT] Logger error:', err);
+        // console.warn('[PVT] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[PVT] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[PVT] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -972,7 +972,7 @@
           document.getElementById('componentCount').innerText = counts.component;
         }
       } catch (countError) {
-        console.warn('[PVT] Could not load asset counts:', countError);
+        // console.warn('[PVT] Could not load asset counts:', countError);  // COMENTADO
         // Mantener el "-" si falla
       }
       
@@ -1265,7 +1265,7 @@
           var printPdfBtn = document.getElementById('printPdfBtn');
           if (printPdfBtn) {
               printPdfBtn.addEventListener('click', function() {
-                  console.log('[PVT] Print PDF clicked');
+                  // console.log('[PVT] Print PDF clicked');  // COMENTADO
                   printCurrentTab();
               });
           }
@@ -1273,7 +1273,7 @@
           var refreshBtn = document.getElementById('refreshBtn');
           if (refreshBtn) {
               refreshBtn.addEventListener('click', function() {
-                  console.log('[PVT] Refresh clicked');
+                  // console.log('[PVT] Refresh clicked');  // COMENTADO
                   refreshAll();
               });
           }
@@ -1295,7 +1295,7 @@
           // ✅ Cargar solo el primer tab (Coverage)
           await loadCoverage();
           hideLoading();
-          showToast('PVT Foresight loaded successfully ✅', 'success');
+          // showToast('PVT Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
           // ✅ Carga en segundo plano: Orphans (para que estén listos)
           setTimeout(function() {
