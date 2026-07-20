@@ -201,7 +201,7 @@
     // ============================================
     <script>
         (function() {
-            console.log('[SYS] Session monitoring started...');
+            // console.log('[SYS] Session monitoring started...');  // COMENTADO
             
             let lastLogTime = 0;
             let toastShown = false;
@@ -219,19 +219,19 @@
                                 const elapsedMinutes = Math.floor(elapsed / 60000);
                                 const elapsedHours = Math.floor(elapsedMinutes / 60);
                                 const remainingMinutes = elapsedMinutes % 60;
-                                console.log(`⏱️ Session active: ${elapsedHours}h ${remainingMinutes}m elapsed`);
+                                // console.log(`⏱️ Session active: ${elapsedHours}h ${remainingMinutes}m elapsed`);  // COMENTADO
                                 lastLogTime = elapsed;
                             }
                             
                             if (elapsed > sessionDuration) {
-                                console.log('⏰ Session expired, logging out...');
+                                // console.log('⏰ Session expired, logging out...');  // COMENTADO
                                 localStorage.removeItem('adkintor_session');
                                 window.location.replace('/app/index.html');
                             } else {
                                 const remaining = sessionDuration - elapsed;
                                 if (remaining < 5 * 60 * 1000 && remaining > 0 && !toastShown) {
                                     const minutes = Math.round(remaining / 60000);
-                                    console.log(`⚠️ Session expires in ${minutes} minutes`);
+                                    // console.log(`⚠️ Session expires in ${minutes} minutes`);  // COMENTADO
                                     
                                     if (typeof showToast === 'function') {
                                         showToast(`⚠️ Your session will expire in ${minutes} minutes.`, 'warning', 10000);
@@ -242,11 +242,11 @@
                         }
                     }
                 } catch(e) {
-                    console.warn('[SYS] Error checking session:', e);
+                    // console.warn('[SYS] Error checking session:', e);  // COMENTADO
                 }
             }, 30000);
             
-            console.log('[SYS] Session monitoring active ✅');
+            // console.log('[SYS] Session monitoring active ✅');  // COMENTADO
         })();
     </script>
 </body>
