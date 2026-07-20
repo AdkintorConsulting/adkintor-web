@@ -884,7 +884,7 @@
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+              // console.error('Error parsing session:', e);  // COMENTADO
             }
         }
     }
@@ -1487,20 +1487,20 @@
     
     async function logAssetModification(assetId, changes) {
         if (!window.Logger || typeof window.Logger.assetModified !== 'function') {
-            console.warn('[AST] Logger not available, skipping log');
+            // console.warn('[AST] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.assetModified(assetId, changes);
-            console.log('[AST] Asset modification logged:', assetId, changes.length, 'changes');
+            // console.log('[AST] Asset modification logged:', assetId, changes.length, 'changes');  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('AST', 'ASSET_MODIFIED', 
                     `Asset ${assetId} modified - ${changes.length} changes`);
             }
         } catch (err) {
-            console.warn('[AST] Failed to log asset modification:', err);
+            // console.warn('[AST] Failed to log asset modification:', err);  // COMENTADO
         }
     }
     
@@ -1523,7 +1523,7 @@
             serial: sanitizeInput(document.getElementById('v-serial').value),
             year: document.getElementById('v-year').value || '',
             hse: 1, prod: 1, usage: 1, oper: 1, redun: 1,
-            user: currentUserEmail || 'system'
+            userEmail: currentUserEmail || 'system'  // ✅ Cambiar user → userEmail
         };
         
         var critInputs = document.querySelectorAll('.crit-input');
@@ -1543,7 +1543,7 @@
             const res = await callApi('AST_updateAssetFull', [formData]);
             
             if (changes.length > 0) {
-                logAssetModification(formData.id, changes).catch(e => console.warn('[AST] Log failed:', e));
+                logAssetModification(formData.id, changes).catch(e => {});  // Log silencioso
             }
             
             hideLoading();
@@ -1557,7 +1557,7 @@
             
         } catch (error) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('AST', 'modifyAsset', error.message).catch(e => console.warn('[AST] Error log failed:', e));
+                window.Logger.error('AST', 'modifyAsset', error.message, currentUserEmail || 'system').catch(e => {});  // Log silencioso
             }
             
             hideLoading();
