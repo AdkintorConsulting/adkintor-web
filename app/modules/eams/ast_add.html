@@ -576,7 +576,7 @@
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = currentUserEmail;
             } catch(e) {
-                console.error('Error parsing session:', e);
+                //console.error('Error parsing session:', e);
             }
         }
     }
@@ -788,7 +788,7 @@
         // ✅ Verificar que los elementos existen antes de continuar
         const typeSelect = document.getElementById('type');
         if (!typeSelect) {
-            console.warn('[AST] Type select not ready, retrying...');
+            //console.warn('[AST] Type select not ready, retrying...');
             setTimeout(syncUI, 100);
             return;
         }
@@ -811,7 +811,7 @@
         const type = document.getElementById('type');
         
         if (!area || !type) {
-            console.warn('[AST] Selects not ready, retrying...');
+            //console.warn('[AST] Selects not ready, retrying...');
             setTimeout(updateFieldStates, 100);
             return;
         }
