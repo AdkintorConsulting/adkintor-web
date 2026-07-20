@@ -3,7 +3,7 @@
  * AUTH MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-17
+ * FECHA: 2026-07-20
  * 
  * Gestión de autenticación y sesión:
  * - Login con dominio de email (Opción B)
@@ -120,6 +120,7 @@
                 // Build session data
                 const sessionData = {
                     email: email,
+                    userEmail: email,  // ✅ AÑADIR ESTA LÍNEA (para consistencia)
                     role: responseData?.role || 'VIEWER',
                     clientId: responseData?.client_id || emailDomain.replace(/\./g, '_').toUpperCase(),
                     clientName: clientName,
@@ -172,7 +173,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     targetUrl: apiUrl,
-                    payload: { action: 'web_login', email: email, password: password }
+                    payload: { 
+                        action: 'web_login', 
+                        email: email, 
+                        password: password,
+                        userEmail: email  // ✅ AÑADIR ESTA LÍNEA
+                    }
                 })
             });
             return await response.json();
