@@ -994,6 +994,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -1001,9 +1002,10 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-            } catch(e) { console.error('Session parse error', e); }
+            } catch(e) { /* console.error('Session parse error', e); */ }  // COMENTADO
         }
     }
 
@@ -1035,55 +1037,55 @@
     // ============================================
     async function logStockAdjustment(skuId, oldStock, newStock, qtyChange, reason, adjustedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit('RECEIVE_STOCK', 'STK', skuId, 'Stock', oldStock, newStock, 
                 'Adjustment: ' + qtyChange + ' (' + reason + ')');
-            console.log('[STK] Stock adjustment logged:', skuId);
+            // console.log('[STK] Stock adjustment logged:', skuId);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('STK', 'STOCK_ADJUSTED', 
                     'SKU ' + skuId + ': ' + oldStock + ' → ' + newStock + ' (' + qtyChange + ') - ' + reason);
             }
         } catch (err) {
-            console.warn('[STK] Failed to log stock adjustment:', err);
+            // console.warn('[STK] Failed to log stock adjustment:', err);  // COMENTADO
         }
     }
 
     async function logSKUCreation(skuId, skuData, createdBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             var details = 'SKU created: ' + skuData.description + ' | Category: ' + skuData.category + ' | Price: ' + skuData.price;
             await window.Logger.audit('CREATE_SKU', 'STK', skuId, '', '', '', details);
-            console.log('[STK] SKU creation logged:', skuId);
+            // console.log('[STK] SKU creation logged:', skuId);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('STK', 'SKU_CREATED', details);
             }
         } catch (err) {
-            console.warn('[STK] Failed to log SKU creation:', err);
+            // console.warn('[STK] Failed to log SKU creation:', err);  // COMENTADO
         }
     }
 
     async function logSKUModification(skuId, changes, modifiedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[STK] Logger not available, skipping log');
+            // console.warn('[STK] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             var changesSummary = changes.map(function(c) { return c.field + ': ' + c.oldValue + ' → ' + c.newValue; }).join(', ');
             await window.Logger.audit('MODIFY_SKU', 'STK', skuId, 'Multiple', '', '', changesSummary.substring(0, 200));
-            console.log('[STK] SKU modification logged:', skuId);
+            // console.log('[STK] SKU modification logged:', skuId);  // COMENTADO
         } catch (err) {
-            console.warn('[STK] Failed to log SKU modification:', err);
+            // console.warn('[STK] Failed to log SKU modification:', err);  // COMENTADO
         }
     }
 
@@ -1107,7 +1109,7 @@
             document.getElementById('totalSKUs').innerText = kpi.totalSKUs;
             document.getElementById('lowStockCount').innerText = kpi.lowStockCount;
             document.getElementById('outOfStockCount').innerText = kpi.outOfStockCount;
-        } catch(e) { console.error(e); }
+        } catch(e) { /* console.error(e); */ }  // COMENTADO
     }
 
     async function loadFilters() {
@@ -1157,7 +1159,7 @@
                 reasonSelect.innerHTML = '<option value="">No reasons configured in SETUP_STK</option>';
             }
         } catch(e) { 
-            console.warn('Error loading adjustment reasons:', e);
+            //console.warn('Error loading adjustment reasons:', e);
             var reasonSelect = document.getElementById('adjustReason');
             reasonSelect.innerHTML = '<option value="">Error loading reasons</option>';
         }
@@ -1171,7 +1173,7 @@
             for (var i = 0; i < unitsList.length; i++) {
                 unitSelect.innerHTML += '<option value="' + unitsList[i] + '">' + unitsList[i] + '</option>';
             }
-        } catch(e) { console.error(e); }
+        } catch(e) { /* console.error(e); */ }  // COMENTADO
     }
 
     async function loadCurrencies() {
@@ -1182,7 +1184,7 @@
             for (var i = 0; i < currenciesList.length; i++) {
                 currencySelect.innerHTML += '<option value="' + currenciesList[i] + '">' + currenciesList[i] + '</option>';
             }
-        } catch(e) { console.error(e); }
+        } catch(e) { /* console.error(e); */ }  // COMENTADO
     }
 
     async function refreshCatalog(showAll) {
@@ -1355,7 +1357,7 @@
             unit: document.getElementById('skuUnit').value,
             minStock: document.getElementById('skuMinStock').value,
             vendorName: document.getElementById('skuVendor').value,
-            user: currentUser  // ✅ AGREGAR
+            userEmail: currentUser || 'system'  // ✅ CORREGIDO
         };
         if (!payload.description) { showToast('Description required', 'error'); return; }
         showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
@@ -1375,10 +1377,10 @@
                 if (String(original.unitPrice) !== String(payload.price)) changes.push({field: 'unitPrice', oldValue: original.unitPrice || '0', newValue: payload.price});
                 
                 if (changes.length > 0) {
-                    logSKUModification(newSkuId, changes, currentUser).catch(function(e) { console.warn('[STK] Edit log failed:', e); });
+                    logSKUModification(newSkuId, changes, currentUser).catch(function(e) { /*console.warn('[STK] Edit log failed:', e);*/ });
                 }
             } else {
-                logSKUCreation(newSkuId, payload, currentUser).catch(function(e) { console.warn('[STK] Create log failed:', e); });
+                logSKUCreation(newSkuId, payload, currentUser).catch(function(e) { /*console.warn('[STK] Create log failed:', e);*/ });
             }
             
             showToast(res.message, 'success');
@@ -1388,7 +1390,7 @@
         } catch(err) { 
             showToast('Error: ' + err.message, 'error');
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('STK', 'saveSku', err.message).catch(function(e) { console.warn('[STK] Error log failed:', e); });
+                window.Logger.error('STK', 'saveSku', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
             }
         } finally { 
             hideLoading(); 
@@ -1435,10 +1437,10 @@
         if (!reason && adjustmentReasons.length) { showToast('Select a reason', 'error'); return; }
         showLoading('Adjusting stock...');
         try {
-            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, currentUser]);
+            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, currentUser || 'system']);
             var oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
             var newStock = oldStock + qtyChange;
-            logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(function(e) { console.warn('[STK] Adjustment log failed:', e); });
+            logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(function(e) { /*console.warn('[STK] Adjustment log failed:', e);*/ });
             
             showToast(res.message, 'success');
             closeAdjustModal();
@@ -1447,7 +1449,7 @@
         } catch(err) { 
             showToast('Error: ' + err.message, 'error');
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('STK', 'applyStockAdjustment', err.message).catch(function(e) { console.warn('[STK] Error log failed:', e); });
+                window.Logger.error('STK', 'applyStockAdjustment', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
             }
         } finally { 
             hideLoading(); 
@@ -1513,9 +1515,9 @@
         async function loadAllVendors() {
             try {
                 allVendors = await callApi('STK_getExistingVendors', []);
-                console.log('[STK] Vendors loaded:', allVendors.length);
+                // console.log('[STK] Vendors loaded:', allVendors.length);  // COMENTADO
             } catch(e) {
-                console.warn('[STK] Error loading vendors:', e);
+                // console.warn('[STK] Error loading vendors:', e);  // COMENTADO
             }
         }
         loadAllVendors();
@@ -1596,7 +1598,7 @@
                         suggestionsDiv.style.display = 'block';
                     }
                 }).catch(function(err) {
-                    console.warn('[STK] Error searching assets:', err);
+                    // console.warn('[STK] Error searching assets:', err);  // COMENTADO
                     suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
                     suggestionsDiv.style.display = 'block';
                 });
@@ -1654,9 +1656,9 @@
             setupAssetSuggestions();  // ✅ NUEVO: Sugerencias para Asset Linkage
             await refreshCatalog(false);
             
-            console.log('[STK] Connected');
+            // console.log('[STK] Connected');  // COMENTADO
             hideLoading();
-            showToast('Inventory Hub loaded successfully ✅', 'success');
+            // showToast('Inventory Hub loaded successfully ✅', 'success');  // ELIMINADO
             setupVendorSuggestions(); // ✅ Esta es la función que creamos
         } catch(err) {
             hideLoading();
