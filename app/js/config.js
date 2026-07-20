@@ -3,7 +3,7 @@
  * CONFIG MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-17
+ * FECHA: 2026-07-20
  * 
  * Configuración global de la aplicación:
  * - Proxy URL (Cloudflare Worker)
@@ -63,7 +63,10 @@
         SESSION_DURATION: 8 * 60 * 60 * 1000,
         
         // App version (actualizado dinámicamente)
-        VERSION: version
+        VERSION: version,
+        
+        // ✅ AÑADIR ESTA LÍNEA (usuario por defecto cuando no hay sesión)
+        DEFAULT_USER_EMAIL: 'system'
     };
     
     //console.log('ADKINTOR_CONFIG loaded');
