@@ -384,7 +384,7 @@
                     showError(errorMsg);
                 }
             } catch (error) {
-                console.error('Login error:', error);
+                // console.error('Login error:', error);  // COMENTADO
                 showError('Connection error. Please try again later.');
             } finally {
                 setLoading(false);
