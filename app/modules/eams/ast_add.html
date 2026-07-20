@@ -699,14 +699,14 @@
     }
 
     function populateParents(area) {
-        console.log('[AST] populateParents - area:', area);
-        console.log('[AST] populateParents - DB.parents:', DB.parents);
+        //console.log('[AST] populateParents - area:', area);
+        //console.log('[AST] populateParents - DB.parents:', DB.parents);
         
         const pSel = document.getElementById('parentID');
         const typeSelect = document.getElementById('type');
         const selectedType = typeSelect ? typeSelect.value : '';
         
-        console.log('[AST] populateParents - selectedType:', selectedType);
+        //console.log('[AST] populateParents - selectedType:', selectedType);
 
         
         // Si es TL, el padre es el área (ya se maneja en updateFieldStates)
@@ -784,7 +784,7 @@
     }
 
     function syncUI() {
-        console.log('[AST] syncUI ejecutado');
+        //console.log('[AST] syncUI ejecutado');
         // ✅ Verificar que los elementos existen antes de continuar
         const typeSelect = document.getElementById('type');
         if (!typeSelect) {
@@ -793,7 +793,7 @@
             return;
         }
         
-        console.log('[AST] syncUI - llamando a updateFieldStates');
+        //console.log('[AST] syncUI - llamando a updateFieldStates');
         // Llamar a la nueva función de estados secuenciales
         updateFieldStates();
         
@@ -986,9 +986,9 @@
         try {
             const response = await callApi('AST_getInitialData', []);
             DB = response.data;
-            console.log('[AST] DB cargado:', DB);
-            console.log('[AST] DB.parents:', DB.parents);  // ← Verificar
-            console.log('[AST] DB.parents length:', DB.parents?.length);
+            //console.log('[AST] DB cargado:', DB);
+            //console.log('[AST] DB.parents:', DB.parents);  // ← Verificar
+            //console.log('[AST] DB.parents length:', DB.parents?.length);
             const areaNames = DB.areas ? DB.areas.map(a => a.name) : [];
             fillSelect('area', areaNames);
             fillSelect('type', DB.assetTypes || []);
@@ -1009,16 +1009,16 @@
 
     async function logAssetCreation(assetId, assetData, assetName, assetType, location, criticality) {
         if (!window.ModuleBase || typeof ModuleBase.logAction !== 'function') {
-            console.warn('[AST] Logger not available, skipping log');
+            // console.warn('[AST] Logger not available, skipping log');  // COMENTADO
             return;
         }
         try {
             await ModuleBase.logAction('CREATE_ASSET', 'AST', assetId,
                 `Asset: ${assetName || assetData.name} | Type: ${assetType || assetData.type} | Location: ${location || assetData.area} | Criticality: ${criticality || assetData.level}`
             );
-            console.log('[AST] Asset creation logged:', assetId);
+            // console.log('[AST] Asset creation logged:', assetId);  // COMENTADO
         } catch (err) {
-            console.warn('[AST] Failed to log asset creation:', err);
+            // console.warn('[AST] Failed to log asset creation:', err);  // COMENTADO
         }
     }
 
@@ -1040,7 +1040,7 @@
             setTimeout(function() {
                 updateFieldStates();
                 hideLoading();
-                showMessage('Add Asset loaded successfully ✅', false);
+                // showMessage('Add Asset loaded successfully ✅', false);  // ELIMINADO (innecesario)
             }, 300);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
@@ -1090,27 +1090,32 @@
             redun: parseInt(payload.redun) || 1,
             score: crit.score,
             level: crit.level,
-            user: currentUserEmail || 'system'
+            userEmail: currentUserEmail || 'system'  // ✅ Cambiar user → userEmail
         };
         try {
             const result = await saveAsset(assetData);
             
             // 🔍 DIAGNÓSTICO - VER QUÉ LLEGA
-            console.log('🔍 RESULTADO COMPLETO:', JSON.stringify(result));
-            console.log('🔍 result.status:', result.status);
-            console.log('🔍 result.status === "error":', result.status === 'error');
-            console.log('🔍 result.message:', result.message);
+            //console.log('🔍 RESULTADO COMPLETO:', JSON.stringify(result));
+            //console.log('🔍 result.status:', result.status);
+            //console.log('🔍 result.status === "error":', result.status === 'error');
+            //console.log('🔍 result.message:', result.message);
             
             // ✅ VERIFICAR SI EL RESULTADO ES ERROR
             if (result.status === 'error') {
-                console.log('✅ ENTRO AL IF DE ERROR');
+                //console.log('✅ ENTRO AL IF DE ERROR');
                 // ... resto del código ...
             } else {
-                console.log('❌ NO ENTRO AL IF - result.status NO es "error"');
+                //console.log('❌ NO ENTRO AL IF - result.status NO es "error"');
             }
             if (result.status === 'error') {
                 const errorMsg = result.message || 'Unknown error';
-                console.error('[AST] Error:', errorMsg);
+                // console.error('[AST] Error:', errorMsg);  // COMENTADO
+                if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                    ModuleBase.showToast('❌ ' + errorMsg, 'error');
+                } else {
+                    showMessage('❌ ' + errorMsg, 'error');
+                }
                 
                 // Detectar duplicado
                 if (errorMsg.toLowerCase().includes('duplicate') || 
@@ -1151,11 +1156,12 @@
             }, 2000);
         } catch (error) {
             // ✅ ERROR DE RED O EXCEPCIÓN
-            console.error('[AST] Exception:', error);
+            // console.error('[AST] Exception:', error);  // COMENTADO
             const errorMsg = error.message || 'Unknown error';
-            showMessage('❌ ' + errorMsg, 'error');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                 ModuleBase.showToast('❌ ' + errorMsg, 'error');
+            } else {
+                showMessage('❌ ' + errorMsg, 'error');
             }
             hideLoading();
             enableButton('btnSubmit');
