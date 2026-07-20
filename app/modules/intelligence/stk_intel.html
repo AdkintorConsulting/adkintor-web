@@ -617,7 +617,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[STK] Logo set from parent');
+        // console.log('[STK] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -625,7 +625,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[STK] Version set from parent:', data.version);
+        // console.log('[STK] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -701,14 +701,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[STK] API URL loaded:', EAMS_API_URL);
+        // console.log('[STK] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[STK] Error parsing session:', e);
+        // console.error('[STK] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[STK] No session found');
+      // console.warn('[STK] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -719,7 +719,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[STK] Calling API:', action, args);
+    // console.log('[STK] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -735,7 +735,7 @@
     }
     
     const result = await response.json();
-    console.log('[STK] API Response:', result);
+    // console.log('[STK] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -751,12 +751,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[STK] Logged:', module + '/' + action);
+        // console.log('[STK] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[STK] Logger error:', err);
+        // console.warn('[STK] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[STK] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[STK] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -890,7 +890,7 @@
           renderPendingPOSTab(pendingData);
           
           hideLoading();
-          showToast('Inventory Foresight loaded successfully ✅', 'success');
+          // showToast('Inventory Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
           // ✅ Cargar Alerts en segundo plano
           setTimeout(async function() {
@@ -906,14 +906,14 @@
                       }
                   }
               } catch(e) {
-                  console.warn('[STK] Error loading alerts in background:', e);
+                  // console.warn('[STK] Error loading alerts in background:', e);  // COMENTADO
               }
           }, 300);
           
           await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (summary.totalSKUs || 0) + ', Pending POs: ' + (pendingData?.length || 0));
       } catch (error) {
           hideLoading();
-          console.error('Load data error:', error);
+          // console.error('Load data error:', error);  // COMENTADO
           showToast('Failed to load: ' + error.message, 'error');
           await logForesight('STK', 'DATA_ERROR', error.message);
       }
@@ -1060,7 +1060,7 @@
                 loadOptimizationsByCategory(category);
             });
         }).catch(function(err) {
-            console.error('[STK] Error loading categories:', err);
+            // console.error('[STK] Error loading categories:', err);  // COMENTADO
             document.getElementById('optimizationTable').innerHTML = 
                 '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading categories: ' + err.message + '</div>';
         });
@@ -1107,7 +1107,7 @@
           renderOptimizationTable(data, total, showAll);
           
       }).catch(function(err) {
-          console.error('[STK] Error loading optimizations:', err);
+          // console.error('[STK] Error loading optimizations:', err);  // COMENTADO
           tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
       });
   }
@@ -1243,7 +1243,7 @@
       await refreshAllData();
       
       hideLoading();
-      showToast('Inventory Foresight loaded successfully ✅', 'success');
+      // showToast('Inventory Foresight loaded successfully ✅', 'success');  // ELIMINADO
       
     } catch(err) {
       hideLoading();
