@@ -920,6 +920,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -927,10 +928,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -980,20 +982,20 @@
     // ============================================
     async function logSweeperExecution(result, executedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[PVT] Logger not available, skipping log');
+            // console.warn('[PVT] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             const details = 'Sweeper executed: ' + (result.expiredCount || 0) + ' expired plans, ' + (result.closedCount || 0) + ' WO auto-closed';
             await window.Logger.audit('CHANGE_STATUS', 'PVT', 'SWEEPER', '', '', '', details);
-            console.log('[PVT] Sweeper execution logged');
+            // console.log('[PVT] Sweeper execution logged');  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('PVT', 'SWEEPER_EXECUTED', details);
             }
         } catch (err) {
-            console.warn('[PVT] Failed to log sweeper execution:', err);
+            // console.warn('[PVT] Failed to log sweeper execution:', err);  // COMENTADO
         }
     }
 
@@ -1037,7 +1039,7 @@
                 } catch (e) {
                     currentUser = 'system';
                 }
-                showToast('System Sweeper loaded successfully ✅', 'success');
+                // showToast('System Sweeper loaded successfully ✅', 'success');  // ELIMINADO
             } else {
                 // Fallback
                 const now = new Date();
@@ -1051,7 +1053,7 @@
                 showToast('Using fallback date', 'warning');
             }
         } catch (e) {
-            console.error('Error loading initial data:', e);
+            // console.error('Error loading initial data:', e);  // COMENTADO
             const now = new Date();
             const startOfYear = new Date(now.getFullYear(), 0, 1);
             currentWeek = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
@@ -1157,7 +1159,16 @@
             showLoading('Executing system hygiene protocol...');
             
             try {
-                var response = await callApi('PVT_runSilentSweeper', []);
+                // ✅ Obtener userEmail de la sesión
+                var session = localStorage.getItem('adkintor_session');
+                var currentUserEmail = 'system';
+                if (session) {
+                    try {
+                        var sessionData = JSON.parse(session);
+                        currentUserEmail = sessionData.email || sessionData.userName || 'system';
+                    } catch(e) {}
+                }
+                var response = await callApi('PVT_runSilentSweeper', [currentUserEmail]);
                 hideLoading();
                 
                 if (response.status === 'success') {
@@ -1174,7 +1185,7 @@
                             currentUserLog = sessionData.email || sessionData.userName || 'system';
                         } catch(e) {}
                     }
-                    logSweeperExecution(sweeperResult, currentUserLog).catch(function(e) { console.warn('[PVT] Sweeper log failed:', e); });
+                    logSweeperExecution(sweeperResult, currentUserLog).catch(function(e) { /* console.warn('[PVT] Sweeper log failed:', e); */ });  // COMENTADO
                     
                     showToast(response.message, 'success');
                     await searchLogs();
@@ -1183,7 +1194,7 @@
                 }
             } catch (e) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('PVT', 'runSweeper', e.message).catch(function(err) { console.warn('[PVT] Error log failed:', err); });
+                    window.Logger.error('PVT', 'runSweeper', e.message).catch(function(err) { /* console.warn('[PVT] Error log failed:', err); */ });  // COMENTADO
                 }
                 
                 hideLoading();
