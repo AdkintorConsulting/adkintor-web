@@ -654,7 +654,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[WO] Logo set from parent');
+        // console.log('[WO] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -662,7 +662,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[WO] Version set from parent:', data.version);
+        // console.log('[WO] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -738,14 +738,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[WO] API URL loaded:', EAMS_API_URL);
+        // console.log('[WO] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[WO] Error parsing session:', e);
+        // console.error('[WO] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[WO] No session found');
+      // console.warn('[WO] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -756,7 +756,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[WO] Calling API:', action, args);
+    // console.log('[WO] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -772,7 +772,7 @@
     }
     
     const result = await response.json();
-    console.log('[WO] API Response:', result);
+    // console.log('[WO] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -788,12 +788,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[WO] Logged:', module + '/' + action);
+        // console.log('[WO] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[WO] Logger error:', err);
+        // console.warn('[WO] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[WO] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[WO] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -876,7 +876,7 @@
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadUsers', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
-      console.error('Error loading users:', error);
+      // console.error('Error loading users:', error);  // COMENTADO
       //allDataLoaded.users = true;
       // checkAllDataLoaded();  ← ELIMINAR
     }
@@ -1177,41 +1177,41 @@
           var printTasksBtn = document.getElementById('printTasksBtn');
           var userSelect = document.getElementById('userSelect');
           
-          console.log('[WO] refreshBtn:', refreshBtn);
-          console.log('[WO] showAllBtn:', showAllBtn);
-          console.log('[WO] printPdfBtn:', printPdfBtn);
+          // console.log('[WO] refreshBtn:', refreshBtn);  // COMENTADO
+          // console.log('[WO] showAllBtn:', showAllBtn);  // COMENTADO
+          // console.log('[WO] printPdfBtn:', printPdfBtn);  // COMENTADO
           
           if (refreshBtn) {
               refreshBtn.addEventListener('click', function() { 
-                  console.log('[WO] Refresh clicked');
+                  // console.log('[WO] Refresh clicked');  // COMENTADO
                   refreshAllData(); 
               });
           }
           
           if (showAllBtn) {
               showAllBtn.addEventListener('click', function() { 
-                  console.log('[WO] Show All clicked');
+                  // console.log('[WO] Show All clicked');  // COMENTADO
                   loadAllWOs(); 
               });
           }
           
           if (printPdfBtn) {
               printPdfBtn.addEventListener('click', function() { 
-                  console.log('[WO] Print PDF clicked');
+                  // console.log('[WO] Print PDF clicked');  // COMENTADO
                   printPrioritiesPDF(); 
               });
           }
           
           if (printTasksBtn) {
               printTasksBtn.addEventListener('click', function() { 
-                  console.log('[WO] Print Tasks clicked');
+                  // console.log('[WO] Print Tasks clicked');  // COMENTADO
                   printTasks(); 
               });
           }
           
           if (userSelect) {
               userSelect.addEventListener('change', function() { 
-                  console.log('[WO] User changed:', this.value);
+                  // console.log('[WO] User changed:', this.value);  // COMENTADO
                   loadTasks(); 
               });
           }
@@ -1220,7 +1220,7 @@
           document.querySelectorAll('.tab-btn').forEach(function(btn) {
               btn.addEventListener('click', function() {
                   var tabId = this.getAttribute('data-tab');
-                  console.log('[WO] Tab clicked:', tabId);
+                  // console.log('[WO] Tab clicked:', tabId);  // COMENTADO
                   showTab(tabId);
               });
           });
@@ -1228,7 +1228,7 @@
           // ✅ Carga principal: solo Priorities
           await loadPriorities();
           hideLoading();
-          showToast('WO Foresight loaded successfully ✅', 'success');
+          // showToast('WO Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
           // ✅ Carga en segundo plano: Users (para que estén listos cuando se necesiten)
           setTimeout(function() {
