@@ -1172,7 +1172,7 @@
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
@@ -1323,13 +1323,13 @@
             renderTable();
             
             hideLoading();
-            showToast('Loaded ' + MASTER_DATA.length + ' records. Showing current week.', 'success');
-            console.log('[WO_SEARCH] Data loaded');
+            // showToast('Loaded ' + MASTER_DATA.length + ' records. Showing current week.', 'success');  // ELIMINADO
+            // console.log('[WO_SEARCH] Data loaded');  // COMENTADO
             
         } catch (error) {
             hideLoading();
             showToast('Error loading data: ' + error.message, 'error');
-            console.error('Load error:', error);
+            // console.error('Load error:', error);  // COMENTADO
         }
     }
 
@@ -1748,7 +1748,7 @@
             } catch (error) {
                 hideLoading();
                 showToast('Error loading details: ' + error.message, 'error');
-                console.error('View error:', error);
+                // console.error('View error:', error);  // COMENTADO
             }
         })();
     }
