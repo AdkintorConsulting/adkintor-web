@@ -638,7 +638,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[CAL] Logo set from parent');
+        // console.log('[CAL] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -646,7 +646,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[CAL] Version set from parent:', data.version);
+        // console.log('[CAL] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -722,14 +722,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[CAL] API URL loaded:', EAMS_API_URL);
+        // console.log('[CAL] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[CAL] Error parsing session:', e);
+        // console.error('[CAL] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[CAL] No session found');
+      // console.warn('[CAL] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -740,7 +740,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[CAL] Calling API:', action, args);
+    // console.log('[CAL] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -756,7 +756,7 @@
     }
     
     const result = await response.json();
-    console.log('[CAL] API Response:', result);
+    // console.log('[CAL] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -772,12 +772,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[CAL] Logged:', module + '/' + action);
+        // console.log('[CAL] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[CAL] Logger error:', err);
+        // console.warn('[CAL] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[CAL] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[CAL] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -827,7 +827,7 @@
         try {
             // ✅ Limpiar caché de CAL antes de recargar
             await callApi('CAL_clearCache', []);
-            console.log('[CAL] Caché limpiada');
+            // console.log('[CAL] Caché limpiada');  // COMENTADO
             
             await loadDashboard();
             hideLoading();
@@ -1125,7 +1125,7 @@
           // ✅ Cargar solo el primer tab (Dashboard)
           await loadDashboard();
           hideLoading();
-          showToast('CAL Foresight loaded successfully ✅', 'success');
+          // showToast('CAL Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
       } catch(err) {
           hideLoading();
