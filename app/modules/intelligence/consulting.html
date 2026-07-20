@@ -753,7 +753,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[CONSULTING] Logo set from parent');
+        // console.log('[CONSULTING] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -761,7 +761,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[CONSULTING] Version set from parent:', data.version);
+        // console.log('[CONSULTING] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -837,14 +837,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);
+        // console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[CONSULTING] Error parsing session:', e);
+        // console.error('[CONSULTING] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[CONSULTING] No session found');
+      // console.warn('[CONSULTING] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -855,7 +855,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[CONSULTING] Calling API:', action, args);
+    // console.log('[CONSULTING] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -871,7 +871,7 @@
     }
     
     const result = await response.json();
-    console.log('[CONSULTING] API Response:', result);
+    // console.log('[CONSULTING] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -887,12 +887,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[CONSULTING] Logged:', module + '/' + action);
+        // console.log('[CONSULTING] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[CONSULTING] Logger error:', err);
+        // console.warn('[CONSULTING] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[CONSULTING] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[CONSULTING] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -1277,7 +1277,7 @@
         }
       }
     } catch (error) {
-      console.warn('[CONSULTING] Could not load years dynamically:', error);
+      // console.warn('[CONSULTING] Could not load years dynamically:', error);  // COMENTADO
       var yearSelect = document.getElementById('yearSelect');
       if (yearSelect && yearSelect.children.length <= 1) {
         var currentYear = new Date().getFullYear();
