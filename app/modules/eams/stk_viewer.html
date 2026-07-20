@@ -732,7 +732,7 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-            } catch(e) { console.error('Session parse error', e); }
+            } catch(e) { /* console.error('Session parse error', e); */ }  // COMENTADO
         }
     }
 
@@ -769,9 +769,9 @@
         
         try {
             await window.Logger.audit('VIEW', 'STK', sku, '', '', '', 'Inventory viewer accessed SKU: ' + sku);
-            console.log('[STK] Inventory view logged:', sku);
+            // console.log('[STK] Inventory view logged:', sku);  // COMENTADO
         } catch (err) {
-            console.warn('[STK] Failed to log inventory view:', err);
+            // console.warn('[STK] Failed to log inventory view:', err);  // COMENTADO
         }
     }
 
@@ -792,7 +792,7 @@
             document.getElementById('totalSKUs').innerText = kpi.totalSKUs;
             document.getElementById('lowStockCount').innerText = kpi.lowStockCount;
             document.getElementById('outOfStockCount').innerText = kpi.outOfStockCount;
-        } catch(e) { console.error(e); showToast('Error loading KPI', 'error'); }
+        } catch(e) { /* console.error(e); */ showToast('Error loading KPI', 'error'); }  // COMENTADO
     }
 
     async function loadFilters() {
@@ -935,7 +935,7 @@
             var container = document.getElementById('historyContent');
             document.getElementById('historyModalTitle').innerText = 'Transaction History: ' + sku;
             
-            logInventoryView(sku, currentUser).catch(function(e) { console.warn('[STK] View log failed:', e); });
+            logInventoryView(sku, currentUser).catch(function(e) { /* console.warn('[STK] View log failed:', e); */ });  // COMENTADO
             
             if (history.length === 0) {
                 container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No transactions found for this SKU.</p>';
@@ -1004,7 +1004,7 @@
         if (!EAMS_API_URL) { 
             hideLoading();
             showToast('Session error: missing API URL. Please login first.', 'error');
-            console.log('[STK] Not connected');
+            // console.log('[STK] Not connected');  // COMENTADO
             return;
         }
         
@@ -1014,14 +1014,14 @@
             await loadFilters();
             await refreshCatalog();
             
-            console.log('[STK] Connected (Read Only)');
+            // console.log('[STK] Connected (Read Only)');  // COMENTADO
             hideLoading();
-            showToast('Inventory Viewer loaded successfully ✅', 'success');
+            // showToast('Inventory Viewer loaded successfully ✅', 'success');  // ELIMINADO
             
             // ✅ Mostrar mensaje informativo sobre el filtro
-            setTimeout(function() {
-                showToast('📋 Showing items with transactions in the last 30 days. Click "Show All" to view full catalog.', 'info');
-            }, 1500);
+            //setTimeout(function() {
+            //    showToast('📋 Showing items with transactions in the last 30 days. Click "Show All" to view full catalog.', 'info');
+            //}, 1500);
         } catch(err) {
             hideLoading();
             showToast('Error loading data: ' + err.message, 'error');
