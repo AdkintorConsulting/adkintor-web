@@ -895,6 +895,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR ESTA LÍNEA
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -902,10 +903,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR ESTA LÍNEA
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -954,19 +956,19 @@
     // ============================================
     async function logPlanAction(action, year, details) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[PVT] Logger not available, skipping log');
+            // console.warn('[PVT] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit(action, 'PVT', 'PLAN_' + year, '', '', '', details);
-            console.log('[PVT] Plan action logged:', action, year);
+            // console.log('[PVT] Plan action logged:', action, year);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('PVT', action, details.substring(0, 200));
             }
         } catch (err) {
-            console.warn('[PVT] Failed to log plan action:', err);
+            // console.warn('[PVT] Failed to log plan action:', err);  // COMENTADO
         }
     }
 
@@ -1059,15 +1061,15 @@
             document.getElementById('yearSelect').addEventListener('change', function() {
                 checkLockState(true);
             });
-            console.log('[PVT] Ready');
-            showToast('Strategic Planner loaded successfully ✅', 'success');
+            // console.log('[PVT] Ready');  // COMENTADO
+            // showToast('Strategic Planner loaded successfully ✅', 'success');  // ELIMINADO
             
             // Opcional: Cargar plan del año seleccionado automáticamente
             // loadPlan();
             
         } catch (e) {
             hideLoading();
-            console.error('Error initializing:', e);
+            // console.error('Error initializing:', e);  // COMENTADO
             showToast('Error loading configuration: ' + e.message, 'error');
             
             var currentYear = new Date().getFullYear();
@@ -1122,7 +1124,16 @@
         showLoading('EXECUTING BALANCING ALGORITHM...');
         
         try {
-            var data = await callApi('PVT_executeAutoPlanning', [parseInt(year)]);
+            // ✅ Añadir userEmail al payload
+            var session = localStorage.getItem('adkintor_session');
+            var currentUser = 'system';
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    currentUser = sessionData.email || sessionData.userName || 'system';
+                } catch(e) {}
+            }
+            var data = await callApi('PVT_executeAutoPlanning', [parseInt(year), currentUser]);
             
             if (!data || data.length === 0) {
                 showToast('No data generated. Check assets and strategy configuration.', 'error');
@@ -1144,7 +1155,7 @@
                 } catch(e) {}
             }
             logPlanAction('GENERATE_PLAN', year, 'Generated ' + data.length + ' tasks for year ' + year)
-                .catch(function(e) { console.warn('[PVT] Log failed:', e); });
+                .catch(function(e) { /* console.warn('[PVT] Log failed:', e); */ });  // COMENTADO
             
             renderHeatmap();
             hideLoading();
@@ -1152,7 +1163,7 @@
             
         } catch (e) {
             hideLoading();
-            console.error('Generation error:', e);
+            // console.error('Generation error:', e);  // COMENTADO
             showToast('Error: ' + e.message, 'error');
         }
     }
@@ -1179,7 +1190,7 @@
             
         } catch (e) {
             hideLoading();
-            console.error('Load error:', e);
+            // console.error('Load error:', e);  // COMENTADO
             showToast('Error: ' + e.message, 'error');
         }
     }
@@ -1457,7 +1468,16 @@
         showLoading('SAVING TO DATABASE...');
         
         try {
-            var response = await callApi('PVT_commitPlan', [currentPlan, lockStatus]);
+            // ✅ Añadir userEmail al payload
+            var session = localStorage.getItem('adkintor_session');
+            var currentUser = 'system';
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    currentUser = sessionData.email || sessionData.userName || 'system';
+                } catch(e) {}
+            }
+            var response = await callApi('PVT_commitPlan', [currentPlan, lockStatus, currentUser]);
             
             hideLoading();
             
@@ -1474,7 +1494,7 @@
                 var year = document.getElementById('yearSelect').value;
                 var actionType = lockStatus === 'LOCKED' ? 'LOCK_PLAN' : 'SAVE_PLAN';
                 logPlanAction(actionType, year, response.message + ' - ' + currentPlan.length + ' tasks')
-                    .catch(function(e) { console.warn('[PVT] Log failed:', e); });
+                    .catch(function(e) { /* console.warn('[PVT] Log failed:', e); */ });  // COMENTADO
                 
                 showToast(response.message, 'success');
                 isDirty = false;
@@ -1501,7 +1521,7 @@
             }
         } catch (e) {
             hideLoading();
-            console.error('Save error:', e);
+            // console.error('Save error:', e);  // COMENTADO
             showToast('Error: ' + e.message, 'error');
         }
     }
