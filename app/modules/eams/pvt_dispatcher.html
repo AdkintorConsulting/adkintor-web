@@ -174,9 +174,9 @@
         
         try {
             permissions = await waitForPermissions();
-            console.log('Permisos obtenidos del padre:', permissions);
+            // console.log('Permisos obtenidos del padre:', permissions);  // COMENTADO
         } catch(e) {
-            console.error('Error loading permissions from parent:', e);
+            // console.error('Error loading permissions from parent:', e);  // COMENTADO
         }
         
         if (!permissions || permissions.length === 0) {
@@ -193,15 +193,15 @@
                     });
                     const data = await response.json();
                     if (data.success) permissions = data.data;
-                    console.log('Permisos obtenidos de API directa:', permissions);
+                    // console.log('Permisos obtenidos de API directa:', permissions);  // COMENTADO
                 }
             } catch(e) {
-                console.error('Error loading permissions from API:', e);
+                // console.error('Error loading permissions from API:', e);  // COMENTADO
             }
         }
         
         window.dispatcherPermissions = permissions;
-        console.log('Permisos finales:', window.dispatcherPermissions);
+        // console.log('Permisos finales:', window.dispatcherPermissions);  // COMENTADO
 
         if (!hasPermission('PVT_ReleaseUI')) {
             const btn = document.getElementById('releaseBtn');
