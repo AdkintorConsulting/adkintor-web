@@ -1103,6 +1103,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR ESTA LÍNEA
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -1110,10 +1111,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ NUEVA LÍNEA AQUÍ
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -1187,8 +1189,8 @@ async function init() {
         await updateDashboard();      // ✅ Espera a que termine
         await loadHierarchyTree();    // ✅ Espera a que termine
         hideLoading();                // ✅ Ahora sí, se oculta al final
-        showToast('Activity Builder loaded successfully ✅', 'success');
-        console.log('[Activity Builder] Ready');
+        // showToast('Activity Builder loaded successfully ✅', 'success');  // ELIMINADO
+        // console.log('[Activity Builder] Ready');  // COMENTADO
     } else {
         hideLoading();
         showToast('API URL not configured. Please log in first.', 'error');
@@ -1206,7 +1208,7 @@ async function updateDashboard() {
             document.getElementById('stat-bar').style.width = (stats.percent || 0) + '%';
         }
     } catch (e) {
-        console.error('Error loading stats:', e);
+        // console.error('Error loading stats:', e);  // COMENTADO
     }
 }
 
@@ -1227,7 +1229,7 @@ async function updateDashboard() {
             }
             document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No active Technical Locations found.</div>';
         } catch (e) {
-            console.error('Error loading hierarchy:', e);
+            // console.error('Error loading hierarchy:', e);  // COMENTADO
             document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading hierarchy</div>';
         }
     }
@@ -1267,7 +1269,7 @@ async function updateDashboard() {
                     suggestionsDiv.style.display = 'none';
                 }
             } catch (e) {
-                console.error('Error getting suggestions:', e);
+                // console.error('Error getting suggestions:', e);  // COMENTADO
                 suggestionsDiv.style.display = 'none';
             }
         }, 300);
@@ -1476,7 +1478,7 @@ async function updateDashboard() {
             renderCloneList('create-clone-list', currentCloneTargets, 'create');
             updateCreateSummary();
         } catch (e) {
-            console.error('Error loading clones:', e);
+            // console.error('Error loading clones:', e);  // COMENTADO
             cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
@@ -1603,7 +1605,8 @@ async function updateDashboard() {
             instruction: instruction,
             standard: standard,
             timeHr: timeHr,
-            cloneTo: cloneTo
+            cloneTo: cloneTo,
+            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
         showLoading('Creating activity...');
@@ -1707,7 +1710,7 @@ async function updateDashboard() {
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
         } catch (e) {
-            console.error('Error loading clones:', e);
+            // console.error('Error loading clones:', e);  // COMENTADO
             cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
@@ -1769,7 +1772,8 @@ async function updateDashboard() {
             instruction: instruction,
             standard: standard,
             timeHr: timeHr,
-            propagateTo: propagateTo
+            propagateTo: propagateTo,
+            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
         showLoading('Updating activity...');
@@ -1900,7 +1904,8 @@ async function updateDashboard() {
             newStrategyId: newStrategyId,
             equipment: orphan.equipment,
             instruction: orphan.instruction,
-            frequency: null
+            frequency: null,
+            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
         callApi('PVT_reassignOrphanActivity', [payload])
@@ -1942,7 +1947,8 @@ async function updateDashboard() {
             assetId: orphan.assetId,
             strategyId: orphan.strategyId,
             equipment: orphan.equipment,
-            instruction: orphan.instruction
+            instruction: orphan.instruction,
+            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
         callApi('PVT_deleteOrphanActivity', [payload])
@@ -2048,7 +2054,7 @@ async function updateDashboard() {
                 currentDeleteCloneTargets = results || [];
                 renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
             } catch (e) {
-                console.error('Error loading clones for delete:', e);
+                // console.error('Error loading clones for delete:', e);  // COMENTADO
                 var container = document.getElementById('delete-clone-list');
                 if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
             }
@@ -2102,7 +2108,8 @@ async function updateDashboard() {
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentDeleteTask.equipment,
             originalInstruction: currentDeleteTask.instruction,
-            deleteFrom: deleteFrom
+            deleteFrom: deleteFrom,
+            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
         showLoading('Deleting activity...');
