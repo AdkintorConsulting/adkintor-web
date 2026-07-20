@@ -21,8 +21,20 @@ const API = {
      * @returns {Promise}
      */
     async call(targetUrl, action, data = {}) {
+        // Obtener sesión automáticamente
+        let session = null;
+        try {
+            const sessionStr = localStorage.getItem('adkintor_session');
+            session = sessionStr ? JSON.parse(sessionStr) : null;
+        } catch (e) {
+            // Si hay error al parsear, ignorar
+        }
+        
+        const userEmail = session?.email || 'system';
+        
         const payload = {
             action: action,
+            userEmail: userEmail,  // ✅ Añadir userEmail automáticamente
             ...data
         };
         
