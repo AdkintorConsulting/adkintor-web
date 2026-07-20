@@ -3,7 +3,7 @@
  * LAYOUT MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-17
+ * FECHA: 2026-07-20
  * 
  * Controlador principal de la interfaz:
  * - Sidebar navigation (FORESIGHT modules)
@@ -40,8 +40,8 @@ let isSidebarCollapsed = false;
 if (typeof Logger === 'undefined') {
     //console.warn('Logger not loaded, logging disabled');
     window.Logger = {
-        error: (...args) => console.warn('Logger unavailable:', args),
-        audit: (...args) => console.warn('Logger unavailable:', args)
+        error: (...args) => {},  // console.warn('Logger unavailable:', args),
+        audit: (...args) => {}   // console.warn('Logger unavailable:', args)
     };
 }
 
@@ -84,7 +84,7 @@ function updateClientInfo() {
         const clientName = session.clientName || 'DEMO_CLIENT';
         clientInfoElement.innerHTML = `<i class="fas fa-building"></i> ${clientName}`;
     } catch (error) {
-        console.error('Error loading client info:', error);
+        //console.error('Error loading client info:', error);
         clientInfoElement.innerHTML = `<i class="fas fa-building"></i> CLIENT`;
     }
 }
@@ -1214,7 +1214,7 @@ async function loadUserRoleAndPermissions() {
         // Obtener sesión
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
         const userRole = session.role || 'VIEWER';
-        const userName = session.userName || session.name || session.email.split('@')[0];
+        const userName = session.userName || session.name || (session.userEmail || session.email)?.split('@')[0] || 'User';
         const eamsApiUrl = session.eamsApiUrl;
         
         currentUserRole = userRole;
@@ -1358,11 +1358,12 @@ function showToast(message, type = 'info', duration = 3000) {
 // Al cargar main.html, mostrar toast de bienvenida
 document.addEventListener('DOMContentLoaded', function() {
     // Mostrar toast de bienvenida
-    setTimeout(() => {
-        const session = JSON.parse(localStorage.getItem('adkintor_session'));
-        const name = session?.userName || session?.email?.split('@')[0] || 'User';
-        showToast(`Welcome back, ${name}! 👋`, 'info', 3000);
-    }, 500);
+    // Mostrar toast de bienvenida - ELIMINADO (innecesario)
+    // setTimeout(() => {
+    //     const session = JSON.parse(localStorage.getItem('adkintor_session'));
+    //     const name = session?.userName || session?.name || (session?.userEmail || session?.email)?.split('@')[0] || 'User';
+    //     showToast(`Welcome back, ${name}! 👋`, 'info', 3000);
+    // }, 500);
 });
 
 // ============================================
