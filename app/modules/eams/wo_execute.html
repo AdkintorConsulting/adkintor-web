@@ -1139,6 +1139,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -1146,10 +1147,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
@@ -1221,7 +1223,7 @@
     // ============================================
     async function logWOExecution(woId, action, details) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[WO] Logger not available, skipping log');
+            // console.warn('[WO] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
@@ -1237,14 +1239,14 @@
             
             await window.Logger.audit('EXECUTE_WO', 'WO', woId, 'Status', '', '', 
                 'Action: ' + action + ' | ' + JSON.stringify(details).substring(0, 200) + ' | User: ' + userEmail);
-            console.log('[WO] WO execution logged:', woId, action);
+            // console.log('[WO] WO execution logged:', woId, action);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('WO', 'WO_EXECUTED', 
                     'WO ' + woId + ' - Action: ' + action + ' - Tasks: ' + (details.tasksCompleted || 0) + '/' + (details.totalTasks || 0) + ' | User: ' + userEmail);
             }
         } catch (err) {
-            console.warn('[WO] Failed to log WO execution:', err);
+            // console.warn('[WO] Failed to log WO execution:', err);  // COMENTADO
         }
     }
 
@@ -1945,17 +1947,17 @@
             if (completedRootCause) completedRootCause.innerHTML = rootCausesHtml;
             if (fuRootCause) fuRootCause.innerHTML = rootCausesHtml;
             
-            console.log('[WO_EXECUTE] Data loaded');
+            // console.log('[WO_EXECUTE] Data loaded');  // COMENTADO
             validateStep();
             hideLoading();
             
             // ✅ Issue #13: Toast de confirmación al cargar
-            showToast('Technical Portal loaded successfully ✅', 'success');
+            // showToast('Technical Portal loaded successfully ✅', 'success');  // ELIMINADO
             
         } catch (error) {
             hideLoading();
             showToast('Error loading data: ' + error.message, 'error');
-            console.error('Load error:', error);
+            // console.error('Load error:', error);  // COMENTADO
         }
     }
 
@@ -2028,7 +2030,7 @@
         } catch (error) {
             hideLoading();
             showToast('Error refreshing: ' + error.message, 'error');
-            console.error('Refresh error:', error);
+            // console.error('Refresh error:', error);  // COMENTADO
         }
     }    
 
@@ -2805,7 +2807,7 @@
           needsExternalService: needsExternalService,
           needsOther: needsOther,
           otherComment: otherCommentText,
-          user: userEmail
+          userEmail: userEmail || 'system'  // ✅ CORREGIDO
       };
       
       try {
@@ -2820,10 +2822,10 @@
               partsConsumed: DB.cart.length,
               rootCause: rootCause || 'N/A'
           };
-          logWOExecution(folio, action, executionDetails).catch(function(e) { console.warn('[WO] Execution log failed:', e); });
+          logWOExecution(folio, action, executionDetails).catch(function(e) { /* console.warn('[WO] Execution log failed:', e); */ });  // COMENTADO
           
           showToast('Report processed successfully!', 'success');
-          console.log('[WO_EXECUTE] Report Saved');
+          // console.log('[WO_EXECUTE] Report Saved');  // COMENTADO
           
           // ✅ Issue #3: Reset completo después de cerrar WO
           // Eliminar WO de la lista
@@ -2883,7 +2885,7 @@
           
       } catch (error) {
           if (window.Logger && typeof window.Logger.error === 'function') {
-              window.Logger.error('WO', 'executeWorkOrder', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+              window.Logger.error('WO', 'executeWorkOrder', error.message).catch(function(e) { /* console.warn('[WO] Error log failed:', e); */ });  // COMENTADO
           }
           
           hideLoading();
