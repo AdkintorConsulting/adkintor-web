@@ -763,6 +763,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -770,10 +771,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
@@ -929,20 +931,20 @@
     // ============================================
     async function logWOClosure(woId, closedBy, resolution, tasksExecuted) {
         if (!window.Logger || typeof window.Logger.woClosed !== 'function') {
-            console.warn('[WO] Logger not available, skipping log');
+            // console.warn('[WO] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.woClosed(woId, resolution);
-            console.log('[WO] WO closure logged:', woId);
+            // console.log('[WO] WO closure logged:', woId);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('WO', 'WO_CLOSED', 
                     'WO ' + woId + ' closed by ' + closedBy + ' - Tasks: ' + tasksExecuted + ' - Resolution: ' + resolution.substring(0, 100));
             }
         } catch (err) {
-            console.warn('[WO] Failed to log WO closure:', err);
+            // console.warn('[WO] Failed to log WO closure:', err);  // COMENTADO
         }
     }
 
@@ -979,17 +981,17 @@
             if (folioOptions.length === 0) {
                 showToast('No COMPLETED work orders pending audit', 'warning');
             } else {
-                showToast('Loaded ' + folioOptions.length + ' completed work orders', 'success');
+                // showToast('Loaded ' + folioOptions.length + ' completed work orders', 'success');  // ELIMINADO
             }
             
-            console.log('[WO_CLOSE] Data loaded');
+            // console.log('[WO_CLOSE] Data loaded');  // COMENTADO
             updateSubmitButton();
             hideLoading();
             
         } catch (error) {
             hideLoading();
             showToast('Error loading data: ' + error.message, 'error');
-            console.error('Load error:', error);
+            // console.error('Load error:', error);  // COMENTADO
         }
     }
 
@@ -1122,7 +1124,7 @@
         } catch (error) {
             hideLoading();
             showToast('Error loading details: ' + error.message, 'error');
-            console.error('Details error:', error);
+            // console.error('Details error:', error);  // COMENTADO
         }
     }
 
@@ -1226,7 +1228,7 @@
             tasksExecuted: woData && woData.pm ? (woData.pm.completedTasks || 0) : 0,
             maxTasks: woData && woData.pm ? woData.pm.maxTasks || 0 : 0,
             supervisorEmails: supervisorEmails,
-            user: userEmail
+            userEmail: userEmail || 'system'  // ✅ CORREGIDO
         };
         
         try {
@@ -1238,10 +1240,10 @@
                 var closedBy = approver;
                 var resolution = note || 'Closed without observations';
                 var tasksExecuted = payload.tasksExecuted || 0;
-                logWOClosure(folio, closedBy, resolution, tasksExecuted).catch(function(e) { console.warn('[WO] Closure log failed:', e); });
+                logWOClosure(folio, closedBy, resolution, tasksExecuted).catch(function(e) { /* console.warn('[WO] Closure log failed:', e); */ });  // COMENTADO
                 
                 showToast('Work Order closed successfully!', 'success');
-                console.log('[WO_CLOSE] WO Closed');
+                // console.log('[WO_CLOSE] WO Closed');  // COMENTADO
                 resetClosureForm();
                 await loadInitialData();
             } else {
@@ -1250,12 +1252,12 @@
             
         } catch (error) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('WO', 'closeWorkOrder', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+                window.Logger.error('WO', 'closeWorkOrder', error.message).catch(function(e) { /* console.warn('[WO] Error log failed:', e); */ });  // COMENTADO
             }
             
             hideLoading();
             showToast('Error: ' + error.message, 'error');
-            console.error('Closure error:', error);
+            // console.error('Closure error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
             updateSubmitButton();
