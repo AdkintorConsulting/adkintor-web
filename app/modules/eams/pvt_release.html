@@ -770,6 +770,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
     let isProcessing = false;
 
     function loadApiUrl() {
@@ -778,10 +779,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -825,7 +827,7 @@
     // ============================================
     async function logPVTRelease(tasksReleased, releasedBy, week, year) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[PVT] Logger not available, skipping log');
+            // console.warn('[PVT] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
@@ -834,14 +836,14 @@
             const details = 'Week ' + week + '/' + year + ' - ' + tasksReleased.length + ' WO(s) released: ' + taskIds.substring(0, 200);
             
             await window.Logger.audit('RELEASE_PLAN', 'PVT', 'WEEK-' + week + '-' + year, '', '', '', details);
-            console.log('[PVT] Release logged:', tasksReleased.length, 'tasks');
+            // console.log('[PVT] Release logged:', tasksReleased.length, 'tasks');  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('PVT', 'WEEKLY_RELEASE', 
                     'Weekly release - Week ' + week + '/' + year + ': ' + tasksReleased.length + ' WO(s) released');
             }
         } catch (err) {
-            console.warn('[PVT] Failed to log release:', err);
+            // console.warn('[PVT] Failed to log release:', err);  // COMENTADO
         }
     }
 
@@ -874,11 +876,11 @@
             
             initUI();
             hideLoading();
-            showToast('Weekly Release loaded successfully ✅', 'success');
+            // showToast('Weekly Release loaded successfully ✅', 'success');  // ELIMINADO
             
         } catch (e) {
             hideLoading();
-            console.error('Error loading initial data:', e);
+            // console.error('Error loading initial data:', e);  // COMENTADO
             showToast('Error loading configuration: ' + e.message, 'error');
             
             availableYears = [new Date().getFullYear()];
@@ -919,7 +921,7 @@
         }
         yearSel.value = currentYear;
         
-        console.log('[Release] Ready');
+        // console.log('[Release] Ready');  // COMENTADO
         loadWeek();
     }
 
@@ -945,7 +947,7 @@
             localTasks = tasks || [];
             renderTable();
             hideLoading();
-            console.log('[Release] Ready - Table refreshed');
+            // console.log('[Release] Ready - Table refreshed');  // COMENTADO
         } catch (e) {
             hideLoading();
             showToast('Error loading tasks: ' + e.message, 'error');
@@ -1143,7 +1145,16 @@
         if (cancelBtn) cancelBtn.disabled = true;
         
         try {
-            var response = await callApi('PVT_releaseWorkOrders', [selectedData]);
+            // ✅ Obtener userEmail de la sesión
+            var session = localStorage.getItem('adkintor_session');
+            var currentUserEmail = 'system';
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    currentUserEmail = sessionData.email || sessionData.userName || 'system';
+                } catch(e) {}
+            }
+            var response = await callApi('PVT_releaseWorkOrders', [selectedData, currentUserEmail]);
             
             // 🔓 DESBLOQUEAR
             isProcessing = false;
@@ -1159,9 +1170,7 @@
             if (response.status === 'success') {
                 var week = document.getElementById('weekSelector').value;
                 var year = document.getElementById('yearSelector').value;
-                logPVTRelease(selectedData, currentUser || 'system', week, year).catch(function(e) {
-                    console.warn('[PVT] Release log failed:', e);
-                });
+                logPVTRelease(selectedData, currentUser || 'system', week, year).catch(function(e) { /* console.warn('[PVT] Release log failed:', e); */ });  // COMENTADO
                 
                 showToast(response.message, 'success');
                 
@@ -1234,7 +1243,7 @@
             loadInitialData();
         } else {
             showToast('Please login to access EAMS', 'error');
-            console.log('[Release] Not Configured');
+            // console.log('[Release] Not Configured');  // COMENTADO
         }
     }
     
