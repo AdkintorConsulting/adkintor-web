@@ -833,6 +833,24 @@
                 padding: 0 !important;
                 background: white !important;
             }
+
+            .btn-print-header {
+                background: transparent !important;
+                border: 1px solid #4a6cf7 !important;
+                color: white !important;
+                padding: 6px 14px !important;
+                border-radius: 4px !important;
+                cursor: pointer !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                transition: all 0.3s !important;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            }
+
+            .btn-print-header:hover {
+                background: #4a6cf7 !important;
+                color: white !important;
+            }            
         }
     </style>
 </head>
@@ -1299,6 +1317,20 @@
         }
         return dateStr;
     }
+
+    // ============================================
+    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
+    // ============================================
+    function printReport() {
+        const title = 'Work Order Report';
+        const mode = 'eams';
+        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            ModuleBase.printModule(title, mode);
+        } else {
+            window.print(); // fallback
+        }
+    }
+    window.printReport = printReport; 
 
     // ============================================
     // DATA LOADING
@@ -1810,6 +1842,11 @@
     function init() {
         loadUser();
         loadApiUrl();
+        
+        // Inicializar ModuleBase si existe
+        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
+            ModuleBase.initModule('Work Order Search');
+        }
         
         if (EAMS_API_URL) {
             loadData();
