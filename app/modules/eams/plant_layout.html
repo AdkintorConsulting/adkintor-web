@@ -464,13 +464,13 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-                console.log('API URL loaded:', EAMS_API_URL);
+                // console.log('API URL loaded:', EAMS_API_URL);  // COMENTADO
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
-            console.error('No session found');
+            // console.error('No session found');  // COMENTADO
             showToast('Please log in to continue.', 'error');
         }
     }
@@ -503,19 +503,19 @@
     // ============================================
     async function logPlantLayoutView(viewedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[SYS] Logger not available, skipping log');
+            // console.warn('[SYS] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit('VIEW', 'SYS', 'PLANT_LAYOUT', '', '', '', 'Plant layout viewed');
-            console.log('[SYS] Plant layout view logged');
+            // console.log('[SYS] Plant layout view logged');  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('SYS', 'PLANT_LAYOUT_VIEWED', 'Plant layout accessed');
             }
         } catch (err) {
-            console.warn('[SYS] Failed to log plant layout view:', err);
+            // console.warn('[SYS] Failed to log plant layout view:', err);  // COMENTADO
         }
     }
     
@@ -570,7 +570,7 @@
             img.onload = function() {
                 hideLoading();
                 img.style.opacity = '1';
-                showToast('Plant layout loaded successfully ✅', 'success');
+                // showToast('Plant layout loaded successfully ✅', 'success');  // ELIMINADO (innecesario)
             };
             
             img.onerror = function() {
@@ -591,7 +591,7 @@
                     currentUser = sessionData.email || sessionData.userName || 'System';
                 } catch(e) {}
             }
-            logPlantLayoutView(currentUser).catch(function(e) { console.warn('[SYS] View log failed:', e); });
+            logPlantLayoutView(currentUser).catch(function(e) { /* console.warn('[SYS] View log failed:', e); */ });  // COMENTADO
             
         } catch (error) {
             hideLoading();
@@ -601,7 +601,7 @@
             img.style.opacity = '1';
             
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('SYS', 'loadPlantLayout', error.message).catch(function(e) { console.warn('[SYS] Error log failed:', e); });
+                window.Logger.error('SYS', 'loadPlantLayout', error.message).catch(function(e) { /* console.warn('[SYS] Error log failed:', e); */ });  // COMENTADO
             }
         }
     }
