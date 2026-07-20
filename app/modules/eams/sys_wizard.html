@@ -951,7 +951,7 @@
     
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
-    let currentUser = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
     
     // Estado del Wizard
     let currentStep = 1;
@@ -981,11 +981,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
-                currentUser = sessionData.email || 'Unknown User';
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = currentUser;
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = 'User';
             }
@@ -1068,19 +1068,19 @@
     // ============================================
     async function logConfigChange(entityId, action, details) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[SYS] Logger not available, skipping log');
+            // console.warn('[SYS] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit(action, 'SYS', entityId, '', '', '', details);
-            console.log('[SYS] Config change logged:', entityId, action);
+            // console.log('[SYS] Config change logged:', entityId, action);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('SYS', action, details.substring(0, 200));
             }
         } catch (err) {
-            console.warn('[SYS] Failed to log config change:', err);
+            // console.warn('[SYS] Failed to log config change:', err);  // COMENTADO
         }
     }
     
@@ -1693,12 +1693,20 @@
         showLoading('Saving entity...');
         
         try {
-            const response = await callApi('SYS_saveEntityData', [selectedModule, selectedEntity.id, currentEntityRows]);
+            // ✅ Añadir userEmail al payload
+            let userEmail = 'system';
+            try {
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    userEmail = session.email;
+                }
+            } catch(e) {}
+            const response = await callApi('SYS_saveEntityData', [selectedModule, selectedEntity.id, currentEntityRows, userEmail]);
             
             hideLoading();
             if (response.success) {
                 const changesCount = currentEntityRows.length;
-                logConfigChange(selectedEntity.id, 'MODIFY_CONFIG', 'Entity ' + selectedEntity.id + ' modified - ' + changesCount + ' rows saved').catch(function(e) { console.warn('[SYS] Config log failed:', e); });
+                logConfigChange(selectedEntity.id, 'MODIFY_CONFIG', 'Entity ' + selectedEntity.id + ' modified - ' + changesCount + ' rows saved').catch(function(e) { /* console.warn('[SYS] Config log failed:', e); */ });  // COMENTADO
                 
                 showToast(response.message, 'success');
                 await loadModule(selectedModule);
@@ -1707,7 +1715,7 @@
             }
         } catch (error) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('SYS', 'saveConfig', error.message).catch(function(e) { console.warn('[SYS] Error log failed:', e); });
+                window.Logger.error('SYS', 'saveConfig', error.message).catch(function(e) { /* console.warn('[SYS] Error log failed:', e); */ });  // COMENTADO
             }
             hideLoading();
             showToast('Server error: ' + error.message, 'error');
@@ -1823,7 +1831,15 @@
             const nextYear = Math.max.apply(null, availableYears) + 1;
             showConfirmation('Add year ' + nextYear + ' with all amounts set to $0?', async function() {
                 try {
-                    const response = await callApi('SYS_addBudgetYear', [nextYear]);
+                    // ✅ Añadir userEmail al payload
+                    let userEmail = 'system';
+                    try {
+                        const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                        if (session && session.email) {
+                            userEmail = session.email;
+                        }
+                    } catch(e) {}
+                    const response = await callApi('SYS_addBudgetYear', [nextYear, userEmail]);
                     if (response.success) {
                         showToast(response.message, 'success');
                         availableYears = await callApi('SYS_getBudgetYears', []);
@@ -1850,11 +1866,19 @@
             showLoading('Saving budget for ' + currentBudgetYear + '...');
             
             try {
-                const response = await callApi('SYS_saveBudgetYear', [currentBudgetYear, newAmounts]);
+                // ✅ Añadir userEmail al payload
+                let userEmail = 'system';
+                try {
+                    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                    if (session && session.email) {
+                        userEmail = session.email;
+                    }
+                } catch(e) {}
+                const response = await callApi('SYS_saveBudgetYear', [currentBudgetYear, newAmounts, userEmail]);
                 hideLoading();
                 if (response.success) {
                     const totalBudget = newAmounts.reduce(function(a,b) { return a + b; }, 0);
-                    logConfigChange('budget', 'MODIFY_BUDGET', 'Budget ' + currentBudgetYear + ' saved - Total: $' + totalBudget).catch(function(e) { console.warn('[SYS] Budget log failed:', e); });
+                    logConfigChange('budget', 'MODIFY_BUDGET', 'Budget ' + currentBudgetYear + ' saved - Total: $' + totalBudget).catch(function(e) { /* console.warn('[SYS] Budget log failed:', e); */ });  // COMENTADO
                     
                     showToast(response.message, 'success');
                     await loadBudgetData();
@@ -1863,7 +1887,7 @@
                 }
             } catch (error) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('SYS', 'saveBudget', error.message).catch(function(e) { console.warn('[SYS] Error log failed:', e); });
+                    window.Logger.error('SYS', 'saveBudget', error.message).catch(function(e) { /* console.warn('[SYS] Error log failed:', e); */ });  // COMENTADO
                 }
                 hideLoading();
                 showToast('Error: ' + error.message, 'error');
@@ -1929,7 +1953,7 @@
         loadApiUrlAndUser();
         goToStep(1);
         hideLoading();
-        showToast('Universal Configurator loaded successfully ✅', 'success');
+        // showToast('Universal Configurator loaded successfully ✅', 'success');  // ELIMINADO
     }
     
     if (document.readyState === 'loading') {
