@@ -730,6 +730,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR ESTA LÍNEA
 
     function loadApiUrl() {
         const session = localStorage.getItem('adkintor_session');
@@ -737,10 +738,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR ESTA LÍNEA
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -785,7 +787,7 @@
     // ============================================
     async function logManualPMCreation(assetId, frequency, weeks, createdBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[PVT] Logger not available, skipping log');
+            // console.warn('[PVT] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
@@ -794,14 +796,14 @@
             var details = 'Manual PM: ' + assetId + ' | Freq: ' + frequency + ' | Weeks: ' + weekList;
             
             await window.Logger.audit('CREATE_MANUAL_PM', 'PVT', assetId, '', '', '', details);
-            console.log('[PVT] Manual PM creation logged:', assetId);
+            //console.log('[PVT] Manual PM creation logged:', assetId);
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('PVT', 'MANUAL_PM_CREATED', 
                     'Manual PM created for ' + assetId + ' - Freq: ' + frequency + ' - ' + weeks.length + ' weeks');
             }
         } catch (err) {
-            console.warn('[PVT] Failed to log manual PM creation:', err);
+            //console.warn('[PVT] Failed to log manual PM creation:', err);
         }
     }
 
@@ -844,7 +846,7 @@
                     suggestionsDiv.style.display = 'block';
                 }
             } catch (e) {
-                console.error('Error getting suggestions:', e);
+                // console.error('Error getting suggestions:', e);  // COMENTADO
                 suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #dc3545;">Error searching</div>';
                 suggestionsDiv.style.display = 'block';
             }
@@ -917,7 +919,7 @@
                 showToast('Error loading configuration', 'error');
             }
         } catch (e) {
-            console.error('Error in searchTL:', e);
+            // console.error('Error in searchTL:', e);  // COMENTADO
             showToast('Error: ' + e.message, 'error');
         } finally {
             hideLoading();
@@ -944,13 +946,13 @@
                 // Deshabilitar checkboxes de años
                 var checkboxes = document.querySelectorAll('.year-checkbox');
                 checkboxes.forEach(function(cb) { cb.disabled = true; });
-                showToast('Configuration loaded. Search for a Technical Location.', 'success');
-                console.log('[PVT Manual] Ready');
+                // showToast('Configuration loaded. Search for a Technical Location.', 'success');  // ELIMINADO
+                // console.log('[PVT Manual] Ready');  // COMENTADO
             } else {
                 showToast('Error: ' + (response.message || 'Unknown error'), 'error');
             }
         } catch (e) {
-            console.error('Error loading config:', e);
+            // console.error('Error loading config:', e);  // COMENTADO
             showToast('Error loading configuration: ' + e.message, 'error');
         } finally {
             hideLoading();
@@ -1139,7 +1141,7 @@
                 warningEl.style.display = 'none';
             }
         } catch (e) {
-            console.warn('Error checking frequency:', e);
+            // console.warn('Error checking frequency:', e);  // COMENTADO
         }
     }
 
@@ -1264,7 +1266,7 @@
                     break;
                 }
             } catch (e) {
-                console.warn('Error checking frequency for year', years[i], ':', e);
+                // console.warn('Error checking frequency for year', years[i], ':', e);  // COMENTADO
             }
         }
         
@@ -1392,7 +1394,12 @@
         showLoading('Saving manual tasks...');
         
         try {
-            var response = await callApi('PVT_saveManualPMPlan', [pendingSavePayload]);
+            // ✅ Añadir userEmail al payload antes de enviar
+            var payloadWithUser = {
+                ...pendingSavePayload,
+                userEmail: currentUserEmail || 'system'
+            };
+            var response = await callApi('PVT_saveManualPMPlan', [payloadWithUser]);
             hideLoading();
             
             if (response.status === 'success') {
@@ -1406,7 +1413,7 @@
                 }
                 
                 logManualPMCreation(pendingSavePayload.assetId, pendingSavePayload.frequency, pendingSavePayload.weeks, currentUser)
-                    .catch(function(e) { console.warn('[PVT] Log failed:', e); });
+                    .catch(function(e) { /* console.warn('[PVT] Log failed:', e); */ });  // COMENTADO
                 
                 showToast(response.message, 'success');
                 if (response.warning) {
@@ -1479,7 +1486,7 @@
             loadConfig();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
-            console.log('[PVT Manual] Not Configured');
+            // console.log('[PVT Manual] Not Configured');  // COMENTADO
         }
     }
     
