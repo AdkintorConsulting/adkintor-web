@@ -867,7 +867,7 @@
                     <select id="woSelect" onchange="loadWOContext()" style="flex: 1; min-width: 180px; max-width: 380px; padding: 10px 12px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px;">
                         <option value="">-- Loading WOs --</option>
                     </select>
-                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
+                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printReport()"><i class="fas fa-print"></i> Print Form</button>
                     <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="woInfo" style="display:none;">
@@ -1217,6 +1217,21 @@
             field.classList.remove('error');
         });
     }
+
+    // ============================================
+    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
+    // ============================================
+    function printReport() {
+        const title = 'Technical Execution Report';
+        const mode = 'eams';
+        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            ModuleBase.printModule(title, mode);
+        } else {
+            // Fallback: usar el método existente
+            printWorkOrder();
+        }
+    }
+    window.printReport = printReport;    
 
     // ============================================
     // FUNCIÓN DE LOGGING
@@ -2899,6 +2914,13 @@
     // ============================================
 
     async function printWorkOrder() {
+        // Si ModuleBase está disponible, usar el método estandarizado
+        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            ModuleBase.printModule('Technical Execution Report', 'eams');
+            return;
+        }
+        
+        // Fallback: método actual con ventana emergente
         var folio = DB.selectedWO?.folio;
         if (!folio) {
             showToast('Please select a work order first', 'error');
@@ -2945,6 +2967,12 @@
     function init() {
         loadUser();
         loadApiUrl();
+        
+        // Inicializar ModuleBase si existe
+        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
+            ModuleBase.initModule('Technical Execution');
+        }
+        
         if (EAMS_API_URL) {
             loadInitialData();
         } else {
