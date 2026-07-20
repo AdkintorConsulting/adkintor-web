@@ -739,7 +739,7 @@
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
             }
         }
     }
