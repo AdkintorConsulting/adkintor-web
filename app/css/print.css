@@ -2,8 +2,24 @@
  * ============================================
  * ADKINTOR - ESTILOS DE IMPRESIÓN
  * ============================================
- * Se aplica SOLO al imprimir (print media)
- * Estandariza cabecera, footer y colores
+ * VERSIÓN: 1.0.0
+ * FECHA: 2026-07-20
+ * 
+ * Archivo de estilos para impresión de todos los módulos
+ * (EAMS y FORESIGHT)
+ * 
+ * Se aplica SOLO al imprimir (@media print)
+ * Estandariza cabecera, footer, tablas y colores
+ * 
+ * USO:
+ *   <link rel="stylesheet" href="/app/css/print.css">
+ * 
+ * DEPENDENCIAS:
+ *   - module-base.js (para la función printModule())
+ * 
+ * MANTENIMIENTO:
+ *   - No modificar sin aprobación del equipo de frontend
+ *   - Mantener sincronizado con module-base.js
  * ============================================
  */
 
@@ -30,7 +46,7 @@
     /* Ocultar elementos no imprimibles */
     .no-print,
     .btn,
-    button,
+    button:not(.print-button),
     .modal-btn,
     .modal-close,
     .modal-controls,
