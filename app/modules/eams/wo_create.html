@@ -558,6 +558,7 @@
     // ============================================
     const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
     let EAMS_API_URL = null;
+    let currentUserEmail = '';  // ✅ AÑADIR
     let assetLibrary = [];
     let currentAsset = null;
     let emailRecipients = '';
@@ -574,10 +575,11 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
+                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
@@ -774,7 +776,7 @@
     // ============================================
     async function logWOCreation(woId, woData) {
         if (!window.Logger || typeof window.Logger.woCreated !== 'function') {
-            console.warn('[WO] Logger not available, skipping log');
+            // console.warn('[WO] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
@@ -795,13 +797,13 @@
                 requester: woData.requester || '',
                 user: userEmail
             });
-            console.log('[WO] WO creation logged:', woId, 'by', userEmail);
+            // console.log('[WO] WO creation logged:', woId, 'by', userEmail);  // COMENTADO
             
             if (window.Logger.foresight) {
                 await window.Logger.foresight('WO', 'WO_CREATED', 'WO ' + woId + ' created - Priority: ' + woData.priority + ' by ' + userEmail);
             }
         } catch (err) {
-            console.warn('[WO] Failed to log WO creation:', err);
+            // console.warn('[WO] Failed to log WO creation:', err);  // COMENTADO
         }
     }
 
@@ -868,14 +870,14 @@
                 elements.folioPreview.textContent = 'WO-' + yy + mm + dd + '----';
             }
             
-            showToast('Data loaded successfully', 'success');
+            // showToast('Data loaded successfully', 'success');  // ELIMINADO
             updateSubmitButton(false);
             hideLoading();
             
         } catch (error) {
             hideLoading();
             showToast('Error loading data: ' + error.message, 'error');
-            console.error('Load error:', error);
+            // console.error('Load error:', error);  // COMENTADO
         }
     }
 
@@ -920,7 +922,7 @@
             criticality: currentAsset ? (currentAsset.crit || '') : '',
             description: description,
             emails: emailRecipients,
-            user: userEmail
+            userEmail: userEmail || 'system'  // ✅ CORREGIDO
         };
         
         try {
@@ -945,7 +947,7 @@
                     type: 'CORRECTIVE',
                     requester: payload.requester
                 };
-                logWOCreation(response.generatedFolio, woDataForLog).catch(function(e) { console.warn('[WO] Log failed:', e); });
+                logWOCreation(response.generatedFolio, woDataForLog).catch(function(e) { /* console.warn('[WO] Log failed:', e); */ });  // COMENTADO
                 
                 var emailStatusMsg = '';
                 if (response.emailSent) {
@@ -957,7 +959,7 @@
                 }
                 
                 showToast('✅ Work Order ' + response.generatedFolio + ' created successfully!' + emailStatusMsg, 'success');
-                console.log('[WO] WO Created:', response.generatedFolio);
+                // console.log('[WO] WO Created:', response.generatedFolio);  // COMENTADO
                 
                 // Resetear el formulario automáticamente después del éxito
                 resetCreateForm();
@@ -969,12 +971,12 @@
             
         } catch (error) {
             if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('WO', 'createWorkOrder', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+                window.Logger.error('WO', 'createWorkOrder', error.message).catch(function(e) { /* console.warn('[WO] Error log failed:', e); */ });  // COMENTADO
             }
             
             hideLoading();
             showToast('Error: ' + error.message, 'error');
-            console.error('Submit error:', error);
+            // console.error('Submit error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
             updateSubmitButton(true);
