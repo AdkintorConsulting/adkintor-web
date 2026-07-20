@@ -784,7 +784,7 @@
                 const userDisplay = document.getElementById('userDisplay');
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
-                console.error('Error parsing session:', e);
+                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error. Please log in again.', 'error');
             }
         } else {
@@ -829,15 +829,15 @@
     // ============================================
     async function logCalibrationView(tagId, viewedBy) {
         if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            console.warn('[CAL] Logger not available, skipping log');
+            // console.warn('[CAL] Logger not available, skipping log');  // COMENTADO
             return;
         }
         
         try {
             await window.Logger.audit('VIEW', 'CAL', tagId, '', '', '', 'Calibration history viewed');
-            console.log('[CAL] Calibration view logged:', tagId);
+            // console.log('[CAL] Calibration view logged:', tagId);  // COMENTADO
         } catch (err) {
-            console.warn('[CAL] Failed to log calibration view:', err);
+            // console.warn('[CAL] Failed to log calibration view:', err);  // COMENTADO
         }
     }
 
@@ -896,8 +896,8 @@ async function init() {
     await loadInstruments();
     setupEventListeners();
     hideLoading();
-    console.log('[CAL] Ready'); // ✅ El footer no tiene ID, usamos console.log
-    showToast('Calibration Viewer loaded successfully ✅', 'success');
+    // console.log('[CAL] Ready');  // COMENTADO
+    // showToast('Calibration Viewer loaded successfully ✅', 'success');  // ELIMINADO (innecesario)
 }
 
         async function loadConfig() {
@@ -1048,7 +1048,7 @@ async function init() {
                 hideLoading();
                 
                 // Log de visualización
-                logCalibrationView(tagId, currentUser).catch(function(e) { console.warn('[CAL] View log failed:', e); });
+                logCalibrationView(tagId, currentUser).catch(function(e) { /* console.warn('[CAL] View log failed:', e); */ });  // COMENTADO
                 
                 var container = document.getElementById('historyContent');
                 var title = document.getElementById('historyModalTitle');
@@ -1099,7 +1099,7 @@ async function init() {
                 
             } catch (error) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('CAL', 'viewHistory', error.message).catch(function(e) { console.warn('[CAL] Error log failed:', e); });
+                    window.Logger.error('CAL', 'viewHistory', error.message).catch(function(e) { /* console.warn('[CAL] Error log failed:', e); */ });  // COMENTADO
                 }
                 hideLoading();
                 showToast("Failed to load history: " + error.message, "error");
