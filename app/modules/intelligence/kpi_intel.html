@@ -603,7 +603,7 @@
       if (logoImg) {
         logoImg.src = data.logoUrl;
         logoImg.style.display = 'block';
-        console.log('[KPI] Logo set from parent');
+        // console.log('[KPI] Logo set from parent');  // COMENTADO
       }
     }
     
@@ -611,7 +611,7 @@
       const versionSpan = document.getElementById('eamsVersion');
       if (versionSpan) {
         versionSpan.innerText = data.version;
-        console.log('[KPI] Version set from parent:', data.version);
+        // console.log('[KPI] Version set from parent:', data.version);  // COMENTADO
       }
     }
   });
@@ -687,14 +687,14 @@
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
         }
-        console.log('[KPI] API URL loaded:', EAMS_API_URL);
+        // console.log('[KPI] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
-        console.error('[KPI] Error parsing session:', e);
+        // console.error('[KPI] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) userDisplay.innerText = 'User';
       }
     } else {
-      console.warn('[KPI] No session found');
+      // console.warn('[KPI] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
@@ -705,7 +705,7 @@
       throw new Error('API URL not configured. Please check your session.');
     }
     
-    console.log('[KPI] Calling API:', action, args);
+    // console.log('[KPI] Calling API:', action, args);  // COMENTADO
     
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -721,7 +721,7 @@
     }
     
     const result = await response.json();
-    console.log('[KPI] API Response:', result);
+    // console.log('[KPI] API Response:', result);  // COMENTADO
     
     if (!result.success) {
       throw new Error(result.error || 'API call failed');
@@ -737,12 +737,12 @@
     if (window.Logger && typeof Logger.foresight === 'function') {
       try {
         await Logger.foresight(module, action, details);
-        console.log('[KPI] Logged:', module + '/' + action);
+        // console.log('[KPI] Logged:', module + '/' + action);  // COMENTADO
       } catch (err) {
-        console.warn('[KPI] Logger error:', err);
+        // console.warn('[KPI] Logger error:', err);  // COMENTADO
       }
     } else {
-      console.log('[KPI] Log (Logger not available):', module + '/' + action + ' - ' + details);
+      // console.log('[KPI] Log (Logger not available):', module + '/' + action + ' - ' + details);  // COMENTADO
     }
   }
   
@@ -806,7 +806,7 @@
         }
         
         hideLoading();
-        showToast('Dashboard loaded successfully', 'success');
+        // showToast('Dashboard loaded successfully', 'success');  // ELIMINADO
         await logForesight('KPI', 'DATA_LOADED', 'Period: ' + month + '/' + year + ' - Availability: ' + data.kpis?.availability + '%');
       } else {
         hideLoading();
@@ -817,7 +817,7 @@
       }
     } catch (error) {
       hideLoading();
-      console.error('Load data error:', error);
+      // console.error('Load data error:', error);  // COMENTADO
       showToast('Connection error: ' + error.message, 'error');
       document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
       await logForesight('KPI', 'DATA_ERROR', error.message);
@@ -836,7 +836,7 @@
         renderCompareTab(currentData);
       }
     } catch (error) {
-      console.error('Compare error:', error);
+      // console.error('Compare error:', error);  // COMENTADO
       showToast('Error loading compare data: ' + error.message, 'error');
     }
   }
@@ -863,7 +863,7 @@
       }
     } catch (error) {
       hideLoading();
-      console.error('PDF export error:', error);
+      // console.error('PDF export error:', error);  // COMENTADO
       showToast('Error generating report: ' + error.message, 'error');
       await logForesight('KPI', 'PDF_EXPORT_ERROR', error.message);
     }
