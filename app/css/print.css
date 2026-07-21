@@ -3,7 +3,7 @@
  * ADKINTOR - ESTILOS DE IMPRESIÓN
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-20
+ * FECHA: 2026-07-21
  * 
  * Archivo de estilos para impresión de todos los módulos
  * (EAMS y FORESIGHT)
@@ -33,14 +33,22 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         color-adjust: exact !important;
+        /* ✅ ELIMINAR SCROLL EN IMPRESIÓN */
+        overflow: visible !important;
+        max-height: none !important;
     }
     
+    html,
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: white !important;
         margin: 0 !important;
         padding: 20px !important;
         color: #1a1a2e !important;
+        /* ✅ ELIMINAR SCROLL EN IMPRESIÓN */
+        height: auto !important;
+        overflow: visible !important;
+        max-height: none !important;
     }
     
     /* Ocultar elementos no imprimibles */
@@ -56,6 +64,17 @@
         display: none !important;
     }
     
+    /* ✅ ELIMINAR SCROLL EN CONTENEDORES */
+    .table-container,
+    .datagrid-container,
+    .custom-scroll,
+    [style*="overflow"],
+    [style*="max-height"] {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+    }
+    
     /* ============================================
        CABECERA DE IMPRESIÓN
        ============================================ */
@@ -67,6 +86,8 @@
         padding-bottom: 12px !important;
         border-bottom: 3px solid #1a1a2e !important;
         margin-bottom: 20px !important;
+        /* ✅ Asegurar que la cabecera no se corte */
+        page-break-after: avoid !important;
     }
     
     .print-header .print-logo {
@@ -129,6 +150,8 @@
         border-collapse: collapse !important;
         font-size: 11px !important;
         margin: 10px 0 !important;
+        /* ✅ PERMITIR SALTOS DE PÁGINA EN TABLAS LARGAS */
+        page-break-inside: auto !important;
     }
     
     table thead th {
@@ -138,6 +161,9 @@
         text-align: left !important;
         font-weight: 600 !important;
         border: 1px solid #1a1a2e !important;
+        /* ✅ REPETIR ENCABEZADO EN CADA PÁGINA */
+        position: sticky !important;
+        top: 0 !important;
     }
     
     table tbody td {
@@ -151,6 +177,11 @@
     
     table tbody tr:nth-child(odd) {
         background: white !important;
+    }
+    
+    /* ✅ EVITAR QUE LAS FILAS SE CORTEN A MITAD */
+    table tbody tr {
+        page-break-inside: avoid !important;
     }
     
     /* ============================================
@@ -230,6 +261,11 @@
     
     .page-break-before {
         page-break-before: always !important;
+    }
+    
+    /* ✅ SALTOS DE PÁGINA PARA CONTENEDORES */
+    .print-section {
+        page-break-inside: avoid !important;
     }
     
     /* ============================================
