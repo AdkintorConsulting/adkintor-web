@@ -491,6 +491,12 @@
             .breadcrumbs { display: none !important; }
             .module-footer { display: none !important; }
         }
+
+        @media print {
+            .master-list-print @page {
+                size: landscape !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1280,13 +1286,18 @@
         
         document.body.appendChild(clone);
         
+        // ✅ Agregar clase para forzar horizontal
+        document.body.classList.add('master-list-print');
+        
         if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
             ModuleBase.printModule('Asset Master Register', 'eams');
         } else {
             window.print();
         }
         
+        // ✅ Remover clase después de imprimir
         setTimeout(function() {
+            document.body.classList.remove('master-list-print');
             var el = document.getElementById('printClone');
             if (el) el.remove();
         }, 2000);
