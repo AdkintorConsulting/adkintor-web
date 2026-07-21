@@ -365,7 +365,25 @@
                 max-width: 100% !important;
                 height: auto !important;
             }
-        }               
+        }  
+
+        /* ============================================
+          REPORT LOGO - ESTILOS PARA IMPRESIÓN
+          ============================================ */
+        .report-logo {
+            max-width: 80px !important;
+            max-height: 60px !important;
+            width: auto !important;
+            height: auto !important;
+            object-fit: contain !important;
+        }
+
+        @media print {
+            .report-logo {
+                max-width: 80px !important;
+                max-height: 60px !important;
+            }
+        }                     
     </style>
 </head>
 <body>
