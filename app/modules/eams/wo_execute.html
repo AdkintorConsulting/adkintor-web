@@ -814,6 +814,37 @@
             .task-row input { margin-left: 0; }
             .header-buttons .btn { padding: 6px 12px; font-size: 11px; min-width: 60px; }
         }
+
+        @media print {
+            #printReportContainer {
+                display: block !important;
+                padding: 20px !important;
+                background: white !important;
+            }
+            
+            /* Estilos para que coincida con WO Search */
+            #printReportContainer .frame {
+                border: 1px solid #333 !important;
+                page-break-inside: avoid !important;
+            }
+            
+            #printReportContainer .frame-title {
+                background: white !important;
+                font-weight: bold !important;
+                color: #1a1a2e !important;
+            }
+            
+            #printReportContainer .label {
+                font-size: 8px !important;
+                color: #555 !important;
+            }
+            
+            #printReportContainer .val {
+                font-size: 12px !important;
+                color: #000 !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+        }        
     </style>
 </head>
 <body>
@@ -1225,13 +1256,13 @@
         const title = 'Technical Execution Report';
         const mode = 'eams';
         if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule(title, mode);
-        } else {
-            // Fallback: usar el método existente
+            // Primero generar el contenido
             printWorkOrder();
+        } else {
+            window.print();
         }
     }
-    window.printReport = printReport;    
+    window.printReport = printReport;
 
     // ============================================
     // FUNCIÓN DE LOGGING
@@ -2914,49 +2945,44 @@
     // ============================================
 
     async function printWorkOrder() {
-        // Si ModuleBase está disponible, usar el método estandarizado
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Technical Execution Report', 'eams');
-            return;
-        }
-        
-        // Fallback: método actual con ventana emergente
         var folio = DB.selectedWO?.folio;
         if (!folio) {
             showToast('Please select a work order first', 'error');
             return;
         }
         
-        var btn = document.getElementById('printBtn');
-        var originalText = btn.innerText;
-        btn.innerText = 'Generating...';
-        btn.disabled = true;
-        showLoading('Generating PDF...');
+        showLoading('Generating report...');
         
         try {
+            // Obtener el HTML del reporte
             var htmlContent = await callApi('WO_generatePrintablePDF', [folio, DB.cachedTasks]);
             
-            hideLoading();
-            btn.innerText = originalText;
-            btn.disabled = false;
+            // Crear un contenedor en la página para el reporte
+            var container = document.createElement('div');
+            container.id = 'printReportContainer';
+            container.style.display = 'block';
+            container.style.padding = '20px';
+            container.style.background = 'white';
+            container.innerHTML = htmlContent;
+            document.body.appendChild(container);
             
-            var printWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
-            if (!printWindow) {
-                showToast('Popup blocked. Please allow popups for this site.', 'error');
-                return;
+            // Usar ModuleBase para imprimir
+            if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+                ModuleBase.printModule('Technical Execution Report', 'eams');
+            } else {
+                window.print();
             }
             
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
-            
+            // Eliminar el contenedor después de imprimir
             setTimeout(function() {
-                printWindow.print();
-            }, 500);
+                var el = document.getElementById('printReportContainer');
+                if (el) el.remove();
+            }, 2000);
+            
+            hideLoading();
         } catch (error) {
             hideLoading();
-            btn.innerText = originalText;
-            btn.disabled = false;
-            showToast('Error generating PDF: ' + error.message, 'error');
+            showToast('Error generating report: ' + error.message, 'error');
         }
     }
 
