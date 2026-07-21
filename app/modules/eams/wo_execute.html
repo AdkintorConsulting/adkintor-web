@@ -2942,7 +2942,7 @@
   }
 
     // ============================================
-    // PRINT
+    // PRINT WORK ORDER - CON VISTA PREVIA Y FORMULARIO
     // ============================================
 
     async function printWorkOrder() {
@@ -2955,7 +2955,7 @@
         showLoading('Generating report preview...');
         
         try {
-            // Obtener datos del WO
+            // Obtener datos del WO y tareas preventivas si existen
             var response = await callApi('WO_getWODetails', [folio]);
             if (!response.success || !response.wo) {
                 throw new Error('Failed to load WO details');
@@ -2963,14 +2963,27 @@
             
             var wo = response.wo;
             var isPM = response.pm?.isPM || false;
+            var pmTasks = [];
             
-            // Crear el contenedor de la vista previa (igual que #fullView en Search)
+            // Si es preventivo, obtener las tareas
+            if (isPM && DB.cachedTasks && DB.cachedTasks.length > 0) {
+                pmTasks = DB.cachedTasks;
+            } else if (isPM) {
+                try {
+                    var tasks = await callApi('WO_getPMTasksByFolio', [folio, wo.equipment]);
+                    pmTasks = JSON.parse(tasks) || [];
+                } catch(e) {
+                    pmTasks = [];
+                }
+            }
+            
+            // Crear el contenedor de la vista previa
             var previewContainer = document.createElement('div');
             previewContainer.id = 'fullView';
             previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
             
-            // Construir el HTML del reporte con los 4 frames
-            var reportHtml = buildReportHTML(wo, isPM);
+            // Construir el HTML del formulario
+            var reportHtml = buildReportHTML(wo, isPM, pmTasks);
             
             previewContainer.innerHTML = reportHtml;
             document.body.appendChild(previewContainer);
@@ -2996,13 +3009,17 @@
         if (el) el.remove();
     }
 
-    function buildReportHTML(wo, isPM) {
+    // ============================================
+    // CONSTRUIR HTML DEL FORMULARIO
+    // ============================================
+
+    function buildReportHTML(wo, isPM, pmTasks) {
         // Función auxiliar para sanitizar
-        function s(val) { return val || '---'; }
+        function s(val) { return val || ''; }
         
         // Función para formatear fecha
         function formatDate(dateStr) {
-            if (!dateStr) return '---';
+            if (!dateStr) return '';
             var d = new Date(dateStr);
             if (isNaN(d.getTime())) return dateStr;
             return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + 
@@ -3010,6 +3027,32 @@
         }
         
         var isClosed = (wo.status === 'Completed' || wo.status === 'Closed');
+        var folio = s(wo.folio);
+        var status = s(wo.status);
+        
+        // Construir lista de tareas preventivas si existe
+        var pmTasksHtml = '';
+        if (isPM && pmTasks && pmTasks.length > 0) {
+            pmTasksHtml = '<div style="margin: 10px 0 0 0;">';
+            pmTasksHtml += '<span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">Preventive Tasks Checklist</span>';
+            pmTasksHtml += '<div style="margin-top: 6px;">';
+            for (var i = 0; i < pmTasks.length; i++) {
+                var task = pmTasks[i];
+                var equip = s(task.equipment || '');
+                var taskName = s(task.task || '');
+                var standard = s(task.standard || '');
+                pmTasksHtml += '<div style="display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; border-bottom: 1px solid #f0f0f0;">';
+                pmTasksHtml += '<span style="font-size: 14px; color: #1a1a2e;">☐</span>';
+                pmTasksHtml += '<div style="flex: 1;">';
+                pmTasksHtml += '<div style="font-size: 11px; font-weight: 600; color: #1a1a2e;">' + equip + ' - ' + taskName + '</div>';
+                if (standard) {
+                    pmTasksHtml += '<div style="font-size: 9px; color: #888;">Standard: ' + standard + '</div>';
+                }
+                pmTasksHtml += '</div>';
+                pmTasksHtml += '</div>';
+            }
+            pmTasksHtml += '</div></div>';
+        }
         
         return `
             <div class="report-paper" style="background: white; width: 800px; margin: 0 auto; padding: 40px 50px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
@@ -3029,98 +3072,102 @@
                 <!-- HEADER -->
                 <div style="margin-bottom: 16px;">
                     <h1 style="margin:0; font-size:22px; letter-spacing:-0.5px;">WORK ORDER TECHNICAL REPORT</h1>
-                    <div style="font-size:15px; font-weight:bold; color:#1a1a2e; margin-top: 10px;">W.O. #: ${s(wo.folio)}</div>
+                    <div style="font-size:15px; font-weight:bold; color:#1a1a2e; margin-top: 10px;">W.O. #: ${folio}</div>
                     <div style="margin-top: 4px;">
                         <span style="font-size: 10px; color: #5f6368; font-weight: 600; text-transform: uppercase;">Current Status:</span>
-                        <span style="font-weight:bold; font-size:13px; color:#2e7d32; margin-left: 6px;">${s(wo.status)}</span>
+                        <span style="font-weight:bold; font-size:13px; color:#2e7d32; margin-left: 6px;">${status}</span>
                     </div>
                 </div>
 
                 <!-- FRAME 1 - Equipment Identification -->
-                <div class="frame" style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
+                <div class="frame" style="border: 1px solid #333; padding: 16px 20px; margin-bottom: 20px; border-radius: 4px; position: relative;">
                     <span class="frame-title" style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">1. EQUIPMENT IDENTIFICATION</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Area / Sector</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.area)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Tech. Location</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.equipment)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Asset Tag</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.assetId || '---')}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Name</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.equipment)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Criticality</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.criticality || '---')}</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Area / Sector</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Tech. Location</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Asset Tag</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Name</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Criticality</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
                     </div>
                 </div>
 
                 <!-- FRAME 2 - Request Details -->
-                <div class="frame" style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
+                <div class="frame" style="border: 1px solid #333; padding: 16px 20px; margin-bottom: 20px; border-radius: 4px; position: relative;">
                     <span class="frame-title" style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">2. REQUEST DETAILS</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Requested By</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.requester)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Creation Date</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${formatDate(wo.start || wo.date)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Priority</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.priority)}</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Requested By</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Creation Date</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Priority</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
                     </div>
-                    <div style="margin-top:10px; border-top:1px solid #e8eaed; padding-top:6px;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Failure Description / Request Notes</span>
-                        <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap;">${s(wo.description)}</div>
+                    <div style="margin-top:10px; border-top:1px solid #ddd; padding-top:6px;">
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Failure Description / Request Notes</span>
+                        <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 60px;">____________________________________________________________________________________________________</div>
                     </div>
                 </div>
 
                 <!-- FRAME 3 - Maintenance Execution -->
-                <div class="frame" style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
+                <div class="frame" style="border: 1px solid #333; padding: 16px 20px; margin-bottom: 20px; border-radius: 4px; position: relative;">
                     <span class="frame-title" style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">3. MAINTENANCE EXECUTION</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Activity Type</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.maintType)}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Primary Technician</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.tech)}</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Activity Type</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Primary Technician</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
                     </div>
                     <div style="margin: 10px 0 0 0;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Technical Findings &amp; Work Performed</span>
-                        <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap; margin-top: 2px;">${s(wo.performed)}</div>
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Technical Findings &amp; Work Performed</span>
+                        <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 60px;">____________________________________________________________________________________________________</div>
                     </div>
                     <div style="margin: 10px 0 0 0;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Spare Parts &amp; Materials Consumed</span>
-                        <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 2px;">${s(wo.materials)}</div>
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Spare Parts &amp; Materials Consumed</span>
+                        <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 40px;">____________________________________________________________________________________________________</div>
                     </div>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px;">
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Start Time</span>
-                            <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap; font-size: 11px;">${formatDate(wo.start)}</div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Start Time</span>
+                            <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div>
                         </div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Completion Time</span>
-                            <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap; font-size: 11px;">${formatDate(wo.end)}</div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Completion Time</span>
+                            <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div>
                         </div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Man-Hours</span>
-                            <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap;">${s(wo.hours)}</div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Man-Hours</span>
+                            <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div>
                         </div>
                     </div>
                     <div style="margin-top: 12px;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Downtime</span>
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Downtime</span>
                         <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 6px;">
-                            <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime Start</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${formatDate(wo.downStart)}</div></div>
-                            <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime End</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${formatDate(wo.downReturn)}</div></div>
-                            <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Downtime</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${s(wo.downtime)}</div></div>
+                            <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime Start</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                            <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime End</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                            <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Downtime</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
                         </div>
                     </div>
                     <div style="margin-top: 12px;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Root Cause Analysis</span>
-                        <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 2px;">${s(wo.rootCause)}</div>
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Root Cause Analysis</span>
+                        <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div>
                     </div>
+                    ${pmTasksHtml}
                 </div>
 
                 <!-- FRAME 4 - Closure & Reliability -->
-                <div class="frame" style="border: 1px solid #dadce0; padding: 16px 20px; margin-bottom: 20px; border-radius: 6px; position: relative;">
+                <div class="frame" style="border: 1px solid #333; padding: 16px 20px; margin-bottom: 20px; border-radius: 4px; position: relative;">
                     <span class="frame-title" style="position: absolute; top: -10px; left: 15px; background: white; padding: 0 10px; font-size: 9px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">4. CLOSURE &amp; RELIABILITY</span>
                     <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approved By</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${isClosed ? s(wo.approver || '---') : '---'}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closed By</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${isClosed ? s(wo.tech || '---') : '---'}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approve Date</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${isClosed ? formatDate(wo.end) : '---'}</div></div>
-                        <div><span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closure Date</span><div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${isClosed ? formatDate(wo.end) : '---'}</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approved By</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closed By</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approve Date</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
+                        <div><span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closure Date</span><div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">_________________________</div></div>
                     </div>
                     <div style="margin-top: 10px;">
-                        <span class="label" style="font-size: 8px; color: #70757a; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Additional Observations</span>
-                        <div class="val" style="font-size: 12px; color: #202124; min-height: 1.2em; border-bottom: 1px solid #f1f3f4; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: pre-wrap; margin-top: 2px; font-size: 11px;">${s(wo.observations || '---')}</div>
+                        <span class="label" style="font-size: 8px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Additional Observations</span>
+                        <div class="val" style="font-size: 12px; color: #000; min-height: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 60px;">____________________________________________________________________________________________________</div>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    // Función para imprimir la vista previa
+    // ============================================
+    // IMPRIMIR VISTA PREVIA
+    // ============================================
+
     function printPreview() {
         var preview = document.getElementById('fullView');
         if (!preview) return;
