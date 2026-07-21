@@ -1,3 +1,1210 @@
+ok, sigueinte es el Report del modulo WO:
+
+gs:
+
+/**
+ * ============================================
+ * WO_Report.gs - ADKINTOR EAMS v1.0.0
+ * ============================================
+ * DESCRIPCIÓN: Portal de ejecución técnica.
+ *              Registro de trabajo realizado,
+ *              consumo de materiales, follow-up,
+ *              generación de PDF, actualización
+ *              de inventario y checklist preventivo.
+ * AUTOR: Mauricio
+ * VERSIÓN: 1.0.0
+ * ÚLTIMA MODIFICACIÓN: 2026-07-17
+ * ============================================
+ */
+
+function WO_getReportCompanyLogoUrl() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const hubSheet = ss.getSheetByName(EAMS_SETTINGS.SETUP.HUB);
+    
+    if (hubSheet) {
+      const logoUrl = hubSheet.getRange('A2').getValue();
+      if (logoUrl && logoUrl.toString().trim() !== '') {
+        return logoUrl.toString().trim();
+      }
+    }
+    return '';
+  } catch (e) {
+    logSystemError('WO_REPORT', 'getReportCompanyLogoUrl', e.toString(), 'ERROR');
+    return '';
+  }
+}
+
+function WO_getInitialTechData() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const logSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.WO_LOG);
+    
+    if (!logSheet) throw new Error('WO_MASTER_LOG not found');
+    
+    const setupWO = getSetupData('WO');
+    const validStatuses = setupWO.statuses || [];
+    // inProgressStatus es índice 1
+    let inProgressStatus = validStatuses[1] || 'In Progress';
+    inProgressStatus = inProgressStatus.charAt(0).toUpperCase() + inProgressStatus.slice(1).toLowerCase();
+    
+    const logData = logSheet.getDataRange().getValues();
+    
+    const activeWOs = logData.slice(1)
+      .filter(r => {
+        const status = String(r[1]).trim();
+        const normalizedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+        return normalizedStatus === inProgressStatus;
+      })
+      .map(r => ({
+        folio: r[0],
+        status: r[1] ? String(r[1]).trim() : '',
+        requester: r[2],
+        date: r[3] instanceof Date ? formatDateForDisplay(r[3]) : r[3],
+        priority: r[4],
+        area: r[5],
+        tl: r[6],
+        eqName: r[7],
+        desc: r[9],
+        maintType: r[10],
+        history: r[25] || '',
+        startTimes: r[14] || '',
+        endTimes: r[15] || '',
+        lastEndTime: (() => {
+          const endTimes = r[15] ? String(r[15]).split('\n').filter(s => s.trim() !== '') : [];
+          return endTimes.length > 0 ? endTimes[endTimes.length - 1].trim() : '';
+        })()
+      }))
+    
+    const setupSheet = ss.getSheetByName(EAMS_SETTINGS.SETUP.WO);
+    let rootCauses = [];
+    
+    if (setupSheet) {
+      const lastRow = setupSheet.getLastRow();
+      if (lastRow >= 2) {
+        const causesRange = setupSheet.getRange(2, 12, lastRow - 1, 1);
+        rootCauses = causesRange.getValues().flat().filter(c => c && c.toString().trim() !== '');
+      }
+    }
+    
+    if (rootCauses.length === 0) {
+      rootCauses = ['Electrical', 'Mechanical', 'Hydraulic', 'Pneumatic', 'Software/PLC', 'Human Error', 'Wear & Tear'];
+    }
+    
+    logSystemError('WO_REPORT', 'getInitialTechData', 'Loaded ' + activeWOs.length + ' active WOs', 'INFO');
+    
+    return JSON.stringify({ wos: activeWOs, rootCauses: rootCauses, inProgressStatus: inProgressStatus });
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'getInitialTechData', e.toString(), 'ERROR');
+    return JSON.stringify({ wos: [], rootCauses: [], error: e.toString() });
+  }
+}
+
+function WO_getWODetails(folio) {
+  try {
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const logSh = ss.getSheetByName('WO_MASTER_LOG');
+    
+    if (!logSh) {
+      return { success: false, error: 'WO_MASTER_LOG sheet not found' };
+    }
+    
+    const data = logSh.getDataRange().getValues();
+    
+    let wo = null;
+    const searchFolio = String(folio).trim();
+    
+    for (let i = 1; i < data.length; i++) {
+      const currentFolio = data[i][0] ? String(data[i][0]).trim() : '';
+      
+      if (currentFolio === searchFolio) {
+        const row = data[i];
+        
+        // ============================================
+        // OBTENER ÚLTIMO END TIME DE COLUMNA P (índice 15)
+        // ============================================
+        let lastEndTime = '';
+        if (row[15]) {
+          const endTimes = String(row[15]).split('\n').filter(s => s.trim() !== '');
+          if (endTimes.length > 0) {
+            // Obtener el último (más reciente)
+            lastEndTime = endTimes[endTimes.length - 1].trim();
+          }
+        }
+        
+        wo = {
+          folio: String(row[0]),
+          requester: row[2] || '',
+          area: row[5] || '',
+          equipment: row[7] || '',
+          description: row[9] || '',
+          maintType: row[10] || '',
+          tech: row[11] || '',
+          performed: row[13] || '',
+          start: row[14] ? Utilities.formatDate(new Date(row[14]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : '',
+          end: row[15] ? Utilities.formatDate(new Date(row[15]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : '',
+          lastEndTime: lastEndTime,  // ← NUEVO
+          hours: row[17] || '0',
+          downtime: row[20] || '0',
+          downStart: row[18] ? Utilities.formatDate(new Date(row[18]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : '',
+          downReturn: row[19] ? Utilities.formatDate(new Date(row[19]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : '',
+          materials: row[16] || '',
+          rootCause: row[21] || '',
+          status: row[1] || ''
+        };
+        break;
+      }
+    }
+
+    if (!wo) {
+      return { success: false, error: 'Work Order not found: ' + folio };
+    }
+
+    // Detectar tipo de WO
+    let isPM = false;
+    let maxTasks = 0;
+    let completedTasks = 0;
+    
+    if (wo.maintType === 'Scheduled Preventive') {
+      isPM = true;
+      
+      const pmLogSheet = ss.getSheetByName('PM_CHECKLIST_LOG');
+      if (pmLogSheet) {
+        const pmData = pmLogSheet.getDataRange().getValues();
+        for (let i = 1; i < pmData.length; i++) {
+          const pmFolio = pmData[i][0] ? String(pmData[i][0]).trim() : '';
+          if (pmFolio === searchFolio) {
+            const totalTasks = pmData[i][3] ? parseInt(pmData[i][3]) : 0;
+            const tasksCompleted = pmData[i][4] ? parseInt(pmData[i][4]) : 0;
+            maxTasks = totalTasks;
+            completedTasks = tasksCompleted;
+            break;
+          }          
+        }
+      }
+    }
+    
+    let isOnHold = false;
+    if (wo.maintType && wo.maintType.toString().toLowerCase() === 'planned' && 
+        wo.description && wo.description.toString().startsWith('FOLLOW UP')) {
+      isOnHold = true;
+    }
+
+    return { 
+      success: true, 
+      wo: wo, 
+      pm: { isPM: isPM, maxTasks: maxTasks, completedTasks: completedTasks },
+      isOnHold: isOnHold
+    };
+    
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+function WO_getSubAssets(parentId) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const assetSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.ASSETS);
+    
+    if (!assetSheet) return JSON.stringify([]);
+    
+    const data = assetSheet.getDataRange().getValues();
+    const cleanParentId = parentId.toString().split(' - ')[0].trim();
+    
+    const childrenMap = {};
+    const assetDetails = {};
+    
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const assetId = row[0] ? row[0].toString().trim() : '';
+      const parentAssetId = row[3] ? row[3].toString().trim() : '';
+      const assetName = row[2] || '';
+      const assetType = row[4] || '';
+      const status = row[6] ? row[6].toString().toUpperCase() : '';
+      
+      if (assetId === '' || status !== 'ACTIVE') continue;
+      
+      assetDetails[assetId] = {
+        id: assetId,
+        name: assetName,
+        type: assetType,
+        parentId: parentAssetId
+      };
+      
+      if (!childrenMap[parentAssetId]) {
+        childrenMap[parentAssetId] = [];
+      }
+      childrenMap[parentAssetId].push(assetId);
+    }
+    
+    const allDescendants = [];
+    
+    function collectDescendants(currentParentId, level) {
+      const children = childrenMap[currentParentId] || [];
+      for (const childId of children) {
+        const child = assetDetails[childId];
+        if (child) {
+          const indent = '  '.repeat(level);
+          allDescendants.push({
+            id: child.id,
+            name: child.name,
+            type: child.type,
+            display: indent + '└─ ' + child.id + ' - ' + child.name + ' (' + child.type + ')',
+            level: level
+          });
+          collectDescendants(child.id, level + 1);
+        }
+      }
+    }
+    
+    collectDescendants(cleanParentId, 0);
+    
+    allDescendants.sort((a, b) => {
+      if (a.level !== b.level) return a.level - b.level;
+      return a.name.localeCompare(b.name);
+    });
+    
+    logSystemError('WO_REPORT', 'getSubAssets', 'Found ' + allDescendants.length + ' descendants for ' + cleanParentId, 'INFO');
+    
+    return JSON.stringify(allDescendants);
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'getSubAssets', e.toString(), 'ERROR');
+    return JSON.stringify([]);
+  }
+}
+
+function WO_searchParts(query) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const partsSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.STK_CATALOG);
+    
+    if (!partsSheet) return JSON.stringify([]);
+    
+    const data = partsSheet.getDataRange().getValues();
+    const results = [];
+    
+    for (let i = 1; i < data.length; i++) {
+      const id = data[i][0] ? data[i][0].toString() : '';
+      const name = data[i][1] ? data[i][1].toString() : '';
+      const reference = data[i][5] ? data[i][5].toString() : '';  // Columna F = Reference / Model
+      const price = parseFloat(data[i][6]) || 0;
+      const stock = parseFloat(data[i][8]) || 0;
+      
+      if (id.toLowerCase().includes(query.toLowerCase()) || 
+          name.toLowerCase().includes(query.toLowerCase()) ||
+          (reference && reference.toLowerCase().includes(query.toLowerCase()))) {
+        results.push({ id: id, name: name, reference: reference, price: price, stock: stock });
+      }
+      if (results.length > 10) break;
+    }
+    
+    return JSON.stringify(results);
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'searchParts', e.toString(), 'ERROR');
+    return JSON.stringify([]);
+  }
+}
+
+function WO_processFinalSubmit(payload) {
+  return runWithLock('TECH_SUBMIT_' + payload.folio, function() {
+    try {
+      const userEmail = payload.userEmail || Session.getActiveUser().getEmail() || 'system';
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const logSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.WO_LOG);
+      
+      if (!logSheet) throw new Error('WO_MASTER_LOG not found');
+      
+      const setupWO = getSetupData('WO');
+      const validMaintTypes = setupWO.maintTypes || [];
+      
+      const data = logSheet.getDataRange().getValues();
+      
+      let rowIdx = -1;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i][0] && data[i][0].toString() === payload.folio.toString()) {
+          rowIdx = i + 1;
+          break;
+        }
+      }
+      
+      if (rowIdx === -1) throw new Error('Critical: Folio not found.');
+      
+      const rowData = data[rowIdx - 1];
+      const maintType = rowData[10] ? rowData[10].toString().toUpperCase() : '';
+      
+      // ============================================
+      // ✅ NUEVO: PERMITIR REUNIFY PARA TODOS EXCEPTO SCHEDULED PREVENTIVE
+      // ============================================
+      const isScheduledPreventive = (maintType === 'SCHEDULED PREVENTIVE' || maintType === 'PREVENTIVE');
+      const allowReunify = !isScheduledPreventive;
+      
+      const startDate = new Date(payload.start);
+      const endDate = new Date(payload.end);
+      const now = new Date();
+
+      // Función para validar fecha real
+      function isValidRealDate(dateObj) {
+        if (!dateObj) return false;
+        if (isNaN(dateObj.getTime())) return false;
+        const year = dateObj.getFullYear();
+        return year > 2000 && year < 2900;
+      }
+      
+      logSheet.getRange(rowIdx, 13).setValue(payload.assetIdFormatted || '');
+      
+      const oldWork = rowData[13] || '';
+      const shiftSeparator = oldWork ? '\n--- SHIFT LOG ' + Utilities.formatDate(now, EAMS_SETTINGS.TIMEZONE, 'yyyy-MM-dd HH:mm') + ' ---\n' : '';
+      const newWork = oldWork + shiftSeparator + (payload.notes || '');
+      logSheet.getRange(rowIdx, 14).setValue(newWork);
+
+      // PREVENTIVE SUMMARY con ✓ y X
+      const originalMaintType = rowData[10] ? rowData[10].toString().toUpperCase() : '';
+      const isScheduledPreventiveCheck = (originalMaintType === 'SCHEDULED PREVENTIVE' || originalMaintType === 'PREVENTIVE');
+
+      if (isScheduledPreventiveCheck && payload.pmTasksCompleted !== undefined && payload.pmTotalTasks !== undefined && payload.pmCompletedTasksList && payload.pmTotalTasks > 0) {
+          var allTasks = payload.pmAllTasksList || [];
+          var allEquipments = payload.pmAllEquipmentsList || [];
+          
+          // ✅ OBTENER TAREAS COMPLETADAS DEL PAYLOAD (CON EQUIPO)
+          var newCompletedTasks = [];
+          if (payload.pmCompletedTasksList && Array.isArray(payload.pmCompletedTasksList)) {
+              for (var i = 0; i < payload.pmCompletedTasksList.length; i++) {
+                  var item = payload.pmCompletedTasksList[i];
+                  var equipment = item.equipment || 'N/A';
+                  var taskName = item.task || '';
+                  newCompletedTasks.push(equipment + '|' + taskName);
+              }
+          }
+          
+          // ✅ OBTENER TAREAS COMPLETADAS PREVIAS DESDE currentWork
+          var previousCompletedTasks = [];
+          var currentWork = logSheet.getRange(rowIdx, 14).getValue() || '';
+          
+          // Buscar líneas con ✓ en todo el texto
+          var lines = currentWork.split('\n');
+          for (var l = 0; l < lines.length; l++) {
+              var match = lines[l].match(/^  ✓ (.+?) - (.+)$/);
+              if (match) {
+                  var equipment = match[1].trim();
+                  var taskName = match[2].trim();
+                  var taskKey = equipment + '|' + taskName;
+                  if (!previousCompletedTasks.includes(taskKey)) {
+                      previousCompletedTasks.push(taskKey);
+                  }
+              }
+          }
+          
+          // ✅ COMBINAR TAREAS PREVIAS + NUEVAS
+          var allCompletedTasks = [...previousCompletedTasks];
+          for (var i = 0; i < newCompletedTasks.length; i++) {
+              if (!allCompletedTasks.includes(newCompletedTasks[i])) {
+                  allCompletedTasks.push(newCompletedTasks[i]);
+              }
+          }
+          
+          // ✅ CREAR LISTA ÚNICA DE TAREAS (EVITAR DUPLICADOS)
+          var uniqueTaskKeys = [];
+          var uniqueAllTasks = [];
+          var uniqueAllEquipments = [];
+          
+          for (var i = 0; i < allTasks.length; i++) {
+              var taskName = allTasks[i];
+              var equipment = allEquipments[i] || 'N/A';
+              var taskKey = equipment + '|' + taskName;
+              
+              if (!uniqueTaskKeys.includes(taskKey)) {
+                  uniqueTaskKeys.push(taskKey);
+                  uniqueAllTasks.push(taskName);
+                  uniqueAllEquipments.push(equipment);
+              }
+          }
+          
+          // ✅ GENERAR RESUMEN
+          var tasksDetail = '';
+          for (var i = 0; i < uniqueAllTasks.length; i++) {
+              var taskName = uniqueAllTasks[i];
+              var equipment = uniqueAllEquipments[i] || 'N/A';
+              var taskKey = equipment + '|' + taskName;
+              var isCompleted = allCompletedTasks.includes(taskKey);
+              var icon = isCompleted ? '✓' : 'X';
+              tasksDetail += '  ' + icon + ' ' + equipment + ' - ' + taskName + '\n';
+          }
+          
+          var uniqueTotalCount = uniqueAllTasks.length;
+          var uniqueCompletedCount = allCompletedTasks.length;
+          
+          var pmSummary = '\n--- PREVENTIVE SUMMARY ---\nPreventive Maintenance Completed: ' + uniqueCompletedCount + '/' + uniqueTotalCount + ' tasks\n';
+          var fullSummary = pmSummary + tasksDetail;
+          
+          // ✅ ELIMINAR RESÚMENES PREVIOS
+          var cleanedWork = currentWork.replace(/--- PREVENTIVE SUMMARY ---\nPreventive Maintenance Completed: \d+\/\d+ tasks\n(?:  [✓X] .+?\n)+/g, '');
+          cleanedWork = cleanedWork.replace(/\n{3,}/g, '\n\n');
+          
+          // ✅ AGREGAR EL NUEVO RESUMEN
+          var newWorkWithPM = (cleanedWork.trim() + '\n' + fullSummary).trim();
+          logSheet.getRange(rowIdx, 14).setValue(newWorkWithPM);
+          
+      }
+
+      // Actualizar PM_CHECKLIST_LOG (columna D y E)
+      if (isScheduledPreventiveCheck && payload.pmTasksCompleted !== undefined && payload.pmTotalTasks !== undefined) {
+        try {
+          const pmLogSheet = ss.getSheetByName('PM_CHECKLIST_LOG');
+          if (pmLogSheet) {
+            const pmLogData = pmLogSheet.getDataRange().getValues();
+            let pmRowIdx = -1;
+            for (let i = 1; i < pmLogData.length; i++) {
+              if (pmLogData[i][0] && pmLogData[i][0].toString() === payload.folio.toString()) {
+                pmRowIdx = i + 1;
+                break;
+              }
+            }
+            if (pmRowIdx !== -1) {
+              // ✅ ACTUALIZAR COLUMNA D (Total Tasks) y COLUMNA E (Tasks Completed)
+              pmLogSheet.getRange(pmRowIdx, 4).setValue(payload.pmTotalTasks);  // Columna D = Total Tasks
+              pmLogSheet.getRange(pmRowIdx, 5).setValue(payload.pmTasksCompleted); // Columna E = Tasks Completed
+              logSystemError('WO_REPORT', 'processFinalSubmit', 'Updated PM_CHECKLIST_LOG: Total Tasks = ' + payload.pmTotalTasks + ', Completed = ' + payload.pmTasksCompleted + ' for ' + payload.folio, 'INFO');
+            } else {
+              logSystemError('WO_REPORT', 'processFinalSubmit', 'PM_CHECKLIST_LOG entry not found for folio: ' + payload.folio + ' (Preventive WO)', 'WARNING');
+            }
+          }
+        } catch(e) {
+          logSystemError('WO_REPORT', 'processFinalSubmit', 'Error updating PM_CHECKLIST_LOG: ' + e.toString(), 'ERROR');
+        }
+      }
+
+      const currentShiftHours = Math.max(0, parseFloat((endDate - startDate) / 3600000) || 0);
+      const previousTotalHours = parseFloat(rowData[17]) || 0;
+      const newTotalHours = (previousTotalHours + currentShiftHours).toFixed(2);
+      logSheet.getRange(rowIdx, 18).setValue(newTotalHours);
+      
+      // ========== CONCATENAR O y P ==========
+      function formatDateConsistent(dateObj) {
+        if (!dateObj) return '';
+        if (!(dateObj instanceof Date)) {
+          try { dateObj = new Date(dateObj); } catch(e) { return ''; }
+        }
+        if (isNaN(dateObj.getTime())) return '';
+        var timezone = (typeof EAMS_SETTINGS !== 'undefined' && EAMS_SETTINGS.TIMEZONE) ? EAMS_SETTINGS.TIMEZONE : Session.getScriptTimeZone();
+        return Utilities.formatDate(dateObj, timezone, 'yyyy-MM-dd HH:mm');
+      }
+
+      function normalizeExistingDate(value) {
+        if (!value) return '';
+        if (typeof value === 'string') return value;
+        try {
+          const d = new Date(value);
+          if (!isNaN(d.getTime())) {
+            var timezone = (typeof EAMS_SETTINGS !== 'undefined' && EAMS_SETTINGS.TIMEZONE) ? EAMS_SETTINGS.TIMEZONE : Session.getScriptTimeZone();
+            return Utilities.formatDate(d, timezone, 'yyyy-MM-dd HH:mm');
+          }
+        } catch(e) {}
+        return String(value);
+      }
+
+      // GUARDAR O (Start Date/Time)
+      const startDateStr = formatDateConsistent(startDate);
+      if (startDateStr) {
+        const oldO = normalizeExistingDate(rowData[14]);
+        const newO = oldO + (oldO ? '\n' : '') + startDateStr;
+        logSheet.getRange(rowIdx, 15).setValue(newO);
+      }
+
+      // GUARDAR P (End Date/Time)
+      const endDateStr = formatDateConsistent(endDate);
+      if (endDateStr) {
+        const oldP = normalizeExistingDate(rowData[15]);
+        const newP = oldP + (oldP ? '\n' : '') + endDateStr;
+        logSheet.getRange(rowIdx, 16).setValue(newP);
+      }
+      
+      // ============================================
+      // ✅ CORREGIDO: GUARDAR DOWNTIME PARA TODOS EXCEPTO SCHEDULED PREVENTIVE
+      // ============================================
+      if (allowReunify) {
+        // Columna S (Eq Down Start - índice 19) - solo primera vez
+        if (!rowData[18]) {
+          const sDateStr = formatDateConsistent(startDate);
+          if (sDateStr) {
+            logSheet.getRange(rowIdx, 19).setValue(sDateStr);
+          }
+        }
+        // Columna T (Eq Return - índice 20) - SOLO cuando NO es REUNIFY
+        if (payload.action !== 'REUNIFY') {
+          const eDateStr = formatDateConsistent(endDate);
+          if (eDateStr) {
+            logSheet.getRange(rowIdx, 20).setValue(eDateStr);
+          }
+        }
+      }
+      
+      const setupStatuses = setupWO.statuses || [];
+      const inProgressStatus = setupStatuses[1] || 'In Progress';
+      const completedStatus = setupStatuses[3] || 'Completed';
+      
+      const normalizedInProgress = inProgressStatus.charAt(0).toUpperCase() + inProgressStatus.slice(1).toLowerCase();
+      const normalizedCompleted = completedStatus.charAt(0).toUpperCase() + completedStatus.slice(1).toLowerCase();
+      
+      if (payload.action === 'REUNIFY') {
+        logSheet.getRange(rowIdx, 2).setValue(normalizedInProgress);
+        
+        const logEntry = `[${Utilities.formatDate(now, EAMS_SETTINGS.TIMEZONE, 'MM/dd HH:mm')}]: Partial report saved`;
+        const oldLog = rowData[25] || '';
+        logSheet.getRange(rowIdx, 26).setValue(oldLog + (oldLog ? ' | ' : '') + logEntry);
+        
+      } else if (payload.action === 'COMPLETED' || payload.action === 'FOLLOW_UP') {
+        logSheet.getRange(rowIdx, 2).setValue(normalizedCompleted);
+        
+        // ✅ CORREGIDO: Calcular downtime solo si allowReunify es true
+        if (allowReunify) {
+          const downStart = rowData[18] ? new Date(rowData[18]) : startDate;
+          const totalDowntime = (endDate - downStart) / 3600000;
+          logSheet.getRange(rowIdx, 21).setValue(Math.max(0, totalDowntime).toFixed(2));
+        }
+        
+        const logEntry = `[${Utilities.formatDate(now, EAMS_SETTINGS.TIMEZONE, 'MM/dd HH:mm')}]: JOB ${payload.action === 'FOLLOW_UP' ? 'COMPLETED - FOLLOW UP CREATED' : 'COMPLETED'}`;
+        const oldLog = rowData[25] || '';
+        logSheet.getRange(rowIdx, 26).setValue(oldLog + (oldLog ? ' | ' : '') + logEntry);
+
+        if (payload.rootCause) {
+          logSheet.getRange(rowIdx, 22).setValue(payload.rootCause);
+        }        
+      }
+
+      // Guardar flags técnicos SOLO si NO es REUNIFY
+      if (payload.action !== 'REUNIFY' && (payload.needsSparePartPurchase !== undefined || payload.needsExternalService !== undefined)) {
+          const currentObs = logSheet.getRange(rowIdx, 26).getValue() || '';
+          const flags = {
+              spare_purchase: payload.needsSparePartPurchase || false,
+              external_service: payload.needsExternalService || false,
+              timestamp: new Date().toISOString()
+          };
+          const flagsJson = '\n--- TECH FLAGS ---\n' + JSON.stringify(flags);
+          logSheet.getRange(rowIdx, 26).setValue(currentObs + flagsJson);
+      } 
+
+      // VALIDACIÓN REUNIFY: Fecha no anterior al último End Time
+      if (payload.action === 'REUNIFY' || payload.action === 'COMPLETED' || payload.action === 'FOLLOW_UP') {
+        const endTimesStr = rowData[15] ? String(rowData[15]) : '';
+        if (endTimesStr) {
+          const endTimes = endTimesStr.split('\n').filter(s => s.trim() !== '');
+          if (endTimes.length > 0) {
+            const lastEndTimeStr = endTimes[endTimes.length - 1].trim();
+            if (lastEndTimeStr) {
+              try {
+                let lastEndDate = new Date(lastEndTimeStr);
+                if (isNaN(lastEndDate.getTime())) {
+                  const match = lastEndTimeStr.match(/(\d{4}-\d{2}-\d{2} \d{2}:\d{2})/);
+                  if (match) {
+                    lastEndDate = new Date(match[1]);
+                  }
+                }
+                if (!isNaN(lastEndDate.getTime()) && startDate < lastEndDate) {
+                  throw new Error(`Start time cannot be earlier than the last End Time (${lastEndTimeStr}). Please select a later start time.`);
+                }
+              } catch(e) {
+                if (e.message.includes('Start time cannot be earlier')) {
+                  throw e;
+                }
+                //console.warn('Could not parse last end time:', lastEndTimeStr);
+              }
+            }
+          }
+        }
+      }
+      
+      // ============================================
+      // BLOQUE DE MATERIALES
+      // ============================================
+      if (payload.materialsList && payload.materialsList.length > 0) {
+        const matSummary = payload.materialsList.map(m => `${m.name} x${m.qty}`).join(', ');
+        const oldMat = rowData[16] || '';
+        logSheet.getRange(rowIdx, 17).setValue(oldMat + (oldMat ? ' / ' : '') + matSummary);
+        const budgetAreaName = payload.budgetAreaName || '';
+        const budgetAreaCode = payload.budgetAreaCode || '';
+        
+        try {
+          updateInventoryAndAudit(payload.materialsList, payload.folio, budgetAreaName, budgetAreaCode, payload.user || 'system');
+        } catch (stockError) {
+          logSheet.getRange(rowIdx, 17).setValue(oldMat);
+          throw new Error(stockError.message);
+        }
+      }
+      
+      if (payload.action === 'FOLLOW_UP') {
+          let flagsToInherit = null;
+          if (payload.needsSparePartPurchase || payload.needsExternalService) {
+              flagsToInherit = JSON.stringify({
+                  spare_purchase: payload.needsSparePartPurchase || false,
+                  external_service: payload.needsExternalService || false,
+                  inherited_from: payload.folio,
+                  timestamp: new Date().toISOString()
+              });
+          }
+          let otherCommentToInherit = '';
+          if (payload.needsOther && payload.otherComment) {
+              otherCommentToInherit = '\n[OTHER COMMENT]: ' + payload.otherComment;
+          }
+          createFollowUpWO(rowData, payload.notes, 'ON HOLD', flagsToInherit, otherCommentToInherit);
+      }
+      
+      SpreadsheetApp.flush();
+      
+      // ==== AUDIT LOG ====
+      try {
+        const reportDetails = `WO ${payload.action === 'COMPLETED' ? 'COMPLETED' : (payload.action === 'FOLLOW_UP' ? 'FOLLOW_UP_CREATED' : 'REUNIFY_SAVED')} | Hours: ${(new Date(payload.end) - new Date(payload.start)) / 3600000} | Root Cause: ${payload.rootCause || 'N/A'} | Materials: ${payload.materialsList?.length || 0} items`;
+        const userEmail = payload.userEmail || Session.getActiveUser().getEmail() || 'system';
+        logChange('WO', payload.folio, payload.action === 'COMPLETED' ? 'COMPLETE' : (payload.action === 'FOLLOW_UP' ? 'FOLLOW_UP' : 'REUNIFY'), null, null, null, reportDetails, userEmail);
+      } catch(e) {
+        logSystemError('WO_REPORT', 'processFinalSubmit', 'Audit log failed: ' + e.toString(), 'ERROR', userEmail);
+      }
+      
+      logSystemError('WO_REPORT', 'processFinalSubmit', 'WO ' + payload.folio + ' processed: ' + payload.action, 'INFO');
+      
+      return 'SUCCESS';
+      
+    } catch (e) {
+      logSystemError('WO_REPORT', 'processFinalSubmit', e.toString(), 'ERROR');
+      throw new Error(e.toString());
+    }
+  });
+}
+
+function updateInventoryAndAudit(items, woFolio, budgetAreaName, budgetAreaCode, user) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const catalogSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.STK_CATALOG);
+    const dbSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.STK_DB);
+    
+    if (!catalogSheet || !dbSheet) return;
+    
+    const catData = catalogSheet.getDataRange().getValues();
+    const transId = 'TR-' + Utilities.formatDate(new Date(), EAMS_SETTINGS.TIMEZONE, 'yyyyMMddHHmmss');
+    
+    let finalBudgetName = budgetAreaName || '';
+    let finalBudgetCode = budgetAreaCode || '';
+    
+    for (let idx = 0; idx < items.length; idx++) {
+      const item = items[idx];
+      let found = false;
+      
+      for (let i = 1; i < catData.length; i++) {
+        const sku = catData[i][0] ? catData[i][0].toString() : '';
+        if (sku === item.id.toString()) {
+          const currentStock = parseFloat(catData[i][8]) || 0;
+          
+          if (currentStock < item.qty) {
+            throw new Error(`INSUFFICIENT STOCK: SKU ${item.id} only has ${currentStock} units available, but ${item.qty} were requested for WO ${woFolio}`);
+          }
+          
+          const newStock = currentStock - item.qty;
+          catalogSheet.getRange(i + 1, 9).setValue(newStock);
+          
+          if (!finalBudgetCode) {
+            const defaultBudgetName = catData[i][13] ? catData[i][13].toString().trim() : '';
+            const defaultBudgetCode = catData[i][14] ? catData[i][14].toString().trim() : '';
+            if (defaultBudgetCode) {
+              finalBudgetName = defaultBudgetName;
+              finalBudgetCode = defaultBudgetCode;
+            }
+          }
+          found = true;
+          break;
+        }
+      }
+      
+      if (!found) {
+        //console.warn(`SKU ${item.id} not found in catalog, skipping stock update`);
+      }
+      
+      const totalCost = (parseFloat(item.price) * parseFloat(item.qty)).toFixed(2);
+      
+      // ORDEN CORRECTO DE COLUMNAS según diagnóstico:
+      // A=Transaction ID, B=Date, C=Part ID, D=Type, E=Qty, F=PO#, G=WO#, H=Unit Price, I=Total Cost, J=Vendor, K=Responsible, L=Comments, M=Budget area, N=General Lodge
+      dbSheet.appendRow([
+        transId,                                    // A: Transaction ID
+        Utilities.formatDate(new Date(), EAMS_SETTINGS.TIMEZONE, "M/d/yyyy"), // B: Date ✅ Solo fecha
+        item.id,                                    // C: Part ID / SKU
+        'CONSUMED_WO',                              // D: Type
+        item.qty,                                   // E: Qty
+        'N/A',                                      // F: PO# / Requisition
+        woFolio,                                    // G: Work Order #
+        item.price,                                 // H: Unit Price
+        totalCost,                                  // I: Total Cost
+        'FIELD_TECH',                               // J: Vendor / Supplier
+        user || 'system',                           // K: Responsible
+        'Job consumption - ' + woFolio,             // L: Comments / Reason
+        finalBudgetName,                            // M: Budget area
+        finalBudgetCode                             // N: General Lodge (código de presupuesto)
+      ]);
+    }
+    
+    logSystemError('WO_REPORT', 'updateInventoryAndAudit', 'Inventory updated for WO: ' + woFolio + ' Budget: ' + finalBudgetCode, 'INFO');
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'updateInventoryAndAudit', e.toString(), 'ERROR');
+    throw e;
+  }
+}
+
+function createFollowUpWO(parentRow, notes, customStatus, inheritedFlags, otherComment) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const logSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.WO_LOG);
+    
+    const setupWO = getSetupData('WO');
+    const validStatuses = setupWO.statuses || [];
+    const initialStatus = customStatus || (validStatuses[0] || 'OPEN');
+    
+    const setupSheet = ss.getSheetByName(EAMS_SETTINGS.SETUP.WO);
+    let plannedPriority = 'Planned';
+    if (setupSheet) {
+      const priorityColumn = 4;
+      const priorityData = setupSheet.getRange(2, priorityColumn, setupSheet.getLastRow() - 1, 1).getValues().flat();
+      if (priorityData.includes('Planned')) {
+        plannedPriority = 'Planned';
+      } else if (priorityData.length > 0) {
+        plannedPriority = priorityData[0];
+      }
+    }
+    
+    const newFolio = generateWOFolio();
+    
+    const newRow = [...parentRow];
+    newRow[0] = newFolio;
+    newRow[1] = initialStatus;
+    newRow[3] = new Date();
+    newRow[4] = plannedPriority;
+    const originalDesc = parentRow[9] || '';
+    // Agregar el comentario "Other" a la columna J (Work Description) si existe
+    const otherCommentText = otherComment || '';
+    newRow[9] = 'FOLLOW UP: ' + originalDesc + ' - ' + (notes || 'Pending further work') + otherCommentText;
+    
+    // ============================================
+    // LIMPIAR COLUMNAS QUE NO DEBEN HEREDAR
+    // ============================================
+    // Columna K (índice 10) - Maintenance Type
+    newRow[10] = '';
+    // Columna L (índice 11) - Technician
+    newRow[11] = '';
+    // Columna M (índice 12) - Assigned Technician (duplicado)
+    newRow[12] = '';
+    // Columna N (índice 13) - Work Performed
+    newRow[13] = '';
+    // Columna O (índice 14) - Start Date/Time
+    newRow[14] = '';
+    // Columna P (índice 15) - End Date/Time
+    newRow[15] = '';
+    // Columna Q (índice 16) - Materials / Spare Parts
+    newRow[16] = '';
+    // Columna R (índice 17) - Labour Hours
+    newRow[17] = 0;
+    // Columna S (índice 18) - Eq Down Start
+    newRow[18] = '';
+    // Columna T (índice 19) - Eq Return
+    newRow[19] = '';
+    // Columna U (índice 20) - Total Downtime
+    newRow[20] = 0;
+    // Columna V (índice 21) - Root Cause
+    newRow[21] = '';
+    // Columna W (índice 22) - Related WO (se guarda el padre)
+    newRow[22] = parentRow[0] || '';  // ← Related WO
+    // Columna X (índice 23) - Approver
+    newRow[23] = '';
+    // Columna Y (índice 24) - Closure Date
+    newRow[24] = '';
+    // Columna Z (índice 25) - Final Observations (solo heredar flags)
+    // Mantener solo los flags heredados, no el historial completo
+    if (inheritedFlags) {
+      newRow[25] = '--- INHERITED FLAGS ---\n' + inheritedFlags;
+    } else {
+      newRow[25] = '';
+    }
+    
+    logSheet.appendRow(newRow);
+    
+    logSystemError('WO_REPORT', 'createFollowUpWO', 'Follow-up WO created: ' + newFolio + ' - Related to: ' + parentRow[0], 'INFO');
+    
+    return newFolio;
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'createFollowUpWO', e.toString(), 'ERROR');
+    return null;
+  }
+}
+
+function WO_generatePrintablePDF(folio, pmTasks) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let woData = null;
+    
+    if (folio && folio !== '' && folio !== '-- Select WO --') {
+      const logSheet = ss.getSheetByName(EAMS_SETTINGS.SHEETS.WO_LOG);
+      if (logSheet) {
+        const logData = logSheet.getDataRange().getValues();
+        for (let i = 1; i < logData.length; i++) {
+          if (logData[i][0] && logData[i][0].toString() === folio.toString()) {
+            woData = {
+              folio: logData[i][0],
+              status: logData[i][1],
+              requester: logData[i][2] || '',
+              date: logData[i][3] instanceof Date ? formatDateForDisplay(logData[i][3]) : logData[i][3],
+              priority: logData[i][4] || '',
+              area: logData[i][5] || '',
+              tl: logData[i][6] || '',
+              eqName: logData[i][7] || '',
+              desc: logData[i][9] || '',
+              maintType: logData[i][10] || '',
+              history: logData[i][25] || 'No previous logs.'
+            };
+            break;
+          }
+        }
+      }
+    }
+    
+    const hubSheet = ss.getSheetByName(EAMS_SETTINGS.SETUP.HUB);
+    let logoUrl = '';
+    if (hubSheet) {
+      logoUrl = hubSheet.getRange('A2').getValue() || '';
+    }
+    
+    const now = new Date();
+    const formattedDate = Utilities.formatDate(now, EAMS_SETTINGS.TIMEZONE, 'yyyy-MM-dd HH:mm');
+
+    // Procesar tareas preventivas si vienen del frontend
+    let pmTasksHtml = '';
+    if (pmTasks && pmTasks.length > 0) {
+      pmTasksHtml = '<div class="section" style="margin-top: 20px;">\n';
+      pmTasksHtml += '<div class="section-title">PREVENTIVE MAINTENANCE CHECKLIST</div>\n';
+      pmTasksHtml += '<table style="width:100%; border-collapse: collapse;">\n';
+      pmTasksHtml += '<thead><tr style="background:#f1f3f4;"><th style="padding:8px; text-align:left;">Equipment</th><th style="padding:8px; text-align:left;">Task</th><th style="padding:8px; text-align:left;">Standard</th></tr></thead>\n';
+      pmTasksHtml += '<tbody>\n';
+      
+      for (let i = 0; i < pmTasks.length; i++) {
+        const task = pmTasks[i];
+        pmTasksHtml += '<tr style="border-bottom:1px solid #eee;">\n';
+        pmTasksHtml += '<td style="padding:8px;">' + escapeHtml(task.equipment || '') + '</td>\n';
+        pmTasksHtml += '<td style="padding:8px;">' + escapeHtml(task.task || '') + '</td>\n';
+        pmTasksHtml += '<td style="padding:8px; font-size:11px;">' + escapeHtml(task.standard || '') + '</td>\n';
+        pmTasksHtml += '</tr>\n';
+      }
+      
+      pmTasksHtml += '</tbody>\n';
+      pmTasksHtml += '</table>\n';
+      pmTasksHtml += '</div>\n';
+    }
+    
+    let printHtml = '<!DOCTYPE html>\n';
+    printHtml += '<html>\n';
+    printHtml += '<head>\n';
+    printHtml += '<meta charset="UTF-8">\n';
+    printHtml += '<title>Work Order Print</title>\n';
+    printHtml += '<style>\n';
+    printHtml += '* { margin: 0; padding: 0; box-sizing: border-box; }\n';
+    printHtml += 'body { font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 20px; background: white; color: #202124; }\n';
+    printHtml += '.container { max-width: 100%; margin: 0 auto; }\n';
+    printHtml += '.header { text-align: left; border-bottom: 2px solid #1a73e8; padding-bottom: 12px; margin-bottom: 20px; position: relative; }\n';
+    printHtml += '.header h1 { margin: 0; font-size: 24px; color: #1a73e8; }\n';
+    printHtml += '.header .folio { font-size: 16px; font-weight: bold; margin-top: 8px; }\n';
+    printHtml += '.header .status { margin-top: 6px; font-size: 14px; }\n';
+    printHtml += '.logo { position: absolute; top: 0; right: 0; max-width: 80px; max-height: 60px; }\n';
+    printHtml += '.section { margin-bottom: 20px; page-break-inside: avoid; }\n';
+    printHtml += '.section-title { background: #f1f3f4; padding: 8px 12px; font-weight: bold; font-size: 14px; border-left: 4px solid #1a73e8; margin-bottom: 12px; }\n';
+    printHtml += '.info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 15px; }\n';
+    printHtml += '.info-item { padding: 4px 0; }\n';
+    printHtml += '.info-label { font-weight: 600; color: #5f6368; font-size: 11px; text-transform: uppercase; }\n';
+    printHtml += '.info-value { font-size: 13px; margin-top: 2px; }\n';
+    printHtml += '.description-box { background: #fff8e7; border: 1px solid #ef6c00; padding: 12px; border-radius: 4px; margin: 10px 0; }\n';
+    printHtml += '.history-box { background: #e8f0fe; border: 1px solid #1a73e8; padding: 12px; border-radius: 4px; margin: 10px 0; }\n';
+    printHtml += '.blank-line { border-bottom: 1px solid #000; margin-top: 4px; min-height: 24px; }\n';
+    printHtml += '.two-column { display: flex; gap: 30px; margin-bottom: 20px; }\n';
+    printHtml += '.two-column > div { flex: 1; }\n';
+    printHtml += '.signature-row { display: flex; gap: 30px; margin-top: 20px; }\n';
+    printHtml += '.signature-row > div { flex: 1; }\n';
+    printHtml += '.footer { margin-top: 30px; text-align: center; font-size: 10px; color: #9aa0a6; border-top: 1px solid #e0e0e0; padding-top: 12px; }\n';
+    printHtml += '@media print { body { padding: 0; } .no-print { display: none; } @page { size: A4; margin: 1.5cm; } }\n';
+    printHtml += '</style>\n';
+    printHtml += '</head>\n';
+    printHtml += '<body>\n';
+    printHtml += '<div class="container">\n';
+    
+    printHtml += '<div class="header">\n';
+    if (logoUrl && logoUrl.toString().trim() !== '') {
+      printHtml += '<img class="logo" src="' + escapeHtml(logoUrl.toString()) + '" alt="Company Logo">\n';
+    }
+    printHtml += '<h1>WORK ORDER TECHNICAL REPORT</h1>\n';
+    if (woData && woData.folio) {
+      printHtml += '<div class="folio">W.O. #: ' + escapeHtml(woData.folio) + '</div>\n';
+      printHtml += '<div class="status">Current Status: ' + escapeHtml(woData.status) + '</div>\n';
+    } else {
+      printHtml += '<div class="folio">W.O. #: _________________________</div>\n';
+      printHtml += '<div class="status">Current Status: ___________</div>\n';
+    }
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">1. WORK ORDER INFORMATION</div>\n';
+    printHtml += '<div class="info-grid">\n';
+    
+    if (woData) {
+      printHtml += '<div class="info-item"><div class="info-label">REQUESTER</div><div class="info-value">' + escapeHtml(woData.requester) + '</div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">DATE</div><div class="info-value">' + escapeHtml(woData.date) + '</div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">MAINTENANCE TYPE</div><div class="info-value">' + escapeHtml(woData.maintType) + '</div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">PRIORITY</div><div class="info-value">' + escapeHtml(woData.priority) + '</div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">AREA</div><div class="info-value">' + escapeHtml(woData.area) + '</div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">EQUIPMENT</div><div class="info-value">' + escapeHtml(woData.eqName) + '</div></div>\n';
+    } else {
+      printHtml += '<div class="info-item"><div class="info-label">REQUESTER</div><div class="blank-line"></div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">DATE</div><div class="blank-line"></div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">MAINTENANCE TYPE</div><div class="blank-line"></div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">PRIORITY</div><div class="blank-line"></div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">AREA</div><div class="blank-line"></div></div>\n';
+      printHtml += '<div class="info-item"><div class="info-label">EQUIPMENT</div><div class="blank-line"></div></div>\n';
+    }
+    
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="description-box">\n';
+    printHtml += '<div class="info-label">WORK DESCRIPTION</div>\n';
+    if (woData && woData.desc) {
+      // CORRECCIÓN #4: Formatear descripción para preventivo en PDF (solo título)
+      let displayDesc = woData.desc;
+      const isPreventive = woData.maintType === 'Scheduled Preventive';
+      if (isPreventive && woData.desc && woData.desc.includes('[EAMS MASTER PM]')) {
+        // Buscar el título de la estrategia
+        const titleMatch = woData.desc.match(/\[EAMS MASTER PM\]\s*(.+?)(?:\n|$)/);
+        if (titleMatch) {
+          displayDesc = `[EAMS MASTER PM] ${titleMatch[1].trim()}`;
+        } else {
+          // Fallback: buscar cualquier texto después del corchete
+          const fallbackMatch = woData.desc.match(/\[EAMS MASTER PM\]\s*(.+)/);
+          if (fallbackMatch) {
+            displayDesc = `[EAMS MASTER PM] ${fallbackMatch[1].trim().substring(0, 100)}`;
+          }
+        }
+      }
+      printHtml += '<div style="margin-top: 8px;">' + escapeHtml(displayDesc) + '</div>\n';
+    } else {
+      printHtml += '<div class="blank-line" style="min-height: 60px;"></div>\n';
+    }
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="history-box">\n';
+    printHtml += '<div class="info-label">HISTORICAL COMMENTS</div>\n';
+    if (woData && woData.history) {
+      printHtml += '<div style="margin-top: 6px;">' + escapeHtml(woData.history) + '</div>\n';
+    } else {
+      printHtml += '<div class="blank-line" style="min-height: 40px;"></div>\n';
+    }
+    printHtml += '</div>\n';
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="two-column">\n';
+    printHtml += '<div>\n';
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">2. INTERVENED COMPONENT</div>\n';
+    printHtml += '<div class="blank-line" style="min-height: 40px;"></div>\n';
+    printHtml += '</div>\n';
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">3. LABOR HOURS</div>\n';
+    printHtml += '<div class="info-label">START TIME</div><div class="blank-line"></div>\n';
+    printHtml += '<div class="info-label" style="margin-top: 12px;">END TIME</div><div class="blank-line"></div>\n';
+    printHtml += '</div>\n';
+    printHtml += '</div>\n';
+    printHtml += '<div>\n';
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">4. MATERIALS / SPARE PARTS</div>\n';
+    printHtml += '<div class="blank-line" style="min-height: 80px;"></div>\n';
+    printHtml += '</div>\n';
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">5. ROOT CAUSE ANALYSIS</div>\n';
+    printHtml += '<div class="blank-line" style="min-height: 40px;"></div>\n';
+    printHtml += '</div>\n';
+    printHtml += '</div>\n';
+    printHtml += '</div>\n';
+    
+    // Insertar checklist preventivo si existe
+    if (pmTasksHtml) {
+      printHtml += pmTasksHtml;
+    }
+    
+    printHtml += '<div class="section">\n';
+    printHtml += '<div class="section-title">TECHNICAL REPORT</div>\n';
+    printHtml += '<div class="blank-line" style="min-height: 80px;"></div>\n';
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="signature-row">\n';
+    printHtml += '<div><div class="info-label">TECHNICIAN SIGNATURE</div><div class="blank-line"></div></div>\n';
+    printHtml += '<div><div class="info-label">DATE</div><div class="blank-line"></div></div>\n';
+    printHtml += '</div>\n';
+    
+    printHtml += '<div class="footer">\n';
+    printHtml += 'Technical Execution Report - Generated on ' + formattedDate + '\n';
+    printHtml += '</div>\n';
+    
+    printHtml += '</div>\n';
+    printHtml += '<div class="no-print" style="text-align: center; margin-top: 20px; padding: 10px;">\n';
+    printHtml += '<button onclick="window.print();" style="padding: 10px 20px; font-size: 14px; cursor: pointer;">🖨️ Print / Save as PDF</button>\n';
+    printHtml += '</div>\n';
+    printHtml += '</body>\n';
+    printHtml += '</html>\n';
+    
+    return printHtml;
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'generatePrintablePDF', e.toString(), 'ERROR');
+    return '<html><body><h3>Error generating PDF: ' + escapeHtml(e.toString()) + '</h3></body></html>';
+  }
+}
+
+function WO_getStrategyIdByFolio(folio) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const pmLogSheet = ss.getSheetByName('PM_CHECKLIST_LOG');
+    
+    if (!pmLogSheet) return '';
+    
+    const data = pmLogSheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      const woFolio = data[i][0] ? data[i][0].toString().trim() : '';
+      if (woFolio === folio) {
+        const strategyId = data[i][2] ? data[i][2].toString().trim() : '';
+        return strategyId;
+      }
+    }
+    return '';
+  } catch (e) {
+    logSystemError('WO_REPORT', 'getStrategyIdByFolio', e.toString(), 'ERROR');
+    return '';
+  }
+}
+
+function WO_getPMTasksByFolio(folio, tl) {
+  try {
+    // 1. Obtener el Strategy ID desde PM_CHECKLIST_LOG
+    const strategyId = WO_getStrategyIdByFolio(folio);
+    
+    if (!strategyId) {
+      return JSON.stringify([]);
+    }
+    
+    // 2. Obtener TODOS los descendientes del TL (recursivo, incluyendo nietos)
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const assetSheet = ss.getSheetByName('ASSET_REGISTER');
+    if (!assetSheet) return JSON.stringify([]);
+    
+    const assetData = assetSheet.getDataRange().getValues();
+    const assetHeaders = assetData[0];
+    
+    // Encontrar índices de columnas dinámicamente
+    const idIdx = assetHeaders.indexOf("Asset ID");
+    const parentIdx = assetHeaders.indexOf("Parent Asset ID");
+    const typeIdx = assetHeaders.indexOf("Asset Type");
+    const nameIdx = assetHeaders.indexOf("Equipment Name");
+    const statusIdx = assetHeaders.indexOf("Status");
+    
+    if (idIdx === -1 || parentIdx === -1) {
+      return JSON.stringify([]);
+    }
+    
+    const childrenIds = [];
+    const assetNameMap = new Map(); // Guardar nombre de cada asset
+    
+    // Función recursiva para encontrar todos los descendientes (MISMA LÓGICA QUE PVT_calculateTotalTasks)
+    function findDescendants(parentId) {
+      for (let i = 1; i < assetData.length; i++) {
+        const row = assetData[i];
+        const currentParentId = String(row[parentIdx] || '').trim();
+        const assetStatus = statusIdx !== -1 ? String(row[statusIdx] || '').toUpperCase() : 'ACTIVE';
+        const assetType = typeIdx !== -1 ? String(row[typeIdx] || '').trim() : '';
+        const childId = String(row[idIdx]).trim();
+        const childName = nameIdx !== -1 ? String(row[nameIdx] || '') : childId;
+        
+        // Incluir solo assets ACTIVOS que NO sean Technical Locations
+        if (currentParentId === parentId && assetStatus === 'ACTIVE' && assetType !== 'Technical Location') {
+          if (!childrenIds.includes(childId)) {
+            childrenIds.push(childId);
+            assetNameMap.set(childId, childName);
+            findDescendants(childId); // Recursión para nietos
+          }
+        }
+      }
+    }
+    
+    // Iniciar búsqueda recursiva desde el TL
+    findDescendants(tl);
+    
+    // También incluir el TL si tiene actividades directas (aunque TL normalmente no tiene)
+    const tlStatus = (() => {
+      for (let i = 1; i < assetData.length; i++) {
+        if (String(assetData[i][idIdx]).trim() === tl) {
+          const status = statusIdx !== -1 ? String(assetData[i][statusIdx] || '').toUpperCase() : 'ACTIVE';
+          return status;
+        }
+      }
+      return 'ACTIVE';
+    })();
+    
+    if (tlStatus === 'ACTIVE' && !childrenIds.includes(tl)) {
+      const tlName = (() => {
+        for (let i = 1; i < assetData.length; i++) {
+          if (String(assetData[i][idIdx]).trim() === tl) {
+            return nameIdx !== -1 ? String(assetData[i][nameIdx] || '') : tl;
+          }
+        }
+        return tl;
+      })();
+      childrenIds.push(tl);
+      assetNameMap.set(tl, tlName);
+    }
+    
+    
+    if (childrenIds.length === 0) {
+      return JSON.stringify([]);
+    }
+    
+    // 3. Buscar tareas en MAINT_ACTIVITIES para cada asset descendiente
+    const activitiesSheet = ss.getSheetByName('MAINT_ACTIVITIES');
+    if (!activitiesSheet) return JSON.stringify([]);
+    
+    const activitiesData = activitiesSheet.getDataRange().getValues();
+    const allTasks = [];
+    
+    for (let childIdx = 0; childIdx < childrenIds.length; childIdx++) {
+      const childId = childrenIds[childIdx];
+      const childName = assetNameMap.get(childId) || childId;
+      
+      for (let i = 1; i < activitiesData.length; i++) {
+        const assetId = activitiesData[i][0] ? activitiesData[i][0].toString().trim() : '';
+        const rowStrategy = activitiesData[i][6] ? activitiesData[i][6].toString().trim() : '';
+        
+        if (assetId === childId && rowStrategy === strategyId) {
+          allTasks.push({
+            equipment: childName,
+            task: activitiesData[i][3] || '',
+            standard: activitiesData[i][4] || '',
+            estTime: activitiesData[i][5] || ''
+          });
+        }
+      }
+    }
+    
+    return JSON.stringify(allTasks);
+    
+  } catch (e) {
+    logSystemError('WO_REPORT', 'getPMTasksByFolio', e.toString(), 'ERROR');
+    return JSON.stringify([]);
+  }
+}
+
+html:
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -814,37 +2021,6 @@
             .task-row input { margin-left: 0; }
             .header-buttons .btn { padding: 6px 12px; font-size: 11px; min-width: 60px; }
         }
-
-        @media print {
-            #printReportContainer {
-                display: block !important;
-                padding: 20px !important;
-                background: white !important;
-            }
-            
-            /* Estilos para que coincida con WO Search */
-            #printReportContainer .frame {
-                border: 1px solid #333 !important;
-                page-break-inside: avoid !important;
-            }
-            
-            #printReportContainer .frame-title {
-                background: white !important;
-                font-weight: bold !important;
-                color: #1a1a2e !important;
-            }
-            
-            #printReportContainer .label {
-                font-size: 8px !important;
-                color: #555 !important;
-            }
-            
-            #printReportContainer .val {
-                font-size: 12px !important;
-                color: #000 !important;
-                border-bottom: 1px solid #ddd !important;
-            }
-        }        
     </style>
 </head>
 <body>
@@ -898,7 +2074,7 @@
                     <select id="woSelect" onchange="loadWOContext()" style="flex: 1; min-width: 180px; max-width: 380px; padding: 10px 12px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px;">
                         <option value="">-- Loading WOs --</option>
                     </select>
-                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printReport()"><i class="fas fa-print"></i> Print Form</button>
+                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
                     <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="woInfo" style="display:none;">
@@ -1248,21 +2424,6 @@
             field.classList.remove('error');
         });
     }
-
-    // ============================================
-    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
-    // ============================================
-    function printReport() {
-        const title = 'Technical Execution Report';
-        const mode = 'eams';
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            // Primero generar el contenido
-            printWorkOrder();
-        } else {
-            window.print();
-        }
-    }
-    window.printReport = printReport;
 
     // ============================================
     // FUNCIÓN DE LOGGING
@@ -2943,6 +4104,7 @@
     // ============================================
     // PRINT
     // ============================================
+
     async function printWorkOrder() {
         var folio = DB.selectedWO?.folio;
         if (!folio) {
@@ -2950,52 +4112,37 @@
             return;
         }
         
-        var fullView = document.getElementById('fullView');
-        if (!fullView) {
-            showToast('Report content not found', 'error');
-            return;
-        }
+        var btn = document.getElementById('printBtn');
+        var originalText = btn.innerText;
+        btn.innerText = 'Generating...';
+        btn.disabled = true;
+        showLoading('Generating PDF...');
         
-        // Clonar el contenido del reporte
-        var clone = fullView.cloneNode(true);
-        clone.id = 'printReportContainer';
-        clone.style.display = 'block';
-        clone.style.position = 'relative';
-        clone.style.background = 'white';
-        clone.style.padding = '20px';
-        clone.style.zIndex = '9999';
-        
-        // Eliminar botones del clon
-        var noPrintElements = clone.querySelectorAll('.no-print');
-        noPrintElements.forEach(function(el) {
-            el.style.display = 'none';
-        });
-        
-        // Asegurar que el logo se muestre
-        var logo = clone.querySelector('.report-logo');
-        if (logo) {
-            var logoImg = document.getElementById('companyLogo');
-            if (logoImg && logoImg.src) {
-                logo.src = logoImg.src;
-                logo.style.display = 'block';
+        try {
+            var htmlContent = await callApi('WO_generatePrintablePDF', [folio, DB.cachedTasks]);
+            
+            hideLoading();
+            btn.innerText = originalText;
+            btn.disabled = false;
+            
+            var printWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            if (!printWindow) {
+                showToast('Popup blocked. Please allow popups for this site.', 'error');
+                return;
             }
+            
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            setTimeout(function() {
+                printWindow.print();
+            }, 500);
+        } catch (error) {
+            hideLoading();
+            btn.innerText = originalText;
+            btn.disabled = false;
+            showToast('Error generating PDF: ' + error.message, 'error');
         }
-        
-        // Insertar en la página
-        document.body.appendChild(clone);
-        
-        // Usar ModuleBase para imprimir
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Technical Execution Report', 'eams');
-        } else {
-            window.print();
-        }
-        
-        // Eliminar el clon después de imprimir
-        setTimeout(function() {
-            var el = document.getElementById('printReportContainer');
-            if (el) el.remove();
-        }, 2000);
     }
 
     // ============================================
@@ -3005,12 +4152,6 @@
     function init() {
         loadUser();
         loadApiUrl();
-        
-        // Inicializar ModuleBase si existe
-        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
-            ModuleBase.initModule('Technical Execution');
-        }
-        
         if (EAMS_API_URL) {
             loadInitialData();
         } else {
