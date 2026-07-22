@@ -944,7 +944,7 @@
       showToast('Error loading compare data: ' + error.message, 'error');
     }
   }
-  
+
   // ============================================
   // IMPRIMIR KPI REPORT - CON VISTA PREVIA
   // ============================================
@@ -955,15 +955,17 @@
       var year = parseInt(document.getElementById('yearSelect').value);
       var monthName = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex]?.text || 'Unknown';
       
-      // Obtener contenido de los tabs
+      // Obtener contenido de los tabs (sin los gráficos)
       var kpiContent = document.getElementById('kpiContent').innerHTML;
-      var chartsContent = document.getElementById('chartsContent').innerHTML;
       var financialContent = document.getElementById('financialContent').innerHTML;
       
       if (!kpiContent || kpiContent.indexOf('Error') !== -1) {
           showToast('No data to print', 'error');
           return;
       }
+      
+      // ✅ Generar representación en texto de los gráficos
+      var chartsText = generateChartsText();
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -997,11 +999,11 @@
                   </div>
               </div>
               
-              <!-- Charts Section -->
+              <!-- Charts Section (TEXT) -->
               <div style="margin-bottom: 24px; page-break-before: always;">
                   <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">📈 Charts & Trends</h2>
                   <div style="overflow-x: auto;">
-                      ${chartsContent}
+                      ${chartsText}
                   </div>
               </div>
               
@@ -1029,6 +1031,83 @@
               document.removeEventListener('keydown', escHandler);
           }
       });
+  }
+
+  // ============================================
+  // GENERAR REPRESENTACIÓN EN TEXTO DE GRÁFICOS
+  // ============================================
+  function generateChartsText() {
+      var trends = currentData?.trends || { 
+          months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          availability: [], pmCompliance: [], mtbf: [], mttr: [],
+          actualSpend: [], budgetSpend: [],
+          correctiveTrend: [], preventiveTrend: [], otherTrend: []
+      };
+      var woDist = currentData?.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
+      
+      var months = trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
+      var html = '';
+      
+      // 1. Operational Trends
+      html += '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px;">';
+      html += '<h3 style="font-size: 14px; margin: 0 0 12px 0; color: #1a1a2e;">Operational Trends (Last 12 Months)</h3>';
+      html += '<table style="width:100%; font-size:11px;"><thead><tr><th>Month</th><th>Availability %</th><th>PM Compliance %</th><th>MTBF (days)</th><th>MTTR (hrs)</th></tr></thead><tbody>';
+      for (var i = 0; i < months.length; i++) {
+          html += '<tr>';
+          html += '<td><strong>' + months[i] + '</strong></td>';
+          html += '<td>' + (trends.availability[i] || 0) + '%</td>';
+          html += '<td>' + (trends.pmCompliance[i] || 0) + '%</td>';
+          html += '<td>' + (trends.mtbf[i] || 0) + '</td>';
+          html += '<td>' + (trends.mttr[i] || 0) + '</td>';
+          html += '</tr>';
+      }
+      html += '</tbody></table></div>';
+      
+      // 2. Monthly Spend Trend
+      html += '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px;">';
+      html += '<h3 style="font-size: 14px; margin: 0 0 12px 0; color: #1a1a2e;">Monthly Spend Trend</h3>';
+      html += '<table style="width:100%; font-size:11px;"><thead><tr><th>Month</th><th>Actual Spend ($)</th><th>Budget ($)</th><th>Variance ($)</th></tr></thead><tbody>';
+      for (var i = 0; i < months.length; i++) {
+          var actual = trends.actualSpend[i] || 0;
+          var budget = trends.budgetSpend[i] || 0;
+          var variance = actual - budget;
+          var color = variance > 0 ? '#dc2626' : '#22c55e';
+          html += '<tr>';
+          html += '<td><strong>' + months[i] + '</strong></td>';
+          html += '<td>$' + Math.round(actual).toLocaleString() + '</td>';
+          html += '<td>$' + Math.round(budget).toLocaleString() + '</td>';
+          html += '<td style="color:' + color + ';">' + (variance > 0 ? '+' : '') + '$' + Math.round(variance).toLocaleString() + '</td>';
+          html += '</tr>';
+      }
+      html += '</tbody></table></div>';
+      
+      // 3. Maintenance Trend
+      html += '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px;">';
+      html += '<h3 style="font-size: 14px; margin: 0 0 12px 0; color: #1a1a2e;">Maintenance Trend (Corrective vs Preventive)</h3>';
+      html += '<table style="width:100%; font-size:11px;"><thead><tr><th>Month</th><th>Corrective</th><th>Preventive</th><th>Others</th></tr></thead><tbody>';
+      for (var i = 0; i < months.length; i++) {
+          html += '<tr>';
+          html += '<td><strong>' + months[i] + '</strong></td>';
+          html += '<td>' + (trends.correctiveTrend[i] || 0) + '</td>';
+          html += '<td>' + (trends.preventiveTrend[i] || 0) + '</td>';
+          html += '<td>' + (trends.otherTrend[i] || 0) + '</td>';
+          html += '</tr>';
+      }
+      html += '</tbody></table></div>';
+      
+      // 4. WO Distribution (Pie chart como texto)
+      html += '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">';
+      html += '<h3 style="font-size: 14px; margin: 0 0 12px 0; color: #1a1a2e;">Work Order Distribution</h3>';
+      html += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center;">';
+      html += '<div style="background: #ff5252; color: white; padding: 8px; border-radius: 4px;">🔧 Corrective<br><strong>' + woDist.corrective + '%</strong></div>';
+      html += '<div style="background: #00e676; color: #0a0a0f; padding: 8px; border-radius: 4px;">📋 Preventive<br><strong>' + woDist.preventive + '%</strong></div>';
+      html += '<div style="background: #ffb74d; color: #0a0a0f; padding: 8px; border-radius: 4px;">⚙️ Op. Service<br><strong>' + (woDist.opService || 0) + '%</strong></div>';
+      html += '<div style="background: #00e5ff; color: #0a0a0f; padding: 8px; border-radius: 4px;">🛠️ General Service<br><strong>' + (woDist.generalService || 0) + '%</strong></div>';
+      html += '<div style="background: #a855f7; color: white; padding: 8px; border-radius: 4px;">📦 Others<br><strong>' + (woDist.others || 0) + '%</strong></div>';
+      html += '</div></div>';
+      
+      return html;
   }
 
   // ============================================
