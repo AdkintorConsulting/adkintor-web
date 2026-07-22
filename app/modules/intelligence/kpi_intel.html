@@ -484,6 +484,110 @@
       height: 280px;
       position: relative;
     }
+
+    /* ============================================
+      KPI - VISTA PREVIA HORIZONTAL
+      ============================================ */
+    #fullView.kpi-preview .report-paper {
+        max-width: 1100px !important;
+        width: 95% !important;
+        padding: 30px 40px !important;
+    }
+
+    #fullView.kpi-preview .kpi-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+        margin-bottom: 20px !important;
+    }
+
+    #fullView.kpi-preview .adk-card {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+    }
+
+    #fullView.kpi-preview .kpi-value {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        color: #0a0a0f !important;
+    }
+
+    #fullView.kpi-preview .kpi-label {
+        font-size: 10px !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+    }
+
+    #fullView.kpi-preview .two-columns {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px !important;
+        margin-bottom: 16px !important;
+    }
+
+    #fullView.kpi-preview .card-title {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #1a1a2e !important;
+        border-left: 3px solid #2563eb !important;
+        padding-left: 10px !important;
+        margin-bottom: 12px !important;
+    }
+
+    #fullView.kpi-preview table {
+        font-size: 11px !important;
+    }
+
+    #fullView.kpi-preview table th,
+    #fullView.kpi-preview table td {
+        padding: 6px 8px !important;
+    }
+
+    #fullView.kpi-preview .backlog-bar-container {
+        background: #e2e8f0 !important;
+        border-radius: 4px !important;
+        height: 20px !important;
+        overflow: hidden !important;
+        margin: 4px 0 !important;
+    }
+
+    #fullView.kpi-preview .backlog-bar {
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        padding-right: 8px !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        color: #0a0a0f !important;
+    }
+
+    #fullView.kpi-preview .chart-container {
+        height: 200px !important;
+        position: relative !important;
+    }
+
+    @media print {
+        .kpi-print @page {
+            size: landscape !important;
+        }
+        
+        .kpi-print .no-print {
+            display: none !important;
+        }
+    }
+
+    /* ============================================
+      REPORT LOGO
+      ============================================ */
+    .report-logo {
+        width: auto !important;
+        height: auto !important;
+        max-width: 80px !important;
+        max-height: 60px !important;
+        object-fit: contain !important;
+    }    
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -841,32 +945,142 @@
     }
   }
   
-  async function exportToPDF() {
-    var month = parseInt(document.getElementById('monthSelect').value);
-    var year = parseInt(document.getElementById('yearSelect').value);
-    
-    showLoading('Generating PDF report...');
-    await logForesight('KPI', 'EXPORT_PDF', 'PDF Export - Period: ' + month + '/' + year);
-    
-    try {
-      var htmlContent = await callApi('KPI_exportPDF', [year, month]);
-      hideLoading();
+  // ============================================
+  // IMPRIMIR KPI REPORT - CON VISTA PREVIA
+  // ============================================
+  function printKPIReport() {
+      var logoUrl = document.getElementById('companyLogo')?.src || '';
+      var now = new Date().toLocaleString();
+      var month = parseInt(document.getElementById('monthSelect').value);
+      var year = parseInt(document.getElementById('yearSelect').value);
+      var monthName = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex]?.text || 'Unknown';
       
-      var printWindow = window.open('', '_blank', 'width=1000,height=800,toolbars=yes');
-      if (printWindow) {
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        showToast('Report generated successfully', 'success');
-        await logForesight('KPI', 'PDF_EXPORT_SUCCESS', 'Period: ' + month + '/' + year);
-      } else {
-        showToast('Popup blocked. Please allow popups for this site.', 'error');
+      // Obtener contenido de los tabs
+      var kpiContent = document.getElementById('kpiContent').innerHTML;
+      var chartsContent = document.getElementById('chartsContent').innerHTML;
+      var financialContent = document.getElementById('financialContent').innerHTML;
+      
+      if (!kpiContent || kpiContent.indexOf('Error') !== -1) {
+          showToast('No data to print', 'error');
+          return;
       }
-    } catch (error) {
-      hideLoading();
-      // console.error('PDF export error:', error);  // COMENTADO
-      showToast('Error generating report: ' + error.message, 'error');
-      await logForesight('KPI', 'PDF_EXPORT_ERROR', error.message);
-    }
+      
+      // Crear vista previa
+      var previewContainer = document.createElement('div');
+      previewContainer.id = 'fullView';
+      previewContainer.className = 'kpi-preview';
+      previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
+      
+      var html = `
+          <div class="report-paper" style="background: white; max-width: 1100px; width: 95%; margin: 0 auto; padding: 30px 40px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; font-family: 'Inter', sans-serif;">
+              <img class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
+              
+              <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
+                  <div style="display:flex; gap:10px;">
+                      <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
+                          <i class="fas fa-times"></i> CLOSE
+                      </button>
+                      <button class="btn-outline" onclick="printPreviewKPI()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
+                          <i class="fas fa-print"></i> PRINT
+                      </button>
+                  </div>
+              </div>
+              
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">KPI PERFORMANCE REPORT</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Period: ${monthName} ${year} | Generated: ${now}</div>
+              
+              <!-- KPIs Section -->
+              <div style="margin-bottom: 24px;">
+                  <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">📊 KPIs</h2>
+                  <div style="overflow-x: auto;">
+                      ${kpiContent}
+                  </div>
+              </div>
+              
+              <!-- Charts Section -->
+              <div style="margin-bottom: 24px; page-break-before: always;">
+                  <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">📈 Charts & Trends</h2>
+                  <div style="overflow-x: auto;">
+                      ${chartsContent}
+                  </div>
+              </div>
+              
+              <!-- Financial Section -->
+              <div style="margin-bottom: 24px; page-break-before: always;">
+                  <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">💰 Financial</h2>
+                  <div style="overflow-x: auto;">
+                      ${financialContent}
+                  </div>
+              </div>
+              
+              <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                  KPI Foresight - Adkintor EAMS
+              </div>
+          </div>
+      `;
+      
+      previewContainer.innerHTML = html;
+      document.body.appendChild(previewContainer);
+      
+      // Cerrar con ESC
+      document.addEventListener('keydown', function escHandler(e) {
+          if (e.key === 'Escape') {
+              closePreview();
+              document.removeEventListener('keydown', escHandler);
+          }
+      });
+  }
+
+  // ============================================
+  // FUNCIONES AUXILIARES PARA IMPRESIÓN
+  // ============================================
+
+  function printPreviewKPI() {
+      var preview = document.getElementById('fullView');
+      if (!preview) return;
+      
+      var clone = preview.cloneNode(true);
+      clone.id = 'printClone';
+      clone.style.position = 'relative';
+      clone.style.background = 'white';
+      clone.style.padding = '20px';
+      clone.style.zIndex = '9999';
+      clone.style.display = 'block';
+      clone.style.overflow = 'visible';
+      clone.style.height = 'auto';
+      
+      var noPrint = clone.querySelectorAll('.no-print');
+      noPrint.forEach(function(el) { el.style.display = 'none'; });
+      
+      var logo = clone.querySelector('.report-logo');
+      if (logo) {
+          var logoImg = document.getElementById('companyLogo');
+          if (logoImg && logoImg.src) {
+              logo.src = logoImg.src;
+              logo.style.display = 'block';
+          }
+      }
+      
+      document.body.appendChild(clone);
+      
+      document.body.classList.add('kpi-print');
+      
+      if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+          ModuleBase.printModule('KPI Performance Report', 'foresight');
+      } else {
+          window.print();
+      }
+      
+      setTimeout(function() {
+          document.body.classList.remove('kpi-print');
+          var el = document.getElementById('printClone');
+          if (el) el.remove();
+      }, 2000);
+  }
+
+  function closePreview() {
+      var el = document.getElementById('fullView');
+      if (el) el.remove();
   }
   
   // ============================================
@@ -1218,35 +1432,37 @@ function renderChartsTab(data) {
   // EVENT LISTENERS
   // ============================================
   function setupEventListeners() {
-    document.querySelectorAll('.tab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        var tabId = this.dataset.tab;
-        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-        document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
-        this.classList.add('active');
-        var targetTab = document.getElementById('tab-' + tabId);
-        if (targetTab) targetTab.classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(tab) {
+          tab.addEventListener('click', function() {
+              var tabId = this.dataset.tab;
+              document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+              document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+              this.classList.add('active');
+              var targetTab = document.getElementById('tab-' + tabId);
+              if (targetTab) targetTab.classList.add('active');
+          });
       });
-    });
-    
-    var loadBtn = document.getElementById('loadBtn');
-    if (loadBtn) loadBtn.addEventListener('click', function() { loadData(); });
-    
-    var exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) exportBtn.addEventListener('click', function() { exportToPDF(); });
-    
-    var compareSelect = document.getElementById('compareSelect');
-    if (compareSelect) {
-      compareSelect.addEventListener('change', function() {
-        if (currentData) {
-          var compareType = this.value;
-          var month = parseInt(document.getElementById('monthSelect').value);
-          var year = parseInt(document.getElementById('yearSelect').value);
-          logForesight('KPI', 'CHANGE_COMPARE', 'Compare type: ' + compareType + ' - Period: ' + month + '/' + year);
-          loadCompareData();
-        }
+      
+      var loadBtn = document.getElementById('loadBtn');
+      if (loadBtn) loadBtn.addEventListener('click', function() { loadData(); });
+      
+      var exportBtn = document.getElementById('exportBtn');
+      if (exportBtn) exportBtn.addEventListener('click', function() { 
+          printKPIReport();  // ← CAMBIAR AQUÍ
       });
-    }
+      
+      var compareSelect = document.getElementById('compareSelect');
+      if (compareSelect) {
+          compareSelect.addEventListener('change', function() {
+              if (currentData) {
+                  var compareType = this.value;
+                  var month = parseInt(document.getElementById('monthSelect').value);
+                  var year = parseInt(document.getElementById('yearSelect').value);
+                  logForesight('KPI', 'CHANGE_COMPARE', 'Compare type: ' + compareType + ' - Period: ' + month + '/' + year);
+                  loadCompareData();
+              }
+          });
+      }
   }
   
   // ============================================
