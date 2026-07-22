@@ -538,7 +538,85 @@
         background: var(--bg-hover);
         border-color: var(--accent-color);
         transform: scale(1.02);
-    }    
+    }  
+
+    /* ============================================
+      CAL - VISTA PREVIA HORIZONTAL
+      ============================================ */
+    #fullView.cal-preview .report-paper {
+        max-width: 1100px !important;
+        width: 95% !important;
+        padding: 30px 40px !important;
+    }
+
+    #fullView.cal-preview table {
+        font-size: 10px !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    #fullView.cal-preview table th,
+    #fullView.cal-preview table td {
+        padding: 6px 8px !important;
+    }
+
+    #fullView.cal-preview .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    #fullView.cal-preview .adk-card {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        text-align: center !important;
+    }
+
+    #fullView.cal-preview .adk-card .value {
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #0a0a0f !important;
+    }
+
+    #fullView.cal-preview .adk-card .label {
+        font-size: 10px !important;
+        color: #64748b !important;
+    }
+
+    #fullView.cal-preview .alert {
+        padding: 10px 14px !important;
+        border-radius: 8px !important;
+        margin-bottom: 8px !important;
+        border-left: 4px solid !important;
+        font-size: 12px !important;
+    }
+
+    #fullView.cal-preview .alert-critical { background: #fef2f2 !important; border-left-color: #dc2626 !important; }
+    #fullView.cal-preview .alert-warning { background: #fffbeb !important; border-left-color: #f59e0b !important; }
+    #fullView.cal-preview .alert-failed { background: #f5f3ff !important; border-left-color: #8b5cf6 !important; }
+    #fullView.cal-preview .alert-safe { background: #ecfdf5 !important; border-left-color: #22c55e !important; }
+
+    @media print {
+        .cal-print @page {
+            size: landscape !important;
+        }
+        
+        .cal-print .no-print {
+            display: none !important;
+        }
+    }
+
+    /* ============================================
+      REPORT LOGO
+      ============================================ */
+    .report-logo {
+        width: auto !important;
+        height: auto !important;
+        max-width: 80px !important;
+        max-height: 60px !important;
+        object-fit: contain !important;
+    }      
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -1038,26 +1116,123 @@
   // ============================================
   // EXPORT PDF
   // ============================================
-  async function exportPDF() {
-    await logForesight('CAL', 'EXPORT_PDF', 'Audit PDF export');
-    
-    showLoading('Generating PDF...');
-    try {
-      var htmlContent = await callApi('CAL_generateAuditPDF', []);
-      var win = window.open('', '_blank');
-      if (!win) {
-        showToast('Popup blocked. Please allow popups.', 'error');
-        hideLoading();
-        return;
+  // ============================================
+  // IMPRIMIR AUDIT - CON VISTA PREVIA
+  // ============================================
+  function printAudit() {
+      var dashboardContent = document.getElementById('dashboardContent').innerHTML;
+      var statsContent = document.querySelector('.stats-grid').innerHTML;
+      
+      if (!dashboardContent || dashboardContent.indexOf('Error') !== -1) {
+          showToast('No data to print', 'error');
+          return;
       }
-      win.document.write(htmlContent);
-      win.document.close();
-      hideLoading();
-      showToast('Report generated successfully', 'success');
-    } catch (error) {
-      hideLoading();
-      showToast('Export failed: ' + error.message, 'error');
-    }
+      
+      var logoUrl = document.getElementById('companyLogo')?.src || '';
+      var now = new Date().toLocaleString();
+      
+      // Crear vista previa
+      var previewContainer = document.createElement('div');
+      previewContainer.id = 'fullView';
+      previewContainer.className = 'cal-preview';
+      previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
+      
+      var html = `
+          <div class="report-paper" style="background: white; max-width: 1100px; width: 95%; margin: 0 auto; padding: 30px 40px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; font-family: 'Inter', sans-serif;">
+              <img class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
+              
+              <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
+                  <div style="display:flex; gap:10px;">
+                      <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
+                          <i class="fas fa-times"></i> CLOSE
+                      </button>
+                      <button class="btn-outline" onclick="printPreviewCAL()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
+                          <i class="fas fa-print"></i> PRINT
+                      </button>
+                  </div>
+              </div>
+              
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">CALIBRATION AUDIT REPORT</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              
+              <!-- Stats -->
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+                  ${statsContent.replace(/--/g, '0')}
+              </div>
+              
+              <!-- Contenido del dashboard -->
+              <div style="overflow-x: auto;">
+                  ${dashboardContent}
+              </div>
+              
+              <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                  CAL Foresight - Adkintor EAMS
+              </div>
+          </div>
+      `;
+      
+      previewContainer.innerHTML = html;
+      document.body.appendChild(previewContainer);
+      
+      // Cerrar con ESC
+      document.addEventListener('keydown', function escHandler(e) {
+          if (e.key === 'Escape') {
+              closePreview();
+              document.removeEventListener('keydown', escHandler);
+          }
+      });
+  }
+
+  // ============================================
+  // FUNCIONES AUXILIARES PARA IMPRESIÓN
+  // ============================================
+
+  function printPreviewCAL() {
+      var preview = document.getElementById('fullView');
+      if (!preview) return;
+      
+      var clone = preview.cloneNode(true);
+      clone.id = 'printClone';
+      clone.style.position = 'relative';
+      clone.style.background = 'white';
+      clone.style.padding = '20px';
+      clone.style.zIndex = '9999';
+      clone.style.display = 'block';
+      clone.style.overflow = 'visible';
+      clone.style.height = 'auto';
+      
+      var noPrint = clone.querySelectorAll('.no-print');
+      noPrint.forEach(function(el) { el.style.display = 'none'; });
+      
+      var logo = clone.querySelector('.report-logo');
+      if (logo) {
+          var logoImg = document.getElementById('companyLogo');
+          if (logoImg && logoImg.src) {
+              logo.src = logoImg.src;
+              logo.style.display = 'block';
+          }
+      }
+      
+      document.body.appendChild(clone);
+      
+      document.body.classList.add('cal-print');
+      
+      if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+          ModuleBase.printModule('Calibration Audit Report', 'foresight');
+      } else {
+          window.print();
+      }
+      
+      setTimeout(function() {
+          document.body.classList.remove('cal-print');
+          var el = document.getElementById('printClone');
+          if (el) el.remove();
+      }, 2000);
+  }
+
+  function closePreview() {
+      var el = document.getElementById('fullView');
+      if (el) el.remove();
   }
   
   // ============================================
@@ -1098,8 +1273,11 @@
               refreshBtn.addEventListener('click', function() { refreshAllData(); });
           }
           
+          // En init(), reemplazar:
           if (printBtn) {
-              printBtn.addEventListener('click', function() { exportPDF(); });
+              printBtn.addEventListener('click', function() { 
+                  printAudit(); 
+              });
           }
           
           // Setup tabs
