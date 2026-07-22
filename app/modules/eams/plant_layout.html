@@ -371,19 +371,55 @@
           REPORT LOGO - ESTILOS PARA IMPRESIÓN
           ============================================ */
         .report-logo {
-            max-width: 80px !important;
-            max-height: 60px !important;
             width: auto !important;
             height: auto !important;
+            max-width: 80px !important;
+            max-height: 60px !important;
             object-fit: contain !important;
         }
 
+        /* ============================================
+          PLANT LAYOUT - VISTA PREVIA
+          ============================================ */
+        #fullView.plant-preview .report-paper {
+            max-width: 1100px !important;
+            width: 95% !important;
+            padding: 30px 40px !important;
+        }
+
+        #fullView.plant-preview img {
+            max-width: 100% !important;
+            max-height: 70vh !important;
+            object-fit: contain !important;
+        }
+
+        /* ============================================
+          PLANT LAYOUT - IMPRESIÓN
+          ============================================ */
         @media print {
-            .report-logo {
-                max-width: 80px !important;
-                max-height: 60px !important;
+            .plant-print-portrait {
+                @page {
+                    size: portrait !important;
+                }
             }
-        }                     
+            
+            .plant-print-landscape {
+                @page {
+                    size: landscape !important;
+                }
+            }
+            
+            .plant-print-portrait .no-print,
+            .plant-print-landscape .no-print {
+                display: none !important;
+            }
+            
+            .plant-print-portrait img,
+            .plant-print-landscape img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        }                    
     </style>
 </head>
 <body>
@@ -640,7 +676,8 @@
         
         document.body.appendChild(clone);
         
-        // Agregar clase según orientación
+        // ✅ CORREGIDO: Aplicar clase al body y al html
+        document.documentElement.classList.add('plant-print-' + orientation);
         document.body.classList.add('plant-print-' + orientation);
         
         if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
@@ -650,6 +687,7 @@
         }
         
         setTimeout(function() {
+            document.documentElement.classList.remove('plant-print-portrait', 'plant-print-landscape');
             document.body.classList.remove('plant-print-portrait', 'plant-print-landscape');
             var el = document.getElementById('printClone');
             if (el) el.remove();
