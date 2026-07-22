@@ -1265,14 +1265,17 @@
     }
 
     function filterCurrentWeekOnly() {
-        const startOfWeekStr = getStartOfCurrentWeek();
-        const startOfWeekDate = new Date(startOfWeekStr);
+        // ✅ CAMBIO: Últimos 14 días en lugar de semana actual
+        const today = new Date();
+        const fourteenDaysAgo = new Date(today);
+        fourteenDaysAgo.setDate(today.getDate() - 14);
+        fourteenDaysAgo.setHours(0, 0, 0, 0);
         
         return MASTER_DATA.filter(function(wo) {
             if (!wo.creationDate) return false;
             const woDate = parseDate(wo.creationDate);
             if (!woDate) return false;
-            return woDate >= startOfWeekDate;
+            return woDate >= fourteenDaysAgo;
         });
     }
 
@@ -1599,7 +1602,7 @@
         } else if (hasAnyCheckbox) {
             showToast('Showing ' + FILTERED_DATA.length + ' record(s) from current week with selected filters', 'success');
         } else {
-            showToast('Showing ' + FILTERED_DATA.length + ' record(s) from current week', 'success');
+            showToast('Showing ' + FILTERED_DATA.length + ' record(s) from last 14 days', 'success');
         }
     }
 
@@ -1619,8 +1622,8 @@
         
         FILTERED_DATA = filterCurrentWeekOnly();
         renderTable();
-        
-        showToast('All filters cleared. Showing current week WOs.', 'success');
+
+        showToast('All filters cleared. Showing last 14 days of WOs.', 'success');
     }
 
     // ============================================
