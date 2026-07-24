@@ -580,6 +580,34 @@
     const zoomSpan = document.getElementById('zoomLevel');
 
     // ============================================
+    // VALIDACIÓN DE PERMISOS EN FRONTEND
+    // ============================================
+
+    async function checkPermissions() {
+        try {
+            // Obtener rol del usuario
+            const userRole = await callApi('getUserRole', []);
+            const modalName = 'SYS_PlantLayoutUI';
+            const hasPermission = await callApi('hasPermission', [modalName, userRole]);
+            
+            if (!hasPermission) {
+                showToast('⛔ You do not have permission to view Plant Layout.', 'error');
+                setTimeout(function() {
+                    window.parent.postMessage('closeIframe', '*');
+                }, 2000);
+                return false;
+            }
+            return true;
+        } catch (e) {
+            showToast('Error validating permissions: ' + e.message, 'error');
+            return false;
+        }
+    }
+
+    // Llamar en init() después de loadApiUrl()
+    // if (!await checkPermissions()) return;
+
+    // ============================================
     // FUNCIÓN DE IMPRESIÓN CON VISTA PREVIA
     // ============================================
     function printReport() {
