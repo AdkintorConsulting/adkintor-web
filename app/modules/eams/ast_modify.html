@@ -1510,6 +1510,17 @@
         disableButton('updateBtn', 'SAVING...');
         showLoading('Saving asset changes...');
         
+        // ✅ OBTENER EMAIL DIRECTAMENTE DE LOCALSTORAGE
+        let userEmail = currentUserEmail;
+        if (!userEmail) {
+            try {
+                const session = JSON.parse(localStorage.getItem('adkintor_session') || '{}');
+                userEmail = session.email || 'system';
+            } catch(e) {
+                userEmail = 'system';
+            }
+        }
+        
         var formData = {
             id: sanitizeInput(document.getElementById('v-id').value),
             name: sanitizeInput(document.getElementById('v-name').value),
@@ -1523,7 +1534,7 @@
             serial: sanitizeInput(document.getElementById('v-serial').value),
             year: document.getElementById('v-year').value || '',
             hse: 1, prod: 1, usage: 1, oper: 1, redun: 1,
-            userEmail: currentUserEmail || 'system'  // ✅ Cambiar user → userEmail
+            userEmail: userEmail  // ✅ AHORA SIEMPRE TENDRÁ EL EMAIL
         };
         
         var critInputs = document.querySelectorAll('.crit-input');
