@@ -1705,7 +1705,7 @@ async function updateDashboard() {
         
         try {
             // ✅ Usar selectedEquipmentId (el equipo actual) como tercer parámetro
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, selectedEquipmentId]);
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentEditTask.assetId || currentContext.assetId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
@@ -2050,7 +2050,7 @@ async function updateDashboard() {
         
         (async function() {
             try {
-                var results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, currentContext.assetId]);
+                var results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, task.assetId || currentContext.assetId]);
                 currentDeleteCloneTargets = results || [];
                 renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
             } catch (e) {
