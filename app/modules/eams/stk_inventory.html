@@ -1653,11 +1653,16 @@
             if (session && session.email) {
                 document.getElementById('userDisplay').innerText = session.email;
                 currentUser = session.email;
+                currentUserEmail = session.email;  // ✅ SINCRONIZAR AMBAS VARIABLES
             } else {
                 document.getElementById('userDisplay').innerText = 'No Session';
+                currentUser = 'system';
+                currentUserEmail = 'system';
             }
         } catch(e) {
             document.getElementById('userDisplay').innerText = 'Error';
+            currentUser = 'system';
+            currentUserEmail = 'system';
         }
         
         // 2. MOSTRAR SPINNER
