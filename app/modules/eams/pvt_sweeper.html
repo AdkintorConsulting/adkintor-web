@@ -1168,8 +1168,12 @@
                     try {
                         var sessionData = JSON.parse(session);
                         currentUserEmail = sessionData.email || sessionData.userName || 'system';
-                    } catch(e) {}
+                    } catch(e) {
+                        console.warn('Error parsing session:', e);
+                    }
                 }
+                // ✅ Log para depuración
+                console.log('🔍 Enviando sweeper con userEmail:', currentUserEmail);
                 var response = await callApi('PVT_runSilentSweeper', [currentUserEmail]);
                 hideLoading();
                 
