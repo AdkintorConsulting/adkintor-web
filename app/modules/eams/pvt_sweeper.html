@@ -1016,7 +1016,8 @@
             loadInitialData();
         } else {
             showToast('API URL not configured. Please log in first.', 'error');
-            document.getElementById('footer-status').innerText = 'Not Configured';
+            // ✅ Eliminar - el elemento no existe
+            // document.getElementById('footer-status').innerText = 'Not Configured';
         }
     }
 
@@ -1065,7 +1066,8 @@
             showToast('Error loading initial data, using fallback: ' + e.message, 'error');
         } finally {
             hideLoading();
-            document.getElementById('footer-status').innerText = 'Ready';
+            // ✅ Eliminar - el elemento no existe
+            // document.getElementById('footer-status').innerText = 'Ready';
         }
     }
 
