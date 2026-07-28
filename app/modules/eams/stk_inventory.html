@@ -1343,6 +1343,20 @@
 
     async function saveSku(event) {
         event.preventDefault();
+        
+        // ✅ OBTENER EMAIL DIRECTAMENTE DE LA SESIÓN
+        var userEmail = currentUser;
+        if (!userEmail || userEmail === 'system') {
+            try {
+                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    userEmail = session.email;
+                    currentUser = session.email; // Actualizar variable global
+                }
+            } catch(e) {}
+        }
+        if (!userEmail) userEmail = 'system';
+        
         var sku = document.getElementById('editSkuId').value;
         var payload = {
             sku: sku || null,
@@ -1357,7 +1371,7 @@
             unit: document.getElementById('skuUnit').value,
             minStock: document.getElementById('skuMinStock').value,
             vendorName: document.getElementById('skuVendor').value,
-            userEmail: currentUser || 'system'  // ✅ CORREGIDO
+            userEmail: userEmail  // ✅ FORZADO
         };
         if (!payload.description) { showToast('Description required', 'error'); return; }
         showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
@@ -1430,6 +1444,20 @@
 
     async function applyStockAdjustment(event) {
         event.preventDefault();
+        
+        // ✅ OBTENER EMAIL DIRECTAMENTE DE LA SESIÓN
+        var userEmail = currentUser;
+        if (!userEmail || userEmail === 'system') {
+            try {
+                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    userEmail = session.email;
+                    currentUser = session.email;
+                }
+            } catch(e) {}
+        }
+        if (!userEmail) userEmail = 'system';
+        
         var sku = document.getElementById('adjustSku').value;
         var qtyChange = parseFloat(document.getElementById('adjustQty').value) || 0;
         var reason = document.getElementById('adjustReason').value;
@@ -1437,7 +1465,7 @@
         if (!reason && adjustmentReasons.length) { showToast('Select a reason', 'error'); return; }
         showLoading('Adjusting stock...');
         try {
-            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, currentUser || 'system']);
+            var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, userEmail]);
             var oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
             var newStock = oldStock + qtyChange;
             logStockAdjustment(sku, oldStock, newStock, qtyChange, reason, currentUser).catch(function(e) { /*console.warn('[STK] Adjustment log failed:', e);*/ });
