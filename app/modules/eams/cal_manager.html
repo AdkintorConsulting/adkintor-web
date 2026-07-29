@@ -1784,15 +1784,34 @@
         }
 
         async function openEditInstrumentModal(tagId) {
-            // ✅ AGREGAR - Actualizar currentUser desde la sesión
+            // ✅ FORZAR currentUser DESDE LA SESIÓN (ULTRA SEGURO)
             try {
-                const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                if (session && session.email) {
-                    currentUser = session.email;
+                const sessionData = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (sessionData && sessionData.email) {
+                    currentUser = sessionData.email;
                     document.getElementById('userDisplay').innerText = currentUser;
+                } else {
+                    // Fallback: usar el email del userDisplay
+                    const userDisplay = document.getElementById('userDisplay');
+                    if (userDisplay && userDisplay.innerText && userDisplay.innerText !== 'Loading...') {
+                        currentUser = userDisplay.innerText;
+                    }
                 }
             } catch(e) {
-                console.warn('⚠️ No se pudo obtener session en openEditInstrumentModal');
+                // Si todo falla, usar el email del userDisplay
+                try {
+                    const userDisplay = document.getElementById('userDisplay');
+                    if (userDisplay && userDisplay.innerText && userDisplay.innerText !== 'Loading...') {
+                        currentUser = userDisplay.innerText;
+                    }
+                } catch(e2) {
+                    currentUser = 'system';
+                }
+            }
+            
+            // ✅ Si currentUser sigue vacío, forzar 'system'
+            if (!currentUser || currentUser === '' || currentUser === 'Loading...') {
+                currentUser = 'system';
             }
             
             showLoading("Loading instrument data...");
