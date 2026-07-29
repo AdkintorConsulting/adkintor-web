@@ -773,15 +773,15 @@
                     </div>
                     <div class="full-width">
                         <label class="field-label">INSTRUMENT NAME *</label>
-                        <input type="text" id="newInstrumentName" required>
+                        <input type="text" id="newInstrumentName" >
                     </div>
                     <div>
                         <label class="field-label">TYPE *</label>
-                        <select id="newType" required></select>
+                        <select id="newType" ></select>
                     </div>
                     <div>
                         <label class="field-label">AREA *</label>
-                        <select id="newArea" required></select>
+                        <select id="newArea" ></select>
                     </div>
                     <div>
                         <label class="field-label">MODEL</label>
@@ -793,11 +793,11 @@
                     </div>
                     <div>
                         <label class="field-label">FREQUENCY (MONTHS) *</label>
-                        <input type="number" id="newFrequency" min="1" required>
+                        <input type="number" id="newFrequency" min="1" >
                     </div>
                     <div>
                         <label class="field-label">LAST CALIBRATION *</label>
-                        <input type="date" id="newLastCal" required>
+                        <input type="date" id="newLastCal" >
                     </div>
                     <div>
                         <label class="field-label">TOLERANCE VALUE</label>
@@ -854,7 +854,7 @@
                     </div>
                     <div>
                         <label class="field-label">CALIBRATION DATE *</label>
-                        <input type="date" id="calibrationDate" required>
+                        <input type="date" id="calibrationDate" >
                     </div>
                     <div>
                         <label class="field-label">FREQUENCY (MONTHS)</label>
@@ -862,12 +862,12 @@
                     </div>
                     <div class="full-width">
                         <label class="field-label">PERFORMED BY *</label>
-                        <input type="text" id="performedBy" placeholder="Type name (min 2 chars)..." autocomplete="off" required>
+                        <input type="text" id="performedBy" placeholder="Type name (min 2 chars)..." autocomplete="off" >
                         <div id="performerSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                     <div class="full-width">
                         <label class="field-label">CERTIFICATE # OR LINK *</label>
-                        <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." required>
+                        <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." >
                     </div>
                     <div class="full-width">
                         <label class="field-label">COMMENTS / NOTES</label>
@@ -954,10 +954,11 @@
     // TOAST (usa ModuleBase si existe)
     // ============================================
     function showToast(message, type = 'info') {
-        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-            ModuleBase.showToast(message, type);
-            return;
-        }
+        // ✅ Forzar uso del contenedor local (ignorar ModuleBase)
+        // if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+        //     ModuleBase.showToast(message, type);
+        //     return;
+        // }
         const container = document.getElementById('toastContainer');
         if (!container) return;
         const toast = document.createElement('div');
@@ -1778,6 +1779,14 @@
         }
 
         async function openEditInstrumentModal(tagId) {
+            // ✅ Asegurar currentUser actualizado
+            try {
+                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    currentUser = session.email;
+                }
+            } catch(e) {}
+            
             showLoading("Loading instrument data...");
             try {
                 var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
@@ -1955,13 +1964,18 @@
                 instrumentForm.addEventListener('submit', function(e) { saveNewInstrument(e); });
             }
             
-            document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-                overlay.addEventListener('click', function(e) {
-                    if (e.target === overlay) {
-                        overlay.classList.remove('active');
+            // ✅ MODIFICADO: SOLO el modal de historial se cierra al hacer clic fuera
+            var historyModal = document.getElementById('historyModal');
+            if (historyModal) {
+                historyModal.addEventListener('click', function(e) {
+                    if (e.target === historyModal) {
+                        closeHistoryModal();
                     }
                 });
-            });
+            }
+            
+            // ✅ Los demás modales SOLO se cierran con sus botones (X o Cancelar)
+            // NOTA: Los modales de instrumento y calibración NO se cierran al hacer clic fuera
         }
 
         // ============================================
