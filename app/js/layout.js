@@ -955,7 +955,6 @@ async function loadCompanyLogoForIframe(iframe) {
     try {
         const session = JSON.parse(localStorage.getItem('adkintor_session'));
         if (!session || !session.eamsApiUrl) {
-            // Logo por defecto
             sendLogoToIframe(iframe, 'https://i.imgur.com/aQol7vU.png');
             return;
         }
@@ -965,11 +964,22 @@ async function loadCompanyLogoForIframe(iframe) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 targetUrl: session.eamsApiUrl,
-                payload: { action: 'WO_getCompanyLogoUrl', args: [] }
+                payload: { action: 'getCompanyLogoUrl', args: [] }
             })
         });
         
-        const result = await response.json();
+        // ✅ Verificar si la respuesta es JSON válido
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            // ❌ Si no es JSON, usar logo por defecto
+            //console.warn('Logo response no es JSON, usando default:', text.substring(0, 100));
+            sendLogoToIframe(iframe, 'https://i.imgur.com/aQol7vU.png');
+            return;
+        }
+        
         const logoUrl = (result.success && result.data) ? result.data : 'https://i.imgur.com/aQol7vU.png';
         sendLogoToIframe(iframe, logoUrl);
         
