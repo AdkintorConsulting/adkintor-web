@@ -1624,9 +1624,9 @@
         async function saveNewInstrument(event) {
             event.preventDefault();
             
-            // ✅ FORZAR currentUser DESDE LA SESIÓN ANTES DE GUARDAR
+            // ✅ AGREGAR - Actualizar currentUser
             try {
-                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
                 if (session && session.email) {
                     currentUser = session.email;
                     document.getElementById('userDisplay').innerText = currentUser;
@@ -1780,13 +1780,16 @@
         }
 
         async function openEditInstrumentModal(tagId) {
-            // ✅ Asegurar currentUser actualizado
+            // ✅ AGREGAR - Actualizar currentUser
             try {
-                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                const session = JSON.parse(localStorage.getItem('adkintor_session'));
                 if (session && session.email) {
                     currentUser = session.email;
+                    document.getElementById('userDisplay').innerText = currentUser;
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.warn('⚠️ No se pudo obtener session en openEditInstrumentModal');
+            }
             
             showLoading("Loading instrument data...");
             try {
