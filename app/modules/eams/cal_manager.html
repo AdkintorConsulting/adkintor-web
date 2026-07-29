@@ -1242,9 +1242,10 @@
                 statusFilter.innerHTML = statusHtml;
             }
 
+            // ✅ MODIFICAR - AÑADIR "-- SELECT --" EN LOS SELECTS DEL FORMULARIO
             var typeField = document.getElementById('newType');
             if (typeField && config.types) {
-                var typeFieldHtml = '';
+                var typeFieldHtml = '<option value="">-- Select Type --</option>';
                 for (var i = 0; i < config.types.length; i++) {
                     typeFieldHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
                 }
@@ -1253,7 +1254,7 @@
 
             var areaField = document.getElementById('newArea');
             if (areaField && config.areas) {
-                var areaFieldHtml = '';
+                var areaFieldHtml = '<option value="">-- Select Area --</option>';
                 for (var i = 0; i < config.areas.length; i++) {
                     areaFieldHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
                 }
@@ -1262,7 +1263,7 @@
 
             var statusField = document.getElementById('newStatus');
             if (statusField && config.statuses) {
-                var statusFieldHtml = '';
+                var statusFieldHtml = '<option value="">-- Select Status --</option>';
                 for (var i = 0; i < config.statuses.length; i++) {
                     statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
                 }
@@ -1271,7 +1272,7 @@
 
             var respField = document.getElementById('newResponsible');
             if (respField && config.responsibles) {
-                var respHtml = '<option value="">-- Select --</option>';
+                var respHtml = '<option value="">-- Select Responsible --</option>';
                 for (var i = 0; i < config.responsibles.length; i++) {
                     respHtml += '<option value="' + config.responsibles[i] + '">' + config.responsibles[i] + '</option>';
                 }
@@ -1280,7 +1281,7 @@
 
             var unitSelect = document.getElementById('newToleranceUnit');
             if (unitSelect && config.toleranceUnits) {
-                unitSelect.innerHTML = '<option value="">-- Unit --</option>';
+                unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
                 for (var i = 0; i < config.toleranceUnits.length; i++) {
                     unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
                 }
@@ -1780,7 +1781,7 @@
         }
 
         async function openEditInstrumentModal(tagId) {
-            // ✅ AGREGAR - Actualizar currentUser
+            // ✅ AGREGAR - Actualizar currentUser desde la sesión
             try {
                 const session = JSON.parse(localStorage.getItem('adkintor_session'));
                 if (session && session.email) {
