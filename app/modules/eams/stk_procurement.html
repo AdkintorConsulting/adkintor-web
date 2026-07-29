@@ -1586,11 +1586,11 @@
                 html += '<div><strong>Date:</strong> ' + escapeHtml(header.issueDate) + '</div>';
                 html += '<div><strong>Req #:</strong> ' + escapeHtml(header.reqNumber) + '</div>';
                 html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
-                html += '<div><strong>Total Ordered:</strong> ' + totalOrdered + '</div>';
-                html += '<div><strong>Total Received:</strong> ' + totalReceived + '</div>';
-                // ✅ AGREGAR BUDGET AREA
-                html += '<div><strong>Budget Area:</strong> ' + escapeHtml(header.budgetAreaName || 'N/A') + '</div>';
-                html += '<div><strong>GL Code:</strong> ' + escapeHtml(header.budgetCode || 'N/A') + '</div>';
+                // ✅ Budget Area y GL Code (una sola vez)
+                var budgetAreaName = header.budgetAreaName || 'N/A';
+                var budgetCode = header.budgetCode || 'N/A';
+                html += '<div><strong>Budget Area:</strong> ' + escapeHtml(budgetAreaName) + '</div>';
+                html += '<div><strong>GL Code:</strong> ' + escapeHtml(budgetCode) + '</div>';
                 html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote) + '</div>';
                 
                 if (specialEvent) {
