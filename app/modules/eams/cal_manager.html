@@ -1496,6 +1496,18 @@
         async function openNewInstrumentModal() {
             showLoading("Generating Tag ID...");
             
+            // ✅ Asegurar que currentUser esté disponible
+            var session = localStorage.getItem('adkintor_session');
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    if (sessionData.email) {
+                        currentUser = sessionData.email;
+                        document.getElementById('userDisplay').innerText = currentUser;
+                    }
+                } catch(e) {}
+            }
+            
             try {
                 var tagId = await callApi('CAL_generateTagId', []);
                 
@@ -1570,6 +1582,17 @@
                 associatedAssetId = associatedAssetId.split(' - ')[0].trim();
             }
             
+            // ✅ Asegurar currentUser actualizado
+            var session = localStorage.getItem('adkintor_session');
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    if (sessionData.email) {
+                        currentUser = sessionData.email;
+                    }
+                } catch(e) {}
+            }
+            
             var payload = {
                 tagId: document.getElementById('newTagId').value,
                 name: document.getElementById('newInstrumentName').value,
@@ -1586,7 +1609,7 @@
                 associatedAssetId: associatedAssetId,
                 certificate: '',
                 comments: '',
-                userEmail: currentUser || 'system'  // ✅ AÑADIR userEmail
+                userEmail: currentUser || 'system'
             };
             
             if (!payload.name) {
