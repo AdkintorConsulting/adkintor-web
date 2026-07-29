@@ -1625,15 +1625,18 @@
         async function saveNewInstrument(event) {
             event.preventDefault();
             
-            // ✅ AGREGAR - Actualizar currentUser
+            // ✅ FORZAR currentUser DESDE LA SESIÓN ANTES DE GUARDAR
             try {
                 const session = JSON.parse(localStorage.getItem('adkintor_session'));
                 if (session && session.email) {
                     currentUser = session.email;
                     document.getElementById('userDisplay').innerText = currentUser;
+                } else {
+                    // ✅ Si no hay sesión, usar un valor por defecto
+                    currentUser = 'system';
                 }
             } catch(e) {
-                console.warn('⚠️ No se pudo obtener session en saveNewInstrument');
+                currentUser = 'system';
             }
             
             var frequencyValue = document.getElementById('newFrequency').value;
