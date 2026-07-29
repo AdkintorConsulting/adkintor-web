@@ -1717,22 +1717,26 @@
             try {
                 var response = await callApi('CAL_saveInstrument', [payload]);
                 hideLoading();
+                
+                // ✅ VALIDACIÓN: Verificar que response existe
+                if (!response) {
+                    showToast("Error: No response from server. Please try again.", "error");
+                    return;
+                }
+                
                 if (response.status === "success") {
                     logCalibrationAction('CREATE_INSTRUMENT', payload.tagId, 'Instrument created/updated - Name: ' + payload.name + ' - Type: ' + payload.type)
-                        .catch(function(e) { /* console.warn('[CAL] Log failed:', e); */ });  // COMENTADO
+                        .catch(function(e) { /* console.warn('[CAL] Log failed:', e); */ });
                     
                     showToast(response.message, "success");
                     closeInstrumentModal();
                     await loadInstruments();
                 } else {
-                    showToast(response.message, "error");
+                    showToast(response.message || "Unknown error", "error");
                 }
             } catch (error) {
-                if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('CAL', 'saveInstrument', error.message)
-                        .catch(function(e) { /* console.warn('[CAL] Error log failed:', e); */ });  // COMENTADO
-                }
                 hideLoading();
+                console.error('❌ Error en saveNewInstrument:', error);
                 showToast("Save failed: " + error.message, "error");
             }
         }
