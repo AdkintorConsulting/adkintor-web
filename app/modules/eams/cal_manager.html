@@ -1624,6 +1624,17 @@
         async function saveNewInstrument(event) {
             event.preventDefault();
             
+            // ✅ FORZAR currentUser DESDE LA SESIÓN ANTES DE GUARDAR
+            try {
+                var session = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (session && session.email) {
+                    currentUser = session.email;
+                    document.getElementById('userDisplay').innerText = currentUser;
+                }
+            } catch(e) {
+                console.warn('⚠️ No se pudo obtener session en saveNewInstrument');
+            }
+            
             var frequencyValue = document.getElementById('newFrequency').value;
             var frequency = parseInt(frequencyValue);
             
