@@ -757,6 +757,83 @@
     
 </div>
 
+<!-- MODAL: INSTRUMENT (CREATE / EDIT) -->
+<div id="instrumentModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4 id="instModalTitle">Register New Instrument</h4>
+            <button class="btn-close-modal" id="closeInstModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="instrumentForm">
+                <div class="form-grid">
+                    <div class="full-width">
+                        <label class="field-label">TAG ID</label>
+                        <input type="text" id="newTagId" readonly>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">INSTRUMENT NAME *</label>
+                        <input type="text" id="newInstrumentName" required>
+                    </div>
+                    <div>
+                        <label class="field-label">TYPE *</label>
+                        <select id="newType" required></select>
+                    </div>
+                    <div>
+                        <label class="field-label">AREA *</label>
+                        <select id="newArea" required></select>
+                    </div>
+                    <div>
+                        <label class="field-label">MODEL</label>
+                        <input type="text" id="newModel">
+                    </div>
+                    <div>
+                        <label class="field-label">SERIAL #</label>
+                        <input type="text" id="newSerial">
+                    </div>
+                    <div>
+                        <label class="field-label">FREQUENCY (MONTHS) *</label>
+                        <input type="number" id="newFrequency" min="1" required>
+                    </div>
+                    <div>
+                        <label class="field-label">LAST CALIBRATION *</label>
+                        <input type="date" id="newLastCal" required>
+                    </div>
+                    <div>
+                        <label class="field-label">TOLERANCE VALUE</label>
+                        <input type="text" id="newToleranceValue" placeholder="e.g., 0.02, 1.00, 100.00">
+                    </div>
+                    <div>
+                        <label class="field-label">TOLERANCE UNIT</label>
+                        <select id="newToleranceUnit">
+                            <option value="">-- Unit --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">STATUS</label>
+                        <select id="newStatus"></select>
+                    </div>
+                    <div>
+                        <label class="field-label">RESPONSIBLE</label>
+                        <select id="newResponsible">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div class="full-width relative">
+                        <label class="field-label">ASSOCIATED ASSET</label>
+                        <input type="text" id="newAssociatedAsset" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
+                        <div id="assetSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelInstBtn"><i class="fas fa-times"></i> CANCEL</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> SAVE INSTRUMENT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL: CALIBRATION RECORDING -->
 <div id="calibrationModal" class="modal-overlay">
     <div class="modal-container">
