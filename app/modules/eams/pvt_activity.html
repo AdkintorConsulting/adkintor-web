@@ -1380,7 +1380,7 @@ async function updateDashboard() {
                 '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
                 '<td style="padding: 8px 12px; text-align: center;">' +
                     '<div style="display: flex; gap: 6px; justify-content: center;">' +
-                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify({assetId: task.assetId || currentContext.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr}).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
                         '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
                     '</div>' +
                 '</td>' +
@@ -1635,6 +1635,10 @@ async function updateDashboard() {
     // EDIT MODAL
     // ============================================
     function openEditModal(task) {
+        // ✅ Asegurar que la tarea tenga assetId
+        if (task && !task.assetId) {
+            task.assetId = currentContext.assetId;
+        }
         currentEditTask = task;
         currentEditCloneTargets = [];
         
