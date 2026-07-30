@@ -1646,7 +1646,7 @@ async function updateDashboard() {
         for (var i = 0; i < equipmentList.length; i++) {
             var e = equipmentList[i];
             var selected = e.name === task.equipment ? 'selected' : '';
-            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '" ' + selected + '>' + escapeHtml(e.name) + '</option>';
+            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '" ' + selected + '>' + escapeHtml(e.id) + ' (' + escapeHtml(e.name) + ')</option>';
         }
         
         var modalHtml = 
@@ -1709,7 +1709,9 @@ async function updateDashboard() {
         
         try {
             // ✅ Usar selectedEquipmentId (el equipo actual) como tercer parámetro
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, currentEditTask.assetId || currentContext.assetId]);
+            // ✅ Usar el ID del equipo seleccionado como tercer parámetro
+            var selectedEquipmentId = select.value;
+            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, selectedEquipmentId]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
