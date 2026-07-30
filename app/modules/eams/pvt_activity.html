@@ -1757,12 +1757,14 @@ async function updateDashboard() {
         var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
-                propagateTo.push({
-                    assetId: checkboxes[i].dataset.assetId,
-                    tlId: checkboxes[i].dataset.tlId,
-                    strategyId: checkboxes[i].dataset.strategy,
-                    equipment: sanitizeInput(checkboxes[i].dataset.equip)
-                });
+              propagateTo.push({
+                  assetId: checkboxes[i].dataset.assetId,
+                  tlId: checkboxes[i].dataset.tlId,
+                  strategyId: checkboxes[i].dataset.strategy,
+                  equipment: sanitizeInput(checkboxes[i].dataset.equip),
+                  originalAssetId: checkboxes[i].dataset.assetId,      // ← GUARDAR ORIGINAL
+                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip) // ← GUARDAR ORIGINAL
+              });
             }
         }
         
