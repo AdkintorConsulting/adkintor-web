@@ -1380,8 +1380,8 @@ async function updateDashboard() {
                 '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
                 '<td style="padding: 8px 12px; text-align: center;">' +
                     '<div style="display: flex; gap: 6px; justify-content: center;">' +
-                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify({assetId: task.assetId || currentContext.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr}).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
-                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify(task).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
+                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify({assetId: task.assetId || currentContext.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify({assetId: task.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
                     '</div>' +
                 '</td>' +
             '</tr>';
@@ -1507,7 +1507,7 @@ async function updateDashboard() {
                 var t = sameTL[i];
                 var globalIdx = targets.indexOf(t);
                 html += '<div class="clone-item">' +
-                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
+                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" data-activity-id="' + (t.activityId || '') + '" onchange="' + summaryFn + '">' +
                     '<span>' + escapeHtml(t.name) + '</span>' +
                 '</div>';
             }
@@ -1758,29 +1758,33 @@ async function updateDashboard() {
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
               propagateTo.push({
+                  activityId: checkboxes[i].dataset.activityId || '',  // ← Activity ID
                   assetId: checkboxes[i].dataset.assetId,
                   tlId: checkboxes[i].dataset.tlId,
                   strategyId: checkboxes[i].dataset.strategy,
                   equipment: sanitizeInput(checkboxes[i].dataset.equip),
-                  originalAssetId: checkboxes[i].dataset.assetId,      // ← GUARDAR ORIGINAL
-                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip) // ← GUARDAR ORIGINAL
+                  originalAssetId: checkboxes[i].dataset.assetId,
+                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
               });
             }
         }
         
         var payload = {
+            activityId: currentEditTask.activityId,  // ← NUEVO: usar Activity ID
             originalAssetId: currentEditTask.assetId || currentContext.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentEditTask.equipment,
             originalInstruction: currentEditTask.instruction,
-            assetId: selectedEquipmentId,  // ← CORREGIDO: usar el ID seleccionado
+            assetId: selectedEquipmentId,
             strategyId: currentContext.strategyId,
             frequency: currentContext.frequency,
             equipment: selectedEquipmentName,
             instruction: instruction,
             standard: standard,
             timeHr: timeHr,
-            propagateTo: propagateTo,
+            propagateTo: propagateTo.map(function(p) {
+                return { activityId: p.activityId || '' };  // ← Solo Activity ID
+            }),
             userEmail: currentUserEmail || 'system'
         };
         
@@ -2103,22 +2107,26 @@ async function updateDashboard() {
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
               deleteFrom.push({
+                  activityId: checkboxes[i].dataset.activityId || '',  // ← Activity ID
                   assetId: checkboxes[i].dataset.assetId,
                   tlId: checkboxes[i].dataset.tlId,
                   strategyId: checkboxes[i].dataset.strategy,
                   equipment: sanitizeInput(checkboxes[i].dataset.equip),
-                  originalAssetId: checkboxes[i].dataset.assetId,      // ← AGREGAR
-                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip) // ← AGREGAR
+                  originalAssetId: checkboxes[i].dataset.assetId,
+                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
               });
             }
         }
         
         var payload = {
-            originalAssetId: currentDeleteTask.assetId,  // ← CORREGIDO: usar el asset de la tarea
+            activityId: currentDeleteTask.activityId,  // ← NUEVO: Activity ID
+            originalAssetId: currentDeleteTask.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentDeleteTask.equipment,
             originalInstruction: currentDeleteTask.instruction,
-            deleteFrom: deleteFrom,
+            deleteFrom: deleteFrom.map(function(d) {
+                return { activityId: d.activityId || '' };  // ← Solo Activity ID
+            }),
             userEmail: currentUserEmail || 'system'
         };
         
