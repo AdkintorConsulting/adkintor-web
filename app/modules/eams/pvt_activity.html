@@ -1767,11 +1767,11 @@ async function updateDashboard() {
         }
         
         var payload = {
-            originalAssetId: currentEditTask.assetId || currentContext.assetId,  // ✅ Usar assetId de la tarea
+            originalAssetId: currentEditTask.assetId || currentContext.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentEditTask.equipment,
             originalInstruction: currentEditTask.instruction,
-            assetId: currentEditTask.assetId || currentContext.assetId,          // ✅ Usar assetId de la tarea
+            assetId: selectedEquipmentId,  // ← CORREGIDO: usar el ID seleccionado
             strategyId: currentContext.strategyId,
             frequency: currentContext.frequency,
             equipment: selectedEquipmentName,
@@ -1779,7 +1779,7 @@ async function updateDashboard() {
             standard: standard,
             timeHr: timeHr,
             propagateTo: propagateTo,
-            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
+            userEmail: currentUserEmail || 'system'
         };
         
         showLoading('Updating activity...');
