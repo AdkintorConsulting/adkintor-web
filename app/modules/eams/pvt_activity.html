@@ -2114,12 +2114,12 @@ async function updateDashboard() {
         }
         
         var payload = {
-            originalAssetId: currentContext.assetId,
+            originalAssetId: currentDeleteTask.assetId,  // ← CORREGIDO: usar el asset de la tarea
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentDeleteTask.equipment,
             originalInstruction: currentDeleteTask.instruction,
             deleteFrom: deleteFrom,
-            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
+            userEmail: currentUserEmail || 'system'
         };
         
         showLoading('Deleting activity...');
