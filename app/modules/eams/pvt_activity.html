@@ -1778,14 +1778,19 @@ async function updateDashboard() {
             if (res.status === 'success') {
                 showToast(res.message, 'success');
                 closeEditModal();
-                // ✅ CORREGIDO: usar currentEditTask.assetId
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                // ✅ ESPERAR 500ms PARA QUE LA HOJA SE ACTUALICE
+                setTimeout(function() {
+                    loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                }, 500);
             } else {
                 showToast('Error: ' + res.message, 'error');
             }
         } catch (e) {
             hideLoading();
             showToast('Error: ' + e.message, 'error');
+            // ✅ SI FALLA, VOLVER A RESULTADOS
+            backToResults();
+            console.error('submitEdit error:', e);
         }
     }
 
@@ -2095,15 +2100,15 @@ async function updateDashboard() {
         var checkboxes = document.querySelectorAll('#delete-clone-list input[type="checkbox"]');
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
-              deleteFrom.push({
-                  activityId: checkboxes[i].dataset.activityId || '',
-                  assetId: checkboxes[i].dataset.assetId,
-                  tlId: checkboxes[i].dataset.tlId,
-                  strategyId: checkboxes[i].dataset.strategy,
-                  equipment: sanitizeInput(checkboxes[i].dataset.equip),
-                  originalAssetId: checkboxes[i].dataset.assetId,
-                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
-              });
+                deleteFrom.push({
+                    activityId: checkboxes[i].dataset.activityId || '',
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip),
+                    originalAssetId: checkboxes[i].dataset.assetId,
+                    originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
+                });
             }
         }
         
@@ -2126,14 +2131,18 @@ async function updateDashboard() {
             if (res.status === 'success') {
                 showToast(res.message, 'success');
                 closeDeleteModal();
-                // ✅ CORREGIDO: usar currentDeleteTask.assetId
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                setTimeout(function() {
+                    loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                }, 500);
             } else {
                 showToast('Error: ' + res.message, 'error');
+                backToResults();
             }
         } catch (e) {
             hideLoading();
             showToast('Error: ' + e.message, 'error');
+            backToResults();
+            console.error('submitDelete error:', e);
         }
     }
 
