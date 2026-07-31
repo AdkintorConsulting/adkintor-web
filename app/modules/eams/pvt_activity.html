@@ -1642,12 +1642,7 @@ async function updateDashboard() {
         currentEditTask = task;
         currentEditCloneTargets = [];
         
-        var equipOptions = '';
-        for (var i = 0; i < equipmentList.length; i++) {
-            var e = equipmentList[i];
-            var selected = e.name === task.equipment ? 'selected' : '';
-            equipOptions += '<option value="' + escapeHtml(e.id) + '" data-name="' + escapeHtml(e.name) + '" ' + selected + '>' + escapeHtml(e.id) + ' (' + escapeHtml(e.name) + ')</option>';
-        }
+        var equipOptions = '<option value="' + escapeHtml(task.assetId) + '" data-name="' + escapeHtml(task.equipment) + '" selected>' + escapeHtml(task.assetId) + ' (' + escapeHtml(task.equipment) + ')</option>';
         
         var modalHtml = 
             '<div class="modal-overlay" id="editModal">' +
@@ -1659,7 +1654,7 @@ async function updateDashboard() {
                     '<div class="modal-body">' +
                         '<div class="form-group">' +
                             '<label>Equipment *</label>' +
-                            '<select id="edit-equipment" onchange="onEditEquipmentChange()">' +
+                            '<select id="edit-equipment" disabled>' +
                                 equipOptions +
                             '</select>' +
                         '</div>' +
@@ -1689,7 +1684,7 @@ async function updateDashboard() {
             '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-        setTimeout(function() { onEditEquipmentChange(); }, 100);
+        //setTimeout(function() { onEditEquipmentChange(); }, 100);
     }
 
     async function onEditEquipmentChange() {
@@ -1741,10 +1736,8 @@ async function updateDashboard() {
     }
 
     async function submitEdit() {
-        var select = document.getElementById('edit-equipment');
-        var selectedEquipmentId = select.value;
-        var selectedOption = select.options[select.selectedIndex];
-        var selectedEquipmentName = selectedOption?.getAttribute('data-name') || selectedEquipmentId;
+        var selectedEquipmentId = currentEditTask.assetId;
+        var selectedEquipmentName = currentEditTask.equipment;
         var instruction = sanitizeInput(document.getElementById('edit-instruction').value);
         var standard = sanitizeInput(document.getElementById('edit-standard').value);
         var timeHr = document.getElementById('edit-time').value;
@@ -1757,15 +1750,15 @@ async function updateDashboard() {
         var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
-              propagateTo.push({
-                  activityId: checkboxes[i].dataset.activityId || '',  // ← Activity ID
-                  assetId: checkboxes[i].dataset.assetId,
-                  tlId: checkboxes[i].dataset.tlId,
-                  strategyId: checkboxes[i].dataset.strategy,
-                  equipment: sanitizeInput(checkboxes[i].dataset.equip),
-                  originalAssetId: checkboxes[i].dataset.assetId,
-                  originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
-              });
+                propagateTo.push({
+                    activityId: checkboxes[i].dataset.activityId || '',
+                    assetId: checkboxes[i].dataset.assetId,
+                    tlId: checkboxes[i].dataset.tlId,
+                    strategyId: checkboxes[i].dataset.strategy,
+                    equipment: sanitizeInput(checkboxes[i].dataset.equip),
+                    originalAssetId: checkboxes[i].dataset.assetId,
+                    originalEquipment: sanitizeInput(checkboxes[i].dataset.equip)
+                });
             }
         }
         
