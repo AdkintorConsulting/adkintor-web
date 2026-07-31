@@ -674,7 +674,7 @@
             padding: 40px 50px;
             border-radius: 8px;
             color: #000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -744,21 +744,30 @@
             /* Asegurar que fullView se muestre correctamente */
             #fullView {
                 display: block !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background: white;
-                padding: 20px;
-                z-index: 9999;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                background-color: white !important;
+                z-index: 9999 !important;
             }
             
             .report-paper {
                 box-shadow: none !important;
+                background: white !important;
                 width: 100% !important;
                 padding: 20px !important;
                 margin: 0 !important;
                 border-radius: 0 !important;
+            }
+            
+            .report-paper * {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
             
             .frame {
@@ -777,6 +786,7 @@
                 font-size: 9px !important;
                 text-transform: uppercase !important;
                 padding: 0 8px !important;
+                page-break-after: avoid !important;
             }
             
             .grid-2 {
@@ -1327,8 +1337,23 @@
     function printReport() {
         const title = 'Work Order Report';
         const mode = 'eams';
+        const fullView = document.getElementById('fullView');
+        
         if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+            // Asegurar que fullView esté visible para imprimir
+            if (fullView) {
+                fullView.style.display = 'block';
+            }
+            
+            // Llamar a printModule - esto inyecta header y footer
             ModuleBase.printModule(title, mode);
+            
+            // Ocultar fullView después de imprimir
+            setTimeout(function() {
+                if (fullView) {
+                    fullView.style.display = 'none';
+                }
+            }, 1500);
         } else {
             window.print(); // fallback
         }
