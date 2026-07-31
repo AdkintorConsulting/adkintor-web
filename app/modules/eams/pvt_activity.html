@@ -1954,7 +1954,7 @@ async function updateDashboard() {
             strategyId: orphan.strategyId,
             equipment: orphan.equipment,
             instruction: orphan.instruction,
-            userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
+            userEmail: currentUserEmail || 'system'
         };
         
         callApi('PVT_deleteOrphanActivity', [payload])
@@ -1962,8 +1962,46 @@ async function updateDashboard() {
                 hideLoading();
                 if (result.status === 'success') {
                     showToast(result.message, 'success');
-                    openOrphanModal();
-                    loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                    closeOrphanModal();
+                    // ✅ RECARGAR TODO DESPUÉS DE BORRAR
+                    setTimeout(function() {
+                        openOrphanModal();
+                        loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                    }, 300);
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                }
+            })
+            .catch(function(e) {
+                hideLoading();
+                showToast('Error: ' + e.message, 'error');
+            });
+    }
+
+    function performReassign(orphan, newStrategyId) {
+        showLoading('Reassigning activity...');
+        
+        var payload = {
+            assetId: orphan.assetId,
+            oldStrategyId: orphan.strategyId,
+            newStrategyId: newStrategyId,
+            equipment: orphan.equipment,
+            instruction: orphan.instruction,
+            frequency: null,
+            userEmail: currentUserEmail || 'system'
+        };
+        
+        callApi('PVT_reassignOrphanActivity', [payload])
+            .then(function(result) {
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    closeOrphanModal();
+                    // ✅ RECARGAR TODO DESPUÉS DE REASIGNAR
+                    setTimeout(function() {
+                        openOrphanModal();
+                        loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                    }, 300);
                 } else {
                     showToast('Error: ' + result.message, 'error');
                 }
