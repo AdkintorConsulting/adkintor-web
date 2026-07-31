@@ -1532,7 +1532,8 @@ async function updateDashboard() {
                     var t = group.equipments[j];
                     var globalIdx = targets.indexOf(t);
                     html += '<div class="clone-item">' +
-                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" onchange="' + summaryFn + '">' +
+                        // ✅ AQUÍ ESTÁ LA CORRECCIÓN - AGREGADO data-activity-id
+                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" data-activity-id="' + (t.activityId || '') + '" onchange="' + summaryFn + '">' +
                         '<span>' + escapeHtml(t.id) + ' (' + escapeHtml(t.name) + ')</span>' +
                     '</div>';
                 }
@@ -1550,10 +1551,8 @@ async function updateDashboard() {
             if (checkboxes[i].checked) selectedCount++;
         }
         var summary = document.getElementById('create-summary');
-        
         // ✅ Verificar que summary existe antes de usarlo
         if (!summary) return;
-        
         if (selectedCount > 0) {
             summary.style.display = 'block';
             summary.innerHTML = '📊 Summary: Will create 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
@@ -1716,10 +1715,8 @@ async function updateDashboard() {
             if (checkboxes[i].checked) selectedCount++;
         }
         var summary = document.getElementById('edit-summary');
-        
         // ✅ Verificar que summary existe antes de usarlo
         if (!summary) return;
-        
         if (selectedCount > 0) {
             summary.style.display = 'block';
             summary.innerHTML = '📊 Summary: Will update 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
@@ -1782,7 +1779,7 @@ async function updateDashboard() {
                 showToast(res.message, 'success');
                 closeEditModal();
                 // ✅ CORREGIDO: usar currentEditTask.assetId
-                loadStrategy(currentContext.strategyId, currentEditTask.assetId, currentContext.frequency, currentContext.tlName);
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
             } else {
                 showToast('Error: ' + res.message, 'error');
             }
@@ -2130,7 +2127,7 @@ async function updateDashboard() {
                 showToast(res.message, 'success');
                 closeDeleteModal();
                 // ✅ CORREGIDO: usar currentDeleteTask.assetId
-                loadStrategy(currentContext.strategyId, currentDeleteTask.assetId, currentContext.frequency, currentContext.tlName);
+                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
             } else {
                 showToast('Error: ' + res.message, 'error');
             }
