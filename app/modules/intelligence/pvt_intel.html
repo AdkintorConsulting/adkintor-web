@@ -1326,7 +1326,7 @@
       
       logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
       
-      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; width: 95%;"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequencies</th><th>Strategies</th><th>Count</th></tr></thead><tbody>';
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; width: 95%;"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequency</th><th>Count</th></tr></thead><tbody>';
       
       for (var i = 0; i < duplicateData.length; i++) {
           var d = duplicateData[i];
@@ -1336,8 +1336,8 @@
               ? '<span style="color: #ef4444; font-weight: bold;">🔴 Duplicate</span>' 
               : '<span style="color: #f59e0b; font-weight: bold;">🟡 Redundant</span>';
           
-          var freqDisplay = d.frequencies ? d.frequencies.join(', ') : '-';
-          var stratDisplay = d.strategies ? d.strategies.join(', ') : '-';
+          // ✅ Ahora frequency es un string simple
+          var freqDisplay = d.frequency || '-';
           
           modalHtml += '<tr>' +
               '<td>' + severityLabel + '</td>' +
@@ -1345,17 +1345,16 @@
               '<td class="col-code">' + escapeHtml(d.tlId || 'Unknown') + '</td>' +
               '<td class="col-task">' + escapeHtml(d.task) + '</td>' +
               '<td><span class="badge adk-badge-primary">' + escapeHtml(freqDisplay) + '</span></td>' +
-              '<td><span class="badge adk-badge-info">' + escapeHtml(stratDisplay) + '</span></td>' +
               '<td><span class="badge adk-badge-warning">' + d.count + 'x</span></td>' +
           '</tr>';
       }
       
       modalHtml += '</tbody></table></div>';
       
-      // Agregar leyenda de colores
+      // Agregar leyenda de colores (simplificada)
       modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.05); border-radius: 8px; border: 1px solid #334155; display: flex; gap: 20px; flex-wrap: wrap;">';
-      modalHtml += '<div><span style="color: #ef4444;">🔴</span> <strong>Duplicate:</strong> Same task, same frequency, same asset</div>';
-      modalHtml += '<div><span style="color: #f59e0b;">🟡</span> <strong>Redundant:</strong> Same task, same asset, different frequencies</div>';
+      modalHtml += '<div><span style="color: #ef4444;">🔴</span> <strong>Duplicate:</strong> Same task, same asset, same frequency</div>';
+      modalHtml += '<div><span style="color: #f59e0b;">🟡</span> <strong>Redundant:</strong> Same task, same asset, different frequencies or strategies</div>';
       modalHtml += '</div>';
       
       modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and remove duplicate/redundant tasks. Keep only one version.</div>';
