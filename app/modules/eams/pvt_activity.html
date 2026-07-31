@@ -1684,34 +1684,27 @@ async function updateDashboard() {
             '</div>';
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-        //setTimeout(function() { onEditEquipmentChange(); }, 100);
+        setTimeout(function() { onEditEquipmentChange(); }, 100);
     }
 
     async function onEditEquipmentChange() {
-        var select = document.getElementById('edit-equipment');
-        var selectedOption = select.options[select.selectedIndex];
-        var equipment = selectedOption?.getAttribute('data-name') || select.value;
-        var selectedEquipmentId = select.value;  // ✅ Obtener el ID del equipo seleccionado
-        
-        if (!equipment) {
-            document.getElementById('edit-clone-section').style.display = 'none';
-            return;
-        }
-        
         var cloneDiv = document.getElementById('edit-clone-list');
-        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div>';
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
-            // ✅ Usar selectedEquipmentId (el equipo actual) como tercer parámetro
-            // ✅ Usar el ID del equipo seleccionado como tercer parámetro
-            var selectedEquipmentId = select.value;
-            var results = await callApi('PVT_getSimilarAssetsWithContext', [equipment, currentContext.frequency, selectedEquipmentId]);
+            // ✅ Buscar clones por actividad (no por categoría)
+            var results = await callApi('PVT_getClonesForActivity', [
+                currentEditTask.assetId,
+                currentContext.strategyId,
+                currentEditTask.instruction,
+                currentEditTask.standard || '',
+                currentEditTask.timeHr
+            ]);
             currentEditCloneTargets = results || [];
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
         } catch (e) {
-            // console.error('Error loading clones:', e);  // COMENTADO
             cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
         }
     }
@@ -2055,11 +2048,16 @@ async function updateDashboard() {
         
         (async function() {
             try {
-                var results = await callApi('PVT_getSimilarAssetsWithContext', [task.equipment, currentContext.frequency, task.assetId || currentContext.assetId]);
+                var results = await callApi('PVT_getClonesForActivity', [
+                    task.assetId,
+                    currentContext.strategyId,
+                    task.instruction,
+                    task.standard || '',
+                    task.timeHr
+                ]);
                 currentDeleteCloneTargets = results || [];
                 renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
             } catch (e) {
-                // console.error('Error loading clones for delete:', e);  // COMENTADO
                 var container = document.getElementById('delete-clone-list');
                 if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
             }
