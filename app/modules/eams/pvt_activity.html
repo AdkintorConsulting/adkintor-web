@@ -1354,10 +1354,15 @@ async function updateDashboard() {
                 renderActivitiesTable();
             } else {
                 showToast('Error: ' + res.message, 'error');
+                // ✅ AGREGAR ESTO: Volver a resultados si falla
+                backToResults();
             }
         } catch (e) {
             hideLoading();
             showToast('Error: ' + e.message, 'error');
+            // ✅ AGREGAR ESTO: Volver a resultados si hay error
+            backToResults();
+            console.error('loadStrategy error:', e);
         }
     }
 
