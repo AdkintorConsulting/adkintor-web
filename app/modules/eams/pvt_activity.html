@@ -1756,7 +1756,7 @@ async function updateDashboard() {
         }
         
         var payload = {
-            activityId: currentEditTask.activityId,  // ← NUEVO: usar Activity ID
+            activityId: currentEditTask.activityId,
             originalAssetId: currentEditTask.assetId || currentContext.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentEditTask.equipment,
@@ -1769,7 +1769,7 @@ async function updateDashboard() {
             standard: standard,
             timeHr: timeHr,
             propagateTo: propagateTo.map(function(p) {
-                return { activityId: p.activityId || '' };  // ← Solo Activity ID
+                return { activityId: p.activityId || '' };
             }),
             userEmail: currentUserEmail || 'system'
         };
@@ -1781,7 +1781,8 @@ async function updateDashboard() {
             if (res.status === 'success') {
                 showToast(res.message, 'success');
                 closeEditModal();
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                // ✅ CORREGIDO: usar currentEditTask.assetId
+                loadStrategy(currentContext.strategyId, currentEditTask.assetId, currentContext.frequency, currentContext.tlName);
             } else {
                 showToast('Error: ' + res.message, 'error');
             }
@@ -2098,7 +2099,7 @@ async function updateDashboard() {
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
               deleteFrom.push({
-                  activityId: checkboxes[i].dataset.activityId || '',  // ← Activity ID
+                  activityId: checkboxes[i].dataset.activityId || '',
                   assetId: checkboxes[i].dataset.assetId,
                   tlId: checkboxes[i].dataset.tlId,
                   strategyId: checkboxes[i].dataset.strategy,
@@ -2110,13 +2111,13 @@ async function updateDashboard() {
         }
         
         var payload = {
-            activityId: currentDeleteTask.activityId,  // ← NUEVO: Activity ID
+            activityId: currentDeleteTask.activityId,
             originalAssetId: currentDeleteTask.assetId,
             originalStrategyId: currentContext.strategyId,
             originalEquipment: currentDeleteTask.equipment,
             originalInstruction: currentDeleteTask.instruction,
             deleteFrom: deleteFrom.map(function(d) {
-                return { activityId: d.activityId || '' };  // ← Solo Activity ID
+                return { activityId: d.activityId || '' };
             }),
             userEmail: currentUserEmail || 'system'
         };
@@ -2128,7 +2129,8 @@ async function updateDashboard() {
             if (res.status === 'success') {
                 showToast(res.message, 'success');
                 closeDeleteModal();
-                loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
+                // ✅ CORREGIDO: usar currentDeleteTask.assetId
+                loadStrategy(currentContext.strategyId, currentDeleteTask.assetId, currentContext.frequency, currentContext.tlName);
             } else {
                 showToast('Error: ' + res.message, 'error');
             }
