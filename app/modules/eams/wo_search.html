@@ -756,6 +756,14 @@
                 z-index: 9999 !important;
             }
             
+            /* ✅ NUEVO: Ocultar botones específicamente en impresión */
+            #fullView .no-print,
+            #fullView .btn,
+            #fullView button,
+            #fullView .btn-outline {
+                display: none !important;
+            }
+            
             .report-paper {
                 box-shadow: none !important;
                 background: white !important;
