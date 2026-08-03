@@ -862,76 +862,137 @@
   // ============================================
   // DATA LOADING FUNCTIONS
   // ============================================
+  // ✅ NUEVA FUNCIÓN: Carga solo el tab activo
+  async function loadTabData(tabId) {
+    var month = parseInt(document.getElementById('monthSelect').value);
+    var year = parseInt(document.getElementById('yearSelect').value);
+    
+    showLoading('Loading ' + tabId + ' data...');
+    
+    try {
+      var data = {};
+      
+      // ✅ Solo cargar el tab activo
+      if (tabId === 'kpis' || tabId === 'all') {
+        var kpiData = await callApi('KPI_getKPIs', [year, month]);
+        Object.assign(data, kpiData);
+        if (kpiData && kpiData.success !== false) {
+          renderKPITab(data);
+        }
+      }
+      
+      if (tabId === 'charts' || tabId === 'all') {
+        var chartsData = await callApi('KPI_getCharts', [year, month]);
+        // ✅ Mezclar con datos existentes
+        data.trends = chartsData.trends || data.trends;
+        data.woDistribution = chartsData.woDistribution || data.woDistribution;
+        if (chartsData && chartsData.success !== false) {
+          renderChartsTab(data);
+        }
+      }
+      
+      if (tabId === 'financial' || tabId === 'all') {
+        var financialData = await callApi('KPI_getFinancial', [year, month]);
+        data.financial = financialData.financial || data.financial;
+        data.topAssetsByCost = financialData.topAssetsByCost || data.topAssetsByCost;
+        if (financialData && financialData.success !== false) {
+          renderFinancialTab(data);
+        }
+      }
+      
+      if (tabId === 'compare' || tabId === 'all') {
+        var compareType = document.getElementById('compareSelect').value;
+        var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
+        data.compareData = compareData;
+        renderCompareTab(data);
+      }
+      
+      // ✅ Guardar datos globales
+      currentData = data;
+      hideLoading();
+      
+    } catch (error) {
+      hideLoading();
+      showToast('Error loading ' + tabId + ': ' + error.message, 'error');
+      console.error('Load error:', error);
+    }
+  }
+
+  // ✅ Función principal - SOLO carga KPIs al inicio
   async function loadData() {
     showLoading('Loading KPI Dashboard...');
     
     var month = parseInt(document.getElementById('monthSelect').value);
     var year = parseInt(document.getElementById('yearSelect').value);
-    var compareType = document.getElementById('compareSelect').value;
     
-    await logForesight('KPI', 'OPEN_DASHBOARD', 'Dashboard opened - Period: ' + month + '/' + year);
+    await logForesight('KPI', 'OPEN_DASHBOARD', 'Period: ' + month + '/' + year);
     
     try {
-      // ✅ Cargar KPIs (Tab 1)
+      // ✅ SOLO cargar KPIs al inicio (Tab 1)
       var kpiData = await callApi('KPI_getKPIs', [year, month]);
-      // ✅ Cargar Charts (Tab 2)
-      var chartsData = await callApi('KPI_getCharts', [year, month]);
-      // ✅ Cargar Financial (Tab 3)
-      var financialData = await callApi('KPI_getFinancial', [year, month]);
-
-      // ✅ Combinar datos con validación
-      var data = {
-        success: true,
-        period: kpiData.period || { monthName: 'Unknown', year: year },
-        kpis: kpiData.kpis || { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 },
-        topAssets: kpiData.topAssets || [],
-        backlog: kpiData.backlog || { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 },
-        woDistribution: kpiData.woDistribution || chartsData.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 },
-        calibrations: kpiData.calibrations || [],
-        financial: financialData.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] },
-        topAssetsByCost: financialData.topAssetsByCost || [],
-        trends: chartsData.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] }
-      };
       
-      if (data && data.success !== false) {
-        currentData = data;
-        // ✅ Verificar que los datos existen antes de renderizar
-        if (data.k || data.kpis) {
-          renderKPITab(data);
-        } else {
-          document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--warning);">⚠️ No KPI data available for this period</div>';
-        }
-        renderChartsTab(data);
-        renderFinancialTab(data);
+      if (kpiData && kpiData.success !== false) {
+        currentData = kpiData;
+        renderKPITab(kpiData);
         
-        try {
-          var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
-          currentData.compareData = compareData;
-          renderCompareTab(currentData);
-        } catch (compareError) {
-          console.error('Compare data error:', compareError);
-          showToast('Compare data error: ' + compareError.message, 'error');
-          renderCompareTab({ compareData: null });
-        }
+        // ✅ Cargar datos de otros tabs en segundo plano (sin bloquear)
+        loadBackgroundData(year, month);
         
         hideLoading();
-        // showToast('Dashboard loaded successfully', 'success');  // ELIMINADO
-        await logForesight('KPI', 'DATA_LOADED', 'Period: ' + month + '/' + year + ' - Availability: ' + data.kpis?.availability + '%');
+        await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
       } else {
         hideLoading();
-        var errorMsg = data?.error || 'Unknown error loading dashboard data';
+        var errorMsg = kpiData?.error || 'Unknown error';
         showToast(errorMsg, 'error');
         document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + errorMsg + '</div>';
-        await logForesight('KPI', 'DATA_ERROR', errorMsg);
       }
     } catch (error) {
       hideLoading();
-      // console.error('Load data error:', error);  // COMENTADO
       showToast('Connection error: ' + error.message, 'error');
       document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
-      // ✅ Asegurar que currentData no quede undefined
-      currentData = null;
-      await logForesight('KPI', 'DATA_ERROR', error.message);
+    }
+  }
+
+  // ✅ NUEVA FUNCIÓN: Carga otros tabs en segundo plano
+  async function loadBackgroundData(year, month) {
+    try {
+      // Cargar Charts
+      var chartsData = await callApi('KPI_getCharts', [year, month]);
+      if (currentData) {
+        currentData.trends = chartsData.trends || currentData.trends;
+        currentData.woDistribution = chartsData.woDistribution || currentData.woDistribution;
+      }
+      
+      // Cargar Financial
+      var financialData = await callApi('KPI_getFinancial', [year, month]);
+      if (currentData) {
+        currentData.financial = financialData.financial || currentData.financial;
+        currentData.topAssetsByCost = financialData.topAssetsByCost || currentData.topAssetsByCost;
+      }
+      
+      // Cargar Compare
+      var compareType = document.getElementById('compareSelect').value;
+      var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
+      if (currentData) {
+        currentData.compareData = compareData;
+      }
+      
+      // ✅ Renderizar tabs que ya están visibles
+      var activeTab = document.querySelector('.tab.active');
+      if (activeTab) {
+        var tabId = activeTab.dataset.tab;
+        if (tabId === 'charts' && currentData) {
+          renderChartsTab(currentData);
+        } else if (tabId === 'financial' && currentData) {
+          renderFinancialTab(currentData);
+        } else if (tabId === 'compare' && currentData) {
+          renderCompareTab(currentData);
+        }
+      }
+      
+    } catch (bgError) {
+      // ✅ No mostrar error, solo log
+      console.warn('[KPI] Background load error:', bgError.message);
     }
   }
   
@@ -1179,17 +1240,18 @@
       return;
     }
     
-    var k = data.k || data.kpis;  // ✅ Compatible con ambos formatos
+    // ✅ CORREGIDO: Usar formato abreviado (k, b, w, c, t) o formato completo
+    var k = data.k || data.kpis;  
     var backlog = data.b || data.backlog;
     var woDist = data.w || data.woDistribution;
     var calibrations = data.c || data.calibrations || [];
     var topAssets = data.t || data.topAssets || [];
     var period = data.p || data.period || { m: 'Unknown', y: 2026 };
     
-    // ✅ Validar que los datos existen
+    // ✅ Validar que k existe antes de usarlo
     if (!k || typeof k !== 'object') {
-        k = { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 };
-    }
+      k = { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 };
+  }
     if (!backlog || typeof backlog !== 'object') {
         backlog = { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 };
     }
@@ -1253,14 +1315,17 @@
     document.getElementById('kpiContent').innerHTML = html;
   }
   
-function renderChartsTab(data) {
+  function renderChartsTab(data) {
     // ✅ Validar que data existe
     if (!data || typeof data !== 'object') {
       document.getElementById('chartsContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading charts...</div>';
       return;
     }
     
+    // ✅ CORREGIDO: Usar data.trends (ya viene del backend)
     var trends = data.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
+    
+    // ✅ CORREGIDO: Usar data.woDistribution (ya viene del backend)
     var woDist = data.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
     
     var html = '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-line"></i> OPERATIONAL TRENDS (Last 12 Months)</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="trendCanvas" style="max-width: 100%;"></canvas></div></div>' +
@@ -1446,7 +1511,10 @@ function renderChartsTab(data) {
       return;
     }
     
+    // ✅ CORREGIDO: Usar data.financial (ya viene del backend)
     var fin = data.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
+    
+    // ✅ CORREGIDO: data.topAssetsByCost ya viene del backend
     var topAssetsByCost = data.topAssetsByCost || [];
     
     var html = '<div class="adk-card" style="margin-bottom: 20px;"><div class="card-title"><i class="fas fa-dollar-sign"></i> BUDGET vs ACTUAL</div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">' +
@@ -1554,28 +1622,67 @@ function renderChartsTab(data) {
   }
   
   // ============================================
-  // EVENT LISTENERS
+  // EVENT LISTENERS - CORREGIDO CON LAZY LOADING
   // ============================================
   function setupEventListeners() {
+      // ✅ TABS - Carga bajo demanda
       document.querySelectorAll('.tab').forEach(function(tab) {
           tab.addEventListener('click', function() {
               var tabId = this.dataset.tab;
+              
+              // Cambiar tab activo visualmente
               document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
               document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
               this.classList.add('active');
               var targetTab = document.getElementById('tab-' + tabId);
               if (targetTab) targetTab.classList.add('active');
+              
+              // ✅ Cargar datos del tab SOLO si es necesario
+              if (currentData) {
+                  if (tabId === 'charts' && !currentData.trends) {
+                      loadTabData('charts');
+                  } else if (tabId === 'financial' && !currentData.financial) {
+                      loadTabData('financial');
+                  } else if (tabId === 'compare' && !currentData.compareData) {
+                      loadTabData('compare');
+                  } else {
+                      // ✅ Ya tiene datos, solo renderizar
+                      if (tabId === 'charts') {
+                          renderChartsTab(currentData);
+                      } else if (tabId === 'financial') {
+                          renderFinancialTab(currentData);
+                      } else if (tabId === 'compare') {
+                          renderCompareTab(currentData);
+                      }
+                  }
+              } else {
+                  // ✅ Si no hay datos, cargar todo
+                  if (tabId === 'charts' || tabId === 'financial' || tabId === 'compare') {
+                      loadTabData(tabId);
+                  }
+              }
+              
+              logForesight('KPI', 'CHANGE_TAB', 'Tab: ' + tabId);
           });
       });
       
+      // ✅ BOTÓN LOAD DATA
       var loadBtn = document.getElementById('loadBtn');
-      if (loadBtn) loadBtn.addEventListener('click', function() { loadData(); });
+      if (loadBtn) {
+          loadBtn.addEventListener('click', function() { 
+              loadData(); 
+          });
+      }
       
+      // ✅ BOTÓN EXPORT PDF
       var exportBtn = document.getElementById('exportBtn');
-      if (exportBtn) exportBtn.addEventListener('click', function() { 
-          printKPIReport();  // ← CAMBIAR AQUÍ
-      });
+      if (exportBtn) {
+          exportBtn.addEventListener('click', function() { 
+              printKPIReport();
+          });
+      }
       
+      // ✅ SELECT COMPARE - Recarga solo compare data
       var compareSelect = document.getElementById('compareSelect');
       if (compareSelect) {
           compareSelect.addEventListener('change', function() {
