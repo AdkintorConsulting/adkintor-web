@@ -872,19 +872,10 @@
       var targetPane = document.getElementById(tabId + '-tab');
       if (targetPane) targetPane.classList.add('active');
       
-      // ✅ Spinner de pantalla completa
       if (tabId === 'dashboard') {
           loadDashboard();
       } else if (tabId === 'alerts') {
-          showLoading('Loading alerts...');
-          callApi('CAL_getOverdueAndDueList', []).then(function(list) {
-              renderAlertsList(list);
-              hideLoading();
-          }).catch(function(err) {
-              hideLoading();
-              document.getElementById('alertsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
-              showToast(err.message, 'error');
-          });
+          loadAlertsWithRetry();
       } else if (tabId === 'trends') {
           showLoading('Loading instruments...');
           callApi('CAL_getInstrumentsForTrend', []).then(function(instruments) {
@@ -898,23 +889,72 @@
       }
   }
 
-    async function refreshAllData() {
-        await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
-        
-        showLoading('Refreshing data...');
-        try {
-            // ✅ Limpiar caché de CAL antes de recargar
-            await callApi('CAL_clearCache', []);
-            // console.log('[CAL] Caché limpiada');  // COMENTADO
-            
-            await loadDashboard();
-            hideLoading();
-            showToast('Data refreshed successfully ✅', 'success');
-        } catch(err) {
-            hideLoading();
-            showToast('Error refreshing: ' + err.message, 'error');
-        }
-    }
+  // ✅ NUEVA FUNCIÓN: Carga de alerts con reintento
+  async function loadAlertsWithRetry(retryCount = 0) {
+      const maxRetries = 2;
+      showLoading('Loading alerts...');
+      
+      try {
+          // ✅ Limpiar caché ANTES de cargar (para datos frescos)
+          await callApi('CAL_clearCache', []);
+          
+          const list = await callApi('CAL_getOverdueAndDueList', []);
+          
+          // ✅ VALIDACIÓN ROBUSTA
+          if (!list || typeof list !== 'object' || !Array.isArray(list)) {
+              console.warn('CAL: Invalid list response, retrying...', list);
+              if (retryCount < maxRetries) {
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                  return loadAlertsWithRetry(retryCount + 1);
+              }
+              throw new Error('Invalid data format received from server');
+          }
+          
+          renderAlertsList(list);
+          hideLoading();
+          
+          // ✅ Log solo si hay datos
+          if (list.length > 0) {
+              console.log(`CAL: ${list.length} alerts loaded`);
+          }
+          
+      } catch (err) {
+          hideLoading();
+          const errorMsg = err.message || 'Failed to load alerts';
+          document.getElementById('alertsContent').innerHTML = 
+              '<div class="adk-card" style="color: var(--danger); padding: 20px;">' +
+              '⚠️ Error loading alerts: ' + escapeHtml(errorMsg) + 
+              '<br><br><button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary" style="margin-top:8px;">🔄 Retry</button>' +
+              '</div>';
+          showToast('Error loading alerts: ' + errorMsg, 'error');
+      }
+  }
+
+  async function refreshAllData() {
+      await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
+      
+      showLoading('Refreshing data...');
+      try {
+          // ✅ Limpiar caché de CAL ANTES de recargar
+          await callApi('CAL_clearCache', []);
+          console.log('[CAL] Cache cleared');
+          
+          // ✅ Cargar el tab actual
+          var activeTab = document.querySelector('.tab-btn.active');
+          if (activeTab) {
+              var tabId = activeTab.getAttribute('data-tab');
+              await showTab(tabId);
+          } else {
+              await loadDashboard();
+          }
+          
+          hideLoading();
+          showToast('Data refreshed successfully ✅', 'success');
+      } catch(err) {
+          hideLoading();
+          showToast('Error refreshing: ' + err.message, 'error');
+      }
+  }
   
   // ============================================
   // TAB 1: DASHBOARD & AUDIT
@@ -996,24 +1036,72 @@
   // TAB 2: OVERDUE & DUE (≤30 DAYS)
   // ============================================
   function renderAlertsList(list) {
-    if (!list || list.length === 0) {
-      document.getElementById('alertsContent').innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No instruments overdue or due in the next 30 days.</div>';
-      return;
-    }
-    
-    var html = '<div class="adk-card"><div class="card-header">⚠️ ALERTS - Overdue & Due (≤30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
-    
-    for (var i = 0; i < list.length; i++) {
-      var item = list[i];
-      var isOverdue = item.daysToExpiry < 0;
-      var status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
-      var rowClass = isOverdue ? 'overdue-row' : '';
+      // ✅ VALIDACIÓN MEJORADA
+      if (!list || typeof list !== 'object' || !Array.isArray(list)) {
+          console.warn('CAL: renderAlertsList called with invalid data:', list);
+          document.getElementById('alertsContent').innerHTML = 
+              '<div class="adk-card" style="padding: 20px; text-align: left;">' +
+              '⚠️ No alerts data available. Please try refreshing.<br><br>' +
+              '<button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary">🔄 Retry</button>' +
+              '</div>';
+          return;
+      }
       
-      html += '<tr class="' + rowClass + '"><td><strong>' + escapeHtml(item.tagId) + '</strong></td><td>' + escapeHtml(item.name) + '</td><td>' + new Date(item.nextCalibration).toLocaleDateString() + '</td><td>' + item.daysToExpiry + '</td><td>' + status + '</td></tr>';
-    }
-    
-    html += '</tbody></table></div></div>';
-    document.getElementById('alertsContent').innerHTML = html;
+      if (list.length === 0) {
+          document.getElementById('alertsContent').innerHTML = 
+              '<div class="adk-card" style="padding: 20px; text-align: left;">✅ No instruments overdue or due in the next 30 days.</div>';
+          return;
+      }
+      
+      // ✅ Validar cada elemento
+      var validItems = list.filter(function(item) {
+          return item && typeof item === 'object' && item.tagId;
+      });
+      
+      if (validItems.length === 0) {
+          document.getElementById('alertsContent').innerHTML = 
+              '<div class="adk-card" style="padding: 20px; text-align: left;">⚠️ No valid alert items found.</div>';
+          return;
+      }
+      
+      var html = '<div class="adk-card"><div class="card-header">⚠️ ALERTS - Overdue & Due (≤30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
+      
+      for (var i = 0; i < validItems.length; i++) {
+          var item = validItems[i];
+          var isOverdue = item.daysToExpiry < 0;
+          var status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
+          var rowClass = isOverdue ? 'overdue-row' : '';
+          
+          // ✅ Formatear fecha de forma segura
+          var dateStr = 'N/A';
+          try {
+              if (item.nextCalibration) {
+                  var d = new Date(item.nextCalibration);
+                  if (!isNaN(d.getTime())) {
+                      dateStr = d.toLocaleDateString();
+                  }
+              }
+          } catch (e) {
+              dateStr = String(item.nextCalibration || 'N/A');
+          }
+          
+          html += '<tr class="' + rowClass + '">' +
+              '<td><strong>' + escapeHtml(item.tagId) + '</strong></td>' +
+              '<td>' + escapeHtml(item.name) + '</td>' +
+              '<td>' + escapeHtml(dateStr) + '</td>' +
+              '<td>' + (typeof item.daysToExpiry === 'number' ? item.daysToExpiry : '—') + '</td>' +
+              '<td>' + status + '</td>' +
+              '</tr>';
+      }
+      
+      html += '</tbody></table></div>';
+      html += '<div style="padding: 12px 20px; font-size: 12px; color: var(--text-secondary); text-align: left;">' +
+          'Total: ' + validItems.length + ' alert(s)' +
+          (validItems.length !== list.length ? ' (' + (list.length - validItems.length) + ' invalid entries filtered)' : '') +
+          '</div>';
+      html += '</div>';
+      
+      document.getElementById('alertsContent').innerHTML = html;
   }
   
   // ============================================
@@ -1304,6 +1392,18 @@
           await loadDashboard();
           hideLoading();
           // showToast('CAL Foresight loaded successfully ✅', 'success');  // ELIMINADO
+
+          // En init(), después de loadDashboard()
+          // Agregar diagnóstico silencioso (solo si hay error)
+          try {
+              // Intentar diagnóstico para debug
+              const diag = await callApi('CAL_diagnoseData', []);
+              if (diag && diag.instrumentCount === 0) {
+                  console.warn('[CAL] No instruments found in INSTRUMENT_MASTER');
+              }
+          } catch (diagError) {
+              // Ignorar errores de diagnóstico
+          }
           
       } catch(err) {
           hideLoading();
