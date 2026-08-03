@@ -587,7 +587,28 @@
         max-width: 80px !important;
         max-height: 60px !important;
         object-fit: contain !important;
-    }    
+    }  
+    
+    .backlog-bar-container {
+      background: var(--bg-primary);
+      border-radius: 6px;
+      height: 28px;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+
+    .backlog-bar {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bg-primary);
+      white-space: nowrap;
+      transition: width 0.3s ease;
+      min-width: 60px; /* ✅ Texto siempre visible */
+    }      
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -1001,6 +1022,12 @@
     var year = parseInt(document.getElementById('yearSelect').value);
     var compareType = document.getElementById('compareSelect').value;
     
+    // ✅ MOSTRAR SPINNER
+    var compareContent = document.getElementById('compareContent');
+    if (compareContent) {
+      compareContent.innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading compare data...</div>';
+    }
+    
     try {
       var data = await callApi('KPI_getCompare', [year, month, compareType]);
       if (currentData) {
@@ -1008,8 +1035,10 @@
         renderCompareTab(currentData);
       }
     } catch (error) {
-      // console.error('Compare error:', error);  // COMENTADO
       showToast('Error loading compare data: ' + error.message, 'error');
+      if (compareContent) {
+        compareContent.innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
+      }
     }
   }
 
@@ -1251,17 +1280,21 @@
     // ✅ Validar que k existe antes de usarlo
     if (!k || typeof k !== 'object') {
       k = { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 };
-  }
+    }
     if (!backlog || typeof backlog !== 'object') {
-        backlog = { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 };
+      backlog = { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 };
     }
     if (!woDist || typeof woDist !== 'object') {
-        woDist = { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
+      woDist = { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
     }
     
     var maxBacklog = Math.max(backlog.less7d, backlog.seven14d, backlog.fifteen30d, backlog.more30d, 1);
     
-    var html = '<div class="kpi-grid">' +
+    // ✅ INICIALIZAR html
+    var html = '';
+    
+    // ✅ KPI GRID - 6 TARJETAS
+    html += '<div class="kpi-grid">' +
       '<div class="adk-card" title="Plant operational rate based on downtime. Target: >90%"><div class="kpi-label">AVAILABILITY</div><div class="kpi-value">' + k.availability + '%</div></div>' +
       '<div class="adk-card" title="Preventive Maintenance completion rate vs planned. Target: >90%"><div class="kpi-label">PM COMPLIANCE</div><div class="kpi-value">' + k.pmCompliance + '%</div></div>' +
       '<div class="adk-card" title="Mean Time Between Failures. Average days of continuous operation. Target: >15 days"><div class="kpi-label">MTBF</div><div class="kpi-value">' + k.mtbf + ' days</div></div>' +
@@ -1270,47 +1303,60 @@
       '<div class="adk-card" title="On Time In Full. Work orders completed before due date. Target: >90%"><div class="kpi-label">OTIF</div><div class="kpi-value">' + k.otif + '%</div></div>' +
       '</div>';
     
-    html += '<div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-trophy"></i> TOP 5 ASSETS BY FAILURES</div><table style="width:100%;"><thead><tr style="text-align:left"><th>#</th><th>Asset</th><th>Failures</th><th>Downtime</th><th>Cost</th></tr></thead><tbody>';
+    // ✅ BACKLOG
+    function renderBacklogBar(label, value, color, max) {
+      var percent = max > 0 ? (value / max * 100) : 0;
+      var minWidth = 40;
+      var width = Math.max(percent, (value > 0 ? 10 : 0));
+      var displayText = label + ': ' + value;
+      
+      return '<div class="backlog-bar-container" style="min-height: 28px;">' +
+        '<div class="backlog-bar" style="width: ' + width + '%; min-width: ' + minWidth + 'px; background: ' + color + '; padding: 0 10px; white-space: nowrap; font-size: 12px;">' +
+        displayText +
+        '</div></div>';
+    }
+
+    html += '<div class="adk-card"><div class="card-title"><i class="fas fa-clock"></i> BACKLOG (Open Work Orders)</div>' +
+      renderBacklogBar('&lt;7d', backlog.less7d, 'var(--info)', maxBacklog) +
+      renderBacklogBar('7-14d', backlog.seven14d, 'var(--warning)', maxBacklog) +
+      renderBacklogBar('15-30d', backlog.fifteen30d, '#f97316', maxBacklog) +
+      renderBacklogBar('&gt;30d', backlog.more30d, 'var(--danger)', maxBacklog) +
+      '<div style="margin-top:12px; text-align:center;"><strong>Total Open: ' + backlog.total + '</strong></div></div>';
+
+    // ✅ TOP 5 ASSETS - SOLO failures
+    html += '<div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-trophy"></i> TOP 5 ASSETS BY FAILURES</div><table style="width:100%;"><thead><tr style="text-align:left"><th>#</th><th>Asset</th><th>Failures</th></tr></thead><tbody>';
+    
     for (var i = 0; i < topAssets.length && i < 5; i++) {
       var a = topAssets[i];
-      // ✅ Compatible con formato compacto (id, name, f, d, c) y formato original
       var assetId = a.id || a.assetId || 'Unknown';
-      var assetName = a.name || a.assetName || assetId;
+      var assetName = a.n || a.name || a.assetName || assetId;
       var failures = a.f || a.failures || 0;
-      var downtime = a.d !== undefined ? a.d : (a.downtimeHours || 0);
-      var cost = a.c !== undefined ? a.c : (a.cost || 0);
-      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(assetName) + '</strong><br><small>' + escapeHtml(assetId) + '</small></td><td>' + failures + '</td><td>' + downtime + 'h</td><td>$' + cost.toLocaleString() + '</td></tr>';
+      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(assetName) + '</strong><br><small>' + escapeHtml(assetId) + '</small></td><td>' + failures + '</td></tr>';
     }
     html += '</tbody></table></div>';
     
-    html += '<div class="adk-card"><div class="card-title"><i class="fas fa-clock"></i> BACKLOG (Open Work Orders)</div>' +
-      '<div><div class="backlog-bar-container"><div class="backlog-bar" style="width: ' + ((backlog.less7d/maxBacklog)*100) + '%; background:var(--info);">&lt;7d: ' + backlog.less7d + '</div></div></div>' +
-      '<div><div class="backlog-bar-container"><div class="backlog-bar" style="width: ' + ((backlog.seven14d/maxBacklog)*100) + '%; background:var(--warning);">7-14d: ' + backlog.seven14d + '</div></div></div>' +
-      '<div><div class="backlog-bar-container"><div class="backlog-bar" style="width: ' + ((backlog.fifteen30d/maxBacklog)*100) + '%; background:#f97316;">15-30d: ' + backlog.fifteen30d + '</div></div></div>' +
-      '<div><div class="backlog-bar-container"><div class="backlog-bar" style="width: ' + ((backlog.more30d/maxBacklog)*100) + '%; background:var(--danger);">&gt;30d: ' + backlog.more30d + '</div></div></div>' +
-      '<div style="margin-top:12px; text-align:center;"><strong>Total Open: ' + backlog.total + '</strong></div></div></div>';
-    
-    html += '<div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-chart-pie"></i> WORK ORDER DISTRIBUTION</div>' +
+    // ✅ WORK ORDER DISTRIBUTION
+    html += '<div class="adk-card"><div class="card-title"><i class="fas fa-chart-pie"></i> WORK ORDER DISTRIBUTION</div>' +
       '<div>🔧 Corrective: ' + woDist.corrective + '%</div>' +
       '<div>📋 Preventive: ' + woDist.preventive + '%</div>' +
       '<div>⚙️ Op. Service: ' + (woDist.opService || 0) + '%</div>' +
       '<div>🛠️ General Service: ' + (woDist.generalService || 0) + '%</div>' +
       '<div>📦 Others: ' + (woDist.others || 0) + '%</div></div>';
     
+    // ✅ UPCOMING CALIBRATIONS
     html += '<div class="adk-card"><div class="card-title"><i class="fas fa-calendar-alt"></i> UPCOMING CALIBRATIONS (30 days)</div>';
     if (calibrations.length === 0) {
       html += '<div>No upcoming calibrations</div>';
     } else {
-      for (var i = 0; i < calibrations.length; i++) {
-        var c = calibrations[i];
-        // ✅ Compatible con formato compacto (i, d, a) y formato original
+      for (var j = 0; j < calibrations.length; j++) {
+        var c = calibrations[j];
         var instrument = c.instrument || c.i || 'Unknown';
         var dueDate = c.dueDate || c.d || 'N/A';
         var area = c.area || c.a || 'Unknown';
         html += '<div>• ' + escapeHtml(instrument) + ' - ' + escapeHtml(dueDate) + ' (' + escapeHtml(area) + ')</div>';
       }
     }
-    html += '</div></div>';
+    html += '</div></div>';  // Cerrar two-columns y el contenedor
     
     document.getElementById('kpiContent').innerHTML = html;
   }
