@@ -300,7 +300,7 @@
         footer.innerHTML = `
             <span>ADKINTOR EAMS + FORESIGHT</span>
             <span>
-                <span class="footer-version">v${version}</span>
+                <span class="footer-version">${version}</span>
                 <span class="footer-date"> | ${dateStr}</span>
             </span>
         `;
