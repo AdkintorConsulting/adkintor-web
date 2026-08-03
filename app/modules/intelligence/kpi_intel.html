@@ -1324,8 +1324,8 @@
       '<div style="margin-top:12px; text-align:center;"><strong>Total Open: ' + backlog.total + '</strong></div></div>';
 
     // ✅ TOP 5 ASSETS - SOLO failures
-    html += '<div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-trophy"></i> TOP 5 ASSETS BY FAILURES</div><table style="width:100%;"><thead><tr style="text-align:left"><th>#</th><th>Asset</th><th>Failures</th></tr></thead><tbody>';
-    
+    html += '<div style="margin-bottom: 20px;"></div><div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-trophy"></i> TOP 5 ASSETS BY FAILURES</div><table style="width:100%;"><thead><tr style="text-align:left"><th>#</th><th>Asset</th><th>Failures</th></tr></thead><tbody>';
+
     for (var i = 0; i < topAssets.length && i < 5; i++) {
       var a = topAssets[i];
       var assetId = a.id || a.assetId || 'Unknown';
@@ -1334,16 +1334,17 @@
       html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(assetName) + '</strong><br><small>' + escapeHtml(assetId) + '</small></td><td>' + failures + '</td></tr>';
     }
     html += '</tbody></table></div>';
-    
+
     // ✅ WORK ORDER DISTRIBUTION
     html += '<div class="adk-card"><div class="card-title"><i class="fas fa-chart-pie"></i> WORK ORDER DISTRIBUTION</div>' +
       '<div>🔧 Corrective: ' + woDist.corrective + '%</div>' +
       '<div>📋 Preventive: ' + woDist.preventive + '%</div>' +
       '<div>⚙️ Op. Service: ' + (woDist.opService || 0) + '%</div>' +
       '<div>🛠️ General Service: ' + (woDist.generalService || 0) + '%</div>' +
-      '<div>📦 Others: ' + (woDist.others || 0) + '%</div></div>';
-    
-    // ✅ UPCOMING CALIBRATIONS
+      '<div>📦 Others: ' + (woDist.others || 0) + '%</div></div>' +
+      '</div>'; // ✅ CERRAR two-columns AQUÍ
+
+    // ✅ UPCOMING CALIBRATIONS (FUERA de two-columns)
     html += '<div class="adk-card"><div class="card-title"><i class="fas fa-calendar-alt"></i> UPCOMING CALIBRATIONS (30 days)</div>';
     if (calibrations.length === 0) {
       html += '<div>No upcoming calibrations</div>';
@@ -1356,7 +1357,7 @@
         html += '<div>• ' + escapeHtml(instrument) + ' - ' + escapeHtml(dueDate) + ' (' + escapeHtml(area) + ')</div>';
       }
     }
-    html += '</div></div>';  // Cerrar two-columns y el contenedor
+    html += '</div>';
     
     document.getElementById('kpiContent').innerHTML = html;
   }
