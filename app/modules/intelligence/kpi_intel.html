@@ -1166,11 +1166,23 @@
   // RENDER FUNCTIONS
   // ============================================
   function renderKPITab(data) {
-    var k = data.kpis;
-    var backlog = data.backlog;
-    var woDist = data.woDistribution;
-    var calibrations = data.calibrations || [];
-    var topAssets = data.topAssets || [];
+    var k = data.k || data.kpis;  // ✅ Compatible con ambos formatos
+    var backlog = data.b || data.backlog;
+    var woDist = data.w || data.woDistribution;
+    var calibrations = data.c || data.calibrations || [];
+    var topAssets = data.t || data.topAssets || [];
+    var period = data.p || data.period || { m: 'Unknown', y: 2026 };
+    
+    // ✅ Validar que los datos existen
+    if (!k || typeof k !== 'object') {
+        k = { availability: 0, pmCompliance: 0, mtbf: 0, mttr: 0, equipmentDown: 0, otif: 0, laborHours: 0 };
+    }
+    if (!backlog || typeof backlog !== 'object') {
+        backlog = { less7d: 0, seven14d: 0, fifteen30d: 0, more30d: 0, total: 0 };
+    }
+    if (!woDist || typeof woDist !== 'object') {
+        woDist = { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
+    }
     
     var maxBacklog = Math.max(backlog.less7d, backlog.seven14d, backlog.fifteen30d, backlog.more30d, 1);
     
@@ -1186,7 +1198,13 @@
     html += '<div class="two-columns"><div class="adk-card"><div class="card-title"><i class="fas fa-trophy"></i> TOP 5 ASSETS BY FAILURES</div><table style="width:100%;"><thead><tr style="text-align:left"><th>#</th><th>Asset</th><th>Failures</th><th>Downtime</th><th>Cost</th></tr></thead><tbody>';
     for (var i = 0; i < topAssets.length && i < 5; i++) {
       var a = topAssets[i];
-      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(a.assetName) + '</strong><br><small>' + escapeHtml(a.assetId) + '</small></td><td>' + a.failures + '</td><td>' + a.downtimeHours + 'h</td><td>$' + a.cost.toLocaleString() + '</td></tr>';
+      // ✅ Compatible con formato compacto (id, name, f, d, c) y formato original
+      var assetId = a.id || a.assetId || 'Unknown';
+      var assetName = a.name || a.assetName || assetId;
+      var failures = a.f || a.failures || 0;
+      var downtime = a.d !== undefined ? a.d : (a.downtimeHours || 0);
+      var cost = a.c !== undefined ? a.c : (a.cost || 0);
+      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(assetName) + '</strong><br><small>' + escapeHtml(assetId) + '</small></td><td>' + failures + '</td><td>' + downtime + 'h</td><td>$' + cost.toLocaleString() + '</td></tr>';
     }
     html += '</tbody></table></div>';
     
@@ -1210,7 +1228,11 @@
     } else {
       for (var i = 0; i < calibrations.length; i++) {
         var c = calibrations[i];
-        html += '<div>• ' + escapeHtml(c.instrument) + ' - ' + c.dueDate + ' (' + escapeHtml(c.area) + ')</div>';
+        // ✅ Compatible con formato compacto (i, d, a) y formato original
+        var instrument = c.instrument || c.i || 'Unknown';
+        var dueDate = c.dueDate || c.d || 'N/A';
+        var area = c.area || c.a || 'Unknown';
+        html += '<div>• ' + escapeHtml(instrument) + ' - ' + escapeHtml(dueDate) + ' (' + escapeHtml(area) + ')</div>';
       }
     }
     html += '</div></div>';
