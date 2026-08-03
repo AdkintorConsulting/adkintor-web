@@ -915,7 +915,7 @@
           
           // ✅ Log solo si hay datos
           if (list.length > 0) {
-              console.log(`CAL: ${list.length} alerts loaded`);
+              //console.log(`CAL: ${list.length} alerts loaded`);
           }
           
       } catch (err) {
@@ -937,7 +937,7 @@
       try {
           // ✅ Limpiar caché de CAL ANTES de recargar
           await callApi('CAL_clearCache', []);
-          console.log('[CAL] Cache cleared');
+          //console.log('[CAL] Cache cleared');
           
           // ✅ Cargar el tab actual
           var activeTab = document.querySelector('.tab-btn.active');
@@ -1395,15 +1395,14 @@
 
           // En init(), después de loadDashboard()
           // Agregar diagnóstico silencioso (solo si hay error)
-          try {
-              // Intentar diagnóstico para debug
-              const diag = await callApi('CAL_diagnoseData', []);
-              if (diag && diag.instrumentCount === 0) {
-                  console.warn('[CAL] No instruments found in INSTRUMENT_MASTER');
-              }
-          } catch (diagError) {
-              // Ignorar errores de diagnóstico
-          }
+          // try {
+          //     const diag = await callApi('CAL_diagnoseData', []);
+          //     if (diag && diag.instrumentCount === 0) {
+          //         console.warn('[CAL] No instruments found in INSTRUMENT_MASTER');
+          //     }
+          // } catch (diagError) {
+          //     // Ignorar errores de diagnóstico
+          // }
           
       } catch(err) {
           hideLoading();
