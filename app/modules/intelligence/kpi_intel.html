@@ -895,7 +895,12 @@
       
       if (data && data.success !== false) {
         currentData = data;
-        renderKPITab(data);
+        // ✅ Verificar que los datos existen antes de renderizar
+        if (data.k || data.kpis) {
+          renderKPITab(data);
+        } else {
+          document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--warning);">⚠️ No KPI data available for this period</div>';
+        }
         renderChartsTab(data);
         renderFinancialTab(data);
         
@@ -924,6 +929,8 @@
       // console.error('Load data error:', error);  // COMENTADO
       showToast('Connection error: ' + error.message, 'error');
       document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
+      // ✅ Asegurar que currentData no quede undefined
+      currentData = null;
       await logForesight('KPI', 'DATA_ERROR', error.message);
     }
   }
@@ -1166,6 +1173,12 @@
   // RENDER FUNCTIONS
   // ============================================
   function renderKPITab(data) {
+    // ✅ Validar que data existe
+    if (!data || typeof data !== 'object') {
+      document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading data...</div>';
+      return;
+    }
+    
     var k = data.k || data.kpis;  // ✅ Compatible con ambos formatos
     var backlog = data.b || data.backlog;
     var woDist = data.w || data.woDistribution;
@@ -1241,6 +1254,12 @@
   }
   
 function renderChartsTab(data) {
+    // ✅ Validar que data existe
+    if (!data || typeof data !== 'object') {
+      document.getElementById('chartsContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading charts...</div>';
+      return;
+    }
+    
     var trends = data.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
     var woDist = data.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
     
@@ -1421,7 +1440,12 @@ function renderChartsTab(data) {
   }
   
   function renderFinancialTab(data) {
-    // ✅ Validar que data.financial exista
+    // ✅ Validar que data existe
+    if (!data || typeof data !== 'object') {
+      document.getElementById('financialContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading financial data...</div>';
+      return;
+    }
+    
     var fin = data.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
     var topAssetsByCost = data.topAssetsByCost || [];
     
