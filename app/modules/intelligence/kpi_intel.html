@@ -914,10 +914,11 @@
       
       if (tabId === 'financial' || tabId === 'all') {
         // ✅ Cargar datos desde el frontend (como CAL, WO, PVT, STK)
-        var poData = await callApi('getLegacySheetColumns', ['PO_REGISTER', ['PO Number', 'Issue Date', 'Status', 'Total', 'Budget area', 'Budget Area', 'General Lodge', 'GL'], 500]);
-        var partsData = await callApi('getLegacySheetColumns', ['SPARE_PARTS_DB', ['Date', 'Type', 'Work Order #', 'Total Cost'], 500]);
-        var woData = await callApi('getLegacySheetColumns', ['WO_MASTER_LOG', ['WO Number', 'Asset ID', 'Technical Location'], 500]);
-        var assetData = await callApi('getLegacySheetColumns', ['ASSET_REGISTER', ['Asset ID', 'Equipment Name'], 200]);
+        // ✅ Usar getLegacySheetWithCache (funciona en el proxy)
+        var poData = await callApi('getLegacySheetWithCache', ['PO_REGISTER']);
+        var partsData = await callApi('getLegacySheetWithCache', ['SPARE_PARTS_DB']);
+        var woData = await callApi('getLegacySheetWithCache', ['WO_MASTER_LOG']);
+        var assetData = await callApi('getLegacySheetWithCache', ['ASSET_REGISTER']);
         var budgetData = await callApi('getSheetAsObjects', ['KPI_BUDGET']);
         
         // ✅ Procesar en el frontend (igual que los otros módulos)
@@ -991,10 +992,11 @@
       }
       
       // Cargar Financial (desde el frontend)
-      var poData = await callApi('getLegacySheetColumns', ['PO_REGISTER', ['PO Number', 'Issue Date', 'Status', 'Total', 'Budget area', 'Budget Area', 'General Lodge', 'GL'], 500]);
-      var partsData = await callApi('getLegacySheetColumns', ['SPARE_PARTS_DB', ['Date', 'Type', 'Work Order #', 'Total Cost'], 500]);
-      var woData = await callApi('getLegacySheetColumns', ['WO_MASTER_LOG', ['WO Number', 'Asset ID', 'Technical Location'], 500]);
-      var assetData = await callApi('getLegacySheetColumns', ['ASSET_REGISTER', ['Asset ID', 'Equipment Name'], 200]);
+      // ✅ Usar getLegacySheetWithCache (funciona en el proxy)
+      var poData = await callApi('getLegacySheetWithCache', ['PO_REGISTER']);
+      var partsData = await callApi('getLegacySheetWithCache', ['SPARE_PARTS_DB']);
+      var woData = await callApi('getLegacySheetWithCache', ['WO_MASTER_LOG']);
+      var assetData = await callApi('getLegacySheetWithCache', ['ASSET_REGISTER']);
       var budgetData = await callApi('getSheetAsObjects', ['KPI_BUDGET']);
       
       if (currentData) {
