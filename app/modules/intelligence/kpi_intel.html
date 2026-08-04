@@ -961,8 +961,8 @@
         currentData = kpiData;
         renderKPITab(kpiData);
         
-        // ✅ Cargar datos de otros tabs en segundo plano (sin bloquear)
-        loadBackgroundData(year, month);
+        // ✅ Cargar datos de otros tabs en segundo plano (ESPERAR)
+        await loadBackgroundData(year, month);
         
         hideLoading();
         await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
