@@ -537,7 +537,13 @@
                 border-radius: 0 !important;
             }
             
-            /* Para Master List - Horizontal */
+            /* Estilos para Datasheet (vertical) */
+            #fullView:not(.master-list-preview) .report-paper {
+                max-width: 800px !important;
+                margin: 0 auto !important;
+            }
+            
+            /* Estilos para Master List (horizontal) */
             #fullView.master-list-preview .report-paper {
                 max-width: 100% !important;
                 width: 100% !important;
@@ -553,22 +559,6 @@
                 padding: 4px 6px !important;
             }
             
-            /* Orientación horizontal para Master List */
-            #fullView.master-list-preview {
-                @page {
-                    size: landscape !important;
-                    margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
-                }
-            }
-            
-            /* Orientación vertical para Datasheet */
-            #fullView:not(.master-list-preview) {
-                @page {
-                    size: portrait !important;
-                    margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
-                }
-            }
-            
             .report-logo {
                 position: absolute !important;
                 top: 10px !important;
@@ -577,6 +567,19 @@
                 max-height: 40px !important;
             }
         }
+        
+        /* ============================================
+           ORIENTACIÓN DE PÁGINA (FUERA DE @media print)
+           ============================================ */
+        @page {
+            size: portrait;
+            margin: 0.8cm 1.2cm 1.8cm 1.2cm;
+        }
+        
+        @page master-list {
+            size: landscape;
+            margin: 0.8cm 1.2cm 1.8cm 1.2cm;
+        }        
     </style>
 </head>
 <body>
@@ -1185,13 +1188,26 @@
         // Mostrar el modal
         preview.style.display = 'block';
         
-        // Imprimir directamente
+        // ✅ Forzar orientación vertical
+        var style = document.createElement('style');
+        style.id = 'printPortraitStyle';
+        style.innerHTML = `
+            @page {
+                size: portrait !important;
+                margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Imprimir
         window.print();
         
-        // Ocultar después de imprimir
+        // Limpiar después de imprimir
         setTimeout(function() {
+            var styleEl = document.getElementById('printPortraitStyle');
+            if (styleEl) styleEl.remove();
             preview.style.display = 'none';
-        }, 1000);
+        }, 1500);
     }
 
     function closePreview() {
@@ -1322,13 +1338,26 @@
         // Mostrar el modal
         preview.style.display = 'block';
         
-        // Imprimir directamente (la orientación se define en @media print)
+        // ✅ Forzar orientación horizontal con CSS dinámico
+        var style = document.createElement('style');
+        style.id = 'printLandscapeStyle';
+        style.innerHTML = `
+            @page {
+                size: landscape !important;
+                margin: 0.5cm 1cm 1.5cm 1cm !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Imprimir
         window.print();
         
-        // Ocultar después de imprimir
+        // Limpiar después de imprimir
         setTimeout(function() {
+            var styleEl = document.getElementById('printLandscapeStyle');
+            if (styleEl) styleEl.remove();
             preview.style.display = 'none';
-        }, 1000);
+        }, 1500);
     }
     
     // ============================================
