@@ -913,18 +913,17 @@
       }
       
       if (tabId === 'financial' || tabId === 'all') {
-        // ✅ Cargar datos desde el frontend (como CAL, WO, PVT, STK)
-        var poData = await callApi('getLegacySheetColumns', ['PO_REGISTER', ['PO Number', 'Issue Date', 'Status', 'Total', 'Budget area', 'Budget Area', 'General Lodge', 'GL'], 500]);
-        var partsData = await callApi('getLegacySheetColumns', ['SPARE_PARTS_DB', ['Date', 'Type', 'Work Order #', 'Total Cost'], 500]);
-        var woData = await callApi('getLegacySheetColumns', ['WO_MASTER_LOG', ['WO Number', 'Asset ID', 'Technical Location'], 500]);
-        var assetData = await callApi('getLegacySheetColumns', ['ASSET_REGISTER', ['Asset ID', 'Equipment Name'], 200]);
-        var budgetData = await callApi('getSheetAsObjects', ['KPI_BUDGET']);
-        
-        // ✅ Procesar en el frontend (igual que los otros módulos)
-        var financialResult = processFinancialData(poData, partsData, woData, assetData, budgetData, year, month);
-        data.financial = financialResult.financial;
-        data.topAssetsByCost = financialResult.topAssetsByCost;
-        renderFinancialTab(data);
+          // ✅ Usar backend optimizado (no frontend)
+          var financialData = await callApi('KPI_getFinancial', [year, month]);
+          if (financialData && financialData.success !== false) {
+              data.financial = financialData.financial;
+              data.topAssetsByCost = financialData.topAssetsByCost;
+          } else {
+              // Fallback: estructura vacía
+              data.financial = { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
+              data.topAssetsByCost = [];
+          }
+          renderFinancialTab(data);
       }
       
       if (tabId === 'compare' || tabId === 'all') {
@@ -1274,148 +1273,6 @@
   // ============================================
   // RENDER FUNCTIONS
   // ============================================
-  // ============================================
-  // PROCESS FINANCIAL DATA (Frontend)
-  // ============================================
-  function processFinancialData(poData, partsData, woData, assetData, budgetData, year, month) {
-    // 1. Filtrar PO CLOSED/PARTIAL del mes
-    var monthPOs = [];
-    for (var i = 0; i < poData.length; i++) {
-      var po = poData[i];
-      var issueDate = new Date(po['Issue Date']);
-      if (isNaN(issueDate.getTime())) continue;
-      if (issueDate.getFullYear() !== year || issueDate.getMonth() + 1 !== month) continue;
-      var status = (po['Status'] || '').toUpperCase();
-      if (status === 'CLOSED' || status === 'PARTIAL') {
-        monthPOs.push(po);
-      }
-    }
-    
-    // 2. Calcular financial (BUDGET vs ACTUAL y SPEND BY AREA)
-    var actualSpend = 0;
-    var budget = 12500;
-    var areaMap = new Map();
-    
-    for (var i = 0; i < monthPOs.length; i++) {
-      var po = monthPOs[i];
-      var total = parseFloat(po['Total']) || 0;
-      actualSpend += total;
-      
-      var budgetArea = po['Budget area'] || po['Budget Area'] || '';
-      var generalLodge = po['General Lodge'] || po['GL'] || '';
-      var areaKey = budgetArea || generalLodge || 'Unassigned';
-      var areaName = budgetArea || areaKey;
-      var areaGL = generalLodge || areaKey;
-      
-      if (!areaMap.has(areaKey)) {
-        areaMap.set(areaKey, { name: areaName, gl: areaGL, budget: 0, actual: 0 });
-      }
-      areaMap.get(areaKey).actual += total;
-    }
-    
-    // Obtener budget
-    for (var i = 0; i < budgetData.length; i++) {
-      var b = budgetData[i];
-      var budgetYear = parseInt(b['BUDGET_YEAR']);
-      var budgetMonth = b['BUDGET_MONTH'];
-      var amount = parseFloat(b['BUDGET_AMOUNT']) || 0;
-      
-      if (budgetYear === year) {
-        var monthMatch = false;
-        if (!isNaN(parseInt(budgetMonth))) {
-          monthMatch = parseInt(budgetMonth) === month;
-        } else {
-          monthMatch = budgetMonth.toLowerCase() === getMonthName(month).toLowerCase();
-        }
-        if (monthMatch) budget = amount;
-      }
-    }
-    
-    // Distribuir budget
-    if (actualSpend > 0 && areaMap.size > 0) {
-      var areaEntries = Array.from(areaMap.entries());
-      for (var i = 0; i < areaEntries.length; i++) {
-        var entry = areaEntries[i];
-        var key = entry[0];
-        var area = entry[1];
-        var proportion = area.actual / actualSpend;
-        area.budget = budget * proportion;
-        areaMap.set(key, area);
-      }
-    }
-    
-    var areas = Array.from(areaMap.values());
-    areas.sort(function(a, b) { return b.actual - a.actual; });
-    
-    var financial = {
-      budget: Math.round(budget),
-      actual: Math.round(actualSpend),
-      variance: Math.round(actualSpend - budget),
-      variancePercent: budget > 0 ? parseFloat(((actualSpend - budget) / budget * 100).toFixed(1)) : 0,
-      areas: areas
-    };
-    
-    // 3. Calcular TOP 5 ASSETS BY COST (Consumed Materials)
-    // Mapa WO Number → Asset ID
-    var woAssetMap = new Map();
-    for (var i = 0; i < woData.length; i++) {
-      var wo = woData[i];
-      var woNumber = wo['WO Number'];
-      if (woNumber) {
-        woAssetMap.set(woNumber, wo['Asset ID'] || wo['Technical Location'] || null);
-      }
-    }
-    
-    // Mapa Asset ID → Asset Name
-    var assetNameMap = new Map();
-    for (var i = 0; i < assetData.length; i++) {
-      var asset = assetData[i];
-      var assetId = asset['Asset ID'];
-      if (assetId) {
-        assetNameMap.set(assetId, asset['Equipment Name'] || assetId);
-      }
-    }
-    
-    // Agrupar costos por Asset
-    var costMap = new Map();
-    for (var i = 0; i < partsData.length; i++) {
-      var part = partsData[i];
-      var date = new Date(part['Date']);
-      if (isNaN(date.getTime())) continue;
-      if (date.getFullYear() !== year || date.getMonth() + 1 !== month) continue;
-      var type = (part['Type'] || '').toUpperCase();
-      if (type !== 'CONSUMED_WO') continue;
-      var woNumber = part['Work Order #'];
-      if (!woNumber) continue;
-      var cost = parseFloat(part['Total Cost']) || 0;
-      if (cost === 0) continue;
-      var assetId = woAssetMap.get(woNumber) || 'Unknown';
-      var current = costMap.get(assetId) || 0;
-      costMap.set(assetId, current + cost);
-    }
-    
-    var topAssetsByCost = [];
-    var entries = Array.from(costMap.entries());
-    for (var i = 0; i < entries.length; i++) {
-      var entry = entries[i];
-      var assetId = entry[0];
-      var cost = entry[1];
-      topAssetsByCost.push({
-        id: assetId,
-        n: assetNameMap.get(assetId) || assetId,
-        c: Math.round(cost)
-      });
-    }
-    topAssetsByCost = topAssetsByCost.filter(function(item) { return item.c > 0; });
-    topAssetsByCost.sort(function(a, b) { return b.c - a.c; });
-    topAssetsByCost = topAssetsByCost.slice(0, 5);
-    
-    return {
-      financial: financial,
-      topAssetsByCost: topAssetsByCost
-    };
-  }
-
   function renderKPITab(data) {
     // ✅ Validar que data existe
     if (!data || typeof data !== 'object') {
