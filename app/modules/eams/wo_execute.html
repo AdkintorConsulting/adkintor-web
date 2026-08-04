@@ -2239,6 +2239,8 @@
                 }
                 if (assetLabel) assetLabel.innerHTML = 'Specific Component Intervened <span class="required">*</span>';
                 if (assetHelpText) assetHelpText.style.display = 'block';
+                // ✅ LLAMAR A refreshAssets AQUÍ para cargar componentes
+                refreshAssets();
             }
             
             document.getElementById('woInfo').style.display = 'block';
@@ -2420,41 +2422,57 @@
     // ============================================
     // STEP 2 - ASSETS
     // ============================================
-
     async function refreshAssets() {
-        var val = document.getElementById('woSelect').value;
-        var wo = DB.wos.find(function(x) { return x.folio == val; });
-        if (!wo) return;
-        
-        var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
-        if (woType === 'PREVENTIVE') return;
-        
-        var sel = document.getElementById('assetSelect');
-        sel.innerHTML = '<option value="">Loading components...</option>';
-        
-        try {
-            var assets = await callApi('WO_getSubAssets', [wo.tl]);
-            var assetList = JSON.parse(assets);
-            sel.innerHTML = '<option value="">-- Select Component --</option>';
-            if (assetList.length === 0) {
-                sel.innerHTML += '<option value="" disabled>No components found for this Technical Location</option>';
-            } else {
-                assetList.forEach(function(a) {
-                    var opt = document.createElement('option');
-                    opt.value = a.id + ' - ' + a.name;
-                    opt.textContent = a.display;
-                    sel.appendChild(opt);
-                });
-            }
-            validateStep();
+            var val = document.getElementById('woSelect').value;
+            var wo = DB.wos.find(function(x) { return x.folio == val; });
+            if (!wo) return;
             
-            // ✅ TOAST: Componentes cargados
-            showToast('Components loaded: ' + assetList.length + ' found', 'success');
-        } catch (error) {
-            sel.innerHTML = '<option value="">Error loading components</option>';
-            showToast('Error loading components: ' + error.message, 'error');
+            var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
+            if (woType === 'PREVENTIVE') return;
+            
+            var sel = document.getElementById('assetSelect');
+            sel.innerHTML = '<option value="">Loading components...</option>';
+            
+            // ✅ VALIDAR TL
+            if (!wo.tl || wo.tl.trim() === '') {
+                sel.innerHTML = '<option value="">No Technical Location assigned to this WO</option>';
+                showToast('No Technical Location found for this WO', 'warning');
+                validateStep();
+                return;
+            }
+            
+            try {
+                var assets = await callApi('WO_getSubAssets', [wo.tl]);
+                // ✅ PROTEGER PARSEO
+                var assetList = [];
+                if (assets && assets !== 'null' && assets !== 'undefined') {
+                    try {
+                        assetList = JSON.parse(assets);
+                    } catch (parseError) {
+                        console.error('Error parsing assets:', parseError);
+                        assetList = [];
+                    }
+                }
+                sel.innerHTML = '<option value="">-- Select Component --</option>';
+                if (!assetList || assetList.length === 0) {
+                    sel.innerHTML += '<option value="" disabled>No components found for this Technical Location</option>';
+                } else {
+                    assetList.forEach(function(a) {
+                        var opt = document.createElement('option');
+                        opt.value = a.id + ' - ' + a.name;
+                        opt.textContent = a.display;
+                        sel.appendChild(opt);
+                    });
+                }
+                validateStep();
+                if (assetList.length > 0) {
+                    showToast('Components loaded: ' + assetList.length + ' found', 'success');
+                }
+            } catch (error) {
+                sel.innerHTML = '<option value="">Error loading components</option>';
+                showToast('Error loading components: ' + error.message, 'error');
+            }
         }
-    }
 
     // ============================================
     // SPARE PARTS - CON CIERRE DE SUGERENCIAS (Issue #6)
