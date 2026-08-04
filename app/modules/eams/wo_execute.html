@@ -3204,45 +3204,16 @@
         var preview = document.getElementById('fullView');
         if (!preview) return;
         
-        // Crear un clon limpio para imprimir
-        var clone = preview.cloneNode(true);
-        clone.id = 'printClone';
-        clone.style.position = 'relative';
-        clone.style.background = 'white';
-        clone.style.padding = '20px';
-        clone.style.zIndex = '9999';
-        clone.style.display = 'block';
-        clone.style.overflow = 'visible';
-        clone.style.height = 'auto';
+        // Mostrar el modal
+        preview.style.display = 'block';
         
-        // Eliminar botones del clon
-        var noPrint = clone.querySelectorAll('.no-print');
-        noPrint.forEach(function(el) { el.style.display = 'none'; });
+        // Imprimir DIRECTAMENTE
+        window.print();
         
-        // Asegurar logo
-        var logo = clone.querySelector('.report-logo');
-        if (logo) {
-            var logoImg = document.getElementById('companyLogo');
-            if (logoImg && logoImg.src) {
-                logo.src = logoImg.src;
-                logo.style.display = 'block';
-            }
-        }
-        
-        document.body.appendChild(clone);
-        
-        // Usar ModuleBase para imprimir
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Technical Execution Report', 'eams');
-        } else {
-            window.print();
-        }
-        
-        // Limpiar después de imprimir
+        // Ocultar después de imprimir
         setTimeout(function() {
-            var el = document.getElementById('printClone');
-            if (el) el.remove();
-        }, 2000);
+            preview.style.display = 'none';
+        }, 1000);
     }
 
     // ============================================
