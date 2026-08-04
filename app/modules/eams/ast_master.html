@@ -1281,45 +1281,65 @@
         var preview = document.getElementById('fullView');
         if (!preview) return;
         
-        var clone = preview.cloneNode(true);
-        clone.id = 'printClone';
-        clone.style.position = 'relative';
-        clone.style.background = 'white';
-        clone.style.padding = '20px';
-        clone.style.zIndex = '9999';
-        clone.style.display = 'block';
-        clone.style.overflow = 'visible';
-        clone.style.height = 'auto';
+        // ✅ Mostrar el modal
+        preview.style.display = 'block';
         
-        var noPrint = clone.querySelectorAll('.no-print');
-        noPrint.forEach(function(el) { el.style.display = 'none'; });
-        
-        var logo = clone.querySelector('.report-logo');
-        if (logo) {
-            var logoImg = document.getElementById('companyLogo');
-            if (logoImg && logoImg.src) {
-                logo.src = logoImg.src;
-                logo.style.display = 'block';
+        // ✅ Forzar orientación horizontal con CSS
+        var style = document.createElement('style');
+        style.id = 'printLandscapeStyle';
+        style.innerHTML = `
+            @media print {
+                @page {
+                    size: landscape !important;
+                    margin: 0.5cm 1cm 1.5cm 1cm !important;
+                }
+                body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                #fullView {
+                    display: block !important;
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    background: white !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    box-shadow: none !important;
+                    z-index: 9999 !important;
+                }
+                .report-paper {
+                    box-shadow: none !important;
+                    background: white !important;
+                    width: 100% !important;
+                    padding: 15px 20px !important;
+                    margin: 0 !important;
+                    border-radius: 0 !important;
+                }
+                .no-print {
+                    display: none !important;
+                }
+                table {
+                    font-size: 9px !important;
+                }
+                table th, table td {
+                    padding: 4px 6px !important;
+                }
             }
-        }
+        `;
+        document.head.appendChild(style);
         
-        document.body.appendChild(clone);
+        // ✅ Imprimir directamente
+        window.print();
         
-        // ✅ Agregar clase para forzar horizontal
-        document.body.classList.add('master-list-print');
-        
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Asset Master Register', 'eams');
-        } else {
-            window.print();
-        }
-        
-        // ✅ Remover clase después de imprimir
+        // ✅ Limpiar después de imprimir
         setTimeout(function() {
-            document.body.classList.remove('master-list-print');
-            var el = document.getElementById('printClone');
-            if (el) el.remove();
-        }, 2000);
+            var styleEl = document.getElementById('printLandscapeStyle');
+            if (styleEl) styleEl.remove();
+            preview.style.display = 'none';
+        }, 1500);
     }
     
     // ============================================
