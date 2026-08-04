@@ -1403,34 +1403,23 @@
     // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
     // ============================================
     function printReport() {
-        const title = 'Work Order Report';
-        const mode = 'eams';
-        const fullView = document.getElementById('fullView');
-        
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            // Asegurar que fullView esté visible para imprimir
+            const fullView = document.getElementById('fullView');
+            
+            // Asegurar que fullView esté visible
             if (fullView) {
                 fullView.style.display = 'block';
             }
             
-            // Llamar a printModule - esto inyecta header y footer
-            ModuleBase.printModule(title, mode);
+            // Imprimir directamente
+            window.print();
             
-            // Ocultar fullView y ELIMINAR header/footer después de imprimir
+            // Ocultar fullView después de imprimir
             setTimeout(function() {
                 if (fullView) {
                     fullView.style.display = 'none';
                 }
-                // ✅ NUEVO: Eliminar header y footer que inyectó ModuleBase
-                const header = document.querySelector('.print-header');
-                const footer = document.querySelector('.print-footer');
-                if (header) header.remove();
-                if (footer) footer.remove();
-            }, 1500);
-        } else {
-            window.print(); // fallback
+            }, 1000);
         }
-    }
     window.printReport = printReport; 
 
     // ============================================
