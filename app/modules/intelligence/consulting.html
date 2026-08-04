@@ -814,24 +814,11 @@
         <div class="control-group">
           <label><i class="far fa-calendar-alt"></i> Year</label>
           <select id="yearSelect">
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026" selected>2026</option>
+            <option value="">Loading years...</option>
           </select>
         </div>
         <div class="control-group">
-          <label><i class="far fa-calendar-alt"></i> Month</label>
-          <select id="monthSelect">
-            <option value="1">January</option><option value="2">February</option>
-            <option value="3">March</option><option value="4">April</option>
-            <option value="5">May</option><option value="6">June</option>
-            <option value="7">July</option><option value="8">August</option>
-            <option value="9">September</option><option value="10">October</option>
-            <option value="11">November</option><option value="12" selected>December</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <button id="generateBtn" class="adk-btn adk-btn-primary"><i class="fas fa-chart-line"></i> Generate Report</button>
+          <button id="generateBtn" class="adk-btn adk-btn-primary"><i class="fas fa-chart-line"></i> Generate Annual Report</button>
         </div>
         <div class="control-group">
           <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled><i class="fas fa-file-pdf"></i> Export PDF</button>
@@ -1026,7 +1013,18 @@
   // ============================================
   async function generateReport() {
     var year = parseInt(document.getElementById('yearSelect').value);
-    var month = parseInt(document.getElementById('monthSelect').value);
+    if (!year) {
+      showToast('Please select a year', 'warning');
+      return;
+    }
+    
+    // Verificar si hay datos suficientes
+    var availability = await callApi('checkYearAvailability', [year]);
+    if (availability && availability.totalMonths < 3) {
+      var confirmMsg = '⚠️ Only ' + availability.totalMonths + ' months of data available for ' + year + 
+                      '. The report will be partial. Continue?';
+      if (!confirm(confirmMsg)) return;
+    }
     
     await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + month + '/' + year);
     
@@ -1053,8 +1051,9 @@
   }
   
   // ============================================
-  // EXPORT PDF
+  // VACIO
   // ============================================
+
   // ============================================
   // IMPRIMIR CONSULTING REPORT - CON VISTA PREVIA
   // ============================================
