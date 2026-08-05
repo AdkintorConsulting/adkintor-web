@@ -922,29 +922,31 @@
   
   async function loadUsers() {
       try {
-          var users = await callApi('getTechniciansAndSupervisor', []);
-          cachedData.users = users;  // ← Guardar en cachedData
+          // ✅ 1. Mostrar "Cargando..." en el dropdown
           var userSelect = document.getElementById('userSelect');
+          if (userSelect) {
+              userSelect.innerHTML = '<option value="">⏳ Loading users...</option>';
+              userSelect.disabled = true;
+          }
+          
+          var users = await callApi('getTechniciansAndSupervisor', []);
+          cachedData.users = users;
+          
           if (userSelect && users) {
               userSelect.innerHTML = '<option value="">-- Select user --</option>';
               for (var i = 0; i < users.length; i++) {
                   var user = users[i];
                   userSelect.innerHTML += '<option value="' + user.email + '">👤 ' + user.name + ' (' + user.role + ')</option>';
               }
+              userSelect.disabled = false;
           }
-          //allDataLoaded.users = true;
-          // ✅ Si hay un usuario seleccionado, cargar tareas
+          
           if (userSelect && userSelect.value) {
               loadTasks();
           }
       } catch (error) {
-      if (window.Logger && typeof Logger.error === 'function') {
-        Logger.error('WO_INTEL', 'loadUsers', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
+          // ... manejo de error
       }
-      // console.error('Error loading users:', error);  // COMENTADO
-      //allDataLoaded.users = true;
-      // checkAllDataLoaded();  ← ELIMINAR
-    }
   }
   
   async function loadTasks() {
