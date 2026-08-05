@@ -1018,23 +1018,29 @@
       return;
     }
     
-    // ✅ Eliminar o comentar la línea que usa 'month'
-    var availability = await callApi('checkYearAvailability', [year]);
-    if (availability && availability.totalMonths < 3) {
-      var confirmMsg = '⚠️ Only ' + availability.totalMonths + ' months of data available for ' + year + 
-                      '. The report will be partial. Continue?';
-      if (!confirm(confirmMsg)) return;
-    }
-    
-    // ✅ CORREGIR: No uses 'month' aquí, solo 'year'
-    await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + year);
-    
-    showLoading('Generating report...');
-    var reportContainer = document.getElementById('reportContent');
-    reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">Loading report data...</p></div>';
+    // ✅ MOSTRAR LOADING INMEDIATAMENTE
+    showLoading('Checking data availability...');
     
     try {
-      // ✅ CORREGIR: Pasar solo 'year' (el backend ignora 'month')
+      var availability = await callApi('checkYearAvailability', [year]);
+      if (availability && availability.totalMonths < 3) {
+        hideLoading();
+        var confirmMsg = '⚠️ Only ' + availability.totalMonths + ' months of data available for ' + year + 
+                        '. The report will be partial. Continue?';
+        if (!confirm(confirmMsg)) {
+          showToast('Report generation cancelled', 'info');
+          return;
+        }
+        showLoading('Generating partial report...');
+      } else {
+        showLoading('Generating report...');
+      }
+      
+      await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + year);
+      
+      var reportContainer = document.getElementById('reportContent');
+      reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">Loading report data...</p></div>';
+      
       var data = await callApi('getConsultingReportData', [year, 12]);
       currentReportData = data;
       renderReport(data);
@@ -1042,13 +1048,14 @@
       if (exportBtn) exportBtn.disabled = false;
       hideLoading();
       showToast('Report generated successfully', 'success');
+      
     } catch (error) {
+      hideLoading();
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('CONSULTING', 'generateReport', error.message).catch(function(e) { console.warn('[CONSULTING] Error log failed:', e); });
       }
-      hideLoading();
       showToast('Error: ' + error.message, 'error');
-      reportContainer.innerHTML = '<div class="alert alert-critical"><i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + error.message + '</div>';
+      document.getElementById('reportContent').innerHTML = '<div class="alert alert-critical"><i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + error.message + '</div>';
     }
   }
   
@@ -1529,10 +1536,8 @@
       
       // Set current date
       var today = new Date();
-      var yearSelect = document.getElementById('yearSelect');
-      var monthSelect = document.getElementById('monthSelect');
-      if (yearSelect) yearSelect.value = today.getFullYear();
-      if (monthSelect) monthSelect.value = today.getMonth() + 1;
+      var yearSelect = document.getElementById('yearSelect');      
+      if (yearSelect) yearSelect.value = today.getFullYear();      
       
       // Load available years
       await loadAvailableYears();
