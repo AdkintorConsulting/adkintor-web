@@ -39,7 +39,7 @@
         <!-- HEADER -->
         <header class="main-header">
             <div class="logo-area">
-                <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR Logo" class="logo-img" id="logoBtn">
+                <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR Logo" class="logo-img" id="logoBtn" style="cursor:pointer;">
                 <h1 class="app-title">ADKINTOR EAMS + FORESIGHT</h1>
             </div>
             <div class="header-actions">
@@ -199,6 +199,7 @@
     // ============================================
     // SESSION MONITORING (every 30 seconds)
     // ============================================
+
     <script>
         (function() {
             // console.log('[SYS] Session monitoring started...');  // COMENTADO
@@ -249,5 +250,31 @@
             // console.log('[SYS] Session monitoring active ✅');  // COMENTADO
         })();
     </script>
+
+    // ============================================
+    // LOGO CLICK - LIMPIAR CACHÉ Y RECARGAR (NUEVO)
+    // ============================================
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoBtn = document.getElementById('logoBtn');
+      if (logoBtn) {
+        logoBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          showToast('🔄 Clearing cache and reloading...', 'info', 3000);
+          
+          if (typeof callApi === 'function') {
+            callApi('clearAllSetupCache', []).then(function(result) {
+              location.reload();
+            }).catch(function() {
+              location.reload();
+            });
+          } else {
+            location.reload();
+          }
+        });
+      }
+    });
+    </script>    
 </body>
 </html>
