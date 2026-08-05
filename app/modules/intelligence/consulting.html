@@ -1018,7 +1018,7 @@
       return;
     }
     
-    // Verificar si hay datos suficientes
+    // ✅ Eliminar o comentar la línea que usa 'month'
     var availability = await callApi('checkYearAvailability', [year]);
     if (availability && availability.totalMonths < 3) {
       var confirmMsg = '⚠️ Only ' + availability.totalMonths + ' months of data available for ' + year + 
@@ -1026,14 +1026,16 @@
       if (!confirm(confirmMsg)) return;
     }
     
-    await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + month + '/' + year);
+    // ✅ CORREGIR: No uses 'month' aquí, solo 'year'
+    await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + year);
     
     showLoading('Generating report...');
     var reportContainer = document.getElementById('reportContent');
     reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">Loading report data...</p></div>';
     
     try {
-      var data = await callApi('getConsultingReportData', [year, month]);
+      // ✅ CORREGIR: Pasar solo 'year' (el backend ignora 'month')
+      var data = await callApi('getConsultingReportData', [year, 12]);
       currentReportData = data;
       renderReport(data);
       var exportBtn = document.getElementById('exportPdfBtn');
