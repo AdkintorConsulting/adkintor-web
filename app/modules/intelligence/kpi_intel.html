@@ -854,6 +854,103 @@
     
     return result.data;
   }
+
+  // ============================================
+  // STK - REFRESH CURRENT MONTH DATA
+  // ============================================
+  async function STK_refreshCurrentMonth() {
+      try {
+          showLoading('Refreshing current month data...');
+          
+          var result = await callApi('STK_refreshCurrentMonth', []);
+          
+          if (result && result.success) {
+              showToast('✅ ' + result.message, 'success');
+              // Recargar los datos después del refresh
+              await loadData();
+          } else {
+              showToast('❌ Error: ' + (result?.error || 'Unknown error'), 'error');
+          }
+      } catch (error) {
+          showToast('❌ Error: ' + error.message, 'error');
+      } finally {
+          hideLoading();
+      }
+  }  
+
+  // ============================================
+  // VERIFICAR SI EL MES SELECCIONADO ES EL ACTUAL
+  // ============================================
+  function isCurrentMonthSelected() {
+      var selectedMonth = parseInt(document.getElementById('monthSelect').value);
+      var selectedYear = parseInt(document.getElementById('yearSelect').value);
+      var today = new Date();
+      var currentMonth = today.getMonth() + 1;
+      var currentYear = today.getFullYear();
+      
+      return (selectedMonth === currentMonth && selectedYear === currentYear);
+  }
+
+  // ============================================
+  // ACTUALIZAR VISIBILIDAD DE TABS SEGÚN MES
+  // ============================================
+  function updateTabVisibility() {
+      var isCurrent = isCurrentMonthSelected();
+      var allTabs = document.querySelectorAll('.tab');
+      var kpiTab = document.querySelector('.tab[data-tab="kpis"]');
+      var otherTabs = document.querySelectorAll('.tab:not([data-tab="kpis"])');
+      
+      if (isCurrent) {
+          // ✅ Mes actual: solo KPIs activo, otros deshabilitados visualmente
+          otherTabs.forEach(function(tab) {
+              tab.style.opacity = '0.4';
+              tab.style.cursor = 'not-allowed';
+              tab.title = 'Only KPIs tab is available for the current month. Select a previous month to view Charts, Financial, or Compare.';
+          });
+          // Asegurar que KPIs esté activo
+          if (kpiTab && !kpiTab.classList.contains('active')) {
+              kpiTab.click();
+          }
+      } else {
+          // ✅ Mes anterior: todos los tabs habilitados
+          otherTabs.forEach(function(tab) {
+              tab.style.opacity = '1';
+              tab.style.cursor = 'pointer';
+              tab.title = '';
+          });
+      }
+  }  
+
+  // ============================================
+  // AGREGAR BOTÓN REFRESH EN PERIOD BAR
+  // ============================================
+  function addRefreshButton() {
+      var periodBar = document.querySelector('.period-bar');
+      if (!periodBar) return;
+      
+      // Verificar si ya existe
+      if (document.getElementById('refreshMonthBtn')) return;
+      
+      var refreshBtn = document.createElement('button');
+      refreshBtn.id = 'refreshMonthBtn';
+      refreshBtn.className = 'adk-btn adk-btn-primary';
+      refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> REFRESH MONTH';
+      refreshBtn.title = 'Refresh current month data from STK';
+      refreshBtn.style.background = '#f59e0b';
+      refreshBtn.style.color = '#0a0a0f';
+      
+      refreshBtn.addEventListener('click', function() {
+          STK_refreshCurrentMonth();
+      });
+      
+      // Insertar antes del botón LOAD DATA
+      var loadBtn = document.getElementById('loadBtn');
+      if (loadBtn) {
+          periodBar.insertBefore(refreshBtn, loadBtn);
+      } else {
+          periodBar.appendChild(refreshBtn);
+      }
+  }  
   
   // ============================================
   // LOGGING FUNCTIONS
@@ -1681,13 +1778,19 @@
   }
   
   // ============================================
-  // EVENT LISTENERS - CORREGIDO CON LAZY LOADING
+  // EVENT LISTENERS - CON CONTROL DE TABS
   // ============================================
   function setupEventListeners() {
-      // ✅ TABS - Carga bajo demanda
+      // ✅ TABS - Control según mes actual
       document.querySelectorAll('.tab').forEach(function(tab) {
           tab.addEventListener('click', function() {
               var tabId = this.dataset.tab;
+              
+              // 🔒 Verificar si es el mes actual y el tab no es KPIs
+              if (isCurrentMonthSelected() && tabId !== 'kpis') {
+                  showToast('📊 Only KPIs tab is available for the current month. Select a previous month to view Charts, Financial, or Compare.', 'warning');
+                  return;
+              }
               
               // Cambiar tab activo visualmente
               document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
@@ -1725,11 +1828,33 @@
           });
       });
       
-      // ✅ BOTÓN LOAD DATA
+      // ✅ BOTÓN LOAD DATA - También verifica mes actual
       var loadBtn = document.getElementById('loadBtn');
       if (loadBtn) {
           loadBtn.addEventListener('click', function() { 
               loadData(); 
+              
+              // ✅ Si es mes actual, deshabilitar tabs no-KPIs visualmente
+              updateTabVisibility();
+          });
+      }
+      
+      // ✅ SELECTORES DE MES/AÑO - Actualiza visibilidad de tabs
+      var monthSelect = document.getElementById('monthSelect');
+      var yearSelect = document.getElementById('yearSelect');
+      
+      if (monthSelect) {
+          monthSelect.addEventListener('change', function() {
+              updateTabVisibility();
+              // Si cambia el mes, recargar datos
+              loadData();
+          });
+      }
+      
+      if (yearSelect) {
+          yearSelect.addEventListener('change', function() {
+              updateTabVisibility();
+              loadData();
           });
       }
       
@@ -1759,6 +1884,7 @@
   // ============================================
   // MAIN INIT
   // ============================================
+  // Dentro de init(), después de setupEventListeners()
   async function init() {
       loadUser();
       showLoading('Loading KPI Dashboard...');
@@ -1771,7 +1897,7 @@
       }
       
       try {
-          // ✅ Configurar mes/año actual
+          // Configurar mes/año actual
           var today = new Date();
           var currentMonth = today.getMonth() + 1;
           var currentYear = today.getFullYear();
@@ -1781,16 +1907,22 @@
           if (monthSelect) monthSelect.value = currentMonth;
           if (yearSelect) yearSelect.value = currentYear;
           
-          // ✅ Configurar event listeners (tabs, botones)
+          // Configurar event listeners (tabs, botones)
           setupEventListeners();
           
-          // ✅ Pedir logo y versión al padre
+          // ✅ AGREGAR BOTÓN REFRESH
+          addRefreshButton();
+          
+          // ✅ Actualizar visibilidad de tabs según mes
+          updateTabVisibility();
+          
+          // Pedir logo y versión al padre
           if (window.parent !== window) {
               window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
               window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
           }
           
-          // ✅ Cargar datos
+          // Cargar datos
           await loadData();
           
           hideLoading();
