@@ -1588,16 +1588,14 @@
   }
   
   function renderFinancialTab(data) {
-    // ✅ Validar que data existe
+    // ✅ VALIDAR PRIMERO
     if (!data || typeof data !== 'object') {
       document.getElementById('financialContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-pulse"></i> Loading financial data...</div>';
       return;
     }
     
-    // ✅ CORREGIDO: Usar data.financial (ya viene del backend)
+    // ✅ LUEGO ASIGNAR
     var fin = data.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
-    
-    // ✅ CORREGIDO: data.topAssetsByCost ya viene del backend
     var topAssetsByCost = data.topAssetsByCost || [];
     
     var html = '<div class="adk-card" style="margin-bottom: 20px;"><div class="card-title"><i class="fas fa-dollar-sign"></i> BUDGET vs ACTUAL</div><div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">' +
