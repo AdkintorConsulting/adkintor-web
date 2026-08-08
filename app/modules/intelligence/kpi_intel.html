@@ -1092,9 +1092,11 @@
           }
           
           // ✅ Renderizar tab activo si ya tiene datos
+          // ✅ Renderizar tab activo si ya tiene datos
           var activeTab = document.querySelector('.tab.active');
           if (activeTab) {
               var tabId = activeTab.dataset.tab;
+              console.log('[KPI] Renderizando tab activo:', tabId);  // ← LOG PARA DEBUG
               if (tabId === 'charts' && currentData) {
                   renderChartsTab(currentData);
               } else if (tabId === 'financial' && currentData) {
@@ -1102,6 +1104,9 @@
               } else if (tabId === 'compare' && currentData) {
                   renderCompareTab(currentData);
               }
+          } else {
+              // ✅ Si no hay tab activo, renderizar KPIs por defecto
+              console.log('[KPI] No hay tab activo, renderizando KPIs');
           }
           
       } catch (bgError) {
@@ -1850,10 +1855,19 @@
               window.parent.postMessage({ type: 'REQUEST_LOGO' }, '*');
               window.parent.postMessage({ type: 'REQUEST_VERSION' }, '*');
           }
-          
+
           // Cargar datos
           await loadData();
-          
+
+          // ✅ Renderizar KPIs (ya debería estar hecho por loadData)
+          // Pero si no, forzar renderizado
+
+          // ✅ Si el tab activo es charts, renderizarlo después de cargar background
+          var activeTab = document.querySelector('.tab.active');
+          if (activeTab && activeTab.dataset.tab === 'charts' && currentData) {
+              renderChartsTab(currentData);
+          }
+
           hideLoading();
           showToast('KPI Dashboard loaded successfully ✅', 'success');
           
