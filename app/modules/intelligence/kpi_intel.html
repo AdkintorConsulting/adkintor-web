@@ -862,7 +862,8 @@
       try {
           showLoading('Refreshing current month data...');
           
-          var result = await callApi('STK_refreshCurrentMonth', []);
+          // ✅ CORREGIDO: Usar refreshCurrentMonth (sin STK_)
+          var result = await callApi('refreshCurrentMonth', []);
           
           if (result && result.success) {
               showToast('✅ ' + result.message, 'success');
@@ -876,7 +877,7 @@
       } finally {
           hideLoading();
       }
-  }  
+  }
 
   // ============================================
   // VERIFICAR SI EL MES SELECCIONADO ES EL ACTUAL
@@ -980,65 +981,52 @@
   // ============================================
   // DATA LOADING FUNCTIONS
   // ============================================
-  // ✅ NUEVA FUNCIÓN: Carga solo el tab activo
   async function loadTabData(tabId) {
-    var month = parseInt(document.getElementById('monthSelect').value);
-    var year = parseInt(document.getElementById('yearSelect').value);
-    
-    showLoading('Loading ' + tabId + ' data...');
-    
-    try {
-      var data = {};
+      var month = parseInt(document.getElementById('monthSelect').value);
+      var year = parseInt(document.getElementById('yearSelect').value);
       
-      // ✅ Solo cargar el tab activo
-      if (tabId === 'kpis' || tabId === 'all') {
-        var kpiData = await callApi('KPI_getKPIs', [year, month]);
-        Object.assign(data, kpiData);
-        if (kpiData && kpiData.success !== false) {
-          renderKPITab(data);
-        }
-      }
+      showLoading('Loading ' + tabId + ' data...');
       
-      if (tabId === 'charts' || tabId === 'all') {
-        var chartsData = await callApi('KPI_getCharts', [year, month]);
-        // ✅ Mezclar con datos existentes
-        data.trends = chartsData.trends || data.trends;
-        data.woDistribution = chartsData.woDistribution || data.woDistribution;
-        if (chartsData && chartsData.success !== false) {
-          renderChartsTab(data);
-        }
-      }
-      
-      if (tabId === 'financial' || tabId === 'all') {
-          // ✅ Usar backend optimizado (no frontend)
-          var financialData = await callApi('KPI_getFinancial', [year, month]);
-          if (financialData && financialData.success !== false) {
-              data.financial = financialData.financial;
-              data.topAssetsByCost = financialData.topAssetsByCost;
-          } else {
-              // Fallback: estructura vacía
-              data.financial = { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
-              data.topAssetsByCost = [];
+      try {
+          if (tabId === 'charts') {
+              var chartsData = await callApi('KPI_getCharts', [year, month]);
+              if (chartsData && chartsData.success !== false) {
+                  if (!currentData) currentData = {};
+                  currentData.trends = chartsData.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
+                  currentData.woDistribution = chartsData.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
+                  renderChartsTab(currentData);
+              } else {
+                  showToast('Error loading charts: ' + (chartsData?.error || 'Unknown'), 'error');
+              }
+          } else if (tabId === 'financial') {
+              var financialData = await callApi('KPI_getFinancial', [year, month]);
+              if (financialData && financialData.success !== false) {
+                  if (!currentData) currentData = {};
+                  currentData.financial = financialData.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
+                  currentData.topAssetsByCost = financialData.topAssetsByCost || [];
+                  renderFinancialTab(currentData);
+              } else {
+                  showToast('Error loading financial: ' + (financialData?.error || 'Unknown'), 'error');
+              }
+          } else if (tabId === 'compare') {
+              var compareType = document.getElementById('compareSelect').value;
+              var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
+              if (compareData && compareData.success !== false) {
+                  if (!currentData) currentData = {};
+                  currentData.compareData = compareData;
+                  renderCompareTab(currentData);
+              } else {
+                  showToast('Error loading compare: ' + (compareData?.error || 'Unknown'), 'error');
+              }
           }
-          renderFinancialTab(data);
+          
+          hideLoading();
+          
+      } catch (error) {
+          hideLoading();
+          showToast('Error loading ' + tabId + ': ' + error.message, 'error');
+          console.error('Load error:', error);
       }
-      
-      if (tabId === 'compare' || tabId === 'all') {
-        var compareType = document.getElementById('compareSelect').value;
-        var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
-        data.compareData = compareData;
-        renderCompareTab(data);
-      }
-      
-      // ✅ Guardar datos globales
-      currentData = data;
-      hideLoading();
-      
-    } catch (error) {
-      hideLoading();
-      showToast('Error loading ' + tabId + ': ' + error.message, 'error');
-      console.error('Load error:', error);
-    }
   }
 
   // ✅ Función principal - SOLO carga KPIs al inicio
@@ -1078,45 +1066,47 @@
 
   // ✅ NUEVA FUNCIÓN: Carga otros tabs en segundo plano
   async function loadBackgroundData(year, month) {
-    try {
-      // Cargar Charts
-      var chartsData = await callApi('KPI_getCharts', [year, month]);
-      if (currentData) {
-        currentData.trends = chartsData.trends || currentData.trends;
-        currentData.woDistribution = chartsData.woDistribution || currentData.woDistribution;
+      try {
+          // ✅ Cargar Charts
+          var chartsData = await callApi('KPI_getCharts', [year, month]);
+          if (chartsData && chartsData.success !== false) {
+              if (!currentData) currentData = {};
+              currentData.trends = chartsData.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
+              currentData.woDistribution = chartsData.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
+          }
+          
+          // ✅ Cargar Financial
+          var financialData = await callApi('KPI_getFinancial', [year, month]);
+          if (financialData && financialData.success !== false) {
+              if (!currentData) currentData = {};
+              currentData.financial = financialData.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
+              currentData.topAssetsByCost = financialData.topAssetsByCost || [];
+          }
+          
+          // ✅ Cargar Compare
+          var compareType = document.getElementById('compareSelect').value;
+          var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
+          if (compareData && compareData.success !== false) {
+              if (!currentData) currentData = {};
+              currentData.compareData = compareData;
+          }
+          
+          // ✅ Renderizar tab activo si ya tiene datos
+          var activeTab = document.querySelector('.tab.active');
+          if (activeTab) {
+              var tabId = activeTab.dataset.tab;
+              if (tabId === 'charts' && currentData) {
+                  renderChartsTab(currentData);
+              } else if (tabId === 'financial' && currentData) {
+                  renderFinancialTab(currentData);
+              } else if (tabId === 'compare' && currentData) {
+                  renderCompareTab(currentData);
+              }
+          }
+          
+      } catch (bgError) {
+          console.warn('[KPI] Background load error:', bgError.message);
       }
-      
-      // Cargar Financial (desde el backend optimizado)
-      var financialData = await callApi('KPI_getFinancial', [year, month]);
-      if (currentData && financialData && financialData.success !== false) {
-        currentData.financial = financialData.financial;
-        currentData.topAssetsByCost = financialData.topAssetsByCost;
-      }
-      
-      // Cargar Compare
-      var compareType = document.getElementById('compareSelect').value;
-      var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
-      if (currentData) {
-        currentData.compareData = compareData;
-      }
-      
-      // ✅ Renderizar tabs que ya están visibles
-      var activeTab = document.querySelector('.tab.active');
-      if (activeTab) {
-        var tabId = activeTab.dataset.tab;
-        if (tabId === 'charts' && currentData) {
-          renderChartsTab(currentData);
-        } else if (tabId === 'financial' && currentData) {
-          renderFinancialTab(currentData);
-        } else if (tabId === 'compare' && currentData) {
-          renderCompareTab(currentData);
-        }
-      }
-      
-    } catch (bgError) {
-      // ✅ No mostrar error, solo log
-      console.warn('[KPI] Background load error:', bgError.message);
-    }
   }
   
   async function loadCompareData() {
@@ -1471,10 +1461,20 @@
       return;
     }
     
-    // ✅ CORREGIDO: Usar data.trends (ya viene del backend)
-    var trends = data.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
+    // ✅ Asegurar que trends existe
+    var trends = data.trends || { 
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      availability: Array(12).fill(0),
+      pmCompliance: Array(12).fill(0),
+      mtbf: Array(12).fill(0),
+      mttr: Array(12).fill(0),
+      actualSpend: Array(12).fill(0),
+      budgetSpend: Array(12).fill(0),
+      correctiveTrend: Array(12).fill(0),
+      preventiveTrend: Array(12).fill(0),
+      otherTrend: Array(12).fill(0)
+    };
     
-    // ✅ CORREGIDO: Usar data.woDistribution (ya viene del backend)
     var woDist = data.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
     
     var html = '<div class="adk-card" style="margin-bottom: 20px; text-align: center;"><div class="card-title" style="text-align: left;"><i class="fas fa-chart-line"></i> OPERATIONAL TRENDS (Last 12 Months)</div><div class="chart-container" style="display: flex; justify-content: center; align-items: center; width: 100%;"><canvas id="trendCanvas" style="max-width: 100%;"></canvas></div></div>' +
@@ -1487,39 +1487,25 @@
     // Trend Chart
     var trendCanvas = document.getElementById('trendCanvas');
     if (trendCanvas) {
-      var ctx = trendCanvas.getContext('2d');
       if (trendChart) trendChart.destroy();
-      trendChart = new Chart(ctx, {
+      trendChart = new Chart(trendCanvas.getContext('2d'), {
         type: 'line',
         data: {
-          labels: trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          labels: trends.months,
           datasets: [
-            { label: 'Availability (%)', data: trends.availability || Array(12).fill(0), borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#00e676', borderWidth: 2, yAxisID: 'y' },
-            { label: 'PM Compliance (%)', data: trends.pmCompliance || Array(12).fill(0), borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#00e5ff', borderWidth: 2, yAxisID: 'y' },
-            { label: 'MTBF (days)', data: trends.mtbf || Array(12).fill(0), borderColor: '#ffb74d', backgroundColor: 'rgba(255,183,77,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#ffb74d', borderWidth: 2, yAxisID: 'y1' },
-            { label: 'MTTR (hrs)', data: trends.mttr || Array(12).fill(0), borderColor: '#ff5252', backgroundColor: 'rgba(255,82,82,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#ff5252', borderWidth: 2, yAxisID: 'y1' }
+            { label: 'Availability (%)', data: trends.availability, borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#00e676', borderWidth: 2, yAxisID: 'y' },
+            { label: 'PM Compliance (%)', data: trends.pmCompliance, borderColor: '#00e5ff', backgroundColor: 'rgba(0,229,255,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#00e5ff', borderWidth: 2, yAxisID: 'y' },
+            { label: 'MTBF (days)', data: trends.mtbf, borderColor: '#ffb74d', backgroundColor: 'rgba(255,183,77,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#ffb74d', borderWidth: 2, yAxisID: 'y1' },
+            { label: 'MTTR (hrs)', data: trends.mttr, borderColor: '#ff5252', backgroundColor: 'rgba(255,82,82,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#ff5252', borderWidth: 2, yAxisID: 'y1' }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: { 
-            legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } 
-          },
+          plugins: { legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } },
           scales: {
-            y: { 
-              title: { display: true, text: 'Percentage (%)', color: '#94a3b8', font: { family: 'Inter' } }, 
-              ticks: { color: '#94a3b8', min: 0, max: 100, stepSize: 20 }, 
-              grid: { color: '#2d2d44' },
-              suggestedMin: 0,
-              suggestedMax: 100
-            },
-            y1: { 
-              position: 'right', 
-              title: { display: true, text: 'Days / Hours', color: '#94a3b8', font: { family: 'Inter' } }, 
-              ticks: { color: '#94a3b8' }, 
-              grid: { drawOnChartArea: false } 
-            },
+            y: { title: { display: true, text: 'Percentage (%)', color: '#94a3b8' }, ticks: { color: '#94a3b8', min: 0, max: 100, stepSize: 20 }, grid: { color: '#2d2d44' } },
+            y1: { position: 'right', title: { display: true, text: 'Days / Hours', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { drawOnChartArea: false } },
             x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d2d44' } }
           }
         }
@@ -1529,32 +1515,23 @@
     // Spend Chart
     var spendCanvas = document.getElementById('spendCanvas');
     if (spendCanvas) {
-      var spendCtx = spendCanvas.getContext('2d');
       if (spendChartInstance) spendChartInstance.destroy();
-      spendChartInstance = new Chart(spendCtx, {
+      spendChartInstance = new Chart(spendCanvas.getContext('2d'), {
         type: 'bar',
         data: {
-          labels: trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          labels: trends.months,
           datasets: [
-            { label: 'Actual Spend', data: trends.actualSpend || Array(12).fill(0), backgroundColor: 'rgba(0,229,255,0.8)', borderColor: '#00e5ff', borderWidth: 2, borderRadius: 6 },
-            { label: 'Budget', data: trends.budgetSpend || Array(12).fill(0), backgroundColor: 'rgba(148,163,184,0.6)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 6 }
+            { label: 'Actual Spend', data: trends.actualSpend, backgroundColor: 'rgba(0,229,255,0.8)', borderColor: '#00e5ff', borderWidth: 2, borderRadius: 6 },
+            { label: 'Budget', data: trends.budgetSpend, backgroundColor: 'rgba(148,163,184,0.6)', borderColor: '#94a3b8', borderWidth: 2, borderRadius: 6 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: { 
-            legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } 
-          },
-          scales: { 
-            y: { 
-              ticks: { color: '#94a3b8', font: { family: 'Inter' } }, 
-              grid: { color: '#2d2d44' } 
-            }, 
-            x: { 
-              ticks: { color: '#94a3b8', font: { family: 'Inter' } }, 
-              grid: { color: '#2d2d44' } 
-            } 
+          plugins: { legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } },
+          scales: {
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#2d2d44' } },
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d2d44' } }
           }
         }
       });
@@ -1563,90 +1540,42 @@
     // Pie Chart
     var pieCanvas = document.getElementById('woPieCanvas');
     if (pieCanvas) {
-      var pieCtx = pieCanvas.getContext('2d');
       if (pieChartInstance) pieChartInstance.destroy();
-      pieChartInstance = new Chart(pieCtx, {
+      pieChartInstance = new Chart(pieCanvas.getContext('2d'), {
         type: 'pie',
         data: {
           labels: ['Corrective', 'Preventive', 'Op. Service', 'General Service', 'Others'],
-          datasets: [{ 
-            data: [woDist.corrective, woDist.preventive, woDist.opService || 0, woDist.generalService || 0, woDist.others || 0], 
-            backgroundColor: ['#ff5252', '#00e676', '#ffb74d', '#00e5ff', '#a855f7'],
-            borderColor: '#1a1a2e',
-            borderWidth: 2
-          }]
+          datasets: [{ data: [woDist.corrective, woDist.preventive, woDist.opService || 0, woDist.generalService || 0, woDist.others || 0], backgroundColor: ['#ff5252', '#00e676', '#ffb74d', '#00e5ff', '#a855f7'], borderColor: '#1a1a2e', borderWidth: 2 }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: { 
-            legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } 
-          }
+          plugins: { legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } }
         }
       });
     }
     
-    // ✅ Maintenance Trend Chart (Corrective vs Preventive vs Others) - LÍNEA DE TENDENCIA
+    // Maintenance Trend Chart
     var maintCanvas = document.getElementById('maintenanceTrendCanvas');
     if (maintCanvas) {
-      var maintCtx = maintCanvas.getContext('2d');
       if (maintChartInstance) maintChartInstance.destroy();
-      maintChartInstance = new Chart(maintCtx, {
+      maintChartInstance = new Chart(maintCanvas.getContext('2d'), {
         type: 'line',
         data: {
-          labels: trends.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          labels: trends.months,
           datasets: [
-            { 
-              label: 'Corrective', 
-              data: trends.correctiveTrend || Array(12).fill(0), 
-              borderColor: '#ff5252', 
-              backgroundColor: 'rgba(255,82,82,0.1)', 
-              tension: 0.3, 
-              fill: true, 
-              pointBackgroundColor: '#ff5252', 
-              borderWidth: 2 
-            },
-            { 
-              label: 'Preventive', 
-              data: trends.preventiveTrend || Array(12).fill(0), 
-              borderColor: '#00e676', 
-              backgroundColor: 'rgba(0,230,118,0.1)', 
-              tension: 0.3, 
-              fill: true, 
-              pointBackgroundColor: '#00e676', 
-              borderWidth: 2 
-            },
-            { 
-              label: 'Others', 
-              data: trends.otherTrend || Array(12).fill(0), 
-              borderColor: '#94a3b8', 
-              backgroundColor: 'rgba(148,163,184,0.1)', 
-              tension: 0.3, 
-              fill: true, 
-              pointBackgroundColor: '#94a3b8', 
-              borderWidth: 2 
-            }
+            { label: 'Corrective', data: trends.correctiveTrend, borderColor: '#ff5252', backgroundColor: 'rgba(255,82,82,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#ff5252', borderWidth: 2 },
+            { label: 'Preventive', data: trends.preventiveTrend, borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#00e676', borderWidth: 2 },
+            { label: 'Others', data: trends.otherTrend, borderColor: '#94a3b8', backgroundColor: 'rgba(148,163,184,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#94a3b8', borderWidth: 2 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: { 
-            legend: { 
-              position: 'top', 
-              labels: { color: '#f1f5f9', font: { family: 'Inter' } } 
-            } 
-          },
-          scales: { 
-            y: { 
-              ticks: { color: '#94a3b8', font: { family: 'Inter' }, stepSize: 1 }, 
-              grid: { color: '#2d2d44' },
-              title: { display: true, text: 'Number of Work Orders', color: '#94a3b8', font: { family: 'Inter' } }
-            }, 
-            x: { 
-              ticks: { color: '#94a3b8', font: { family: 'Inter' } }, 
-              grid: { color: '#2d2d44' } 
-            } 
+          plugins: { legend: { position: 'top', labels: { color: '#f1f5f9', font: { family: 'Inter' } } } },
+          scales: {
+            y: { ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#2d2d44' }, title: { display: true, text: 'Number of Work Orders', color: '#94a3b8' } },
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d2d44' } }
           }
         }
       });
