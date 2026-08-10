@@ -1266,7 +1266,7 @@
       '<div class="kpi-grid">' +
         '<div class="kpi-card"><div class="kpi-value gold">$' + financial.totalSpend.toLocaleString() + '</div><div class="kpi-label">Total Spend</div></div>' +
         '<div class="kpi-card"><div class="kpi-value">$' + financial.budgetAmount.toLocaleString() + '</div><div class="kpi-label">Budget</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value ' + (financial.variance > 0 ? 'danger' : 'success') + '">' + financial.variance.toFixed(1) + '%</div><div class="kpi-label">Variance</div><div class="kpi-status ' + varianceStatusClass + '">' + varianceIcon + ' ' + financial.varianceStatus + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (financial.variance > 0 ? 'danger' : 'success') + '">' + (financial.variance >= 0 ? '+' : '-') + '$' + Math.abs(financial.variance).toLocaleString() + '</div><div class="kpi-label">Variance</div><div class="kpi-status ' + varianceStatusClass + '">' + varianceIcon + ' ' + financial.varianceStatus + '</div></div>' +
       '</div>';
     
     html += '<h4><i class="fas fa-trophy"></i> Top 5 Assets by Maintenance Cost</h4>' +
