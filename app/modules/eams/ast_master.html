@@ -1242,10 +1242,10 @@
           for (let i = 0; i < assets.length; i++) {
               const a = assets[i];
               
-              // ✅ Si es header de área Y tiene nombre
+              // ✅ Si es área header, mostrar solo el nombre (NO usar nameRaw)
               if (a.isAreaHeader && a.name && a.name.trim() !== '') {
                   tableRows += '<tr style="background:#e2e8f0; font-weight:bold;">';
-                  tableRows += '<td colspan="8" style="padding:8px; border-bottom:1px solid #94a3b8;">🏭 ' + sanitizeString(a.name) + '</td>';
+                  tableRows += '<td colspan="8" style="padding:8px; border-bottom:1px solid #94a3b8;">' + sanitizeString(a.name) + '</td>';
                   tableRows += '</tr>';
                   continue;
               }
