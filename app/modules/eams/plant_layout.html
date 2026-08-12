@@ -324,26 +324,7 @@
             object-fit: contain !important;
         }
 
-        /* ============================================
-           ORIENTACIÓN DE PÁGINA (FUERA DE @media print)
-           ============================================ */
-        @page print-portrait {
-            size: portrait !important;
-            margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
-        }
-        
-        @page print-landscape {
-            size: landscape !important;
-            margin: 0.5cm 1cm 1.5cm 1cm !important;
-        }
-        
-        body.print-portrait {
-            page: print-portrait;
-        }
-        
-        body.print-landscape {
-            page: print-landscape;
-        }
+
 
         /* ============================================
            ESTILOS DE IMPRESIÓN
@@ -482,14 +463,19 @@
     // ============================================
     // RECIBIR MENSAJES DEL PADRE (SOLO UNA VEZ)
     // ============================================
+    let pendingLogoUrl = null;
+
     window.addEventListener('message', function(event) {
         const data = event.data;
         if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+            // Guardar en variable global
+            pendingLogoUrl = data.logoUrl;
+            
             // Logo en el header
             const img = document.getElementById('companyLogo');
             if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
             
-            // ✅ NUEVO: Logo en la vista previa (#fullView)
+            // Intentar actualizar #fullView si ya existe
             const reportLogo = document.querySelector('#fullView .report-logo');
             if (reportLogo) {
                 reportLogo.src = data.logoUrl;
@@ -642,7 +628,7 @@
     }
 
     function buildPlantLayoutHTML(imageSrc) {
-        var logoUrl = document.getElementById('companyLogo')?.src || '';
+        var logoUrl = pendingLogoUrl || document.getElementById('companyLogo')?.src || '';
         
         return `
             <div class="report-paper" style="background: white; max-width: 1100px; width: 95%; margin: 0 auto; padding: 30px 40px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
@@ -683,18 +669,32 @@
         // Mostrar el modal
         preview.style.display = 'block';
         
-        // ✅ Agregar clase al body para orientación
-        document.body.classList.remove('print-portrait', 'print-landscape');
-        document.body.classList.add('print-' + orientation);
+        // ✅ Forzar orientación con CSS dinámico
+        var style = document.getElementById('printOrientationStyle');
+        if (style) style.remove();
         
-        // Imprimir directamente
-        window.print();
+        var newStyle = document.createElement('style');
+        newStyle.id = 'printOrientationStyle';
+        var pageSize = (orientation === 'landscape') ? 'landscape' : 'portrait';
+        newStyle.innerHTML = `
+            @page {
+                size: ${pageSize} !important;
+                margin: 0.5cm 1cm 1.5cm 1cm !important;
+            }
+        `;
+        document.head.appendChild(newStyle);
+        
+        // Pequeño retraso para aplicar el CSS
+        setTimeout(function() {
+            window.print();
+        }, 200);
         
         // Limpiar después de imprimir
         setTimeout(function() {
-            document.body.classList.remove('print-portrait', 'print-landscape');
+            var styleEl = document.getElementById('printOrientationStyle');
+            if (styleEl) styleEl.remove();
             preview.style.display = 'none';
-        }, 1500);
+        }, 2000);
     }
 
     function closePreview() {
