@@ -1250,8 +1250,8 @@
                   
                   tableRows += '<tr>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.area) + '</td>';
-                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.id) + '</td>';
-                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.nameRaw || a.name) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + (a.id || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + (a.nameRaw || a.name || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.type || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.manufacturer || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.model || '—') + '</td>';
