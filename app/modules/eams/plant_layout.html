@@ -298,75 +298,6 @@
             pointer-events: none;
         }
 
-        @media print {
-            .layout-header {
-                background: white !important;
-                color: #004a99 !important;
-                border-bottom: 2px solid #004a99 !important;
-            }
-            
-            .layout-header h2 {
-                color: #004a99 !important;
-            }
-            
-            .zoom-controls,
-            .zoom-controls button,
-            .layout-header button {
-                display: none !important;
-            }
-            
-            .viewport {
-                background: white !important;
-            }
-            
-            .image-container img {
-                max-width: 100% !important;
-                height: auto !important;
-            }
-            
-            .module-header,
-            .breadcrumbs,
-            .module-footer {
-                display: none !important;
-            }
-        } 
-
-        /* ============================================
-          PLANT LAYOUT - VISTA PREVIA
-          ============================================ */
-        #fullView.plant-preview .report-paper {
-            max-width: 1100px !important;
-            width: 95% !important;
-            padding: 30px 40px !important;
-        }
-
-        #fullView.plant-preview img {
-            max-width: 100% !important;
-            max-height: 70vh !important;
-            object-fit: contain !important;
-        }
-
-        @media print {
-            .plant-print-portrait @page {
-                size: portrait !important;
-            }
-            
-            .plant-print-landscape @page {
-                size: landscape !important;
-            }
-            
-            .plant-print-portrait .no-print,
-            .plant-print-landscape .no-print {
-                display: none !important;
-            }
-            
-            .plant-print-portrait img,
-            .plant-print-landscape img {
-                max-width: 100% !important;
-                height: auto !important;
-            }
-        }  
-
         /* ============================================
           REPORT LOGO - ESTILOS PARA IMPRESIÓN
           ============================================ */
@@ -394,32 +325,63 @@
         }
 
         /* ============================================
-          PLANT LAYOUT - IMPRESIÓN
-          ============================================ */
+           ESTILOS DE IMPRESIÓN (UN SOLO BLOQUE)
+           ============================================ */
         @media print {
-            .plant-print-portrait {
-                @page {
-                    size: portrait !important;
-                }
-            }
-            
-            .plant-print-landscape {
-                @page {
-                    size: landscape !important;
-                }
-            }
-            
-            .plant-print-portrait .no-print,
-            .plant-print-landscape .no-print {
+            /* Ocultar todo EXCEPTO #fullView */
+            body > *:not(#fullView) {
                 display: none !important;
             }
             
-            .plant-print-portrait img,
-            .plant-print-landscape img {
-                max-width: 100% !important;
+            #fullView {
+                display: block !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                z-index: 9999 !important;
+                overflow: visible !important;
                 height: auto !important;
             }
-        }                    
+            
+            #fullView .no-print {
+                display: none !important;
+            }
+            
+            .report-paper {
+                box-shadow: none !important;
+                background: white !important;
+                width: 100% !important;
+                padding: 15px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            
+            /* Estilos para Plant Layout */
+            #fullView.plant-preview .report-paper {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 15px 20px !important;
+            }
+            
+            #fullView.plant-preview img {
+                max-width: 100% !important;
+                max-height: 70vh !important;
+                object-fit: contain !important;
+            }
+            
+            .report-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                max-width: 60px !important;
+                max-height: 40px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -680,46 +642,30 @@
         var preview = document.getElementById('fullView');
         if (!preview) return;
         
-        var clone = preview.cloneNode(true);
-        clone.id = 'printClone';
-        clone.style.position = 'relative';
-        clone.style.background = 'white';
-        clone.style.padding = '20px';
-        clone.style.zIndex = '9999';
-        clone.style.display = 'block';
-        clone.style.overflow = 'visible';
-        clone.style.height = 'auto';
+        // Mostrar el modal
+        preview.style.display = 'block';
         
-        var noPrint = clone.querySelectorAll('.no-print');
-        noPrint.forEach(function(el) { el.style.display = 'none'; });
-        
-        var logo = clone.querySelector('.report-logo');
-        if (logo) {
-            var logoImg = document.getElementById('companyLogo');
-            if (logoImg && logoImg.src) {
-                logo.src = logoImg.src;
-                logo.style.display = 'block';
+        // ✅ Forzar orientación con CSS dinámico
+        var style = document.createElement('style');
+        style.id = 'printOrientationStyle';
+        var pageSize = (orientation === 'landscape') ? 'landscape' : 'portrait';
+        style.innerHTML = `
+            @page {
+                size: ${pageSize} !important;
+                margin: 0.5cm 1cm 1.5cm 1cm !important;
             }
-        }
+        `;
+        document.head.appendChild(style);
         
-        document.body.appendChild(clone);
+        // Imprimir
+        window.print();
         
-        // ✅ CORREGIDO: Aplicar clase al body y al html
-        document.documentElement.classList.add('plant-print-' + orientation);
-        document.body.classList.add('plant-print-' + orientation);
-        
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Plant Layout', 'eams');
-        } else {
-            window.print();
-        }
-        
+        // Limpiar después de imprimir
         setTimeout(function() {
-            document.documentElement.classList.remove('plant-print-portrait', 'plant-print-landscape');
-            document.body.classList.remove('plant-print-portrait', 'plant-print-landscape');
-            var el = document.getElementById('printClone');
-            if (el) el.remove();
-        }, 2000);
+            var styleEl = document.getElementById('printOrientationStyle');
+            if (styleEl) styleEl.remove();
+            preview.style.display = 'none';
+        }, 1500);
     }
 
     function closePreview() {
