@@ -381,6 +381,14 @@
                 max-width: 60px !important;
                 max-height: 40px !important;
             }
+            
+            /* ✅ LOGO MÁS PEQUEÑO (sobrescribe el anterior) */
+            #fullView .report-logo {
+                max-width: 50px !important;
+                max-height: 35px !important;
+                top: 10px !important;
+                right: 15px !important;
+            }
         }
     </style>
 </head>
@@ -645,7 +653,7 @@
         // Mostrar el modal
         preview.style.display = 'block';
         
-        // ✅ Forzar orientación con CSS dinámico
+        // ✅ Forzar orientación con CSS dinámico (dar tiempo a que se aplique)
         var style = document.createElement('style');
         style.id = 'printOrientationStyle';
         var pageSize = (orientation === 'landscape') ? 'landscape' : 'portrait';
@@ -657,15 +665,17 @@
         `;
         document.head.appendChild(style);
         
-        // Imprimir
-        window.print();
+        // ✅ Pequeño retraso para que el CSS se aplique antes de imprimir
+        setTimeout(function() {
+            window.print();
+        }, 200);
         
         // Limpiar después de imprimir
         setTimeout(function() {
             var styleEl = document.getElementById('printOrientationStyle');
             if (styleEl) styleEl.remove();
             preview.style.display = 'none';
-        }, 1500);
+        }, 2000);
     }
 
     function closePreview() {
