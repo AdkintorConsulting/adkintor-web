@@ -325,7 +325,28 @@
         }
 
         /* ============================================
-           ESTILOS DE IMPRESIÓN (UN SOLO BLOQUE)
+           ORIENTACIÓN DE PÁGINA (FUERA DE @media print)
+           ============================================ */
+        @page print-portrait {
+            size: portrait !important;
+            margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
+        }
+        
+        @page print-landscape {
+            size: landscape !important;
+            margin: 0.5cm 1cm 1.5cm 1cm !important;
+        }
+        
+        body.print-portrait {
+            page: print-portrait;
+        }
+        
+        body.print-landscape {
+            page: print-landscape;
+        }
+
+        /* ============================================
+           ESTILOS DE IMPRESIÓN
            ============================================ */
         @media print {
             /* Ocultar todo EXCEPTO #fullView */
@@ -374,20 +395,17 @@
                 object-fit: contain !important;
             }
             
-            .report-logo {
+            /* ✅ LOGO CORREGIDO */
+            #fullView .report-logo {
                 position: absolute !important;
                 top: 10px !important;
                 right: 15px !important;
-                max-width: 60px !important;
-                max-height: 40px !important;
-            }
-            
-            /* ✅ LOGO MÁS PEQUEÑO (sobrescribe el anterior) */
-            #fullView .report-logo {
                 max-width: 50px !important;
                 max-height: 35px !important;
-                top: 10px !important;
-                right: 15px !important;
+                width: auto !important;
+                height: auto !important;
+                object-fit: contain !important;
+                z-index: 10 !important;
             }
         }
     </style>
@@ -653,29 +671,18 @@
         // Mostrar el modal
         preview.style.display = 'block';
         
-        // ✅ Forzar orientación con CSS dinámico (dar tiempo a que se aplique)
-        var style = document.createElement('style');
-        style.id = 'printOrientationStyle';
-        var pageSize = (orientation === 'landscape') ? 'landscape' : 'portrait';
-        style.innerHTML = `
-            @page {
-                size: ${pageSize} !important;
-                margin: 0.5cm 1cm 1.5cm 1cm !important;
-            }
-        `;
-        document.head.appendChild(style);
+        // ✅ Agregar clase al body para orientación
+        document.body.classList.remove('print-portrait', 'print-landscape');
+        document.body.classList.add('print-' + orientation);
         
-        // ✅ Pequeño retraso para que el CSS se aplique antes de imprimir
-        setTimeout(function() {
-            window.print();
-        }, 200);
+        // Imprimir directamente
+        window.print();
         
         // Limpiar después de imprimir
         setTimeout(function() {
-            var styleEl = document.getElementById('printOrientationStyle');
-            if (styleEl) styleEl.remove();
+            document.body.classList.remove('print-portrait', 'print-landscape');
             preview.style.display = 'none';
-        }, 2000);
+        }, 1500);
     }
 
     function closePreview() {
