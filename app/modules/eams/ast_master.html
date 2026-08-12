@@ -7,579 +7,605 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
     <style>
-        /* ============================================
-           BASE
-           ============================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f9;
-            height: 100vh;
-            overflow: hidden;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* ============================================
-           WRAPPER
-           ============================================ */
-        .module-wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: #f4f6f9;
-        }
-        
-        /* ============================================
-           CABECERA - AZUL OSCURO
-           ============================================ */
-        .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background: #1a1a2e;
-            border-bottom: 2px solid #2a2f4a;
-            flex-shrink: 0;
-            min-height: 56px;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        
-        .module-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-badge {
-            font-size: 12px;
-            color: #e0e0e0;
-            background: rgba(255,255,255,0.15);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .company-logo {
-            height: 32px;
-            width: auto;
-            display: none;
-        }
-        
-        /* ============================================
-           BREADCRUMBS
-           ============================================ */
-        .breadcrumbs {
-            padding: 8px 20px;
-            font-size: 12px;
-            color: #888;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-            flex-shrink: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .breadcrumbs .current {
-            color: #1a1a2e;
-            font-weight: 600;
-        }
-        
-        /* ============================================
-           CUERPO
-           ============================================ */
-        .module-body {
-            flex: 1;
-            overflow: hidden;
-            padding: 0;
-            background: #f4f6f9;
-            display: flex;
-        }
-        
-        /* ============================================
-           FOOTER - BLANCO
-           ============================================ */
-        .module-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 20px;
-            background: #ffffff;
-            border-top: 1px solid #eee;
-            font-size: 11px;
-            color: #999;
-            flex-shrink: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .status-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .status-dot.connected {
-            background: #22c55e;
-        }
-        
-        .footer-version {
-            color: #4a6cf7;
-            font-weight: 500;
-        }
-        
-        /* ============================================
-           LOADING OVERLAY
-           ============================================ */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(244, 246, 249, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            gap: 12px;
-        }
-        
-        #loadingOverlay.visible {
-            display: flex;
-        }
-        
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid #e0e0e0;
-            border-top-color: #1a1a2e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* ============================================
-           TOAST - ARRIBA DERECHA
-           ============================================ */
-        #toastContainer {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 360px;
-            pointer-events: none;
-        }
-        
-        #toastContainer .toast {
-            pointer-events: auto;
-            padding: 10px 16px;
-            border-radius: 6px;
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: toastSlideIn 0.3s ease-out;
-        }
-        
-        #toastContainer .toast-success { background: #22c55e; }
-        #toastContainer .toast-error { background: #dc3545; }
-        #toastContainer .toast-warning { background: #f59e0b; }
-        #toastContainer .toast-info { background: #1a1a2e; }
-        
-        @keyframes toastSlideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes toastSlideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        /* ============================================
-           ESTILOS ESPECÍFICOS DEL MÓDULO
-           ============================================ */
-        .master-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .left-pane {
-            width: 350px;
-            background: #ffffff;
-            border-right: 2px solid #2c3e50;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        .pane-header {
-            padding: 15px;
-            background: #2c3e50;
-            color: white;
-            flex-shrink: 0;
-            font-weight: bold;
-            font-size: 1rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .search-area {
-            padding: 10px;
-            background: white;
-            border-bottom: 1px solid #cbd5e1;
-            flex-shrink: 0;
-        }
-        
-        .search-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .search-group input {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.8rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            background: white;
-            color: #1e293b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .search-group input:focus {
-            outline: none;
-            border-color: #1a1a2e;
-            box-shadow: 0 0 0 2px rgba(26,26,46,0.1);
-        }
-        
-        .search-group button {
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            background: #1a1a2e;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.3s;
-        }
-        
-        .search-group button:hover {
-            background: #2c2c4e;
-        }
-        
-        .btn-primary {
-            background: #1a1a2e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:hover {
-            background: #2c2c4e;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.3s;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .suggestions {
-            max-height: 200px;
-            overflow-y: auto;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            margin-top: 4px;
-            display: none;
-        }
-        
-        .suggestion-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .suggestion-item:hover {
-            background: #1a1a2e;
-            color: white;
-        }
-        
-        .suggestion-id {
-            font-family: monospace;
-            font-weight: bold;
-        }
-        
-        .tree-view {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            background: #f8fafc;
-        }
-        
-        .tree-node {
-            margin-bottom: 2px;
-        }
-        
-        .node-header {
-            display: flex;
-            align-items: center;
-            padding: 6px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.2s;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 13px;
-        }
-        
-        .node-header:hover {
-            background: #e2e8f0;
-        }
-        
-        .children-container {
-            margin-left: 20px;
-            display: none;
-            border-left: 1px dashed #94a3b8;
-        }
-        
-        .right-pane {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            background: white;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .dashboard-header h2 {
-            margin: 0;
-            color: #2c3e50;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .asset-id {
-            font-family: monospace;
-            color: #1a56db;
-            font-size: 0.85rem;
-        }
-        
-        .field-group {
-            margin-bottom: 15px;
-        }
-        
-        .field-group label {
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: #64748b;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 4px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .data-value {
-            font-size: 0.95rem;
-            padding: 6px 0;
-            border-bottom: 1px solid #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .crit-card {
-            padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .crit-value-large {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-top: 10px;
-        }
-        
-        .lvl-A { color: #dc2626; }
-        .lvl-B { color: #d97706; }
-        .lvl-C { color: #10b981; }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .welcome-msg {
-            text-align: center;
-            margin-top: 150px;
-            color: #64748b;
-        }
-        
-        .welcome-msg .emoji-big {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-        
-        .print-logo {
-            display: none;
-        }
-        
-        .back-button {
-            margin-bottom: 20px;
-        }
-        
-        /* ============================================
-          MASTER LIST - VISTA PREVIA HORIZONTAL
+      /* ============================================
+          BASE
           ============================================ */
-        #fullView.master-list-preview .report-paper {
-            max-width: 1100px !important;
-            width: 95% !important;
-            padding: 30px 40px !important;
-        }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: #f4f6f9;
+          height: 100vh;
+          overflow: hidden;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+      }
+      
+      /* ============================================
+          WRAPPER
+          ============================================ */
+      .module-wrapper {
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          background: #f4f6f9;
+      }
+      
+      /* ============================================
+          CABECERA - AZUL OSCURO
+          ============================================ */
+      .module-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 20px;
+          background: #1a1a2e;
+          border-bottom: 2px solid #2a2f4a;
+          flex-shrink: 0;
+          min-height: 56px;
+      }
+      
+      .header-left {
+          display: flex;
+          align-items: center;
+      }
+      
+      .module-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #ffffff;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .header-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+      }
+      
+      .user-badge {
+          font-size: 12px;
+          color: #e0e0e0;
+          background: rgba(255,255,255,0.15);
+          padding: 4px 14px;
+          border-radius: 20px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .company-logo {
+          height: 32px;
+          width: auto;
+          display: none;
+      }
+      
+      /* ============================================
+          BREADCRUMBS
+          ============================================ */
+      .breadcrumbs {
+          padding: 8px 20px;
+          font-size: 12px;
+          color: #888;
+          background: #f8f9fa;
+          border-bottom: 1px solid #eee;
+          flex-shrink: 0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .breadcrumbs .current {
+          color: #1a1a2e;
+          font-weight: 600;
+      }
+      
+      /* ============================================
+          CUERPO
+          ============================================ */
+      .module-body {
+          flex: 1;
+          overflow: hidden;
+          padding: 0;
+          background: #f4f6f9;
+          display: flex;
+      }
+      
+      /* ============================================
+          FOOTER - BLANCO
+          ============================================ */
+      .module-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 6px 20px;
+          background: #ffffff;
+          border-top: 1px solid #eee;
+          font-size: 11px;
+          color: #999;
+          flex-shrink: 0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .status-dot {
+          display: inline-block;
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          margin-right: 5px;
+      }
+      
+      .status-dot.connected {
+          background: #22c55e;
+      }
+      
+      .footer-version {
+          color: #4a6cf7;
+          font-weight: 500;
+      }
+      
+      /* ============================================
+          LOADING OVERLAY
+          ============================================ */
+      #loadingOverlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(244, 246, 249, 0.95);
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          gap: 12px;
+      }
+      
+      #loadingOverlay.visible {
+          display: flex;
+      }
+      
+      .spinner {
+          width: 36px;
+          height: 36px;
+          border: 3px solid #e0e0e0;
+          border-top-color: #1a1a2e;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+      }
+      
+      @keyframes spin {
+          to { transform: rotate(360deg); }
+      }
+      
+      /* ============================================
+          TOAST - ARRIBA DERECHA
+          ============================================ */
+      #toastContainer {
+          position: fixed;
+          top: 16px;
+          right: 16px;
+          z-index: 10000;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          max-width: 360px;
+          pointer-events: none;
+      }
+      
+      #toastContainer .toast {
+          pointer-events: auto;
+          padding: 10px 16px;
+          border-radius: 6px;
+          color: white;
+          font-size: 13px;
+          font-weight: 500;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          animation: toastSlideIn 0.3s ease-out;
+      }
+      
+      #toastContainer .toast-success { background: #22c55e; }
+      #toastContainer .toast-error { background: #dc3545; }
+      #toastContainer .toast-warning { background: #f59e0b; }
+      #toastContainer .toast-info { background: #1a1a2e; }
+      
+      @keyframes toastSlideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+      }
+      
+      @keyframes toastSlideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+      }
+      
+      /* ============================================
+          ESTILOS ESPECÍFICOS DEL MÓDULO
+          ============================================ */
+      .master-container {
+          display: flex;
+          flex: 1;
+          overflow: hidden;
+      }
+      
+      .left-pane {
+          width: 350px;
+          background: #ffffff;
+          border-right: 2px solid #2c3e50;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+      }
+      
+      .pane-header {
+          padding: 15px;
+          background: #2c3e50;
+          color: white;
+          flex-shrink: 0;
+          font-weight: bold;
+          font-size: 1rem;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .search-area {
+          padding: 10px;
+          background: white;
+          border-bottom: 1px solid #cbd5e1;
+          flex-shrink: 0;
+      }
+      
+      .search-group {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 8px;
+      }
+      
+      .search-group input {
+          flex: 1;
+          padding: 8px;
+          font-size: 0.8rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+          background: white;
+          color: #1e293b;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .search-group input:focus {
+          outline: none;
+          border-color: #1a1a2e;
+          box-shadow: 0 0 0 2px rgba(26,26,46,0.1);
+      }
+      
+      .search-group button {
+          padding: 8px 16px;
+          font-size: 0.75rem;
+          background: #1a1a2e;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          transition: all 0.3s;
+      }
+      
+      .search-group button:hover {
+          background: #2c2c4e;
+      }
+      
+      .btn-primary {
+          background: #1a1a2e;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          transition: all 0.3s;
+      }
+      
+      .btn-primary:hover {
+          background: #2c2c4e;
+      }
+      
+      .btn-secondary {
+          background: #6c757d;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          transition: all 0.3s;
+      }
+      
+      .btn-secondary:hover {
+          background: #5a6268;
+      }
+      
+      .suggestions {
+          max-height: 200px;
+          overflow-y: auto;
+          background: white;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+          margin-top: 4px;
+          display: none;
+      }
+      
+      .suggestion-item {
+          padding: 8px 12px;
+          cursor: pointer;
+          border-bottom: 1px solid #e2e8f0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .suggestion-item:hover {
+          background: #1a1a2e;
+          color: white;
+      }
+      
+      .suggestion-id {
+          font-family: monospace;
+          font-weight: bold;
+      }
+      
+      .tree-view {
+          flex: 1;
+          overflow-y: auto;
+          padding: 10px;
+          background: #f8fafc;
+      }
+      
+      .tree-node {
+          margin-bottom: 2px;
+      }
+      
+      .node-header {
+          display: flex;
+          align-items: center;
+          padding: 6px 8px;
+          cursor: pointer;
+          border-radius: 4px;
+          transition: background 0.2s;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-size: 13px;
+      }
+      
+      .node-header:hover {
+          background: #e2e8f0;
+      }
+      
+      .children-container {
+          margin-left: 20px;
+          display: none;
+          border-left: 1px dashed #94a3b8;
+      }
+      
+      .right-pane {
+          flex: 1;
+          padding: 25px;
+          overflow-y: auto;
+          background: white;
+      }
+      
+      .dashboard-header {
+          display: flex;
+          justify-content: space-between;
+          border-bottom: 3px solid #2c3e50;
+          padding-bottom: 15px;
+          margin-bottom: 25px;
+          flex-wrap: wrap;
+      }
+      
+      .dashboard-header h2 {
+          margin: 0;
+          color: #2c3e50;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .asset-id {
+          font-family: monospace;
+          color: #1a56db;
+          font-size: 0.85rem;
+      }
+      
+      .field-group {
+          margin-bottom: 15px;
+      }
+      
+      .field-group label {
+          font-size: 0.7rem;
+          font-weight: bold;
+          color: #64748b;
+          text-transform: uppercase;
+          display: block;
+          margin-bottom: 4px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .data-value {
+          font-size: 0.95rem;
+          padding: 6px 0;
+          border-bottom: 1px solid #e2e8f0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 20px;
+      }
+      
+      .crit-card {
+          padding: 20px;
+          border-radius: 6px;
+          text-align: center;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+      }
+      
+      .crit-value-large {
+          font-size: 2rem;
+          font-weight: 800;
+          margin-top: 10px;
+      }
+      
+      .lvl-A { color: #dc2626; }
+      .lvl-B { color: #d97706; }
+      .lvl-C { color: #10b981; }
+      
+      .button-group {
+          display: flex;
+          gap: 10px;
+      }
+      
+      .welcome-msg {
+          text-align: center;
+          margin-top: 150px;
+          color: #64748b;
+      }
+      
+      .welcome-msg .emoji-big {
+          font-size: 4rem;
+          margin-bottom: 20px;
+      }
+      
+      .print-logo {
+          display: none;
+      }
+      
+      .back-button {
+          margin-bottom: 20px;
+      }
+      
+      /* ============================================
+        MASTER LIST - VISTA PREVIA HORIZONTAL
+        ============================================ */
+      #fullView.master-list-preview .report-paper {
+          max-width: 1100px !important;
+          width: 95% !important;
+          padding: 30px 40px !important;
+      }
 
-        #fullView.master-list-preview table {
-            font-size: 10px !important;
-        }
+      #fullView.master-list-preview table {
+          font-size: 10px !important;
+      }
 
-        #fullView.master-list-preview table th,
-        #fullView.master-list-preview table td {
-            padding: 6px 8px !important;
-        }
+      #fullView.master-list-preview table th,
+      #fullView.master-list-preview table td {
+          padding: 6px 8px !important;
+      }
 
-        /* ============================================
-           ESTILOS DE IMPRESIÓN
-           ============================================ */
-        @media print {
-            /* Ocultar todo EXCEPTO #fullView */
-            body > *:not(#fullView) {
-                display: none !important;
-            }
-            
-            #fullView {
-                display: block !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                background: white !important;
-                padding: 20px !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                z-index: 9999 !important;
-                overflow: visible !important;
-                height: auto !important;
-            }
-            
-            #fullView .no-print {
-                display: none !important;
-            }
-            
-            .report-paper {
-                box-shadow: none !important;
-                background: white !important;
-                width: 100% !important;
-                padding: 15px !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
-            }
-            
-            /* Estilos para Datasheet (vertical) */
-            #fullView:not(.master-list-preview) .report-paper {
-                max-width: 800px !important;
-                margin: 0 auto !important;
-            }
-            
-            /* Estilos para Master List (horizontal) */
-            #fullView.master-list-preview .report-paper {
-                max-width: 100% !important;
-                width: 100% !important;
-                padding: 15px 20px !important;
-            }
-            
-            #fullView.master-list-preview table {
-                font-size: 8px !important;
-            }
-            
-            #fullView.master-list-preview table th,
-            #fullView.master-list-preview table td {
-                padding: 4px 6px !important;
-            }
-            
-            .report-logo {
-                position: absolute !important;
-                top: 10px !important;
-                right: 15px !important;
-                max-width: 60px !important;
-                max-height: 40px !important;
-            }
-        }
-        
-        /* ============================================
-           ORIENTACIÓN DE PÁGINA (FUERA DE @media print)
-           ============================================ */
-        @page {
-            size: portrait;
-            margin: 0.8cm 1.2cm 1.8cm 1.2cm;
-        }
-        
-        @page master-list {
-            size: landscape;
-            margin: 0.8cm 1.2cm 1.8cm 1.2cm;
-        }        
+      /* ============================================
+          ESTILOS DE IMPRESIÓN
+          ============================================ */
+      @media print {
+          /* Ocultar todo EXCEPTO #fullView */
+          body > *:not(#fullView) {
+              display: none !important;
+          }
+          
+          #fullView {
+              display: block !important;
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100% !important;
+              background: white !important;
+              padding: 20px !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+              z-index: 9999 !important;
+              overflow: visible !important;
+              height: auto !important;
+          }
+          
+          #fullView .no-print {
+              display: none !important;
+          }
+          
+          .report-paper {
+              box-shadow: none !important;
+              background: white !important;
+              width: 100% !important;
+              padding: 15px !important;
+              margin: 0 !important;
+              border-radius: 0 !important;
+          }
+          
+          /* Estilos para Datasheet (vertical) */
+          #fullView:not(.master-list-preview) .report-paper {
+              max-width: 800px !important;
+              margin: 0 auto !important;
+          }
+          
+          /* Estilos para Master List (horizontal) */
+          #fullView.master-list-preview .report-paper {
+              max-width: 100% !important;
+              width: 100% !important;
+              padding: 15px 20px !important;
+          }
+          
+          #fullView.master-list-preview table {
+              font-size: 8px !important;
+          }
+          
+          #fullView.master-list-preview table th,
+          #fullView.master-list-preview table td {
+              padding: 4px 6px !important;
+          }
+          
+          .report-logo {
+              position: absolute !important;
+              top: 10px !important;
+              right: 15px !important;
+              max-width: 60px !important;
+              max-height: 40px !important;
+          }
+      }
+          
+      /* ============================================
+          MASTER LIST - HORIZONTAL
+          ============================================ */
+      #fullView.master-list-preview .report-paper {
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 15px 20px !important;
+      }
+      
+      #fullView.master-list-preview table {
+          font-size: 8px !important;
+      }
+      
+      #fullView.master-list-preview table th,
+      #fullView.master-list-preview table td {
+          padding: 4px 6px !important;
+      }
+      
+      .report-logo {
+          position: absolute !important;
+          top: 10px !important;
+          right: 15px !important;
+          max-width: 60px !important;
+          max-height: 40px !important;
+      }
+      
+      @page {
+          size: portrait;
+          margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
+      }
+      
+      /* Orientación horizontal para Master List */
+      #fullView.master-list-preview {
+          @page {
+              size: landscape !important;
+              margin: 0.5cm 1cm 1.5cm 1cm !important;
+          }
+      }
     </style>
 </head>
 <body>
@@ -735,672 +761,663 @@
 </div>
 
 <script>
-    // ============================================
-    // RECIBIR MENSAJES DEL PADRE
-    // ============================================
-    window.addEventListener('message', function(event) {
-        const data = event.data;
-        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const img = document.getElementById('companyLogo');
-            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
-        }
-        if (data.type === 'SET_VERSION' && data.version) {
-            const el = document.getElementById('eamsVersion');
-            if (el) el.innerText = data.version;
-        }
-    });
-    
-    // ============================================
-    // CARGAR USUARIO (email)
-    // ============================================
-    function loadUser() {
-        try {
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            if (session && session.email) {
-                document.getElementById('userDisplay').innerText = session.email;
-            }
-        } catch(e) {}
-    }
-    
-    // ============================================
-    // TOAST (usa ModuleBase si existe)
-    // ============================================
-    function showMessage(message, isError = false) {
-        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-            ModuleBase.showToast(message, isError ? 'error' : 'success');
-            return;
-        }
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
-        toast.textContent = message;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
-            setTimeout(() => toast.remove(), 350);
-        }, 3000);
-    }
+  // ============================================
+  // RECIBIR MENSAJES DEL PADRE
+  // ============================================
+  window.addEventListener('message', function(event) {
+      const data = event.data;
+      if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
+          const img = document.getElementById('companyLogo');
+          if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+      }
+      if (data.type === 'SET_VERSION' && data.version) {
+          const el = document.getElementById('eamsVersion');
+          if (el) el.innerText = data.version;
+      }
+  });
+  
+  // ============================================
+  // CARGAR USUARIO (email)
+  // ============================================
+  function loadUser() {
+      try {
+          const session = JSON.parse(localStorage.getItem('adkintor_session'));
+          if (session && session.email) {
+              document.getElementById('userDisplay').innerText = session.email;
+          }
+      } catch(e) {}
+  }
+  
+  // ============================================
+  // TOAST (usa ModuleBase si existe)
+  // ============================================
+  function showMessage(message, isError = false) {
+      if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+          ModuleBase.showToast(message, isError ? 'error' : 'success');
+          return;
+      }
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+          toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+          setTimeout(() => toast.remove(), 350);
+      }, 3000);
+  }
 
-    // ============================================
-    // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
-    // ============================================
-    function printReport(title, mode = 'eams') {
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule(title, mode);
-        } else {
-            // Fallback: usar window.print()
-            window.print();
-        }
-    }
-    window.printReport = printReport;    
-    
-    // ============================================
-    // LOADING
-    // ============================================
-    function showLoading(msg) {
-        const overlay = document.getElementById('loadingOverlay');
-        const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
-        overlay.classList.add('visible');
-    }
-    
-    function hideLoading() {
-        document.getElementById('loadingOverlay').classList.remove('visible');
-    }
-    
-    // ============================================
-    // CERRAR MODAL
-    // ============================================
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
-    }
-    
-    // ============================================
-    // CONFIGURACIÓN (TU LÓGICA ORIGINAL)
-    // ============================================
-    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-    let EAMS_API_URL = null;
-    
-    let currentHierarchy = [];
-    let flatAssetsList = [];
-    let currentAsset = null;
-    let searchTimeout = null;
-    let isSearching = false;
-    
-    // ============================================
-    // FUNCIONES BASE (TU LÓGICA ORIGINAL)
-    // ============================================
-    
-    function loadApiUrl() {
-        const session = localStorage.getItem('adkintor_session');
-        if (session) {
-            try {
-                const sessionData = JSON.parse(session);
-                EAMS_API_URL = sessionData.eamsApiUrl;
-                const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
-            } catch(e) {
-                // console.error('Error parsing session:', e);  // COMENTADO
-            }
-        }
-    }
-    
-    function showBanner(message, type) {
-        showMessage(message, type === 'error');
-    }
-    
-    async function callApi(action, args = []) {
-        if (!EAMS_API_URL) {
-            throw new Error('API URL not configured');
-        }
-        
-        const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                targetUrl: EAMS_API_URL,
-                payload: { action: action, args: args }
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
-        }
-        
-        return result.data;
-    }
-    
-    function sanitizeString(str) {
-        if (!str) return '';
-        return String(str).replace(/[<>]/g, '').trim();
-    }
-    
-    function getCriticalityClass(lvl) {
-        if (!lvl) return '';
-        if (lvl.indexOf('A') !== -1 || lvl.indexOf('CRITICAL') !== -1) return 'lvl-A';
-        if (lvl.indexOf('B') !== -1 || lvl.indexOf('IMPORTANT') !== -1) return 'lvl-B';
-        return 'lvl-C';
-    }
-    
-    // ============================================
-    // TREE VIEW (TU LÓGICA ORIGINAL)
-    // ============================================
-    
-    function buildTreeHTML(nodes) {
-        if (!nodes || nodes.length === 0) return '';
-        var html = '';
-        for (var i = 0; i < nodes.length; i++) {
-            var node = nodes[i];
-            var hasChildren = node.children && node.children.length > 0;
-            var isArea = (node.type === 'AREA_ROOT');
-            var icon = isArea ? '🏭' : (hasChildren ? '📁' : '⚙️');
-            
-            html += '<div class="tree-node">';
-            html += '<div class="node-header" data-id="' + (node.id || '') + '" data-type="' + (node.type || '') + '" data-has-children="' + hasChildren + '">';
-            html += '<span style="width:24px;">' + icon + '</span>';
-            html += '<span>' + sanitizeString(node.name) + '</span>';
-            if (hasChildren) {
-                html += '<span style="margin-left:auto; font-size:0.7rem; color:#64748b;">(' + node.children.length + ')</span>';
-            }
-            html += '</div>';
-            if (hasChildren) {
-                html += '<div class="children-container">';
-                html += buildTreeHTML(node.children);
-                html += '</div>';
-            }
-            html += '</div>';
-        }
-        return html;
-    }
-    
-    function renderTree(hierarchy) {
-        var treeDiv = document.getElementById('tree-view');
-        if (!treeDiv) return;
-        if (!hierarchy || hierarchy.length === 0) {
-            treeDiv.innerHTML = '<div style="text-align:center;padding:20px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No assets found</div>';
-            return;
-        }
-        treeDiv.innerHTML = buildTreeHTML(hierarchy);
-        
-        var headers = document.querySelectorAll('.node-header');
-        for (var i = 0; i < headers.length; i++) {
-            var header = headers[i];
-            var container = header.nextElementSibling;
-            var hasContainer = container && container.classList && container.classList.contains('children-container');
-            
-            if (hasContainer) {
-                header.onclick = (function(el, cont) {
-                    return function(e) {
-                        e.stopPropagation();
-                        var isVisible = cont.style.display === 'block';
-                        cont.style.display = isVisible ? 'none' : 'block';
-                        var iconSpan = el.querySelector('span:first-child');
-                        if (iconSpan && iconSpan.innerText === '📁') iconSpan.innerText = '📂';
-                        else if (iconSpan && iconSpan.innerText === '📂') iconSpan.innerText = '📁';
-                        
-                        var id = el.getAttribute('data-id');
-                        var type = el.getAttribute('data-type');
-                        if (id && id !== '' && type !== 'AREA_ROOT') {
-                            document.getElementById('search-input').value = id;
-                            showMessage('Asset ID loaded. Click SEARCH to view details.', false);
-                        }
-                    };
-                })(header, container);
-            } else {
-                header.onclick = function(e) {
-                    e.stopPropagation();
-                    var id = this.getAttribute('data-id');
-                    if (id && id !== '') {
-                        document.getElementById('search-input').value = id;
-                        showMessage('Asset ID loaded. Click SEARCH to view details.', false);
-                    }
-                };
-            }
-        }
-    }
-    
-    async function loadTree() {
-        showLoading('Loading assets...');
-        try {
-            const response = await callApi('AST_getAssetHierarchy', []);
-            flatAssetsList = response.flatList || [];
-            currentHierarchy = response.hierarchy || [];
-            renderTree(currentHierarchy);
-            showMessage('Ready: ' + (response.totalAssets || 0) + ' assets loaded', false);
-            hideLoading();
-        } catch (error) {
-            hideLoading();
-            showMessage('Error loading assets: ' + error.message, true);
-            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading data</div>';
-        }
-    }
-    
-    // ============================================
-    // SUGGESTIONS (TU LÓGICA ORIGINAL)
-    // ============================================
-    
-    function showSuggestions(filter) {
-        var div = document.getElementById('suggestions');
-        if (!filter || filter.length < 2) {
-            div.style.display = 'none';
-            div.innerHTML = '';
-            return;
-        }
-        var lower = filter.toLowerCase();
-        var matches = [];
-        for (var i = 0; i < flatAssetsList.length && matches.length < 10; i++) {
-            var a = flatAssetsList[i];
-            if ((a.id && a.id.toLowerCase().indexOf(lower) !== -1) || 
-                (a.name && a.name.toLowerCase().indexOf(lower) !== -1)) {
-                matches.push(a);
-            }
-        }
-        if (matches.length === 0) {
-            div.style.display = 'none';
-            return;
-        }
-        var html = '';
-        for (var i = 0; i < matches.length; i++) {
-            var safeId = matches[i].id.replace(/'/g, "\\'");
-            html += '<div class="suggestion-item" onclick="selectSuggestion(\'' + safeId + '\')">' +
-                    '<div><span class="suggestion-id">' + sanitizeString(matches[i].id) + '</span></div>' +
-                    '<div class="suggestion-name">' + sanitizeString(matches[i].name) + '</div></div>';
-        }
-        div.innerHTML = html;
-        div.style.display = 'block';
-    }
-    
-    function selectSuggestion(assetId) {
-        document.getElementById('search-input').value = assetId;
-        document.getElementById('suggestions').style.display = 'none';
-        showMessage('Asset ID loaded. Click SEARCH to view details.', false);
-    }
-    
-    // ============================================
-    // SEARCH & DISPLAY (TU LÓGICA ORIGINAL)
-    // ============================================
-    
-    function backToSearch() {
-        document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('welcome-msg').style.display = 'block';
-        document.getElementById('search-input').value = '';
-        currentAsset = null;
-    }
-    
-    async function performSearch(searchValue) {
-        if (isSearching) return;
-        if (!searchValue || searchValue.trim() === '') {
-            showMessage('Please enter an Asset ID or Name', true);
-            return;
-        }
-        
-        isSearching = true;
-        showLoading('Searching...');
-        
-        try {
-            const result = await callApi('AST_getAssetById', [searchValue.trim()]);
-            const asset = result.asset || result;
-            
-            if (!asset || !asset.id) {
-                throw new Error('Asset not found');
-            }
-            
-            currentAsset = asset;
-            document.getElementById('welcome-msg').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('d-name').innerText = sanitizeString(asset.name);
-            document.getElementById('d-id').innerText = 'TAG: ' + sanitizeString(asset.id);
-            document.getElementById('d-area').innerText = sanitizeString(asset.area);
-            document.getElementById('d-category').innerText = sanitizeString(asset.category) || '—';
-            document.getElementById('d-type').innerText = sanitizeString(asset.type);
-            document.getElementById('d-status').innerText = sanitizeString(asset.status);
-            document.getElementById('d-man').innerText = sanitizeString(asset.manufacturer) || '—';
-            document.getElementById('d-model').innerText = sanitizeString(asset.model) || '—';
-            document.getElementById('d-serial').innerText = sanitizeString(asset.serial) || '—';
-            document.getElementById('d-year').innerText = asset.installYear || asset.year || '—';
-            document.getElementById('d-score').innerText = (asset.weightedScore || 0).toFixed(2);
-            
-            var lvl = asset.criticality || 'C - STANDARD';
-            var lvlEl = document.getElementById('d-level');
-            lvlEl.innerText = sanitizeString(lvl);
-            lvlEl.className = 'crit-value-large ' + getCriticalityClass(lvl);
-            
-            hideLoading();
-        } catch (error) {
-            hideLoading();
-            showMessage(error.message || 'Asset not found', true);
-        }
-        
-        isSearching = false;
-    }
-    
-    // ============================================
-    // PRINT FUNCTIONS (TU LÓGICA ORIGINAL)
-    // ============================================
-    
-    function printDashboard() {
-        if (!currentAsset) {
-            showMessage('No asset selected to print', true);
-            return;
-        }
-        
-        const asset = currentAsset;
-        
-        // Crear vista previa
-        var previewContainer = document.createElement('div');
-        previewContainer.id = 'fullView';
-        previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
-        
-        // Construir HTML del datasheet
-        var html = buildDatasheetHTML(asset);
-        previewContainer.innerHTML = html;
-        document.body.appendChild(previewContainer);
-        
-        // Cerrar con ESC
-        document.addEventListener('keydown', function escHandler(e) {
-            if (e.key === 'Escape') {
-                closePreview();
-                document.removeEventListener('keydown', escHandler);
-            }
-        });
-    }
+  // ============================================
+  // FUNCIÓN DE IMPRESIÓN ESTANDARIZADA
+  // ============================================
+  function printReport(title, mode = 'eams') {
+      if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
+          ModuleBase.printModule(title, mode);
+      } else {
+          // Fallback: usar window.print()
+          window.print();
+      }
+  }
+  window.printReport = printReport;    
+  
+  // ============================================
+  // LOADING
+  // ============================================
+  function showLoading(msg) {
+      const overlay = document.getElementById('loadingOverlay');
+      const span = overlay.querySelector('span');
+      if (span) span.innerText = msg || 'Loading...';
+      overlay.classList.add('visible');
+  }
+  
+  function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('visible');
+  }
+  
+  // ============================================
+  // CERRAR MODAL
+  // ============================================
+  function closeModal() {
+      window.parent.postMessage('closeIframe', '*');
+  }
+  
+  // ============================================
+  // CONFIGURACIÓN (TU LÓGICA ORIGINAL)
+  // ============================================
+  const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+  let EAMS_API_URL = null;
+  
+  let currentHierarchy = [];
+  let flatAssetsList = [];
+  let currentAsset = null;
+  let searchTimeout = null;
+  let isSearching = false;
+  
+  // ============================================
+  // FUNCIONES BASE (TU LÓGICA ORIGINAL)
+  // ============================================
+  
+  function loadApiUrl() {
+      const session = localStorage.getItem('adkintor_session');
+      if (session) {
+          try {
+              const sessionData = JSON.parse(session);
+              EAMS_API_URL = sessionData.eamsApiUrl;
+              const userDisplay = document.getElementById('userDisplay');
+              if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+          } catch(e) {
+              // console.error('Error parsing session:', e);  // COMENTADO
+          }
+      }
+  }
+  
+  function showBanner(message, type) {
+      showMessage(message, type === 'error');
+  }
+  
+  async function callApi(action, args = []) {
+      if (!EAMS_API_URL) {
+          throw new Error('API URL not configured');
+      }
+      
+      const response = await fetch(PROXY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              targetUrl: EAMS_API_URL,
+              payload: { action: action, args: args }
+          })
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+          throw new Error(result.error || 'Unknown error');
+      }
+      
+      return result.data;
+  }
+  
+  function sanitizeString(str) {
+      if (!str) return '';
+      return String(str).replace(/[<>]/g, '').trim();
+  }
+  
+  function getCriticalityClass(lvl) {
+      if (!lvl) return '';
+      if (lvl.indexOf('A') !== -1 || lvl.indexOf('CRITICAL') !== -1) return 'lvl-A';
+      if (lvl.indexOf('B') !== -1 || lvl.indexOf('IMPORTANT') !== -1) return 'lvl-B';
+      return 'lvl-C';
+  }
+  
+  // ============================================
+  // TREE VIEW (TU LÓGICA ORIGINAL)
+  // ============================================
+  
+  function buildTreeHTML(nodes) {
+      if (!nodes || nodes.length === 0) return '';
+      var html = '';
+      for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          var hasChildren = node.children && node.children.length > 0;
+          var isArea = (node.type === 'AREA_ROOT');
+          var icon = isArea ? '🏭' : (hasChildren ? '📁' : '⚙️');
+          
+          html += '<div class="tree-node">';
+          html += '<div class="node-header" data-id="' + (node.id || '') + '" data-type="' + (node.type || '') + '" data-has-children="' + hasChildren + '">';
+          html += '<span style="width:24px;">' + icon + '</span>';
+          html += '<span>' + sanitizeString(node.name) + '</span>';
+          if (hasChildren) {
+              html += '<span style="margin-left:auto; font-size:0.7rem; color:#64748b;">(' + node.children.length + ')</span>';
+          }
+          html += '</div>';
+          if (hasChildren) {
+              html += '<div class="children-container">';
+              html += buildTreeHTML(node.children);
+              html += '</div>';
+          }
+          html += '</div>';
+      }
+      return html;
+  }
+  
+  function renderTree(hierarchy) {
+      var treeDiv = document.getElementById('tree-view');
+      if (!treeDiv) return;
+      if (!hierarchy || hierarchy.length === 0) {
+          treeDiv.innerHTML = '<div style="text-align:center;padding:20px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No assets found</div>';
+          return;
+      }
+      treeDiv.innerHTML = buildTreeHTML(hierarchy);
+      
+      var headers = document.querySelectorAll('.node-header');
+      for (var i = 0; i < headers.length; i++) {
+          var header = headers[i];
+          var container = header.nextElementSibling;
+          var hasContainer = container && container.classList && container.classList.contains('children-container');
+          
+          if (hasContainer) {
+              header.onclick = (function(el, cont) {
+                  return function(e) {
+                      e.stopPropagation();
+                      var isVisible = cont.style.display === 'block';
+                      cont.style.display = isVisible ? 'none' : 'block';
+                      var iconSpan = el.querySelector('span:first-child');
+                      if (iconSpan && iconSpan.innerText === '📁') iconSpan.innerText = '📂';
+                      else if (iconSpan && iconSpan.innerText === '📂') iconSpan.innerText = '📁';
+                      
+                      var id = el.getAttribute('data-id');
+                      var type = el.getAttribute('data-type');
+                      if (id && id !== '' && type !== 'AREA_ROOT') {
+                          document.getElementById('search-input').value = id;
+                          showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+                      }
+                  };
+              })(header, container);
+          } else {
+              header.onclick = function(e) {
+                  e.stopPropagation();
+                  var id = this.getAttribute('data-id');
+                  if (id && id !== '') {
+                      document.getElementById('search-input').value = id;
+                      showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+                  }
+              };
+          }
+      }
+  }
+  
+  async function loadTree() {
+      showLoading('Loading assets...');
+      try {
+          const response = await callApi('AST_getAssetHierarchy', []);
+          flatAssetsList = response.flatList || [];
+          currentHierarchy = response.hierarchy || [];
+          renderTree(currentHierarchy);
+          showMessage('Ready: ' + (response.totalAssets || 0) + ' assets loaded', false);
+          hideLoading();
+      } catch (error) {
+          hideLoading();
+          showMessage('Error loading assets: ' + error.message, true);
+          document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading data</div>';
+      }
+  }
+  
+  // ============================================
+  // SUGGESTIONS (TU LÓGICA ORIGINAL)
+  // ============================================
+  
+  function showSuggestions(filter) {
+      var div = document.getElementById('suggestions');
+      if (!filter || filter.length < 2) {
+          div.style.display = 'none';
+          div.innerHTML = '';
+          return;
+      }
+      var lower = filter.toLowerCase();
+      var matches = [];
+      for (var i = 0; i < flatAssetsList.length && matches.length < 10; i++) {
+          var a = flatAssetsList[i];
+          if ((a.id && a.id.toLowerCase().indexOf(lower) !== -1) || 
+              (a.name && a.name.toLowerCase().indexOf(lower) !== -1)) {
+              matches.push(a);
+          }
+      }
+      if (matches.length === 0) {
+          div.style.display = 'none';
+          return;
+      }
+      var html = '';
+      for (var i = 0; i < matches.length; i++) {
+          var safeId = matches[i].id.replace(/'/g, "\\'");
+          html += '<div class="suggestion-item" onclick="selectSuggestion(\'' + safeId + '\')">' +
+                  '<div><span class="suggestion-id">' + sanitizeString(matches[i].id) + '</span></div>' +
+                  '<div class="suggestion-name">' + sanitizeString(matches[i].name) + '</div></div>';
+      }
+      div.innerHTML = html;
+      div.style.display = 'block';
+  }
+  
+  function selectSuggestion(assetId) {
+      document.getElementById('search-input').value = assetId;
+      document.getElementById('suggestions').style.display = 'none';
+      showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+  }
+  
+  // ============================================
+  // SEARCH & DISPLAY (TU LÓGICA ORIGINAL)
+  // ============================================
+  
+  function backToSearch() {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('welcome-msg').style.display = 'block';
+      document.getElementById('search-input').value = '';
+      currentAsset = null;
+  }
+  
+  async function performSearch(searchValue) {
+      if (isSearching) return;
+      if (!searchValue || searchValue.trim() === '') {
+          showMessage('Please enter an Asset ID or Name', true);
+          return;
+      }
+      
+      isSearching = true;
+      showLoading('Searching...');
+      
+      try {
+          const result = await callApi('AST_getAssetById', [searchValue.trim()]);
+          const asset = result.asset || result;
+          
+          if (!asset || !asset.id) {
+              throw new Error('Asset not found');
+          }
+          
+          currentAsset = asset;
+          document.getElementById('welcome-msg').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          document.getElementById('d-name').innerText = sanitizeString(asset.name);
+          document.getElementById('d-id').innerText = 'TAG: ' + sanitizeString(asset.id);
+          document.getElementById('d-area').innerText = sanitizeString(asset.area);
+          document.getElementById('d-category').innerText = sanitizeString(asset.category) || '—';
+          document.getElementById('d-type').innerText = sanitizeString(asset.type);
+          document.getElementById('d-status').innerText = sanitizeString(asset.status);
+          document.getElementById('d-man').innerText = sanitizeString(asset.manufacturer) || '—';
+          document.getElementById('d-model').innerText = sanitizeString(asset.model) || '—';
+          document.getElementById('d-serial').innerText = sanitizeString(asset.serial) || '—';
+          document.getElementById('d-year').innerText = asset.installYear || asset.year || '—';
+          document.getElementById('d-score').innerText = (asset.weightedScore || 0).toFixed(2);
+          
+          var lvl = asset.criticality || 'C - STANDARD';
+          var lvlEl = document.getElementById('d-level');
+          lvlEl.innerText = sanitizeString(lvl);
+          lvlEl.className = 'crit-value-large ' + getCriticalityClass(lvl);
+          
+          hideLoading();
+      } catch (error) {
+          hideLoading();
+          showMessage(error.message || 'Asset not found', true);
+      }
+      
+      isSearching = false;
+  }
+  
+  // ============================================
+  // PRINT FUNCTIONS (TU LÓGICA ORIGINAL)
+  // ============================================
+  
+  function printDashboard() {
+      if (!currentAsset) {
+          showMessage('No asset selected to print', true);
+          return;
+      }
+      
+      const asset = currentAsset;
+      
+      // Crear vista previa
+      var previewContainer = document.createElement('div');
+      previewContainer.id = 'fullView';
+      previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
+      
+      // Construir HTML del datasheet
+      var html = buildDatasheetHTML(asset);
+      previewContainer.innerHTML = html;
+      document.body.appendChild(previewContainer);
+      
+      // Cerrar con ESC
+      document.addEventListener('keydown', function escHandler(e) {
+          if (e.key === 'Escape') {
+              closePreview();
+              document.removeEventListener('keydown', escHandler);
+          }
+      });
+  }
 
-    function buildDatasheetHTML(asset) {
-        function s(val) { return val || '---'; }
-        
-        var logoUrl = document.getElementById('companyLogo')?.src || '';
-        
-        return `
-            <div class="report-paper" style="background: white; width: 800px; margin: 0 auto; padding: 40px 50px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                <img id="reportLogo" class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
-                
-                <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-times"></i> CLOSE
-                        </button>
-                        <button class="btn-outline" onclick="printPreviewDatasheet()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-print"></i> PRINT
-                        </button>
-                    </div>
-                </div>
-                
-                <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET DATASHEET</h1>
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 20px; font-weight: bold;">${s(asset.name)}</div>
-                    <div style="font-family: monospace; color: #1a56db; font-size: 14px;">TAG: ${s(asset.id)}</div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Functional Area</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.area)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Category / Subtype</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.category)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Manufacturer</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.manufacturer)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Model</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.model)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Serial Number</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.serial)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Installation Year</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${asset.installYear || asset.year || '—'}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Status</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.status)}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Classification</div>
-                        <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.type)}</div>
-                    </div>
-                </div>
-                <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Weighted Risk Score</div>
-                        <div style="font-size: 28px; font-weight: 800; margin-top: 10px;">${(asset.weightedScore || 0).toFixed(2)}</div>
-                    </div>
-                    <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Criticality Ranking</div>
-                        <div style="font-size: 28px; font-weight: 800; margin-top: 10px; ${getCriticalityClass(asset.criticality) ? 'color: ' + (getCriticalityClass(asset.criticality) === 'lvl-A' ? '#dc2626' : getCriticalityClass(asset.criticality) === 'lvl-B' ? '#d97706' : '#10b981') : ''}">${s(asset.criticality)}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+  function buildDatasheetHTML(asset) {
+      function s(val) { return val || '---'; }
+      
+      var logoUrl = document.getElementById('companyLogo')?.src || '';
+      
+      return `
+          <div class="report-paper" style="background: white; width: 800px; margin: 0 auto; padding: 40px 50px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <img id="reportLogo" class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
+              
+              <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
+                  <div style="display:flex; gap:10px;">
+                      <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                          <i class="fas fa-times"></i> CLOSE
+                      </button>
+                      <button class="btn-outline" onclick="printPreviewDatasheet()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                          <i class="fas fa-print"></i> PRINT
+                      </button>
+                  </div>
+              </div>
+              
+              <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET DATASHEET</h1>
+              <div style="margin-bottom: 20px;">
+                  <div style="font-size: 20px; font-weight: bold;">${s(asset.name)}</div>
+                  <div style="font-family: monospace; color: #1a56db; font-size: 14px;">TAG: ${s(asset.id)}</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Functional Area</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.area)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Category / Subtype</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.category)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Manufacturer</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.manufacturer)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Model</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.model)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Serial Number</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.serial)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Installation Year</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${asset.installYear || asset.year || '—'}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Status</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.status)}</div>
+                  </div>
+                  <div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Classification</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.type)}</div>
+                  </div>
+              </div>
+              <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Weighted Risk Score</div>
+                      <div style="font-size: 28px; font-weight: 800; margin-top: 10px;">${(asset.weightedScore || 0).toFixed(2)}</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Criticality Ranking</div>
+                      <div style="font-size: 28px; font-weight: 800; margin-top: 10px; ${getCriticalityClass(asset.criticality) ? 'color: ' + (getCriticalityClass(asset.criticality) === 'lvl-A' ? '#dc2626' : getCriticalityClass(asset.criticality) === 'lvl-B' ? '#d97706' : '#10b981') : ''}">${s(asset.criticality)}</div>
+                  </div>
+              </div>
+          </div>
+      `;
+  }
 
-    function printPreviewDatasheet() {
-        var preview = document.getElementById('fullView');
-        if (!preview) return;
-        
-        // Mostrar el modal
-        preview.style.display = 'block';
-        
-        // ✅ Forzar orientación vertical
-        var style = document.createElement('style');
-        style.id = 'printPortraitStyle';
-        style.innerHTML = `
-            @page {
-                size: portrait !important;
-                margin: 0.8cm 1.2cm 1.8cm 1.2cm !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Imprimir
-        window.print();
-        
-        // Limpiar después de imprimir
-        setTimeout(function() {
-            var styleEl = document.getElementById('printPortraitStyle');
-            if (styleEl) styleEl.remove();
-            preview.style.display = 'none';
-        }, 1500);
-    }
+  function printPreviewDatasheet() {
+      var preview = document.getElementById('fullView');
+      if (!preview) return;
+      
+      // Mostrar el modal
+      preview.style.display = 'block';
+      
+      // Imprimir directamente
+      window.print();
+      
+      // Ocultar después de imprimir
+      setTimeout(function() {
+          preview.style.display = 'none';
+      }, 1000);
+  }
 
-    function closePreview() {
-        var el = document.getElementById('fullView');
-        if (el) el.remove();
-    }
-    
-    async function printMasterList() {
-        showLoading('Generating Master List...');
-        
-        try {
-            const res = await callApi('AST_getAssetHierarchyFlat', []);
-            const assets = res.assets;
-            const stats = res.stats;
-            const generatedDate = res.generatedDate || new Date().toLocaleString();
-            
-            // Construir tabla
-            let tableRows = '';
-            for (let i = 0; i < assets.length; i++) {
-                const a = assets[i];
-                if (a.isAreaHeader) {
-                    tableRows += '<tr style="background:#e2e8f0;"><td colspan="8"><strong>' + sanitizeString(a.name) + '</strong></td></tr>';
-                } else {
-                    tableRows += '<tr>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.area) + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.id) + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.nameRaw || a.name) + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.type || '—') + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.manufacturer || '—') + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.model || '—') + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.status) + '</td>';
-                    tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.criticality) + '</td>';
-                    tableRows += '</tr>';
-                }
-            }
-            
-            var logoUrl = document.getElementById('companyLogo')?.src || '';
-            
-            var html = `
-                <div class="report-paper" style="background: white; width: 800px; margin: 0 auto; padding: 40px 50px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                    <img id="reportLogo" class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
-                    
-                    <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
-                        <div style="display:flex; gap:10px;">
-                            <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                <i class="fas fa-times"></i> CLOSE
-                            </button>
-                            <button class="btn-outline" onclick="printPreviewMasterList()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                <i class="fas fa-print"></i> PRINT
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET MASTER REGISTER</h1>
-                    <div style="text-align: right; font-size: 11px; color: #64748b; margin-bottom: 20px;">Generated: ${generatedDate}</div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                        <thead>
-                            <tr style="background: #2c3e50; color: white;">
-                                <th style="padding: 8px; text-align: left;">AREA</th>
-                                <th style="padding: 8px; text-align: left;">ASSET ID</th>
-                                <th style="padding: 8px; text-align: left;">ASSET NAME</th>
-                                <th style="padding: 8px; text-align: left;">TYPE</th>
-                                <th style="padding: 8px; text-align: left;">MANUFACTURER</th>
-                                <th style="padding: 8px; text-align: left;">MODEL</th>
-                                <th style="padding: 8px; text-align: left;">STATUS</th>
-                                <th style="padding: 8px; text-align: left;">CRITICALITY</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                    <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 30px;">
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                            <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">📊 GENERAL COUNTS</h4>
-                            <p>Areas: <strong>${stats.totalAreas || 0}</strong></p>
-                            <p>Technical Locations: <strong>${stats.totalTechLocations || 0}</strong></p>
-                            <p>Main Equipment: <strong>${stats.totalMainEquipment || 0}</strong></p>
-                            <p>Other Equipment: <strong>${stats.totalOtherEquipment || 0}</strong></p>
-                            <p><strong>TOTAL EQUIPMENT: ${stats.totalEquipment || 0}</strong></p>
-                        </div>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                            <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">⚙️ BY STATUS</h4>
-                            ${Object.keys(stats.statusCounts || {}).length > 0 ? 
-                                Object.entries(stats.statusCounts).map(([key, value]) => 
-                                    `<p>${key}: <strong>${value}</strong></p>`
-                                ).join('') : 
-                                '<p>No status data</p>'
-                            }
-                            <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${Object.values(stats.statusCounts || {}).reduce((a,b) => a + b, 0)}</strong></p>
-                        </div>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                            <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">🎯 BY CRITICALITY</h4>
-                            <p>A - CRITICAL: <strong>${stats.criticalityCounts?.A || 0}</strong></p>
-                            <p>B - IMPORTANT: <strong>${stats.criticalityCounts?.B || 0}</strong></p>
-                            <p>C - STANDARD: <strong>${stats.criticalityCounts?.C || 0}</strong></p>
-                            <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${(stats.criticalityCounts?.A || 0) + (stats.criticalityCounts?.B || 0) + (stats.criticalityCounts?.C || 0)}</strong></p>
-                        </div>
-                    </div>
-                </div>
-            `;
+  function closePreview() {
+      var el = document.getElementById('fullView');
+      if (el) el.remove();
+  }
+  
+  async function printMasterList() {
+      showLoading('Generating Master List...');
+      
+      try {
+          const res = await callApi('AST_getAssetHierarchyFlat', []);
+          const assets = res.assets;
+          const stats = res.stats;
+          const generatedDate = res.generatedDate || new Date().toLocaleString();
+          
+          // Construir tabla
+          let tableRows = '';
+          for (let i = 0; i < assets.length; i++) {
+              const a = assets[i];
+              if (a.isAreaHeader) {
+                  tableRows += '<tr style="background:#e2e8f0;"><td colspan="8"><strong>' + sanitizeString(a.name) + '</strong></td></tr>';
+              } else {
+                  // ✅ FILTRO: omitir filas sin ID o sin nombre
+                  if (!a.id || a.id.trim() === '') continue;
+                  if (!a.name || a.name.trim() === '') continue;
+                  
+                  tableRows += '<tr>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.area) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.id) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.nameRaw || a.name) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.type || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.manufacturer || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.model || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.status) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.criticality) + '</td>';
+                  tableRows += '</tr>';
+              }
+          }
+          
+          var logoUrl = document.getElementById('companyLogo')?.src || '';
+          
+          var html = `
+              <div class="report-paper" style="background: white; width: 800px; margin: 0 auto; padding: 40px 50px; border-radius: 8px; color: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  <img id="reportLogo" class="report-logo" src="${logoUrl}" alt="Company Logo" style="position: absolute; top: 30px; right: 30px; max-width: 80px; max-height: 60px; z-index: 10; display: ${logoUrl ? 'block' : 'none'};">
+                  
+                  <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
+                      <div style="display:flex; gap:10px;">
+                          <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                              <i class="fas fa-times"></i> CLOSE
+                          </button>
+                          <button class="btn-outline" onclick="printPreviewMasterList()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                              <i class="fas fa-print"></i> PRINT
+                          </button>
+                      </div>
+                  </div>
+                  
+                  <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET MASTER REGISTER</h1>
+                  <div style="text-align: right; font-size: 11px; color: #64748b; margin-bottom: 20px;">Generated: ${generatedDate}</div>
+                  <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                      <thead>
+                          <tr style="background: #2c3e50; color: white;">
+                              <th style="padding: 8px; text-align: left;">AREA</th>
+                              <th style="padding: 8px; text-align: left;">ASSET ID</th>
+                              <th style="padding: 8px; text-align: left;">ASSET NAME</th>
+                              <th style="padding: 8px; text-align: left;">TYPE</th>
+                              <th style="padding: 8px; text-align: left;">MANUFACTURER</th>
+                              <th style="padding: 8px; text-align: left;">MODEL</th>
+                              <th style="padding: 8px; text-align: left;">STATUS</th>
+                              <th style="padding: 8px; text-align: left;">CRITICALITY</th>
+                          </tr>
+                      </thead>
+                      <tbody>${tableRows}</tbody>
+                  </table>
+                  <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 30px;">
+                      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">📊 GENERAL COUNTS</h4>
+                          <p>Areas: <strong>${stats.totalAreas || 0}</strong></p>
+                          <p>Technical Locations: <strong>${stats.totalTechLocations || 0}</strong></p>
+                          <p>Main Equipment: <strong>${stats.totalMainEquipment || 0}</strong></p>
+                          <p>Other Equipment: <strong>${stats.totalOtherEquipment || 0}</strong></p>
+                          <p><strong>TOTAL EQUIPMENT: ${stats.totalEquipment || 0}</strong></p>
+                      </div>
+                      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">⚙️ BY STATUS</h4>
+                          ${Object.keys(stats.statusCounts || {}).length > 0 ? 
+                              Object.entries(stats.statusCounts).map(([key, value]) => 
+                                  `<p>${key}: <strong>${value}</strong></p>`
+                              ).join('') : 
+                              '<p>No status data</p>'
+                          }
+                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${Object.values(stats.statusCounts || {}).reduce((a,b) => a + b, 0)}</strong></p>
+                      </div>
+                      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">🎯 BY CRITICALITY</h4>
+                          <p>A - CRITICAL: <strong>${stats.criticalityCounts?.A || 0}</strong></p>
+                          <p>B - IMPORTANT: <strong>${stats.criticalityCounts?.B || 0}</strong></p>
+                          <p>C - STANDARD: <strong>${stats.criticalityCounts?.C || 0}</strong></p>
+                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${(stats.criticalityCounts?.A || 0) + (stats.criticalityCounts?.B || 0) + (stats.criticalityCounts?.C || 0)}</strong></p>
+                      </div>
+                  </div>
+              </div>
+          `;
 
-            // Crear vista previa
-            var previewContainer = document.createElement('div');
-            previewContainer.id = 'fullView';
-            previewContainer.className = 'master-list-preview';  // ← NUEVO
-            previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
-            previewContainer.innerHTML = html;
-            document.body.appendChild(previewContainer);
-            
-            hideLoading();
-            
-            document.addEventListener('keydown', function escHandler(e) {
-                if (e.key === 'Escape') {
-                    closePreview();
-                    document.removeEventListener('keydown', escHandler);
-                }
-            });
-            
-        } catch (error) {
-            hideLoading();
-            showMessage('Error generating master list: ' + error.message, true);
-        }
-    }
+          // Crear vista previa
+          var previewContainer = document.createElement('div');
+          previewContainer.id = 'fullView';
+          previewContainer.className = 'master-list-preview';  // ← NUEVO
+          previewContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.95); z-index: 200; overflow-y: auto; padding: 40px 0; display: block;';
+          previewContainer.innerHTML = html;
+          document.body.appendChild(previewContainer);
+          
+          hideLoading();
+          
+          document.addEventListener('keydown', function escHandler(e) {
+              if (e.key === 'Escape') {
+                  closePreview();
+                  document.removeEventListener('keydown', escHandler);
+              }
+          });
+          
+      } catch (error) {
+          hideLoading();
+          showMessage('Error generating master list: ' + error.message, true);
+      }
+  }
 
-    function printPreviewMasterList() {
-        var preview = document.getElementById('fullView');
-        if (!preview) return;
-        
-        // Mostrar el modal
-        preview.style.display = 'block';
-        
-        // ✅ Forzar orientación horizontal con CSS dinámico
-        var style = document.createElement('style');
-        style.id = 'printLandscapeStyle';
-        style.innerHTML = `
-            @page {
-                size: landscape !important;
-                margin: 0.5cm 1cm 1.5cm 1cm !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Imprimir
-        window.print();
-        
-        // Limpiar después de imprimir
-        setTimeout(function() {
-            var styleEl = document.getElementById('printLandscapeStyle');
-            if (styleEl) styleEl.remove();
-            preview.style.display = 'none';
-        }, 1500);
-    }
-    
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-    
-    function init() {
-        loadUser();
-        loadApiUrl();
-        
-        // ✅ Inicializar ModuleBase si existe
-        if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
-            ModuleBase.initModule('Asset Master');
-        }
-        
-        if (EAMS_API_URL) {
-            loadTree();
-        } else {
-            showMessage('API URL not configured. Please log in again.', true);
-            document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Authentication required. Please refresh the page.</div>';
-        }
-        
-        var searchInput = document.getElementById('search-input');
-        var searchBtn = document.getElementById('search-btn');
-        
-        searchInput.addEventListener('input', function(e) {
-            if (searchTimeout) clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(function() { showSuggestions(e.target.value); }, 300);
-        });
-        
-        searchInput.addEventListener('blur', function() {
-            setTimeout(function() { document.getElementById('suggestions').style.display = 'none'; }, 200);
-        });
-        
-        searchBtn.addEventListener('click', function() { performSearch(searchInput.value); });
-        searchInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') performSearch(searchInput.value); });
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+  function printPreviewMasterList() {
+      var preview = document.getElementById('fullView');
+      if (!preview) return;
+      
+      // Mostrar el modal
+      preview.style.display = 'block';
+      
+      // ✅ Forzar orientación horizontal con CSS dinámico
+      var style = document.createElement('style');
+      style.id = 'printLandscapeStyle';
+      style.innerHTML = `
+          @page {
+              size: landscape !important;
+              margin: 0.5cm 1cm 1.5cm 1cm !important;
+          }
+      `;
+      document.head.appendChild(style);
+      
+      // Imprimir
+      window.print();
+      
+      // Limpiar después de imprimir
+      setTimeout(function() {
+          var styleEl = document.getElementById('printLandscapeStyle');
+          if (styleEl) styleEl.remove();
+          preview.style.display = 'none';
+      }, 1500);
+  }
+  
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+  
+  function init() {
+      loadUser();
+      loadApiUrl();
+      
+      // ✅ Inicializar ModuleBase si existe
+      if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
+          ModuleBase.initModule('Asset Master');
+      }
+      
+      if (EAMS_API_URL) {
+          loadTree();
+      } else {
+          showMessage('API URL not configured. Please log in again.', true);
+          document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Authentication required. Please refresh the page.</div>';
+      }
+      
+      var searchInput = document.getElementById('search-input');
+      var searchBtn = document.getElementById('search-btn');
+      
+      searchInput.addEventListener('input', function(e) {
+          if (searchTimeout) clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(function() { showSuggestions(e.target.value); }, 300);
+      });
+      
+      searchInput.addEventListener('blur', function() {
+          setTimeout(function() { document.getElementById('suggestions').style.display = 'none'; }, 200);
+      });
+      
+      searchBtn.addEventListener('click', function() { performSearch(searchInput.value); });
+      searchInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') performSearch(searchInput.value); });
+  }
+  
+  if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+  } else {
+      init();
+  }
 </script>
 </body>
 </html>
