@@ -586,14 +586,63 @@
         }
 
         @media print {
-            .inventory-print @page {
-                size: landscape !important;
-            }
-            
-            .inventory-print .no-print {
+            /* Ocultar todo EXCEPTO #fullView */
+            body > *:not(#fullView) {
                 display: none !important;
             }
-        }                
+            
+            #fullView {
+                display: block !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                z-index: 9999 !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            
+            #fullView .no-print {
+                display: none !important;
+            }
+            
+            .report-paper {
+                box-shadow: none !important;
+                background: white !important;
+                width: 100% !important;
+                padding: 15px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            
+            /* Estilos para Inventory (horizontal) */
+            #fullView.inventory-preview .report-paper {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 15px 20px !important;
+            }
+            
+            #fullView.inventory-preview table {
+                font-size: 8px !important;
+            }
+            
+            #fullView.inventory-preview table th,
+            #fullView.inventory-preview table td {
+                padding: 4px 6px !important;
+            }
+            
+            .report-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                max-width: 60px !important;
+                max-height: 40px !important;
+            }
+        }               
     </style>
 </head>
 <body>
@@ -850,43 +899,16 @@
         var preview = document.getElementById('fullView');
         if (!preview) return;
         
-        var clone = preview.cloneNode(true);
-        clone.id = 'printClone';
-        clone.style.position = 'relative';
-        clone.style.background = 'white';
-        clone.style.padding = '20px';
-        clone.style.zIndex = '9999';
-        clone.style.display = 'block';
-        clone.style.overflow = 'visible';
-        clone.style.height = 'auto';
+        // Mostrar el modal
+        preview.style.display = 'block';
         
-        var noPrint = clone.querySelectorAll('.no-print');
-        noPrint.forEach(function(el) { el.style.display = 'none'; });
+        // Imprimir directamente
+        window.print();
         
-        var logo = clone.querySelector('.report-logo');
-        if (logo) {
-            var logoImg = document.getElementById('companyLogo');
-            if (logoImg && logoImg.src) {
-                logo.src = logoImg.src;
-                logo.style.display = 'block';
-            }
-        }
-        
-        document.body.appendChild(clone);
-        
-        document.body.classList.add('inventory-print');
-        
-        if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-            ModuleBase.printModule('Inventory Status Report', 'eams');
-        } else {
-            window.print();
-        }
-        
+        // Ocultar después de imprimir
         setTimeout(function() {
-            document.body.classList.remove('inventory-print');
-            var el = document.getElementById('printClone');
-            if (el) el.remove();
-        }, 2000);
+            preview.style.display = 'none';
+        }, 1000);
     }
 
     function closePreview() {
