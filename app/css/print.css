@@ -98,8 +98,10 @@
     }
     
     .print-header .print-logo {
-        height: 40px !important;
+        height: 32px !important;
         width: auto !important;
+        max-width: 50px !important;
+        max-height: 35px !important;
         object-fit: contain !important;
     }
     
