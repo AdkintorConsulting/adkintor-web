@@ -906,9 +906,11 @@
   // ============================================
   async function loadPriorities() {
       try {
-          var data = await callApi('getPrioritizedWOs', [false, 14]);
-          // Usamos data para todo, tanto tabla como totales
-          renderPriorities(data);
+          // ✅ 1. Cargar TOTAL para tarjetas (sin filtro de fecha)
+          var totalData = await callApi('getPrioritizedWOs', [false, 0]);
+          // ✅ 2. Cargar FILTRADO para grid (últimos 14 días)
+          var filteredData = await callApi('getPrioritizedWOs', [false, 14]);
+          renderPriorities(totalData, filteredData);
       } catch (error) {
 
       if (window.Logger && typeof Logger.error === 'function') {
@@ -988,12 +990,12 @@
   }
   
   async function loadAllWOs() {
-      await logForesight('WO', 'LOAD_ALL_WOS', 'User requested to view all Work Orders (full mode)');
-      
       showLoading('Loading all work orders...');
       try {
-          var data = await callApi('getPrioritizedWOs', [false, 0]);  // ← 0 = sin límite
-          renderPriorities(data);
+          // ✅ Cargar TOTAL para tarjetas (ya debería estar en caché, pero recargamos)
+          var totalData = await callApi('getPrioritizedWOs', [false, 0]);
+          // ✅ Grid muestra TODOS (sin filtro)
+          renderPriorities(totalData, totalData);
           hideLoading();
           showToast('All WOs loaded successfully', 'success');
       } catch (error) {
@@ -1023,19 +1025,24 @@
   // ============================================
   // RENDER FUNCTIONS
   // ============================================
-  function renderPriorities(data) {
-      // data ES el array de WOs (filtrado por 14 días)
-      var wos = Array.isArray(data) ? data : (data?.wos || []);
+  function renderPriorities(totalData, filteredData) {
+      // ✅ totalData → para tarjetas (SIEMPRE TOTAL)
+      var totalWOs = Array.isArray(totalData) ? totalData : (totalData?.wos || []);
       
-      // Contadores sobre los mismos datos (NO hay dos llamadas)
-      var activeCount = wos.length;
-      var highCount = wos.filter(function(w) { return w.score >= 80; }).length;
-      var holdCount = wos.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
-      var openCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'OPEN'; }).length;
-      var inProgressCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'IN PROGRESS'; }).length;
-      var completedCount = wos.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'COMPLETED'; }).length;
+      // ✅ filteredData → para grid (FILTRADO)
+      var gridWOs = Array.isArray(filteredData) ? filteredData : (filteredData?.wos || []);
       
-      // Actualizar tarjetas
+      // ============================================
+      // TARJETAS (usando totalWOs)
+      // ============================================
+      var activeCount = totalWOs.length;
+      var highCount = totalWOs.filter(function(w) { return w.score >= 80; }).length;
+      var holdCount = totalWOs.filter(function(w) { return w.missingParts || (w.status || '').toUpperCase() === 'ON HOLD'; }).length;
+      var openCount = totalWOs.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'OPEN'; }).length;
+      var inProgressCount = totalWOs.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'IN PROGRESS'; }).length;
+      var completedCount = totalWOs.filter(function(w) { var s = (w.status || '').toUpperCase(); return s === 'COMPLETED'; }).length;
+      
+      // Actualizar tarjetas (con totales)
       document.getElementById('activeCount').innerText = activeCount;
       document.getElementById('highCount').innerText = highCount;
       document.getElementById('holdCount').innerText = holdCount;
@@ -1043,8 +1050,10 @@
       document.getElementById('inProgressCount').innerText = inProgressCount;
       document.getElementById('completedCount').innerText = completedCount;
       
-      // Tabla con los mismos datos
-      if (!wos.length) {
+      // ============================================
+      // GRID (usando gridWOs)
+      // ============================================
+      if (!gridWOs.length) {
           document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders in the selected period</div>';
           return;
       }
@@ -1053,8 +1062,8 @@
       html += '<tr><th>#</th><th>WO #</th><th>Creation Date</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
       html += '</thead><tbody>';
 
-      for (var i = 0; i < wos.length; i++) {
-          var wo = wos[i];
+      for (var i = 0; i < gridWOs.length; i++) {
+          var wo = gridWOs[i];
           var statusUpper = (wo.status || '').toUpperCase();
           var statusBadge = '';
           
