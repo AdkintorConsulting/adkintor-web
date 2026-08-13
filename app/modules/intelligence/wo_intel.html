@@ -901,34 +901,50 @@
     }
   }
   
-  async function callApi(action, args = []) {
-    if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
-    }
-    
-    // console.log('[WO] Calling API:', action, args);  // COMENTADO
-    
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        targetUrl: EAMS_API_URL, 
-        payload: { action: action, args: args } 
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-    }
-    
-    const result = await response.json();
-    // console.log('[WO] API Response:', result);  // COMENTADO
-    
-    if (!result.success) {
-      throw new Error(result.error || 'API call failed');
-    }
-    
-    return result.data;
+  async function callApi(action, args = [], retries = 2) {
+      if (!EAMS_API_URL) {
+          throw new Error('API URL not configured. Please check your session.');
+      }
+      
+      let lastError = null;
+      
+      for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+              const response = await fetch(PROXY_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                      targetUrl: EAMS_API_URL, 
+                      payload: { action: action, args: args } 
+                  })
+              });
+              
+              if (!response.ok) {
+                  throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+              }
+              
+              const result = await response.json();
+              
+              if (!result.success) {
+                  throw new Error(result.error || 'API call failed');
+              }
+              
+              // ✅ Si llegamos aquí, todo funcionó
+              return result.data;
+              
+          } catch (error) {
+              lastError = error;
+              console.warn(`⚠️ Intento ${attempt + 1} para "${action}" falló:`, error.message);
+              
+              if (attempt < retries) {
+                  // Esperar 1 segundo antes de reintentar
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+              }
+          }
+      }
+      
+      // ❌ Todos los intentos fallaron
+      throw lastError || new Error('API call failed after ' + (retries + 1) + ' attempts');
   }
   
   // ============================================
