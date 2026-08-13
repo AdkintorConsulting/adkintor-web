@@ -431,7 +431,7 @@
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       font-family: 'Inter', sans-serif;
     }
     
@@ -591,24 +591,109 @@
     }
 
     @media print {
-        .wo-print @page {
-            size: landscape !important;
-        }
-        
-        .wo-print .no-print {
+        /* Ocultar todo EXCEPTO #fullView */
+        body > *:not(#fullView) {
             display: none !important;
         }
-    }
-
-    /* ============================================
-      REPORT LOGO
-      ============================================ */
-    .report-logo {
-        width: auto !important;
-        height: auto !important;
-        max-width: 80px !important;
-        max-height: 60px !important;
-        object-fit: contain !important;
+        
+        #fullView {
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            padding: 20px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            z-index: 9999 !important;
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        #fullView .no-print {
+            display: none !important;
+        }
+        
+        .report-paper {
+            box-shadow: none !important;
+            background: white !important;
+            width: 100% !important;
+            padding: 15px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+        
+        /* Estilos para WO Preview */
+        #fullView.wo-preview .report-paper {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 15px 20px !important;
+        }
+        
+        #fullView.wo-preview table {
+            font-size: 9px !important;
+        }
+        
+        #fullView.wo-preview table th,
+        #fullView.wo-preview table td {
+            padding: 4px 6px !important;
+        }
+        
+        #fullView.wo-preview .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(6, 1fr) !important;
+            gap: 8px !important;
+        }
+        
+        #fullView.wo-preview .adk-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 4px !important;
+            padding: 8px !important;
+            text-align: center !important;
+        }
+        
+        #fullView.wo-preview .adk-card .value {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #0a0a0f !important;
+        }
+        
+        #fullView.wo-preview .adk-card .label {
+            font-size: 8px !important;
+            color: #64748b !important;
+        }
+        
+        /* ✅ BADGES EN BLANCO Y NEGRO */
+        .badge {
+            background: white !important;
+            color: black !important;
+            border: 1px solid black !important;
+        }
+        
+        .adk-badge-danger,
+        .adk-badge-warning,
+        .adk-badge-success,
+        .adk-badge-primary,
+        .adk-badge-gray {
+            background: white !important;
+            color: black !important;
+            border: 1px solid black !important;
+        }
+        
+        .report-logo {
+            position: absolute !important;
+            top: 10px !important;
+            right: 15px !important;
+            max-width: 60px !important;
+            max-height: 40px !important;
+        }
+        
+        @page {
+            size: landscape !important;
+            margin: 0.5cm 1cm 1.5cm 1cm !important;
+        }
     }    
   </style>
 </head>
@@ -656,8 +741,8 @@
       <div class="content-panel">
         <!-- TAB 1: PRIORITIES -->
         <div id="priorities-tab" class="tab-pane active">
-          <div class="flex-between">
-            <div class="stats-grid" style="width: 100%;">
+          <div class="flex-between" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">
+            <div class="stats-grid" style="flex: 1; min-width: 200px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;">
                 <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
                 <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
                 <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
@@ -665,11 +750,11 @@
                 <div class="adk-card"><div class="label">In Progress</div><div class="value" id="inProgressCount">-</div></div>
                 <div class="adk-card"><div class="label">Completed</div><div class="value" id="completedCount">-</div></div>
             </div>
-              <div style="display: flex; gap: 8px;">
-                  <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-                  <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
-                  <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
-              </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+                <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
+                <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
+                <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+            </div>
           </div>
           <div id="prioritiesList"></div>
         </div>
@@ -798,7 +883,7 @@
     if (session) {
       try {
         const sessionData = JSON.parse(session);
-        EAMS_API_URL = sessionData.eamsApiUrl || sessionData.intelligenceApiUrl;
+        EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
           userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
@@ -1209,50 +1294,20 @@
   // ============================================
   // FUNCIONES AUXILIARES PARA IMPRESIÓN
   // ============================================
-
   function printPreviewWO(type) {
       var preview = document.getElementById('fullView');
       if (!preview) return;
       
-      var clone = preview.cloneNode(true);
-      clone.id = 'printClone';
-      clone.style.position = 'relative';
-      clone.style.background = 'white';
-      clone.style.padding = '20px';
-      clone.style.zIndex = '9999';
-      clone.style.display = 'block';
-      clone.style.overflow = 'visible';
-      clone.style.height = 'auto';
+      // Mostrar el modal directamente
+      preview.style.display = 'block';
       
-      var noPrint = clone.querySelectorAll('.no-print');
-      noPrint.forEach(function(el) { el.style.display = 'none'; });
+      // Imprimir directamente
+      window.print();
       
-      var logo = clone.querySelector('.report-logo');
-      if (logo) {
-          var logoImg = document.getElementById('companyLogo');
-          if (logoImg && logoImg.src) {
-              logo.src = logoImg.src;
-              logo.style.display = 'block';
-          }
-      }
-      
-      document.body.appendChild(clone);
-      
-      document.body.classList.add('wo-print');
-      
-      var title = type === 'priorities' ? 'WO Priorities Report' : 'WO Tasks Report';
-      
-      if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-          ModuleBase.printModule(title, 'foresight');
-      } else {
-          window.print();
-      }
-      
+      // Ocultar después de imprimir
       setTimeout(function() {
-          document.body.classList.remove('wo-print');
-          var el = document.getElementById('printClone');
-          if (el) el.remove();
-      }, 2000);
+          preview.style.display = 'none';
+      }, 1000);
   }
 
   function closePreview() {
