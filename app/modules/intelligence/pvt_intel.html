@@ -819,17 +819,15 @@
               <button class="tab-btn" data-tab="alerts">🚨 Alerts</button>
           </div>
 
-          <!-- ✅ BOTÓN REFRESH (GLOBAL) -->
-          <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-              <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-          </div>
+          <!-- Refresh ahora está dentro de cada tab -->
 
           <div class="content-panel">
               
               <!-- TAB 1: COVERAGE -->
               <div id="coverage-tab" class="tab-pane active">
-                  <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                      <button id="printCoverageBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+                  <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end; flex-wrap: wrap;">
+                      <button id="printCoverageBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
+                      <button id="refreshBtnTab1" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
                   </div>
                   <!-- Tarjetas de conteo (5) -->
                   <div class="stats-grid">
@@ -849,8 +847,9 @@
 
               <!-- TAB 2: ORPHANS -->
               <div id="orphans-tab" class="tab-pane">
-                  <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                      <button id="printOrphansBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+                  <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end; flex-wrap: wrap;">
+                      <button id="printOrphansBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
+                      <button id="refreshBtnTab2" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
                   </div>
                   <div id="duplicateWarning" class="adk-alert-warning" style="display: none;">
                       <span>⚠️</span>
@@ -1567,10 +1566,18 @@
               });
           }
 
-          var refreshBtn = document.getElementById('refreshBtn');
-          if (refreshBtn) {
-              refreshBtn.addEventListener('click', function() {
-                  // console.log('[PVT] Refresh clicked');  // COMENTADO
+          // Botón Refresh en Tab 1
+          var refreshBtnTab1 = document.getElementById('refreshBtnTab1');
+          if (refreshBtnTab1) {
+              refreshBtnTab1.addEventListener('click', function() {
+                  refreshAll();
+              });
+          }
+          
+          // Botón Refresh en Tab 2
+          var refreshBtnTab2 = document.getElementById('refreshBtnTab2');
+          if (refreshBtnTab2) {
+              refreshBtnTab2.addEventListener('click', function() {
                   refreshAll();
               });
           }
