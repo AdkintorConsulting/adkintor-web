@@ -780,33 +780,30 @@
   }
   
   async function callApi(action, args = []) {
-    if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
-    }
-    
-    // console.log('[STK] Calling API:', action, args);  // COMENTADO
-    
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        targetUrl: EAMS_API_URL, 
-        payload: { action: action, args: args } 
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-    }
-    
-    const result = await response.json();
-    // console.log('[STK] API Response:', result);  // COMENTADO
-    
-    if (!result.success) {
-      throw new Error(result.error || 'API call failed');
-    }
-    
-    return result.data;
+      if (!EAMS_API_URL) {
+        throw new Error('API URL not configured. Please check your session.');
+      }
+      
+      const response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          targetUrl: EAMS_API_URL, 
+          payload: { action: action, args: args } 
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'API call failed');
+      }
+      
+      return result.data;
   }
   
   // ============================================
