@@ -569,25 +569,143 @@
     }
 
     @media print {
-        .kpi-print @page {
-            size: landscape !important;
-        }
-        
-        .kpi-print .no-print {
+        /* Ocultar todo EXCEPTO #fullView */
+        body > *:not(#fullView) {
             display: none !important;
         }
-    }
-
-    /* ============================================
-      REPORT LOGO
-      ============================================ */
-    .report-logo {
-        width: auto !important;
-        height: auto !important;
-        max-width: 80px !important;
-        max-height: 60px !important;
-        object-fit: contain !important;
-    }  
+        
+        #fullView {
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            padding: 20px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            z-index: 9999 !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        #fullView .no-print {
+            display: none !important;
+        }
+        
+        .report-paper {
+            box-shadow: none !important;
+            background: white !important;
+            width: 100% !important;
+            padding: 15px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        #fullView .card-body {
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        /* Estilos para KPI Preview */
+        #fullView.kpi-preview .report-paper {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 15px 20px !important;
+        }
+        
+        #fullView.kpi-preview .kpi-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 12px !important;
+            margin-bottom: 16px !important;
+        }
+        
+        #fullView.kpi-preview .adk-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 6px !important;
+            padding: 12px !important;
+        }
+        
+        #fullView.kpi-preview .kpi-value {
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: #0a0a0f !important;
+        }
+        
+        #fullView.kpi-preview .kpi-label {
+            font-size: 10px !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+        }
+        
+        #fullView.kpi-preview .two-columns {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 12px !important;
+            margin-bottom: 12px !important;
+        }
+        
+        #fullView.kpi-preview .card-title {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #1a1a2e !important;
+            border-left: 3px solid #2563eb !important;
+            padding-left: 8px !important;
+            margin-bottom: 10px !important;
+        }
+        
+        #fullView.kpi-preview table {
+            font-size: 10px !important;
+        }
+        
+        #fullView.kpi-preview table th,
+        #fullView.kpi-preview table td {
+            padding: 4px 6px !important;
+        }
+        
+        #fullView.kpi-preview .backlog-bar-container {
+            background: #e2e8f0 !important;
+            border-radius: 4px !important;
+            height: 18px !important;
+            overflow: hidden !important;
+            margin: 3px 0 !important;
+        }
+        
+        #fullView.kpi-preview .backlog-bar {
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            padding-right: 6px !important;
+            font-size: 9px !important;
+            font-weight: 600 !important;
+            color: #0a0a0f !important;
+        }
+        
+        #fullView.kpi-preview .chart-container {
+            height: 150px !important;
+            position: relative !important;
+        }
+        
+        .report-logo {
+            position: absolute !important;
+            top: 10px !important;
+            right: 15px !important;
+            max-width: 60px !important;
+            max-height: 40px !important;
+        }
+        
+        @page {
+            size: landscape !important;
+            margin: 0.5cm 1cm 1.5cm 1cm !important;
+        }
+    } 
     
     .backlog-bar-container {
       background: var(--bg-primary);
@@ -671,7 +789,7 @@
             <option value="2026" selected>2026</option>
           </select>
           <button id="loadBtn" class="adk-btn adk-btn-primary"><i class="fas fa-sync-alt"></i> LOAD DATA</button>
-          <button id="exportBtn" class="adk-btn adk-btn-success"><i class="fas fa-file-pdf"></i> EXPORT PDF</button>
+          <button id="exportBtn" class="adk-btn adk-btn-success"><i class="fas fa-file-pdf"></i> Print PDF</button>
         </div>
       </div>
       
@@ -1039,17 +1157,18 @@
     await logForesight('KPI', 'OPEN_DASHBOARD', 'Period: ' + month + '/' + year);
     
     try {
-      // ✅ SOLO cargar KPIs al inicio (Tab 1)
+      // ✅ Cargar KPIs (siempre)
       var kpiData = await callApi('KPI_getKPIs', [year, month]);
       
       if (kpiData && kpiData.success !== false) {
         currentData = kpiData;
         renderKPITab(kpiData);
         
-        // ✅ Cargar datos de otros tabs en segundo plano (ESPERAR)
+        // ✅ Cargar datos de otros tabs en segundo plano
         await loadBackgroundData(year, month);
         
         hideLoading();
+        showToast('Data loaded successfully ✅', 'success');
         await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
       } else {
         hideLoading();
@@ -1149,17 +1268,29 @@
       var year = parseInt(document.getElementById('yearSelect').value);
       var monthName = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex]?.text || 'Unknown';
       
-      // Obtener contenido de los tabs (sin los gráficos)
+      var isCurrent = isCurrentMonthSelected();
+      
+      // Obtener contenido de los tabs
       var kpiContent = document.getElementById('kpiContent').innerHTML;
-      var financialContent = document.getElementById('financialContent').innerHTML;
       
       if (!kpiContent || kpiContent.indexOf('Error') !== -1) {
           showToast('No data to print', 'error');
           return;
       }
       
-      // ✅ Generar representación en texto de los gráficos
-      var chartsText = generateChartsText();
+      var chartsText = '';
+      var financialContent = '';
+      var compareContent = '';
+      
+      // ✅ Si es mes pasado, incluir TODOS los tabs
+      if (!isCurrent) {
+          chartsText = generateChartsText();
+          financialContent = document.getElementById('financialContent')?.innerHTML || '';
+          var compareEl = document.getElementById('compareContent');
+          if (compareEl) {
+              compareContent = compareEl.innerHTML;
+          }
+      }
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1185,15 +1316,18 @@
               <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">KPI PERFORMANCE REPORT</h1>
               <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Period: ${monthName} ${year} | Generated: ${now}</div>
               
-              <!-- KPIs Section -->
+              <!-- KPIs Section (SIEMPRE) -->
               <div style="margin-bottom: 24px;">
                   <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">📊 KPIs</h2>
                   <div style="overflow-x: auto;">
                       ${kpiContent}
                   </div>
-              </div>
-              
-              <!-- Charts Section (TEXT) -->
+              </div>`;
+      
+      // ✅ Si es mes pasado, incluir Charts, Financial y Compare
+      if (!isCurrent) {
+          html += `
+              <!-- Charts Section -->
               <div style="margin-bottom: 24px; page-break-before: always;">
                   <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">📈 Charts & Trends</h2>
                   <div style="overflow-x: auto;">
@@ -1209,6 +1343,16 @@
                   </div>
               </div>
               
+              <!-- Compare Section -->
+              <div style="margin-bottom: 24px; page-break-before: always;">
+                  <h2 style="font-size: 16px; color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; margin-bottom: 16px;">🔄 Comparative Analysis</h2>
+                  <div style="overflow-x: auto;">
+                      ${compareContent}
+                  </div>
+              </div>`;
+      }
+      
+      html += `
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
                   KPI Foresight - Adkintor EAMS
               </div>
@@ -1218,7 +1362,6 @@
       previewContainer.innerHTML = html;
       document.body.appendChild(previewContainer);
       
-      // Cerrar con ESC
       document.addEventListener('keydown', function escHandler(e) {
           if (e.key === 'Escape') {
               closePreview();
@@ -1312,43 +1455,16 @@
       var preview = document.getElementById('fullView');
       if (!preview) return;
       
-      var clone = preview.cloneNode(true);
-      clone.id = 'printClone';
-      clone.style.position = 'relative';
-      clone.style.background = 'white';
-      clone.style.padding = '20px';
-      clone.style.zIndex = '9999';
-      clone.style.display = 'block';
-      clone.style.overflow = 'visible';
-      clone.style.height = 'auto';
+      // Mostrar el modal directamente
+      preview.style.display = 'block';
       
-      var noPrint = clone.querySelectorAll('.no-print');
-      noPrint.forEach(function(el) { el.style.display = 'none'; });
+      // Imprimir directamente
+      window.print();
       
-      var logo = clone.querySelector('.report-logo');
-      if (logo) {
-          var logoImg = document.getElementById('companyLogo');
-          if (logoImg && logoImg.src) {
-              logo.src = logoImg.src;
-              logo.style.display = 'block';
-          }
-      }
-      
-      document.body.appendChild(clone);
-      
-      document.body.classList.add('kpi-print');
-      
-      if (window.ModuleBase && typeof ModuleBase.printModule === 'function') {
-          ModuleBase.printModule('KPI Performance Report', 'foresight');
-      } else {
-          window.print();
-      }
-      
+      // Ocultar después de imprimir
       setTimeout(function() {
-          document.body.classList.remove('kpi-print');
-          var el = document.getElementById('printClone');
-          if (el) el.remove();
-      }, 2000);
+          preview.style.display = 'none';
+      }, 1000);
   }
 
   function closePreview() {
@@ -1778,15 +1894,14 @@
       if (monthSelect) {
           monthSelect.addEventListener('change', function() {
               updateTabVisibility();
-              // Si cambia el mes, recargar datos
-              loadData();
+              // ✅ SOLO actualizar visibilidad, NO cargar datos
           });
       }
       
       if (yearSelect) {
           yearSelect.addEventListener('change', function() {
               updateTabVisibility();
-              loadData();
+              // ✅ SOLO actualizar visibilidad, NO cargar datos
           });
       }
       
@@ -1842,8 +1957,8 @@
           // Configurar event listeners (tabs, botones)
           setupEventListeners();
           
-          // ✅ AGREGAR BOTÓN REFRESH
-          addRefreshButton();
+          // ✅ BOTÓN REFRESH ELIMINADO (unificado con LOAD DATA)
+          // addRefreshButton();
           
           // ✅ Actualizar visibilidad de tabs según mes
           updateTabVisibility();
