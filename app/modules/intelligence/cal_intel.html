@@ -771,10 +771,7 @@
         <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>        
       </div>
 
-      <!-- Refresh global -->
-      <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-          <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-      </div> 
+      <!-- Refresh ahora está dentro de cada tab --> 
 
       <!-- Summary Cards (4 columnas) -->
       <div id="summaryCards" class="stats-grid">
@@ -1139,8 +1136,8 @@
           }
       }
       
-      // ✅ CONTADOR VISIBLE (se muestra DESPUÉS de la lista)
-      html += '<div style="padding: 6px 0 12px 0; font-size: 12px; color: var(--text-secondary); text-align: left; border-top: 1px solid var(--border-color); margin-top: 8px;">Total: ' + audit.recommendations.length + ' recommendation(s)</div>';
+      // ✅ CONTADOR ELIMINADO (por solicitud)
+      // html += '<div style="padding: 6px 0 12px 0; font-size: 12px; color: var(--text-secondary); text-align: left; border-top: 1px solid var(--border-color); margin-top: 8px;">Total: ' + audit.recommendations.length + ' recommendation(s)</div>';
       
       html += '</div></div>';
       
