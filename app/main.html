@@ -196,6 +196,49 @@
     <script src="/app/js/auth.js"></script>
     <script src="/app/js/layout.js"></script>
 
+    <!-- ============================================ -->
+    <!-- BACKEND WARM-UP (evitar HTTP 500) -->
+    <!-- ============================================ -->
+    <script>
+    (function() {
+        // 🔥 Calentar backend para evitar HTTP 500 en primera carga
+        async function warmUpBackend() {
+            try {
+                const sessionData = localStorage.getItem('adkintor_session');
+                if (!sessionData) return;
+                
+                const session = JSON.parse(sessionData);
+                const apiUrl = session.intelligenceApiUrl || session.eamsApiUrl;
+                if (!apiUrl) return;
+                
+                const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+                
+                // Función liviana para calentar el backend
+                await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        targetUrl: apiUrl,
+                        payload: { action: 'STK_getSummaryData', args: [] }
+                    })
+                });
+                // console.log('🔥 Backend warmed up successfully');
+            } catch(e) {
+                // Silencio - no afecta la carga principal
+            }
+        }
+        
+        // Ejecutar después de que la página esté completamente cargada
+        if (document.readyState === 'complete') {
+            setTimeout(warmUpBackend, 2000);
+        } else {
+            window.addEventListener('load', function() {
+                setTimeout(warmUpBackend, 2000);
+            });
+        }
+    })();
+    </script>    
+
     // ============================================
     // SESSION MONITORING (every 30 seconds)
     // ============================================
