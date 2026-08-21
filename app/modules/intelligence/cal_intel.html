@@ -616,6 +616,7 @@
             z-index: 9999 !important;
             overflow: visible !important;
             height: auto !important;
+            max-height: none !important;
         }
         
         #fullView .no-print {
@@ -629,6 +630,9 @@
             padding: 15px !important;
             margin: 0 !important;
             border-radius: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
         }
         
         /* Estilos para CAL Preview */
@@ -678,6 +682,7 @@
             margin-bottom: 6px !important;
             border-left: 4px solid !important;
             font-size: 11px !important;
+            page-break-inside: avoid !important;
         }
         
         #fullView.cal-preview .alert-critical { background: #fef2f2 !important; border-left-color: #dc2626 !important; }
@@ -722,7 +727,7 @@
             size: landscape !important;
             margin: 0.5cm 1cm 1.5cm 1cm !important;
         }
-    }     
+    }
     
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-secondary); }
