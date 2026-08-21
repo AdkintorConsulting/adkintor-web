@@ -635,6 +635,13 @@
             max-height: none !important;
         }
         
+        /* ✅ FORZAR QUE EL CARD-BODY NO TENGA LÍMITE EN IMPRESIÓN */
+        #fullView .card-body {
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
         /* Estilos para CAL Preview */
         #fullView.cal-preview .report-paper {
             max-width: 100% !important;
