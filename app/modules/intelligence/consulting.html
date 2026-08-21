@@ -1274,7 +1274,7 @@
     if (financial.topCostAssets && financial.topCostAssets.length > 0) {
       for (var i = 0; i < financial.topCostAssets.length && i < 5; i++) {
         var asset = financial.topCostAssets[i];
-        html += '<tr><td><strong>' + escapeHtml(asset.name) + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.name || asset.assetId) + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
       }
     } else {
       html += '<tr><td colspan="3">No data available</td></tr>';
@@ -1367,7 +1367,7 @@
       for (var i = 0; i < reliability.topFailures.length; i++) {
         var asset = reliability.topFailures[i];
         var critClass = asset.criticality === 'A - CRITICAL' ? 'status-critical' : (asset.criticality === 'B - IMPORTANT' ? 'status-warning' : 'status-good');
-        html += '<tr><td><strong>' + escapeHtml(asset.name) + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.name || asset.assetId) + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
       }
     } else {
       html += '<tr><td colspan="3">No failures recorded</td></tr>';
