@@ -202,42 +202,63 @@
     <script>
     (function() {
         // 🔥 Calentar backend para evitar HTTP 500 en primera carga
-        async function warmUpBackend() {
+        function warmUpBackend() {
             try {
                 const sessionData = localStorage.getItem('adkintor_session');
-                if (!sessionData) return;
+                if (!sessionData) {
+                    // console.log('[WARM-UP] No session, skipping');
+                    return;
+                }
                 
                 const session = JSON.parse(sessionData);
                 const apiUrl = session.intelligenceApiUrl || session.eamsApiUrl;
-                if (!apiUrl) return;
+                if (!apiUrl) {
+                    // console.log('[WARM-UP] No API URL, skipping');
+                    return;
+                }
                 
                 const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
                 
+                // console.log('[WARM-UP] Calentando backend...');
+                
                 // Función liviana para calentar el backend
-                await fetch(proxyUrl, {
+                fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         targetUrl: apiUrl,
                         payload: { action: 'STK_getSummaryData', args: [] }
                     })
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(result) {
+                    // console.log('[WARM-UP] Backend calentado:', result.success ? '✅' : '❌');
+                })
+                .catch(function(error) {
+                    // Silencio - no afecta la carga principal
+                    // console.log('[WARM-UP] Error (silent):', error.message);
                 });
-                // console.log('🔥 Backend warmed up successfully');
             } catch(e) {
-                // Silencio - no afecta la carga principal
+                // Silencio total
             }
         }
         
-        // Ejecutar después de que la página esté completamente cargada
-        if (document.readyState === 'complete') {
-            setTimeout(warmUpBackend, 2000);
-        } else {
-            window.addEventListener('load', function() {
-                setTimeout(warmUpBackend, 2000);
-            });
+        // ✅ Esperar a que layout.js termine de cargar
+        // layout.js expone window.ADKINTOR_READY cuando termina
+        function tryWarmUp() {
+            if (window.ADKINTOR_READY) {
+                // console.log('[WARM-UP] ADKINTOR_READY detectado');
+                setTimeout(warmUpBackend, 1000);
+            } else {
+                // console.log('[WARM-UP] Esperando ADKINTOR_READY...');
+                setTimeout(tryWarmUp, 500);
+            }
         }
+        
+        // Iniciar el proceso de espera
+        setTimeout(tryWarmUp, 1000);
     })();
-    </script>    
+    </script>
 
     // ============================================
     // SESSION MONITORING (every 30 seconds)
