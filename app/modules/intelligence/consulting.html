@@ -1357,7 +1357,7 @@
       html += '<div class="alert alert-critical"><strong>⚠️ Top Issues Impacting Performance</strong><br>';
       for (var i = 0; i < summary.topIssues.length; i++) {
         var issue = summary.topIssues[i];
-        html += '• ' + escapeHtml(issue.assetId) + ': ' + issue.failures + ' failures (' + escapeHtml(issue.criticality) + ')<br>';
+        html += '• ' + escapeHtml(issue.assetId + ' (' + (issue.name || issue.assetId) + ')') + ': ' + issue.failures + ' failures (' + escapeHtml(issue.criticality) + ')<br>';
       }
       html += '</div>';
     } else {
@@ -1412,7 +1412,7 @@
     if (financial.topCostAssets && financial.topCostAssets.length > 0) {
       for (var i = 0; i < financial.topCostAssets.length && i < 5; i++) {
         var asset = financial.topCostAssets[i];
-        html += '<tr><td><strong>' + escapeHtml(asset.name || asset.assetId) + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
       }
     } else {
       html += '<tr><td colspan="3">No data available</td></tr>';
@@ -1505,7 +1505,7 @@
       for (var i = 0; i < reliability.topFailures.length; i++) {
         var asset = reliability.topFailures[i];
         var critClass = asset.criticality === 'A - CRITICAL' ? 'status-critical' : (asset.criticality === 'B - IMPORTANT' ? 'status-warning' : 'status-good');
-        html += '<tr><td><strong>' + escapeHtml(asset.name || asset.assetId) + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
       }
     } else {
       html += '<tr><td colspan="3">No failures recorded</td></tr>';
