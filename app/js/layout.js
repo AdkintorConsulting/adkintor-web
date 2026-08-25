@@ -1423,3 +1423,62 @@ window.addEventListener('message', function(event) {
     // ✅ Manejar otros mensajes que ya existen
     // (El código existente para otros mensajes puede ir aquí)
 });
+
+// ============================================
+// BACKEND WARM-UP (evitar HTTP 500 en primera carga)
+// ============================================
+(function() {
+    // 🔥 Calentar backend para evitar HTTP 500 en primera carga
+    function warmUpBackend() {
+        try {
+            const sessionData = localStorage.getItem('adkintor_session');
+            if (!sessionData) {
+                // console.log('[WARM-UP] No session, skipping');
+                return;
+            }
+            
+            const session = JSON.parse(sessionData);
+            const apiUrl = session.intelligenceApiUrl || session.eamsApiUrl;
+            if (!apiUrl) {
+                // console.log('[WARM-UP] No API URL, skipping');
+                return;
+            }
+            
+            const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+            
+            // console.log('[WARM-UP] Calentando backend...');
+            
+            // Función liviana para calentar el backend
+            fetch(proxyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: apiUrl,
+                    payload: { action: 'STK_getSummaryData', args: [] }
+                })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(result) {
+                // console.log('[WARM-UP] Backend calentado:', result.success ? '✅' : '❌');
+            })
+            .catch(function(error) {
+                // Silencio - no afecta la carga principal
+            });
+        } catch(e) {
+            // Silencio total
+        }
+    }
+    
+    // ✅ Ejecutar después de que la sesión esté cargada
+    // Esperar 2 segundos después de que la página cargue
+    if (document.readyState === 'complete') {
+        setTimeout(warmUpBackend, 2000);
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(warmUpBackend, 2000);
+        });
+    }
+    
+    // También exponer la función globalmente para pruebas
+    window.warmUpBackend = warmUpBackend;
+})();
