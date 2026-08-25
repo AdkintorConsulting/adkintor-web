@@ -1233,21 +1233,18 @@
       await logForesight('KPI', 'OPEN_DASHBOARD', 'Period: ' + month + '/' + year);
       
       try {
-          // ✅ PRIMERO: Verificar si hay datos para este mes
-          var checkData = await callApi('KPI_checkPeriodData', [year, month]);
+          // ✅ Cargar KPIs (contiene la validación implícita)
+          var kpiData = await callApi('KPI_getKPIs', [year, month]);
           
-          if (checkData && checkData.success === false) {
-              // ❌ No hay datos para este mes
+          // ✅ Si KPI_getKPIs devuelve error, mostrar mensaje
+          if (kpiData && kpiData.success === false) {
               hideLoading();
-              showToast('📭 No data available for the selected month. Please select a different period.', 'warning');
+              showToast('📭 No data available for ' + getMonthName(month) + ' ' + year + '. Please select a different period.', 'warning');
               document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--warning);"><i class="fas fa-calendar-times"></i> No data available for ' + getMonthName(month) + ' ' + year + '. Please select a different month.</div>';
               return;
           }
           
-          // ✅ Cargar KPIs (siempre)
-          var kpiData = await callApi('KPI_getKPIs', [year, month]);
-          
-          if (kpiData && kpiData.success !== false) {
+          if (kpiData && kpiData.k && typeof kpiData.k === 'object') {
               currentData = kpiData;
               renderKPITab(kpiData);
               
@@ -1261,10 +1258,10 @@
               showToast('Data loaded successfully ✅', 'success');
               await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
           } else {
+              // ✅ Si no hay datos, mostrar mensaje
               hideLoading();
-              var errorMsg = kpiData?.error || 'Unknown error';
-              showToast(errorMsg, 'error');
-              document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + errorMsg + '</div>';
+              showToast('📭 No data available for ' + getMonthName(month) + ' ' + year + '. Please select a different period.', 'warning');
+              document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--warning);"><i class="fas fa-calendar-times"></i> No data available for ' + getMonthName(month) + ' ' + year + '. Please select a different month.</div>';
           }
       } catch (error) {
           hideLoading();
