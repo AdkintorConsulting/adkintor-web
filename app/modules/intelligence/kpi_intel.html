@@ -1143,7 +1143,7 @@
       } catch (error) {
           hideLoading();
           showToast('Error loading ' + tabId + ': ' + error.message, 'error');
-          console.error('Load error:', error);
+          //console.error('Load error:', error);
       }
   }
 
@@ -1215,7 +1215,7 @@
           var activeTab = document.querySelector('.tab.active');
           if (activeTab) {
               var tabId = activeTab.dataset.tab;
-              console.log('[KPI] Renderizando tab activo:', tabId);  // ← LOG PARA DEBUG
+              //console.log('[KPI] Renderizando tab activo:', tabId);  // ← LOG PARA DEBUG
               if (tabId === 'charts' && currentData) {
                   renderChartsTab(currentData);
               } else if (tabId === 'financial' && currentData) {
@@ -1225,11 +1225,11 @@
               }
           } else {
               // ✅ Si no hay tab activo, renderizar KPIs por defecto
-              console.log('[KPI] No hay tab activo, renderizando KPIs');
+              //console.log('[KPI] No hay tab activo, renderizando KPIs');
           }
           
       } catch (bgError) {
-          console.warn('[KPI] Background load error:', bgError.message);
+          //console.warn('[KPI] Background load error:', bgError.message);
       }
   }
   
