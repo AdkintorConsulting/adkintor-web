@@ -942,6 +942,82 @@
       if (userDisplay) userDisplay.innerText = 'Guest';
     }
   }
+
+  // ============================================
+  // CARGAR MESES DISPONIBLES DESDE KPI_HISTORICAL
+  // ============================================
+  async function loadAvailableMonths() {
+      try {
+          // Obtener años y meses disponibles desde el backend
+          var availableData = await callApi('KPI_getAvailablePeriods', []);
+          
+          if (availableData && availableData.success && availableData.periods) {
+              var periods = availableData.periods; // [{year: 2026, month: 8}, ...]
+              
+              // Obtener años únicos
+              var uniqueYears = {};
+              var uniqueMonths = {};
+              
+              for (var i = 0; i < periods.length; i++) {
+                  var p = periods[i];
+                  uniqueYears[p.year] = true;
+                  if (!uniqueMonths[p.year]) uniqueMonths[p.year] = {};
+                  uniqueMonths[p.year][p.month] = true;
+              }
+              
+              var years = Object.keys(uniqueYears).sort();
+              var yearSelect = document.getElementById('yearSelect');
+              
+              // ✅ Filtrar años disponibles
+              yearSelect.innerHTML = '';
+              for (var y = 0; y < years.length; y++) {
+                  var opt = document.createElement('option');
+                  opt.value = years[y];
+                  opt.textContent = years[y];
+                  yearSelect.appendChild(opt);
+              }
+              
+              // ✅ Filtrar meses según año seleccionado
+              updateMonthFilter();
+              
+              // ✅ Evento para actualizar meses al cambiar año
+              yearSelect.addEventListener('change', function() {
+                  updateMonthFilter();
+              });
+              
+          } else {
+              // Fallback: usar meses manuales
+              //console.warn('[KPI] No available periods from backend, using defaults');
+          }
+      } catch (error) {
+          //console.warn('[KPI] Error loading available months:', error.message);
+          // Fallback: mantener meses manuales
+      }
+  }
+
+  // ============================================
+  // ACTUALIZAR FILTRO DE MESES SEGÚN AÑO
+  // ============================================
+  function updateMonthFilter() {
+      var yearSelect = document.getElementById('yearSelect');
+      var monthSelect = document.getElementById('monthSelect');
+      var selectedYear = parseInt(yearSelect.value);
+      
+      // Obtener meses disponibles para el año seleccionado
+      var availableMonths = window._availableMonths || {};
+      var months = availableMonths[selectedYear] || [1,2,3,4,5,6,7,8,9,10,11,12];
+      
+      monthSelect.innerHTML = '';
+      var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      
+      for (var i = 0; i < months.length; i++) {
+          var m = months[i];
+          var opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = monthNames[m - 1];
+          monthSelect.appendChild(opt);
+      }
+  }  
   
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
@@ -1149,38 +1225,52 @@
 
   // ✅ Función principal - SOLO carga KPIs al inicio
   async function loadData() {
-    showLoading('Loading KPI Dashboard...');
-    
-    var month = parseInt(document.getElementById('monthSelect').value);
-    var year = parseInt(document.getElementById('yearSelect').value);
-    
-    await logForesight('KPI', 'OPEN_DASHBOARD', 'Period: ' + month + '/' + year);
-    
-    try {
-      // ✅ Cargar KPIs (siempre)
-      var kpiData = await callApi('KPI_getKPIs', [year, month]);
+      showLoading('Loading KPI Dashboard...');
       
-      if (kpiData && kpiData.success !== false) {
-        currentData = kpiData;
-        renderKPITab(kpiData);
-        
-        // ✅ Cargar datos de otros tabs en segundo plano
-        await loadBackgroundData(year, month);
-        
-        hideLoading();
-        showToast('Data loaded successfully ✅', 'success');
-        await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
-      } else {
-        hideLoading();
-        var errorMsg = kpiData?.error || 'Unknown error';
-        showToast(errorMsg, 'error');
-        document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + errorMsg + '</div>';
+      var month = parseInt(document.getElementById('monthSelect').value);
+      var year = parseInt(document.getElementById('yearSelect').value);
+      
+      await logForesight('KPI', 'OPEN_DASHBOARD', 'Period: ' + month + '/' + year);
+      
+      try {
+          // ✅ PRIMERO: Verificar si hay datos para este mes
+          var checkData = await callApi('KPI_checkPeriodData', [year, month]);
+          
+          if (checkData && checkData.success === false) {
+              // ❌ No hay datos para este mes
+              hideLoading();
+              showToast('📭 No data available for the selected month. Please select a different period.', 'warning');
+              document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="padding: 20px; text-align: center; color: var(--warning);"><i class="fas fa-calendar-times"></i> No data available for ' + getMonthName(month) + ' ' + year + '. Please select a different month.</div>';
+              return;
+          }
+          
+          // ✅ Cargar KPIs (siempre)
+          var kpiData = await callApi('KPI_getKPIs', [year, month]);
+          
+          if (kpiData && kpiData.success !== false) {
+              currentData = kpiData;
+              renderKPITab(kpiData);
+              
+              // ✅ Cargar datos de otros tabs en segundo plano
+              await loadBackgroundData(year, month);
+              
+              // ✅ Actualizar visibilidad de tabs DESPUÉS de cargar
+              updateTabVisibility();
+              
+              hideLoading();
+              showToast('Data loaded successfully ✅', 'success');
+              await logForesight('KPI', 'DATA_LOADED', 'Availability: ' + (kpiData.k?.availability || '0') + '%');
+          } else {
+              hideLoading();
+              var errorMsg = kpiData?.error || 'Unknown error';
+              showToast(errorMsg, 'error');
+              document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + errorMsg + '</div>';
+          }
+      } catch (error) {
+          hideLoading();
+          showToast('Connection error: ' + error.message, 'error');
+          document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
       }
-    } catch (error) {
-      hideLoading();
-      showToast('Connection error: ' + error.message, 'error');
-      document.getElementById('kpiContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding:20px;"><i class="fas fa-exclamation-triangle"></i> ' + error.message + '</div>';
-    }
   }
 
   // ✅ NUEVA FUNCIÓN: Carga otros tabs en segundo plano
@@ -1887,21 +1977,21 @@
           });
       }
       
-      // ✅ SELECTORES DE MES/AÑO - Actualiza visibilidad de tabs
+      // ✅ SELECTORES DE MES/AÑO - SOLO actualiza visibilidad al cambiar
       var monthSelect = document.getElementById('monthSelect');
       var yearSelect = document.getElementById('yearSelect');
-      
+
       if (monthSelect) {
           monthSelect.addEventListener('change', function() {
-              updateTabVisibility();
               // ✅ SOLO actualizar visibilidad, NO cargar datos
+              // updateTabVisibility();  // ← ELIMINADO
           });
       }
-      
+
       if (yearSelect) {
           yearSelect.addEventListener('change', function() {
-              updateTabVisibility();
               // ✅ SOLO actualizar visibilidad, NO cargar datos
+              // updateTabVisibility();  // ← ELIMINADO
           });
       }
       
@@ -1954,11 +2044,11 @@
           if (monthSelect) monthSelect.value = currentMonth;
           if (yearSelect) yearSelect.value = currentYear;
           
+          // ✅ Cargar meses disponibles desde backend
+          await loadAvailableMonths();
+          
           // Configurar event listeners (tabs, botones)
           setupEventListeners();
-          
-          // ✅ BOTÓN REFRESH ELIMINADO (unificado con LOAD DATA)
-          // addRefreshButton();
           
           // ✅ Actualizar visibilidad de tabs según mes
           updateTabVisibility();
@@ -1971,15 +2061,6 @@
 
           // Cargar datos
           await loadData();
-
-          // ✅ Renderizar KPIs (ya debería estar hecho por loadData)
-          // Pero si no, forzar renderizado
-
-          // ✅ Si el tab activo es charts, renderizarlo después de cargar background
-          var activeTab = document.querySelector('.tab.active');
-          if (activeTab && activeTab.dataset.tab === 'charts' && currentData) {
-              renderChartsTab(currentData);
-          }
 
           hideLoading();
           showToast('KPI Dashboard loaded successfully ✅', 'success');
