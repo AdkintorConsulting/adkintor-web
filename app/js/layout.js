@@ -3,7 +3,7 @@
  * LAYOUT MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-20
+ * FECHA: 2026-08-26
  * 
  * Controlador principal de la interfaz:
  * - Sidebar navigation (FORESIGHT modules)
@@ -1448,7 +1448,6 @@ window.addEventListener('message', function(event) {
             
             // console.log('[WARM-UP] Calentando backend...');
             
-            // Función liviana para calentar el backend
             fetch(proxyUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1469,15 +1468,12 @@ window.addEventListener('message', function(event) {
         }
     }
     
-    // ✅ Ejecutar después de que la sesión esté cargada
-    // Esperar 2 segundos después de que la página cargue
-    if (document.readyState === 'complete') {
-        setTimeout(warmUpBackend, 2000);
-    } else {
-        window.addEventListener('load', function() {
-            setTimeout(warmUpBackend, 2000);
-        });
-    }
+    // ✅ ✅ ✅ NUEVO: Ejecutar directamente después de 3 segundos
+    // (ya no esperar ADKINTOR_READY)
+    setTimeout(function() {
+        // console.log('[WARM-UP] Ejecutando warm-up...');
+        warmUpBackend();
+    }, 3000);
     
     // También exponer la función globalmente para pruebas
     window.warmUpBackend = warmUpBackend;
