@@ -1002,6 +1002,18 @@
   // DATA LOADING FUNCTIONS
   // ============================================
   async function refreshAllData(showAll = false) {
+      // ✅ INTENTAR CALENTAR EL BACKEND SI ES LA PRIMERA CARGA
+      if (!window._stkWarmUpDone) {
+          window._stkWarmUpDone = true;
+          try {
+              console.log('🔥 STK: Calentando backend...');
+              await callApi('STK_getSummaryData', []);
+              console.log('✅ STK: Backend calentado');
+          } catch(e) {
+              console.log('⚠️ STK: Warm-up falló (continuando de todos modos)');
+          }
+      }
+      
       showLoading('Loading inventory data...');
       
       await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
