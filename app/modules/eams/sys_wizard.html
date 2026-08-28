@@ -974,16 +974,16 @@
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
-    
     function loadApiUrlAndUser() {
         const session = localStorage.getItem('adkintor_session');
         if (session) {
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
-                currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
+                currentUserEmail = sessionData.email || '';
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = currentUser;
+                // ✅ CORREGIDO: usar currentUserEmail en vez de currentUser
+                if (userDisplay) userDisplay.innerText = currentUserEmail;
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
                 const userDisplay = document.getElementById('userDisplay');
