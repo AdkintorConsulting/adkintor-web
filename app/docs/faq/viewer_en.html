@@ -141,42 +141,6 @@
         }
         
         /* Botones de acción */
-        .action-buttons {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            background: #1a237e;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        
-        .action-btn.print {
-            background: #4CAF50;
-        }
-        
-        .action-btn.close {
-            background: #f44336;
-        }
         
         /* Footer */
         .doc-footer {
@@ -246,14 +210,6 @@
 </head>
 <body>
     <!-- Botones de acción -->
-    <div class="action-buttons no-print">
-        <button class="action-btn print" onclick="window.print()">
-            <i class="fas fa-print"></i> Print / PDF
-        </button>
-        <button class="action-btn close" onclick="window.parent.closeDocModal()">
-            <i class="fas fa-times"></i> Close
-        </button>
-    </div>
     
     <!-- Contenido del documento -->
     <div class="doc-container">
