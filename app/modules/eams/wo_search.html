@@ -1266,10 +1266,16 @@
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
-                // ✅ CORREGIDO: Solo usa email, no userName
-                if (userDisplay) userDisplay.innerText = sessionData.email || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.name || 'User';
+                
+                // ✅ NUEVO: Cargar logo desde la sesión inmediatamente
+                if (sessionData.companyLogo) {
+                    const img = document.getElementById('companyLogo');
+                    if (img) { img.src = sessionData.companyLogo; img.style.display = 'block'; }
+                    const reportLogo = document.getElementById('reportLogo');
+                    if (reportLogo) { reportLogo.src = sessionData.companyLogo; reportLogo.style.display = 'block'; }
+                }
             } catch(e) {
-                // console.error('Error parsing session:', e);  // COMENTADO
                 showToast('Session error: Please login again', 'error');
             }
         } else {
