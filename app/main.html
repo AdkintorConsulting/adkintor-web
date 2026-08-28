@@ -53,20 +53,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="dropdown-content" id="docsDropdown">
-                        <div class="dropdown-section">
-                            <div class="section-title">SOP & WORKFLOW</div>
-                            <a href="#" data-doc="SOP Maintenance">SOP Maintenance</a>
-                            <a href="#" data-doc="Workflow WO">Workflow WO</a>
-                        </div>
-                        <div class="dropdown-section">
-                            <div class="section-title">ADKINTOR MANUALS</div>
-                            <a href="#" data-doc="User Manual">User Manual</a>
-                            <a href="#" data-doc="Quick Start Guide">Quick Start Guide</a>
-                        </div>
-                        <div class="dropdown-section">
-                            <div class="section-title">FAQ's</div>
-                            <a href="#" data-doc="Frequently Asked Questions">Frequently Asked Questions</a>
-                        </div>
+                        <!-- Se generará dinámicamente según el rol del usuario -->
                     </div>
                 </div>
             </div>
@@ -163,26 +150,25 @@
         </div>
     </div>
 
-    <!-- MODAL FOR DOCUMENTS (PDF) -->
-    <div id="docModal" class="modal-overlay" style="display: none;">
-        <div class="modal-container modal-doc">
-            <div class="modal-header">
-                <h3 id="docModalTitle">Document</h3>
-                <button class="modal-close" id="closeDocModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="pdfPlaceholder" class="pdf-placeholder">
-                    <i class="fas fa-file-pdf"></i>
-                    <p>PDF document will be available soon</p>
-                    <div class="pdf-actions">
-                        <button class="btn-pdf" id="downloadPdfBtn" disabled>
-                            <i class="fas fa-download"></i> DOWNLOAD PDF
-                        </button>
-                        <button class="btn-pdf" id="printPdfBtn" disabled>
-                            <i class="fas fa-print"></i> PRINT
-                        </button>
-                    </div>
+    <!-- MODAL FOR DOCUMENTS (HTML / DOWNLOAD) -->
+    <div id="docModal">
+        <div class="doc-modal-container">
+            <div class="doc-modal-header">
+                <h3><i class="fas fa-book-open"></i> <span id="docModalTitle">Document</span></h3>
+                <div class="doc-modal-controls">
+                    <button class="doc-modal-btn primary" id="printDocBtn" onclick="printDocument()">
+                        <i class="fas fa-print"></i> Print / PDF
+                    </button>
+                    <button class="doc-modal-btn" id="downloadDocBtn" onclick="downloadDocument()" style="display:none;">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="doc-modal-close" onclick="closeDocModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
+            </div>
+            <div class="doc-modal-body">
+                <iframe id="docIframe" src="" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -302,5 +288,332 @@
       }
     });
     </script>   
+<!-- ============================================
+     DOCUMENTATION SYSTEM - ADKINTOR (SIMPLE)
+     ============================================ -->
+<script>
+// Configuración de documentos (TODOS visibles para todos)
+const DOCS_CONFIG = {
+    'SOP Maintenance': {
+        type: 'download',
+        icon: 'fa-file-alt',
+        section: 'SOP & WORKFLOW',
+        files: {
+            ES: '/app/docs/downloads/SOP_Maintenance_ES.txt',
+            EN: '/app/docs/downloads/SOP_Maintenance_EN.txt'
+        }
+    },
+    'Workflow WO': {
+        type: 'download',
+        icon: 'fa-diagram-project',
+        section: 'SOP & WORKFLOW',
+        files: {
+            ES: '/app/docs/downloads/Workflow_Preventivo.pptx',
+            EN: '/app/docs/downloads/Workflow_Correctivo.pptx'
+        }
+    },
+    'Technician Manual': {
+        type: 'html',
+        icon: 'fa-wrench',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/technician_es.html',
+            EN: '/app/docs/manuals/technician_en.html'
+        }
+    },
+    'Supervisor Manual': {
+        type: 'html',
+        icon: 'fa-user-tie',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/supervisor_es.html',
+            EN: '/app/docs/manuals/supervisor_en.html'
+        }
+    },
+    'Executive Manual': {
+        type: 'html',
+        icon: 'fa-briefcase',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/executive_es.html',
+            EN: '/app/docs/manuals/executive_en.html'
+        }
+    },
+    'Viewer Manual': {
+        type: 'html',
+        icon: 'fa-eye',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/viewer_es.html',
+            EN: '/app/docs/manuals/viewer_en.html'
+        }
+    },
+    'Quick Start Guide': {
+        type: 'html',
+        icon: 'fa-rocket',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/quickstart_es.html',
+            EN: '/app/docs/manuals/quickstart_en.html'
+        }
+    },
+    'FAQ Technician': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/technician_es.html',
+            EN: '/app/docs/faq/technician_en.html'
+        }
+    },
+    'FAQ Supervisor': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/supervisor_es.html',
+            EN: '/app/docs/faq/supervisor_en.html'
+        }
+    },
+    'FAQ Executive': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/executive_es.html',
+            EN: '/app/docs/faq/executive_en.html'
+        }
+    },
+    'FAQ Viewer': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/viewer_es.html',
+            EN: '/app/docs/faq/viewer_en.html'
+        }
+    }
+};
+
+// Variables globales
+let currentDoc = null;
+let currentDocConfig = null;
+
+// Obtener sesión actual
+function getSession() {
+    try {
+        return JSON.parse(localStorage.getItem('adkintor_session') || '{}');
+    } catch(e) {
+        return {};
+    }
+}
+
+// Abrir documento
+function openDocument(docName) {
+    const session = getSession();
+    const lang = (session.language || 'ES').toUpperCase();
+    
+    const docConfig = DOCS_CONFIG[docName];
+    if (!docConfig) {
+        showToast('Document not found', 'error');
+        return;
+    }
+    
+    currentDoc = docName;
+    currentDocConfig = docConfig;
+    
+    // Determinar URL del documento
+    let docUrl = docConfig.files[lang] || docConfig.files['ES'];
+    
+    // Abrir modal
+    const modal = document.getElementById('docModal');
+    const iframe = document.getElementById('docIframe');
+    const title = document.getElementById('docModalTitle');
+    const printBtn = document.getElementById('printDocBtn');
+    const downloadBtn = document.getElementById('downloadDocBtn');
+    
+    title.textContent = docName;
+    
+    if (docConfig.type === 'html') {
+        iframe.src = docUrl;
+        iframe.style.display = 'block';
+        printBtn.style.display = 'flex';
+        downloadBtn.style.display = 'none';
+    } else {
+        // Para archivos descargables
+        iframe.style.display = 'none';
+        printBtn.style.display = 'none';
+        downloadBtn.style.display = 'flex';
+        
+        // Configurar botón de descarga
+        downloadBtn.onclick = function() {
+            downloadFile(docUrl, docName);
+        };
+    }
+    
+    modal.classList.add('active');
+}
+
+// Cerrar modal de documentos
+function closeDocModal() {
+    const modal = document.getElementById('docModal');
+    const iframe = document.getElementById('docIframe');
+    
+    modal.classList.remove('active');
+    setTimeout(function() {
+        iframe.src = '';
+    }, 300);
+}
+
+// Imprimir documento
+function printDocument() {
+    const iframe = document.getElementById('docIframe');
+    
+    // Asegurar que el iframe esté cargado
+    if (iframe.contentDocument) {
+        // Si el documento es HTML, imprimir directamente
+        iframe.contentWindow.print();
+        
+        // Si es PDF o no se puede imprimir desde iframe, abrir en nueva ventana
+        setTimeout(function() {
+            try {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } catch(e) {
+                // Fallback: abrir en nueva ventana
+                const docUrl = iframe.src;
+                const printWindow = window.open(docUrl, '_blank');
+                if (printWindow) {
+                    printWindow.onload = function() {
+                        printWindow.print();
+                    };
+                }
+            }
+        }, 500);
+    } else {
+        // Fallback para PDFs
+        const docUrl = iframe.src;
+        const printWindow = window.open(docUrl, '_blank');
+        if (printWindow) {
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+    }
+}
+
+// Descargar archivo
+function downloadFile(url, filename) {
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+            
+            if (typeof showToast === 'function') {
+                showToast('Download started...', 'success', 3000);
+            }
+        })
+        .catch(error => {
+            if (typeof showToast === 'function') {
+                showToast('Error downloading file', 'error');
+            }
+        });
+}
+
+// Descargar documento (wrapper para botón)
+function downloadDocument() {
+    if (currentDocConfig && currentDocConfig.type === 'download') {
+        const session = getSession();
+        const lang = (session.language || 'ES').toUpperCase();
+        const docUrl = currentDocConfig.files[lang] || currentDocConfig.files['ES'];
+        downloadFile(docUrl, currentDoc);
+    }
+}
+
+// Actualizar menú de documentos (TODOS visibles)
+function updateDocsMenu() {
+    const dropdown = document.getElementById('docsDropdown');
+    
+    // Agrupar por sección
+    const sections = {};
+    Object.entries(DOCS_CONFIG).forEach(([name, config]) => {
+        if (!sections[config.section]) {
+            sections[config.section] = [];
+        }
+        sections[config.section].push({ name, config });
+    });
+    
+    // Generar HTML del menú
+    let html = '';
+    
+    // Orden de secciones
+    const sectionOrder = ['SOP & WORKFLOW', 'ADKINTOR MANUALS', "FAQ's"];
+    
+    sectionOrder.forEach(section => {
+        if (sections[section] && sections[section].length > 0) {
+            html += `<div class="dropdown-section">
+                <div class="section-title">${section}</div>`;
+            
+            sections[section].forEach(({ name, config }) => {
+                html += `<a href="#" onclick="openDocument('${name}')">
+                    <i class="fas ${config.icon}"></i> ${name}
+                </a>`;
+            });
+            
+            html += `</div>`;
+        }
+    });
+    
+    dropdown.innerHTML = html;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar menú de documentos
+    updateDocsMenu();
+    
+    // Event listener para botón del menú
+    const docsDropdownBtn = document.getElementById('docsDropdownBtn');
+    if (docsDropdownBtn) {
+        docsDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('docsDropdown');
+            dropdown.classList.toggle('show');
+        });
+    }
+    
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown-docs')) {
+            const dropdown = document.getElementById('docsDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+    
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDocModal();
+        }
+    });
+    
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('docModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDocModal();
+        }
+    });
+});
+</script>
+
 </body>
 </html>
