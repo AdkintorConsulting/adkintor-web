@@ -286,16 +286,16 @@
             })
             .then(function(response) { return response.json(); })
             .then(function(result) {
-              console.log('[CACHE] Cleared:', result);
+              //console.log('[CACHE] Cleared:', result);
               location.reload();
             })
             .catch(function(error) {
-              console.error('[CACHE] Error:', error);
+              //console.error('[CACHE] Error:', error);
               location.reload();
             });
             
           } catch(e) {
-            console.warn('[CACHE] Error:', e);
+            //console.warn('[CACHE] Error:', e);
             location.reload();
           }
         });
