@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADKINTOR - Quick Start Guide</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .doc-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header del documento */
+        .doc-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+        }
+        
+        .doc-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .doc-header h1 i {
+            font-size: 2rem;
+        }
+        
+        .doc-version {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+        
+        .doc-logo {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        /* Contenido */
+        .doc-body {
+            padding: 30px 40px;
+        }
+        
+        /* Secciones */
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #1a237e;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .section-header i {
+            font-size: 1.2rem;
+        }
+        
+        .section-body {
+            padding: 20px;
+        }
+        
+        /* Listas numeradas */
+        ol {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        ol li {
+            margin-bottom: 10px;
+        }
+        
+        /* Cajas de información */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tabla de roles */
+        .roles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .roles-table th {
+            background: #1a237e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .roles-table td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        
+        .roles-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .role-icon {
+            margin-right: 8px;
+            color: #1a237e;
+        }
+        
+        /* Lista de recordatorios */
+        .reminders-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .reminders-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .reminders-list li i {
+            color: #4CAF50;
+            margin-top: 3px;
+        }
+        
+        /* Botones de acción (no imprimir) */
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn.print {
+            background: #4CAF50;
+        }
+        
+        .action-btn.close {
+            background: #f44336;
+        }
+        
+        /* Footer del documento */
+        .doc-footer {
+            background: #f5f5f5;
+            padding: 20px 40px;
+            border-top: 2px solid #1a237e;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .doc-footer i {
+            color: #1a237e;
+            margin-right: 5px;
+        }
+        
+        /* Estilos de impresión */
+        @media print {
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .doc-header {
+                background: white !important;
+                color: #1a237e !important;
+                border-bottom: 3px solid #1a237e !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .doc-header h1 {
+                color: #1a237e !important;
+            }
+            
+            .doc-version {
+                color: #666 !important;
+            }
+            
+            .doc-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                width: 60px !important;
+                height: 40px !important;
+            }
+            
+            .section-header {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .info-box, .warning-box, .success-box {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .roles-table th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm 1.5cm 2cm 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones de acción -->
+    <div class="action-buttons no-print">
+        <button class="action-btn print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print / PDF
+        </button>
+        <button class="action-btn close" onclick="window.parent.closeDocModal()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Contenido del documento -->
+    <div class="doc-container">
+        <div class="doc-header">
+            <h1><i class="fas fa-rocket"></i> Quick Start Guide</h1>
+            <p class="doc-version">Version 1.0 | English | ADKINTOR EAMS + FORESIGHT</p>
+            <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR" class="doc-logo">
+        </div>
+        
+        <div class="doc-body">
+            <!-- WHAT IS THIS GUIDE FOR? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i> What is this guide for?
+                </div>
+                <div class="section-body">
+                    <p>This guide is for <strong>EMERGENCIES</strong>. When you don't have time to read the full manual, this is what you need to know to keep the system running.</p>
+                    <p><strong>ALL roles</strong> can use this guide.</p>
+                </div>
+            </div>
+            
+            <!-- SYSTEM ACCESS -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-sign-in-alt"></i> System Access
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Open your browser (use <strong>CHROME</strong>)</li>
+                        <li>Go to: <strong>https://www.adkintor.com/app</strong></li>
+                        <li>Enter your corporate email and password</li>
+                        <li>Click <strong>"SIGN IN"</strong></li>
+                    </ol>
+                    
+                    <div class="info-box">
+                        <strong>Forgot your password?</strong><br>
+                        → Click "Forgot Password?" and follow the instructions<br>
+                        → Or ask your supervisor to reset it
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IF PRODUCTION STOPS (EMERGENCY) -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-exclamation-triangle"></i> If Production Stops (Emergency)
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Go to EAMS → WORK ORDER → CREATE</li>
+                        <li>Priority: <strong>EMERGENCY</strong></li>
+                        <li>In WORK DESCRIPTION, write: <strong>"PRODUCTION DOWN - [affected equipment]"</strong></li>
+                        <li>Click <strong>"SUBMIT WORK ORDER"</strong></li>
+                        <li>Your supervisor will receive an immediate alert</li>
+                    </ol>
+                    
+                    <div class="warning-box">
+                        <strong>Important:</strong> Time is critical. Don't wait to report.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IF YOU FIND A FAILURE (NOT EMERGENCY) -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tools"></i> If You Find a Failure (Not Emergency)
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Go to EAMS → WORK ORDER → CREATE</li>
+                        <li>Priority: <strong>URGENT, NORMAL, or PLANNED</strong> (choose the right one)</li>
+                        <li>Describe the failure in WORK DESCRIPTION</li>
+                        <li>Click <strong>"SUBMIT WORK ORDER"</strong></li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- IF THE SYSTEM IS SLOW -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tachometer-alt"></i> If the System is Slow
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Click the <strong>ADKINTOR logo</strong> (clears the cache)</li>
+                        <li>Close other tabs</li>
+                        <li>If still slow, report to <strong>support@adkintor.com</strong></li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- IF THE SYSTEM IS DOWN -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-plug"></i> If the System is Down
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Write everything on paper:
+                            <ul>
+                                <li>WO, hours, parts, description</li>
+                            </ul>
+                        </li>
+                        <li>Enter the data when the system is back
+                            <ul>
+                                <li>You have <strong>24 hours</strong> to do this</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- IF YOU HAVE A QUESTION -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-question-circle"></i> If You Have a Question
+                </div>
+                <div class="section-body">
+                    <ol>
+                        <li>Ask your supervisor</li>
+                        <li>Or email <strong>support@adkintor.com</strong></li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- WHAT DOES EACH ROLE DO? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i> What Does Each Role Do?
+                </div>
+                <div class="section-body">
+                    <table class="roles-table">
+                        <tr>
+                            <th>Role</th>
+                            <th>Responsibilities</th>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-wrench role-icon"></i> <strong>Technician</strong></td>
+                            <td>Report failures, execute work, close WOs</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-user-tie role-icon"></i> <strong>Supervisor</strong></td>
+                            <td>Approve WOs, release PMs, review team, close WOs</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-briefcase role-icon"></i> <strong>Executive</strong></td>
+                            <td>Review KPIs, make strategic decisions</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-eye role-icon"></i> <strong>Viewer</strong></td>
+                            <td>Report failures, view information</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- REMEMBER -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-check-circle"></i> Remember
+                </div>
+                <div class="section-body">
+                    <ul class="reminders-list">
+                        <li><i class="fas fa-check"></i> Adkintor is a guide. Your supervisor has the final say.</li>
+                        <li><i class="fas fa-check"></i> Report everything. Imperfect data is better than no data.</li>
+                        <li><i class="fas fa-check"></i> Do not share your password with anyone.</li>
+                        <li><i class="fas fa-check"></i> If you don't know something, ask.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- NEED HELP? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-headset"></i> Need Help?
+                </div>
+                <div class="section-body">
+                    <p><strong>support@adkintor.com</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="doc-footer">
+            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
