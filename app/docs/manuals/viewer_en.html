@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADKINTOR - Viewer Manual</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .doc-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header del documento */
+        .doc-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+        }
+        
+        .doc-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .doc-header h1 i {
+            font-size: 2rem;
+        }
+        
+        .doc-version {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+        
+        .doc-logo {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        /* Contenido */
+        .doc-body {
+            padding: 30px 40px;
+        }
+        
+        /* Secciones */
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #1a237e;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .section-header i {
+            font-size: 1.2rem;
+        }
+        
+        .section-body {
+            padding: 20px;
+        }
+        
+        /* Listas numeradas */
+        ol, ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        ol li, ul li {
+            margin-bottom: 10px;
+        }
+        
+        /* Cajas de información */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .danger-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th {
+            background: #1a237e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        /* Lista de errores/cannot do */
+        .cannot-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .cannot-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .cannot-list li i {
+            color: #f44336;
+            margin-top: 3px;
+        }
+        
+        /* Lista de reglas de oro */
+        .golden-rules {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .golden-rules li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .golden-rules li i {
+            color: #4CAF50;
+            margin-top: 3px;
+        }
+        
+        /* Lista de reportes exportables */
+        .reports-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .reports-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .reports-list li i {
+            color: #1976d2;
+            margin-top: 3px;
+        }
+        
+        /* Tabla de prioridades */
+        .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .priority-table th {
+            background: #1a237e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .priority-table td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Botones de acción */
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn.print {
+            background: #4CAF50;
+        }
+        
+        .action-btn.close {
+            background: #f44336;
+        }
+        
+        /* Footer */
+        .doc-footer {
+            background: #f5f5f5;
+            padding: 20px 40px;
+            border-top: 2px solid #1a237e;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Estilos de impresión */
+        @media print {
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .doc-header {
+                background: white !important;
+                color: #1a237e !important;
+                border-bottom: 3px solid #1a237e !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .doc-header h1 {
+                color: #1a237e !important;
+            }
+            
+            .doc-version {
+                color: #666 !important;
+            }
+            
+            .doc-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                width: 60px !important;
+                height: 40px !important;
+            }
+            
+            .section-header {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .info-box, .warning-box, .success-box, .danger-box {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm 1.5cm 2cm 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones de acción -->
+    <div class="action-buttons no-print">
+        <button class="action-btn print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print / PDF
+        </button>
+        <button class="action-btn close" onclick="window.parent.closeDocModal()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Contenido del documento -->
+    <div class="doc-container">
+        <div class="doc-header">
+            <h1><i class="fas fa-eye"></i> Viewer Manual</h1>
+            <p class="doc-version">Version 1.0 | English | ADKINTOR EAMS + FORESIGHT</p>
+            <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR" class="doc-logo">
+        </div>
+        
+        <div class="doc-body">
+            <!-- WHAT IS ADKINTOR? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i> What is Adkintor?
+                </div>
+                <div class="section-body">
+                    <p>Adkintor is a tool that allows you to view maintenance information in <strong>read-only mode</strong>, AND report failures when you find a problem.</p>
+                    <p>Your role is to consult and report. You don't execute the work, but you help keep the system updated with what you see.</p>
+                </div>
+            </div>
+            
+            <!-- WHAT CAN YOU DO? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tasks"></i> What Can You Do?
+                </div>
+                <div class="section-body">
+                    <h3 style="color: #1a237e; margin-top: 0;">1. Report Failures (EAMS → WORK ORDER → CREATE)</h3>
+                    <ul>
+                        <li>Report a failure when something is not working</li>
+                        <li>Complete the 5 required fields:
+                            <ul>
+                                <li><strong>REQUESTER:</strong> Who is reporting the failure?</li>
+                                <li><strong>PRIORITY:</strong> How urgent is it? (Emergency / Urgent / Normal / Planned)</li>
+                                <li><strong>AREA:</strong> Which area is the equipment in?</li>
+                                <li><strong>EQUIPMENT:</strong> Which equipment failed?</li>
+                                <li><strong>WORK DESCRIPTION:</strong> Describe the failure in detail</li>
+                            </ul>
+                        </li>
+                        <li>The WO is registered and your supervisor will review it</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You can only <strong>CREATE</strong> WOs. You cannot approve, execute, or close.
+                    </div>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <h3 style="color: #1a237e;">2. View Assets (EAMS → ASSET → ASSET MASTER)</h3>
+                    <ul>
+                        <li>View the complete asset list</li>
+                        <li>View the asset hierarchy by area</li>
+                        <li>Search for assets by ID or name</li>
+                        <li>View detailed information (manufacturer, model, serial, criticality)</li>
+                        <li>Print the master asset list</li>
+                        <li>Print a datasheet for a specific asset</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You cannot create or modify assets.
+                    </div>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <h3 style="color: #1a237e;">3. View Work Orders (EAMS → WORK ORDER → SEARCH & REPORT)</h3>
+                    <ul>
+                        <li>Search WOs by number, asset, date, status, area, or priority</li>
+                        <li>View the full list of WOs with all details</li>
+                        <li>View a detailed report for each WO</li>
+                        <li>Print WO reports</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You cannot approve, execute, or close WOs.
+                    </div>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <h3 style="color: #1a237e;">4. View Inventory (EAMS → INVENTORY → INVENTORY VIEWER)</h3>
+                    <ul>
+                        <li>View the complete SKU catalog</li>
+                        <li>Filter by category or location</li>
+                        <li>Search by SKU, description, manufacturer, or model</li>
+                        <li>View transaction history for each SKU</li>
+                        <li>Print the inventory report</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You cannot create, modify, or adjust stock.
+                    </div>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <h3 style="color: #1a237e;">5. View Calibrations (EAMS → CALIBRATIONS → CALIBRATION VIEWER)</h3>
+                    <ul>
+                        <li>View the list of calibration instruments</li>
+                        <li>View calibration status (CRITICAL, UPCOMING, COMPLIANT)</li>
+                        <li>View the calibration history for each instrument</li>
+                        <li>Print the calibration report</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You cannot create or modify instruments or record calibrations.
+                    </div>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <h3 style="color: #1a237e;">6. View FORESIGHT - Work Orders (FORESIGHT → WORK ORDERS)</h3>
+                    <ul>
+                        <li>View the prioritized WO list</li>
+                        <li>View tasks assigned to each technician</li>
+                        <li>View system alerts</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Note:</strong> You cannot assign, approve, or modify anything.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IMPORTANT: CHOOSING THE RIGHT PRIORITY -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-exclamation-triangle"></i> Important: Choosing the Right Priority
+                </div>
+                <div class="section-body">
+                    <p>Selecting the correct priority is very important.</p>
+                    <p>Not everything can be EMERGENCY or URGENT. If everything is urgent, then nothing is truly urgent. The system uses priority to decide what gets done first.</p>
+                    
+                    <table class="priority-table">
+                        <tr>
+                            <th>Priority</th>
+                            <th>When to Use</th>
+                        </tr>
+                        <tr>
+                            <td style="background: #ffebee;"><strong>EMERGENCY</strong></td>
+                            <td>Production is <strong>STOPPED</strong>. Nothing is working. Use this <strong>ONLY</strong> when the plant is down.</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff3e0;"><strong>URGENT</strong></td>
+                            <td>Production will be affected <strong>SOON</strong>. Use this when the problem will get worse quickly.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NORMAL</strong></td>
+                            <td><strong>No immediate impact</strong>. Use this for most routine issues.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PLANNED</strong></td>
+                            <td><strong>Scheduled preventive work</strong>. Use this for planned maintenance.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- NOT SURE WHICH EQUIPMENT? USE PLANT LAYOUT -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-map-marked-alt"></i> Not Sure Which Equipment? Use Plant Layout
+                </div>
+                <div class="section-body">
+                    <p>If you are not sure which equipment is failing, you can:</p>
+                    <ol>
+                        <li>Go to <strong>EAMS → PLANT LAYOUT</strong></li>
+                        <li>Check the map or diagram of the plant</li>
+                        <li>Find the equipment location</li>
+                        <li>Return to CREATE and select the correct equipment</li>
+                    </ol>
+                    
+                    <div class="warning-box">
+                        <strong>Note:</strong> PLANT LAYOUT must be loaded by your supervisor. If the map is empty, ask your supervisor to upload it.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- WHAT YOU CANNOT DO -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-lock"></i> What You Cannot Do
+                </div>
+                <div class="section-body">
+                    <ul class="cannot-list">
+                        <li><i class="fas fa-times"></i> Approve, execute, or close Work Orders (you can only <strong>CREATE</strong>)</li>
+                        <li><i class="fas fa-times"></i> Create, modify, or delete assets</li>
+                        <li><i class="fas fa-times"></i> Create, modify, or adjust inventory</li>
+                        <li><i class="fas fa-times"></i> Create or modify calibration instruments</li>
+                        <li><i class="fas fa-times"></i> Create or modify preventive maintenance plans</li>
+                        <li><i class="fas fa-times"></i> View financial KPIs (executives only)</li>
+                        <li><i class="fas fa-times"></i> View CONSULTING (administrators only)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- WHO IS THIS ROLE FOR? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i> Who Is This Role For?
+                </div>
+                <div class="section-body">
+                    <p>The VIEWER role is designed for:</p>
+                    <ul>
+                        <li>Plant operators who need to report failures</li>
+                        <li>Office staff who need to consult maintenance information</li>
+                        <li>Quality staff who review records</li>
+                        <li>Procurement staff who need to check inventory</li>
+                        <li>Any user who needs visibility but does not execute work</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- REPORTS YOU CAN EXPORT -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-file-export"></i> Reports You Can Export
+                </div>
+                <div class="section-body">
+                    <ul class="reports-list">
+                        <li><i class="fas fa-check-circle"></i> Asset Report (PDF) → ASSET MASTER → PRINT MASTER LIST</li>
+                        <li><i class="fas fa-check-circle"></i> Asset Datasheet (PDF) → ASSET MASTER → PRINT DATASHEET</li>
+                        <li><i class="fas fa-check-circle"></i> Work Order Report (PDF) → SEARCH & REPORT → VIEW → PRINT TO PDF</li>
+                        <li><i class="fas fa-check-circle"></i> Inventory Report (PDF) → INVENTORY VIEWER → PRINT</li>
+                        <li><i class="fas fa-check-circle"></i> Calibration Report (PDF) → CALIBRATION VIEWER → PRINT</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- GOLDEN RULES -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-star"></i> Golden Rules
+                </div>
+                <div class="section-body">
+                    <ul class="golden-rules">
+                        <li><i class="fas fa-check"></i> Report everything. Imperfect data is better than no data.</li>
+                        <li><i class="fas fa-check"></i> If you see something incorrect, notify your supervisor.</li>
+                        <li><i class="fas fa-check"></i> Do not share sensitive information outside the organization.</li>
+                        <li><i class="fas fa-check"></i> If you are unsure about something, ask your supervisor.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- NEED HELP? -->
+            <div class="section">
+                <div class="section-header" style="background: #4CAF50;">
+                    <i class="fas fa-headset"></i> Need Help?
+                </div>
+                <div class="section-body">
+                    <p>Talk to your supervisor or email <strong>support@adkintor.com</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="doc-footer">
+            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
