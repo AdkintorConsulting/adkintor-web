@@ -1213,6 +1213,21 @@
             }
         } catch(e) {}
     }
+
+    // ============================================
+    // FORZAR EMAIL EN USER DISPLAY (DESPUÉS DE ModuleBase)
+    // ============================================
+    function forceUserEmail() {
+        try {
+            const session = JSON.parse(localStorage.getItem('adkintor_session'));
+            if (session && session.email) {
+                const userDisplay = document.getElementById('userDisplay');
+                if (userDisplay) {
+                    userDisplay.innerText = session.email;
+                }
+            }
+        } catch(e) {}
+    }
     
     // ============================================
     // TOAST (usa ModuleBase si existe)
@@ -1452,7 +1467,10 @@
             
             FILTERED_DATA = filterCurrentWeekOnly();
             renderTable();
-            
+
+            // ✅ FORZAR EMAIL DESPUÉS DE RENDERIZAR
+            forceUserEmail();
+
             hideLoading();
             // showToast('Loaded ' + MASTER_DATA.length + ' records. Showing current week.', 'success');  // ELIMINADO
             // console.log('[WO_SEARCH] Data loaded');  // COMENTADO
@@ -1937,7 +1955,6 @@
     // ============================================
     // INITIALIZATION
     // ============================================
-
     function init() {
         loadUser();
         loadApiUrl();
@@ -1946,6 +1963,9 @@
         if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
             ModuleBase.initModule('Work Order Search');
         }
+        
+        // ✅ FORZAR EMAIL DESPUÉS DE ModuleBase
+        forceUserEmail();
         
         if (EAMS_API_URL) {
             loadData();
