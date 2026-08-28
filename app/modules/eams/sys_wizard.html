@@ -1237,7 +1237,9 @@
         // Budget editor special case (eliminado si ya no existe SYS)
         if (selectedModule === 'SYS' && selectedEntity.id === 'budget') {
             goToStep(3);
-            loadBudgetEditor();
+            // loadBudgetEditor() ya no existe - renderBudgetEditor() se llama desde renderEntityEditor()
+            // Forzar renderizado del budget editor
+            renderBudgetEditor();
             return;
         }
         
