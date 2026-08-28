@@ -1207,8 +1207,8 @@
         try {
             const session = JSON.parse(localStorage.getItem('adkintor_session'));
             if (session) {
-                // Mostrar email o userName (el que exista)
-                const displayName = session.email || session.userEmail || session.userName || 'User';
+                // FORZAR email - NUNCA usar userName
+                const displayName = session.email || session.userEmail || 'User';
                 document.getElementById('userDisplay').innerText = displayName;
             }
         } catch(e) {}
