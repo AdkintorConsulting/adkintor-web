@@ -1206,8 +1206,10 @@
     function loadUser() {
         try {
             const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            if (session && session.email) {
-                document.getElementById('userDisplay').innerText = session.email;
+            if (session) {
+                // Mostrar email o userName (el que exista)
+                const displayName = session.email || session.userEmail || session.userName || 'User';
+                document.getElementById('userDisplay').innerText = displayName;
             }
         } catch(e) {}
     }
@@ -1265,8 +1267,8 @@
             try {
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
-                const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.name || 'User';
+                //const userDisplay = document.getElementById('userDisplay');
+                //if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.name || 'User';
                 
                 // ✅ NUEVO: Cargar logo desde la sesión inmediatamente
                 if (sessionData.companyLogo) {
