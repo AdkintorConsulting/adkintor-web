@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADKINTOR - Executive Manual</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .doc-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header del documento */
+        .doc-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+        }
+        
+        .doc-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .doc-header h1 i {
+            font-size: 2rem;
+        }
+        
+        .doc-version {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+        
+        .doc-logo {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        /* Contenido */
+        .doc-body {
+            padding: 30px 40px;
+        }
+        
+        /* Secciones */
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #1a237e;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .section-header i {
+            font-size: 1.2rem;
+        }
+        
+        .section-header.success {
+            background: #4CAF50;
+        }
+        
+        .section-header.info {
+            background: #1976d2;
+        }
+        
+        .section-header.warning {
+            background: #f57c00;
+        }
+        
+        .section-body {
+            padding: 20px;
+        }
+        
+        /* Listas numeradas */
+        ol, ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        ol li, ul li {
+            margin-bottom: 10px;
+        }
+        
+        /* Cajas de información */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .danger-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th {
+            background: #1a237e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        /* Lista de errores */
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .error-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .error-list li i {
+            color: #f44336;
+            margin-top: 3px;
+        }
+        
+        /* Lista de verificación */
+        .check-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .check-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .check-list li i {
+            color: #4CAF50;
+            margin-top: 3px;
+        }
+        
+        /* Botones de acción */
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn.print {
+            background: #4CAF50;
+        }
+        
+        .action-btn.close {
+            background: #f44336;
+        }
+        
+        /* Footer */
+        .doc-footer {
+            background: #f5f5f5;
+            padding: 20px 40px;
+            border-top: 2px solid #1a237e;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Estilos de impresión */
+        @media print {
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .doc-header {
+                background: white !important;
+                color: #1a237e !important;
+                border-bottom: 3px solid #1a237e !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .doc-header h1 {
+                color: #1a237e !important;
+            }
+            
+            .doc-version {
+                color: #666 !important;
+            }
+            
+            .doc-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                width: 60px !important;
+                height: 40px !important;
+            }
+            
+            .section-header {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .info-box, .warning-box, .success-box, .danger-box {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm 1.5cm 2cm 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones de acción -->
+    <div class="action-buttons no-print">
+        <button class="action-btn print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print / PDF
+        </button>
+        <button class="action-btn close" onclick="window.parent.closeDocModal()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Contenido del documento -->
+    <div class="doc-container">
+        <div class="doc-header">
+            <h1><i class="fas fa-briefcase"></i> Executive Manual</h1>
+            <p class="doc-version">Version 1.0 | English | ADKINTOR EAMS + FORESIGHT</p>
+            <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR" class="doc-logo">
+        </div>
+        
+        <div class="doc-body">
+            <!-- WHAT IS ADKINTOR? -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i> What is Adkintor?
+                </div>
+                <div class="section-body">
+                    <p>Adkintor is a maintenance intelligence system that turns your data (work orders, inventory, calibrations) into <strong>ACTIONABLE RECOMMENDATIONS</strong> and real-time KPIs.</p>
+                    <p>You don't need to use it every day. Your Supervisor handles daily operations. You review results and make strategic decisions.</p>
+                </div>
+            </div>
+            
+            <!-- YOUR 3 MAIN TOOLS -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-tools"></i> Your 3 Main Tools
+                </div>
+                <div class="section-body">
+                    <!-- TOOL 1 -->
+                    <h3 style="color: #1a237e; margin-top: 0;">Tool 1: KPI Dashboard (FORESIGHT → KPI)</h3>
+                    <p>This is your control panel. In 5 seconds you understand your plant's health.</p>
+                    
+                    <p><strong>Key indicators:</strong></p>
+                    <table>
+                        <tr>
+                            <th>Indicator</th>
+                            <th>What It Means</th>
+                            <th>Target</th>
+                        </tr>
+                        <tr>
+                            <td><strong>AVAILABILITY</strong></td>
+                            <td>How much is the plant operating?</td>
+                            <td>>90% = green</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PM COMPLIANCE</strong></td>
+                            <td>Is preventive maintenance being completed?</td>
+                            <td>>90% = green</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MTBF</strong></td>
+                            <td>Average time between failures</td>
+                            <td>>15 days = green</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MTTR</strong></td>
+                            <td>Average time to repair</td>
+                            <td><4 hours = green</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EQUIPMENT DOWN</strong></td>
+                            <td>Equipment currently down</td>
+                            <td>0 = green</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OTIF</strong></td>
+                            <td>On Time In Full</td>
+                            <td>>90% = green</td>
+                        </tr>
+                    </table>
+                    
+                    <p><strong>Available tabs:</strong></p>
+                    <ul>
+                        <li><strong>KPIs:</strong> The 6 key indicators + TOP 5 assets by failures + BACKLOG</li>
+                        <li><strong>Charts:</strong> Trend charts (12 months)</li>
+                        <li><strong>Financial:</strong> Budget vs Actual, spend by area, TOP 5 assets by cost</li>
+                        <li><strong>Compare:</strong> Compare with previous month or same month last year</li>
+                    </ul>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <!-- TOOL 2 -->
+                    <h3 style="color: #1a237e;">Tool 2: Financial Analysis (FORESIGHT → KPI → FINANCIAL)</h3>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><strong>BUDGET VS ACTUAL</strong></td>
+                            <td>Are we within budget?</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SPEND BY AREA</strong></td>
+                            <td>Which areas are spending the most?</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TOP 5 BY COST</strong></td>
+                            <td>Which assets are consuming the most resources?</td>
+                        </tr>
+                    </table>
+                    
+                    <hr style="border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0;">
+                    
+                    <!-- TOOL 3 -->
+                    <h3 style="color: #1a237e;">Tool 3: Recommendations (FORESIGHT → STK / PVT / CAL)</h3>
+                    <p>Adkintor generates recommendations based on historical data:</p>
+                    <table>
+                        <tr>
+                            <th>Module</th>
+                            <th>Example Recommendation</th>
+                        </tr>
+                        <tr>
+                            <td><strong>INVENTORY</strong></td>
+                            <td>"Order more bearings for PRO-MIXR-001"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PREVENTIVE</strong></td>
+                            <td>"Add quarterly PM to ASM-CONV-002"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CALIBRATION</strong></td>
+                            <td>"Instrument X requires calibration before [date]"</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- REPORTS YOU CAN EXPORT -->
+            <div class="section">
+                <div class="section-header success">
+                    <i class="fas fa-file-export"></i> Reports You Can Export
+                </div>
+                <div class="section-body">
+                    <ul class="check-list">
+                        <li><i class="fas fa-check-circle"></i> Monthly Executive Report (PDF) → <strong>"EXPORT PDF"</strong> button in KPI</li>
+                        <li><i class="fas fa-check-circle"></i> Work Order Report → EAMS → WORK ORDER → SEARCH & REPORT</li>
+                        <li><i class="fas fa-check-circle"></i> Asset Report → EAMS → ASSET → ASSET MASTER</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- WHAT YOU SHOULD NOT DO -->
+            <div class="section">
+                <div class="section-header warning">
+                    <i class="fas fa-exclamation-triangle"></i> What You Should Not Do (It's for Your Supervisor)
+                </div>
+                <div class="section-body">
+                    <ul class="error-list">
+                        <li><i class="fas fa-times"></i> Approve WOs</li>
+                        <li><i class="fas fa-times"></i> Release preventive maintenance</li>
+                        <li><i class="fas fa-times"></i> Manage inventory</li>
+                        <li><i class="fas fa-times"></i> Plan preventive maintenance</li>
+                        <li><i class="fas fa-times"></i> Manage calibrations</li>
+                        <li><i class="fas fa-times"></i> Execute work</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong>Your role is strategic, not operational.</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- INVESTMENT AND RETURN -->
+            <div class="section">
+                <div class="section-header info">
+                    <i class="fas fa-chart-line"></i> Investment and Return
+                </div>
+                <div class="section-body">
+                    <p><strong>Starting at $500 CAD/month</strong> for plants with 20-50 assets.</p>
+                    
+                    <p><strong>Typical ROI: 3-5x</strong></p>
+                    <ul>
+                        <li>Reduced downtime</li>
+                        <li>Optimized inventory</li>
+                        <li>Fewer emergencies</li>
+                        <li>Better planning</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- HOW TO KNOW IF ADKINTOR IS WORKING -->
+            <div class="section">
+                <div class="section-header success">
+                    <i class="fas fa-check-circle"></i> How to Know If Adkintor Is Working
+                </div>
+                <div class="section-body">
+                    <p>In your first monthly review, ask yourself:</p>
+                    <ol>
+                        <li>Are KPIs improving month over month?</li>
+                        <li>Is the backlog decreasing?</li>
+                        <li>Are we within budget?</li>
+                        <li>Are the recommendations useful?</li>
+                    </ol>
+                    
+                    <div class="success-box">
+                        <strong>If the answer is YES to 3 out of 4 → Adkintor is working.</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEXT STEP -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-arrow-right"></i> Next Step
+                </div>
+                <div class="section-body">
+                    <p>Ask your Maintenance Supervisor to show you the KPI dashboard once a month. 15 minutes is enough.</p>
+                </div>
+            </div>
+            
+            <!-- NEED HELP? -->
+            <div class="section">
+                <div class="section-header" style="background: #4CAF50;">
+                    <i class="fas fa-headset"></i> Need Help?
+                </div>
+                <div class="section-body">
+                    <p>Email <strong>support@adkintor.com</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="doc-footer">
+            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
