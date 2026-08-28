@@ -1006,11 +1006,11 @@
       if (!window._stkWarmUpDone) {
           window._stkWarmUpDone = true;
           try {
-              console.log('🔥 STK: Calentando backend...');
+              //console.log('🔥 STK: Calentando backend...');
               await callApi('STK_getSummaryData', []);
-              console.log('✅ STK: Backend calentado');
+              //console.log('✅ STK: Backend calentado');
           } catch(e) {
-              console.log('⚠️ STK: Warm-up falló (continuando de todos modos)');
+              //console.log('⚠️ STK: Warm-up falló (continuando de todos modos)');
           }
       }
       
