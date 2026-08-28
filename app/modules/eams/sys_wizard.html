@@ -1794,27 +1794,30 @@
                 newAmounts[month] = parseFloat(inputs[i].value) || 0;
             }
             
-            // Actualizar currentEntityRows con los nuevos valores
+            // Obtener el año actual
             const year = parseInt(document.getElementById('budgetYearSelect').value);
-            for (let m = 0; m < 12; m++) {
-                // Buscar si existe fila para este año/mes
-                let found = false;
-                for (let r = 0; r < currentEntityRows.length; r++) {
-                    if (currentEntityRows[r][0] == year && currentEntityRows[r][1] == (m + 1)) {
-                        currentEntityRows[r][2] = newAmounts[m];
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    currentEntityRows.push([year, m + 1, newAmounts[m]]);
+            
+            // Obtener TODOS los años que existen en budgetData
+            const allYears = Object.keys(budgetData);
+            
+            // Crear un nuevo array con TODAS las filas de TODOS los años
+            const allRows = [];
+            for (const y of allYears) {
+                const yearNum = parseInt(y);
+                const amounts = budgetData[yearNum] || Array(12).fill(0);
+                for (let m = 0; m < 12; m++) {
+                    // Si es el año actual, usar los nuevos montos
+                    const amount = (yearNum === year) ? newAmounts[m] : amounts[m];
+                    allRows.push([yearNum, m + 1, amount]);
                 }
             }
             
+            // Reemplazar currentEntityRows con todas las filas
+            currentEntityRows = allRows;
+            
             await saveEntity();
-            // Después de await saveEntity();
             updateBudgetStatus();
-            showToast('Budget for ' + year + ' saved successfully', 'success');
+            showToast('Budget for ' + year + ' saved successfully (all years preserved)', 'success');
             
             // Recargar el editor para reflejar cambios
             const entity = moduleData.entities.find(function(e) { return e.id === 'budget'; });
