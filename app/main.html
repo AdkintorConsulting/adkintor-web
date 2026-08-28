@@ -49,7 +49,7 @@
                     <i class="fas fa-sign-out-alt"></i> LOGOUT
                 </button>
                 <div class="dropdown-docs">
-                    <button class="btn-docs" id="docsDropdownBtn">
+                    <button class="btn-docs" id="docsDropdownBtn" onclick="toggleDocsMenu()">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="dropdown-content" id="docsDropdown">
@@ -578,41 +578,38 @@ function updateDocsMenu() {
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar menú de documentos
     updateDocsMenu();
-    
-    // Event listener para botón del menú
-    const docsDropdownBtn = document.getElementById('docsDropdownBtn');
-    if (docsDropdownBtn) {
-        docsDropdownBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('docsDropdown');
-            dropdown.classList.toggle('show');
-        });
-    }
-    
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown-docs')) {
-            const dropdown = document.getElementById('docsDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-            }
-        }
-    });
-    
-    // Cerrar modal con tecla ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeDocModal();
-        }
-    });
-    
-    // Cerrar modal al hacer clic fuera
-    document.getElementById('docModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDocModal();
-        }
-    });
 });
+
+// Función para abrir/cerrar el menú (accesible desde el HTML)
+function toggleDocsMenu() {
+    const dropdown = document.getElementById('docsDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Cerrar menú al hacer clic fuera
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-docs')) {
+        const dropdown = document.getElementById('docsDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+});
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDocModal();
+    }
+});
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('docModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDocModal();
+    }
+});
+
 </script>
 
 </body>
