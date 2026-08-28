@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADKINTOR - FAQ Technician</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .doc-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header del documento */
+        .doc-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+        }
+        
+        .doc-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .doc-header h1 i {
+            font-size: 2rem;
+        }
+        
+        .doc-version {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+        
+        .doc-logo {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+        }
+        
+        /* Contenido */
+        .doc-body {
+            padding: 30px 40px;
+        }
+        
+        /* Preguntas frecuentes */
+        .faq-item {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            background: #1a237e;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        
+        .faq-question i {
+            font-size: 1.2rem;
+            color: #ffc107;
+        }
+        
+        .faq-answer {
+            padding: 20px;
+        }
+        
+        .faq-answer ul, .faq-answer ol {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .faq-answer li {
+            margin-bottom: 8px;
+        }
+        
+        /* Cajas de información */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tabla de prioridades */
+        .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .priority-table th {
+            background: #1a237e;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .priority-table td {
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Botones de acción */
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn.print {
+            background: #4CAF50;
+        }
+        
+        .action-btn.close {
+            background: #f44336;
+        }
+        
+        /* Footer */
+        .doc-footer {
+            background: #f5f5f5;
+            padding: 20px 40px;
+            border-top: 2px solid #1a237e;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Estilos de impresión */
+        @media print {
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .doc-header {
+                background: white !important;
+                color: #1a237e !important;
+                border-bottom: 3px solid #1a237e !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .doc-header h1 {
+                color: #1a237e !important;
+            }
+            
+            .doc-version {
+                color: #666 !important;
+            }
+            
+            .doc-logo {
+                position: absolute !important;
+                top: 10px !important;
+                right: 15px !important;
+                width: 60px !important;
+                height: 40px !important;
+            }
+            
+            .faq-question {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .info-box, .warning-box {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .priority-table th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm 1.5cm 2cm 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones de acción -->
+    <div class="action-buttons no-print">
+        <button class="action-btn print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print / PDF
+        </button>
+        <button class="action-btn close" onclick="window.parent.closeDocModal()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Contenido del documento -->
+    <div class="doc-container">
+        <div class="doc-header">
+            <h1><i class="fas fa-question-circle"></i> FAQ - Technician</h1>
+            <p class="doc-version">Version 1.0 | English | ADKINTOR EAMS + FORESIGHT</p>
+            <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR" class="doc-logo">
+        </div>
+        
+        <div class="doc-body">
+            <!-- Q1 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    Can I close a WO without finishing the job?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>No.</strong> But you can save your progress using <strong>"STILL WORKING"</strong>. The WO will remain "In Progress" and you can continue later.</p>
+                </div>
+            </div>
+            
+            <!-- Q2 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    Can I close a WO without entering the hours I worked?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>No.</strong> The system will ask for hours before closing. It is mandatory.</p>
+                </div>
+            </div>
+            
+            <!-- Q3 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if I made a mistake when reporting a failure?
+                </div>
+                <div class="faq-answer">
+                    <p>Talk to your supervisor. They can reject the WO in <strong>APPROVE</strong> and you can create a new one with the corrected information.</p>
+                </div>
+            </div>
+            
+            <!-- Q4 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    Do I need internet all the time?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Yes.</strong> Adkintor works online. If there is no internet:</p>
+                    <ol>
+                        <li>Write everything on paper (WO, hours, parts, description)</li>
+                        <li>Enter the data when internet is back</li>
+                        <li>You have <strong>24 hours</strong> to do this</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- Q5 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    Can I use my phone?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>Yes, the app works on mobile browsers.</strong> But the screen is small. We recommend using a computer for longer jobs.</p>
+                </div>
+            </div>
+            
+            <!-- Q6 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    Will I be evaluated based on what I report?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>No.</strong> The system is here to help you, not to judge you. Report everything honestly. Even if you did nothing, it's valid.</p>
+                </div>
+            </div>
+            
+            <!-- Q7 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What does each priority mean?
+                </div>
+                <div class="faq-answer">
+                    <table class="priority-table">
+                        <tr>
+                            <th>Priority</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><strong>EMERGENCY</strong></td>
+                            <td>Production is down. Do it <strong>NOW</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>URGENT</strong></td>
+                            <td>May affect production soon. Do it within <strong>4 hours</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NORMAL</strong></td>
+                            <td>No immediate impact. Do it <strong>today or tomorrow</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PLANNED</strong></td>
+                            <td>Scheduled preventive work. Do it on the <strong>given date</strong>.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Q8 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if I used a part that is not in the system?
+                </div>
+                <div class="faq-answer">
+                    <p>Write it in the work description (<strong>WORK PERFORMED</strong>). Include the name, quantity, and any relevant details.</p>
+                </div>
+            </div>
+            
+            <!-- Q9 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if the system is slow?
+                </div>
+                <div class="faq-answer">
+                    <ol>
+                        <li>Click the <strong>ADKINTOR logo</strong> (clears the cache)</li>
+                        <li>Close other tabs</li>
+                        <li>Use <strong>Chrome</strong> (not Edge, not Firefox)</li>
+                        <li>If still slow, notify your supervisor</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- Q10 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if I enter more than 8 hours on a job?
+                </div>
+                <div class="faq-answer">
+                    <p>The system will show a warning, but will allow you to save. It's just an alert. If it's correct, you can continue.</p>
+                </div>
+            </div>
+            
+            <!-- Q11 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if I can't finish the job today?
+                </div>
+                <div class="faq-answer">
+                    <p>Enter the partial hours you worked and select <strong>"STILL WORKING"</strong>. The WO will remain "In Progress" and you can continue tomorrow.</p>
+                </div>
+            </div>
+            
+            <!-- Q12 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question"></i>
+                    What if I have a question not listed here?
+                </div>
+                <div class="faq-answer">
+                    <ol>
+                        <li>Ask your supervisor</li>
+                        <li>Or email <strong>support@adkintor.com</strong></li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- NEED HELP -->
+            <div class="section" style="border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; margin-top: 30px;">
+                <div class="faq-question" style="background: #4CAF50;">
+                    <i class="fas fa-headset"></i>
+                    Need Help?
+                </div>
+                <div class="faq-answer">
+                    <p>Talk to your supervisor or email <strong>support@adkintor.com</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="doc-footer">
+            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
