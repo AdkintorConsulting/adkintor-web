@@ -1611,19 +1611,26 @@
         
         if (moduleData && moduleData.entityData && moduleData.entityData.budget) {
             const rows = moduleData.entityData.budget.rows;
+            //console.log('📊 Filas de budget:', rows);
+            
             for (let i = 0; i < rows.length; i++) {
                 const year = rows[i][0];
                 const month = parseInt(rows[i][1]);
                 const amount = parseFloat(rows[i][2]) || 0;
-                if (!budgetData[year]) {
-                    budgetData[year] = Array(12).fill(0);
-                    availableYears.push(year);
-                }
-                if (month >= 1 && month <= 12) {
+                
+                //console.log(`   Año: ${year}, Mes: ${month}, Monto: ${amount}`);
+                
+                if (year && !isNaN(year) && month >= 1 && month <= 12) {
+                    if (!budgetData[year]) {
+                        budgetData[year] = Array(12).fill(0);
+                        availableYears.push(year);
+                    }
                     budgetData[year][month - 1] = amount;
                 }
             }
             availableYears.sort();
+            //console.log('📊 budgetData:', budgetData);
+            //console.log('📊 availableYears:', availableYears);
         }
         
         // Si no hay años, usar año actual
@@ -1695,20 +1702,23 @@
             '</div>';
         
         container.innerHTML = tableHtml;
+
+        // Actualizar status después de renderizar
+        setTimeout(function() {
+            updateBudgetStatus();
+        }, 100);        
         
         // === EVENTOS ===
         
         // Cambio de año
         document.getElementById('budgetYearSelect').addEventListener('change', function(e) {
             const newYear = parseInt(e.target.value);
-            // Actualizar amounts con los datos guardados
             const amounts = budgetData[newYear] || Array(12).fill(0);
             const inputs = document.querySelectorAll('.budget-amount-input');
             for (let i = 0; i < inputs.length; i++) {
                 const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
                 inputs[i].value = amounts[month] || 0;
             }
-            // Actualizar estados
             updateBudgetStatus();
             selectedYear = newYear;
         });
@@ -1718,24 +1728,45 @@
             const nextYear = Math.max.apply(null, availableYears) + 1;
             showConfirmation('Add year ' + nextYear + ' with all amounts set to $0?', async function() {
                 try {
-                    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                    const userEmail = session ? session.email : 'system';
+                    // Obtener el año seleccionado actualmente
+                    const yearSelect = document.getElementById('budgetYearSelect');
+                    const currentYear = parseInt(yearSelect.value);
                     
-                    // Crear 12 filas para el nuevo año (meses 1-12)
-                    const newRows = [];
-                    for (let m = 1; m <= 12; m++) {
-                        newRows.push([nextYear, m, 0]);
+                    // Obtener los montos actuales del año seleccionado
+                    const inputs = document.querySelectorAll('.budget-amount-input');
+                    const currentAmounts = Array(12).fill(0);
+                    for (let i = 0; i < inputs.length; i++) {
+                        const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
+                        currentAmounts[month] = parseFloat(inputs[i].value) || 0;
                     }
                     
-                    // Agregar a currentEntityRows
-                    for (let i = 0; i < newRows.length; i++) {
-                        currentEntityRows.push(newRows[i]);
+                    // Guardar los montos actuales ANTES de agregar el nuevo año
+                    for (let m = 0; m < 12; m++) {
+                        let found = false;
+                        for (let r = 0; r < currentEntityRows.length; r++) {
+                            if (currentEntityRows[r][0] == currentYear && currentEntityRows[r][1] == (m + 1)) {
+                                currentEntityRows[r][2] = currentAmounts[m];
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            currentEntityRows.push([currentYear, m + 1, currentAmounts[m]]);
+                        }
                     }
                     
-                    // Guardar
+                    // Guardar los cambios del año actual
                     await saveEntity();
                     
-                    // Recargar módulo
+                    // Ahora agregar el nuevo año (12 filas con 0)
+                    for (let m = 1; m <= 12; m++) {
+                        currentEntityRows.push([nextYear, m, 0]);
+                    }
+                    
+                    // Guardar el nuevo año
+                    await saveEntity();
+                    
+                    // Recargar el módulo para reflejar los cambios
                     await loadModule('SYS');
                     
                     // Seleccionar entidad budget nuevamente
@@ -1747,7 +1778,7 @@
                         renderBudgetEditor();
                     }
                     
-                    showToast('Year ' + nextYear + ' added successfully', 'success');
+                    showToast('Year ' + nextYear + ' added successfully (previous year saved)', 'success');
                 } catch (error) {
                     showToast('Error: ' + error.message, 'error');
                 }
@@ -1781,6 +1812,8 @@
             }
             
             await saveEntity();
+            // Después de await saveEntity();
+            updateBudgetStatus();
             showToast('Budget for ' + year + ' saved successfully', 'success');
             
             // Recargar el editor para reflejar cambios
