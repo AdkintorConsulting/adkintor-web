@@ -578,6 +578,15 @@ function updateDocsMenu() {
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar menú de documentos
     updateDocsMenu();
+    
+    // Asignar evento click al botón del menú
+    const docsDropdownBtn = document.getElementById('docsDropdownBtn');
+    if (docsDropdownBtn) {
+        docsDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('docsDropdown').classList.toggle('show');
+        });
+    }
 });
 
 // Función para abrir/cerrar el menú (accesible desde el HTML)
