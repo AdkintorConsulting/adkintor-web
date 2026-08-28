@@ -1,0 +1,582 @@
+MANUFACTURING PLANT MAINTENANCE MANAGEMENT
+[Logo Empresa]
+Code: XXXX-XX-XXX
+
+---
+
+INDEX
+
+1. PURPOSE
+2. SCOPE
+3. DEFINITIONS
+4. SAFETY CONSIDERATIONS
+5. ROLES AND RESPONSIBILITY
+6. EQUIPMENT AND MATERIALS
+7. PROCEDURE
+8. REFERENCE
+9. REVISION HISTORY
+10. ANNEXES
+11. DISTRIBUTION LIST
+
+---
+
+| | |
+|---|---|
+| **Manager** | Company / PROD / MAINTENANCE AREA |
+| **Date** | 05-28-2025 |
+| **Approver** | Company / PROD / MAINTENANCE AREA |
+| **Next Review** | 05-28-2025 |
+
+---
+
+1. PURPOSE
+
+To establish a preventive and corrective maintenance management system for the equipment and facilities of the manufacturing plant, in accordance with technical and quality standards, with the aim of improving operational efficiency, ensuring timely response to maintenance needs, and guaranteeing product conformity, in compliance with the requirements of the ISO 9001 quality management system.
+
+**[ADKINTOR]** This procedure is designed to be fully compatible with Adkintor, a computerized maintenance management system (EAMS + FORESIGHT) that digitizes work order management, preventive planning, inventory control, calibration tracking, and KPI monitoring. Adkintor is available as an optional digital tool to complement or replace manual record-keeping methods described in this document.
+
+---
+
+2. SCOPE
+
+This maintenance management system applies to the manufacturing plant and covers all equipment, infrastructure, utilities, and technical installations necessary to ensure their continued functionality, capacity, and performance in accordance with defined product quality requirements.
+
+The plan encompasses both preventive and corrective maintenance activities aimed at sustaining operational reliability and minimizing unplanned downtime. It enables the proactive management of procedures, work instructions, and technical documents to maintain the plant in proper working condition.
+
+**[ADKINTOR]** For organizations using Adkintor, the system provides a centralized digital platform for managing all maintenance activities including work order creation, approval, execution, closure, preventive planning, inventory management, calibration scheduling, and real-time KPI dashboards.
+
+---
+
+3. DEFINITIONS
+
+**Adkintor:** A computerized maintenance management system (EAMS + FORESIGHT) that digitizes and centralizes maintenance operations including work orders, preventive planning, inventory, calibrations, and KPI monitoring.
+
+**CMMS (Computerised Maintenance Management System):** A software tool used to plan, track, and manage maintenance activities, resources, and documentation. Adkintor is an example of a CMMS.
+
+**Corrective Maintenance:** A maintenance category focused on repairing equipment after a failure or irregularity occurs, restoring it to proper operation.
+
+**[ADKINTOR]** **EAMS (Enterprise Asset Management):** The operational module within Adkintor used for executing daily maintenance tasks including work order creation, approval, execution, and closure.
+
+**[ADKINTOR]** **FORESIGHT:** The intelligence module within Adkintor used for viewing KPIs, recommendations, alerts, and strategic maintenance data.
+
+**Key Performance Indicators (KPIs):** Specific metrics used to evaluate critical aspects of maintenance management, such as:
+- **Planned Maintenance Percentage (PMP):** The proportion of total maintenance hours spent on planned (preventive) maintenance versus corrective maintenance.
+- **Mean Time Between Failures (MTBF):** The average time elapsed between one failure and the next, indicating equipment reliability.
+- **Mean Time to Repair (MTTR):** The average time required to repair equipment and restore it to operational condition after a failure.
+- **Maintenance Compliance Rate:** The percentage of scheduled maintenance tasks completed within the planned timeframe.
+
+**Lockout/Tagout (LOTO):** A safety procedure used to ensure that machinery or equipment is properly shut off and cannot be started up again prior to the completion of maintenance or repair work.
+
+**Maintenance:** A set of technical and administrative activities aimed at preserving or restoring an asset to its operational condition, enabling it to perform its intended function.
+
+**Maintenance Plan:** A comprehensive set of activities including preventive maintenance scheduling and corrective maintenance actions designed to maintain asset reliability and performance.
+
+**Personal Protective Equipment (PPE):** Specialized clothing or equipment worn by personnel to minimize exposure to hazards that can cause injuries or illnesses during maintenance activities.
+
+**Preventive Maintenance:** A proactive maintenance category aimed at preventing equipment failure through scheduled inspections, servicing, and adjustments.
+
+**Risk Assessment:** The systematic process of identifying hazards, evaluating the risks associated with them, and implementing measures to control or eliminate those risks.
+
+**[ADKINTOR]** **WO (Work Order):** A documented request for maintenance work. In Adkintor, WOs are created, approved, executed, and closed digitally through the EAMS module.
+
+---
+
+4. SAFETY CONSIDERATIONS
+
+Safety is a fundamental priority in all maintenance activities within the manufacturing plant. The following guidelines must be observed to ensure the protection of personnel, equipment, and facilities:
+
+- **Compliance with Safety Regulations:** All maintenance work shall comply with applicable occupational health and safety regulations, company policies, and industry best practices.
+- **Risk Assessment:** Before performing any maintenance task, a risk assessment must be conducted to identify potential hazards and implement appropriate control measures.
+- **Lockout/Tagout (LOTO):** Proper lockout and tagout procedures must be followed to ensure equipment is safely de-energized and cannot be started unexpectedly during maintenance.
+- **Personal Protective Equipment (PPE):** Maintenance personnel must wear appropriate PPE such as gloves, safety glasses, helmets, hearing protection, and any other equipment specified for the task or area.
+- **Training and Competency:** Only trained and qualified personnel shall carry out maintenance activities. Regular training sessions on safety protocols and equipment handling must be provided.
+- **Housekeeping:** Work areas must be kept clean and organized to prevent accidents caused by slips, trips, and falls.
+- **Emergency Procedures:** Maintenance staff must be familiar with emergency response plans, including evacuation routes, first aid stations, and emergency contacts.
+- **Reporting and Investigation:** All incidents, near misses, and unsafe conditions must be promptly reported and investigated to prevent recurrence.
+
+---
+
+5. ROLES AND RESPONSIBILITY
+
+The following roles are defined for the implementation, execution, and control of this maintenance management system:
+
+**[ADKINTOR]** These roles align with the Adkintor permission matrix. Users see only the functions corresponding to their role.
+
+**CEO**
+- Approve the overall maintenance strategy for the production plant.
+- Ensure adequate resources are available for effective maintenance execution.
+- Support continuous improvement initiatives related to equipment reliability and asset management.
+
+**Production Manager**
+- Review and approve the Annual Maintenance Plan for the manufacturing plant.
+- Monitor plan execution and ensure alignment with production goals and quality standards.
+- Approve, within their level of authority, purchase requisitions related to maintenance activities.
+- Support the escalation and resolution of significant corrective maintenance events.
+- **[ADKINTOR]** Review KPI dashboards in FORESIGHT to monitor plant performance.
+
+**Area Manager**
+- Facilitate equipment availability to allow preventive maintenance activities to be carried out as scheduled.
+- Ensure that equipment users promptly report any malfunctions or abnormalities.
+- Support coordination and provide access to affected areas during corrective maintenance.
+- Participate in root cause analysis and implementation of corrective actions, when applicable.
+
+**Maintenance Supervisor**
+- Identify the appropriate type of maintenance for each asset, and determine the human, technical, and material resources required.
+- Develop and maintain the Annual Preventive Maintenance Plan.
+- Prepare and communicate the Weekly Preventive Maintenance Schedule.
+- Coordinate with relevant departments to minimise disruptions during maintenance.
+- Ensure that all maintenance activities—both preventive and corrective—are properly documented and archived.
+- Promote continual improvement in maintenance processes.
+- **[ADKINTOR]** Use Adkintor EAMS to approve work orders, release preventive maintenance, manage inventory, oversee calibrations, and monitor team workload.
+- **[ADKINTOR]** Use Adkintor FORESIGHT to review KPIs, alerts, and strategic recommendations.
+
+**Maintenance Technician**
+- Execute assigned preventive and corrective maintenance tasks in accordance with established procedures.
+- Comply with applicable safety and quality standards during all maintenance activities.
+- Accurately complete work orders and technical records upon task completion.
+- Report any anomalies, deviations, or additional support needs to the Maintenance Supervisor.
+- Participate in post-maintenance inspections and functional testing when required.
+- Propose improvements to procedures or maintenance frequencies based on field experience.
+- **[ADKINTOR]** Use Adkintor EAMS to report failures, view assigned tasks, execute work, and record hours, parts, and technical findings.
+
+**Operator**
+- Perform basic maintenance checks as defined in work instructions (e.g., cleaning and visual inspections).
+- Promptly report any equipment abnormalities or failures to the Maintenance Supervisor.
+- Support maintenance activities by ensuring equipment is accessible and safe for intervention.
+- Record anomalies in the designated logbooks or systems, when applicable.
+- **[ADKINTOR]** Report equipment failures directly in Adkintor using the WO CREATE function (VIEWER role), or notify the supervisor for manual reporting.
+
+**[ADKINTOR]** **Viewer (Optional Role)**
+- Consult maintenance information in read-only mode.
+- Report equipment failures through Adkintor WO CREATE.
+- View asset data, inventory, and calibration status.
+- Print reports for review.
+- Note: This role has no execution, approval, or planning permissions.
+
+---
+
+6. EQUIPMENT AND MATERIALS
+
+All equipment and materials subject to maintenance activities are detailed in the attached annex, titled "Master Equipment List." This comprehensive list includes:
+- The physical location of each asset within the facility.
+- The specific area location within the plant.
+- The technical location of each piece of equipment.
+- The machine or equipment name.
+- Details of individual components or sub-equipment contained within each machine.
+- **[ADKINTOR]** Equipment coding and criticality classification (A - CRITICAL, B - IMPORTANT, C - STANDARD) for prioritization.
+
+This annex serves as the primary reference for identifying maintenance requirements, scheduling, and resource allocation. It is regularly reviewed and updated to ensure accuracy and completeness.
+
+**[ADKINTOR]** For organizations using Adkintor, the Master Equipment List is maintained digitally in the ASSET module. Each asset is assigned a unique Asset ID and criticality level, enabling automated prioritization and reporting.
+
+---
+
+7. PROCEDURE
+
+**Process Requirements**
+
+This procedure has been developed with the objective of:
+- Documenting the process and all activities involved in the comprehensive Maintenance Management of the manufacturing plant.
+- Providing a standardized and accessible procedure with clear and appropriate language for all personnel involved in executing or supporting this process.
+- Ensuring alignment with applicable internal policies, safety regulations, and quality management system standards.
+- Supporting preventive, corrective, and improvement actions through systematic planning, execution, monitoring, and documentation of maintenance activities.
+- Promoting equipment reliability, minimizing downtime, and ensuring operational continuity across all production areas.
+
+**Process Flowchart**
+
+The flowchart describing the sequence of activities in the Maintenance Management process is found in Appendix A – Maintenance Management Flowchart.
+
+This flowchart provides a visual representation of the main steps and decision points in the process, helping to ensure clarity, standardization, and effective communication among all stakeholders.
+
+---
+
+**Process Activities Detail**
+
+This section describes the key operational elements involved in the execution of the Maintenance Management process.
+
+**Maintenance Frequency**
+
+The Preventive Maintenance Plan establishes the frequency or periodicity for each maintenance task. This frequency is determined based on manufacturer recommendations, operational criticality, historical performance, and risk assessments.
+
+The plan defines how often each prescribed maintenance activity must be performed (e.g., weekly, monthly, quarterly), ensuring consistency and operational reliability.
+
+**[ADKINTOR]** In Adkintor, preventive maintenance frequencies are configured in the PVT module. The system automatically generates tasks based on frequency and criticality, distributing them across the 52 weeks of the year.
+
+**Equipment Identification**
+
+All equipment subject to the Preventive Maintenance Plan is listed in the Master Equipment List. This document contains the updated inventory of all equipment included in the maintenance program.
+
+Each asset is registered with relevant technical and operational data, including:
+- Equipment name and function
+- Department or technical location
+- Manufacturer and model
+- Date of installation
+- Maintenance classification (critical/non-critical)
+- **[ADKINTOR]** Asset ID and criticality level (A/B/C)
+
+**[ADKINTOR]** In Adkintor, equipment is registered in the ASSET module. Each asset receives a unique Asset ID and its criticality is calculated automatically based on a matrix of HSE, Production Impact, Usage Factor, Operational Criticality, and Redundancy.
+
+**Equipment Coding System**
+
+Each piece of equipment is assigned a unique identifier code, structured according to a standardized nomenclature reflecting:
+- Site code
+- Functional area (department)
+- Sub-area or process section
+- Equipment type code
+- Sequential equipment number
+
+Example: AT-PR-PR-PRT-001
+
+Where:
+- AT = Site (Toronto Plant)
+- PR = Area (Printing Room)
+- PR = Sub-Area
+- PRT = Equipment type (Printer)
+- 001 = Sequential number
+
+**[ADKINTOR]** In Adkintor, the Asset ID is auto-generated using a similar structure, combining Area prefix, Category prefix, and Asset Name. Technical Locations (TL) follow the format: [Area_Prefix]-[Asset_Name]. Other assets follow: [Area_Prefix]-[Category_Prefix]-[Asset_Name].
+
+This coding system promotes traceability, data analysis and ensures alignment with CMMS integration.
+
+**Preventive Maintenance Planning**
+
+The purpose of the preventive maintenance planning process is to minimize unplanned equipment failures, extend the service life of assets, and ensure efficient and safe plant operations.
+
+**Activity Distribution**
+
+Weekly maintenance tasks are scheduled and distributed using the Annual Preventive Maintenance Plan. The schedule is prepared and reviewed by the Maintenance Supervisor.
+
+**[ADKINTOR]** In Adkintor, the PVT PLANNER module automatically distributes tasks across 52 weeks based on equipment criticality, grouping tasks that are close in time, and avoiding peak seasons. The heatmap visualization helps supervisors identify workload imbalances.
+
+**Assignment of Scheduled Tasks**
+
+Tasks are assigned primarily to the plant's internal technical personnel. When external services are required, selection is based on technical and economic evaluation through competitive quotes and comparative analysis.
+
+**[ADKINTOR]** In Adkintor, tasks are assigned to technicians during the WO APPROVE process. The supervisor selects the WO, assigns a technician, and releases it.
+
+**Work Order Generation**
+
+Work orders are issued and assigned to internal staff or external contractors as appropriate.
+
+**[ADKINTOR]** In Adkintor, work orders are generated through the EAMS module:
+- **Preventive:** Generated automatically by PVT RELEASE.
+- **Corrective:** Created manually by any user with CREATE permission (Technician, Supervisor, Executive, Viewer).
+- **Digital format:** All WOs include folio number, priority, asset, description, hours, parts, and status tracking.
+
+**Work Execution**
+
+The designated personnel execute the work as scheduled. All procedures must follow the specific work instructions available for each task.
+
+**[ADKINTOR]** In Adkintor, technicians execute work through the TECHNICAL REPORT module. They record start time, end time, work performed, spare parts used, and select the appropriate closure option (CLOSE, FOLLOW UP, or STILL WORKING).
+
+**Work Inspection**
+
+All completed work is inspected and technically approved by the Maintenance Department. For requests initiated by internal customers, the inspection will be done jointly. If the result is unsatisfactory, the task will be returned for rework.
+
+**[ADKINTOR]** In Adkintor, completed WOs are reviewed and closed by the supervisor in the CLOSE module. The supervisor verifies hours, parts, and description before authorizing final closure and archive. If something is incorrect, the supervisor leaves a comment and requests correction.
+
+**Data Recording**
+
+Upon completion, the technician must fill out the corresponding Work Order with detailed technical information. Accurate and complete data ensures the reliability of the maintenance records and supports continuous improvement of the plan.
+
+**[ADKINTOR]** In Adkintor, data recording is digital and mandatory. The system requires:
+- Start and end times.
+- Work performed description (minimum 10 characters).
+- Spare parts used (searchable by SKU or Part Number).
+- Closure type (CLOSE, FOLLOW UP, STILL WORKING).
+The system validates data entry and prevents incomplete submissions.
+
+**Plan Compliance Verification**
+
+Each month, the Maintenance Department will review the execution of the preventive maintenance plan. Any delays, omissions, or deviations will be analyzed, and corrective actions will be taken if required.
+
+**[ADKINTOR]** In Adkintor, compliance is tracked automatically through KPIs in FORESIGHT. The PM Compliance indicator shows the percentage of scheduled preventive tasks completed.
+
+**Performance Monitoring**
+
+The following key performance indicators (KPIs) will be tracked to evaluate the effectiveness of preventive maintenance:
+- PM Compliance (%): Tasks completed vs. scheduled.
+- MTBF (Mean Time Between Failures).
+- MTTR (Mean Time To Repair).
+
+**[ADKINTOR]** In Adkintor, all KPIs are calculated automatically and displayed in FORESIGHT → KPI. The dashboard includes Availability, PM Compliance, MTBF, MTTR, Equipment Down, and OTIF, with color-coded status (Green/Yellow/Red) and historical trend charts.
+
+---
+
+**Corrective Maintenance**
+
+Corrective maintenance refers to unplanned maintenance tasks required to restore equipment or systems to operational condition after a failure or defect has occurred. This includes both emergency repairs and deferred corrective actions.
+
+**Maintenance Requests**
+
+Maintenance requests can be submitted through:
+- In-person reporting to the maintenance office.
+- Email communication to the maintenance team.
+- **[ADKINTOR]** Digital reporting through Adkintor WO CREATE (recommended).
+
+**[ADKINTOR]** In Adkintor, any user with CREATE permission can report a failure by completing 5 fields: REQUESTER, PRIORITY, AREA, EQUIPMENT, and WORK DESCRIPTION.
+
+All requests must include equipment ID, description of the problem, date/time of occurrence, and requester's name.
+
+**Evaluation and Classification**
+
+The maintenance supervisor evaluates each request to:
+- Confirm the need for corrective action.
+- Classify the urgency (Emergency, Urgent, Normal, Planned).
+- Define whether internal resources or external contractors are required.
+
+**[ADKINTOR]** In Adkintor, priority classification is part of the WO CREATE process. The supervisor reviews and approves the WO in APPROVE, assigning a technician and confirming the priority.
+
+**Work Order Generation**
+
+Once approved, a work order is issued and logged. The work order must specify:
+- Equipment details.
+- Type of fault.
+- Required spare parts or materials.
+- Estimated downtime.
+- Assigned technician(s).
+
+**[ADKINTOR]** In Adkintor, the WO is generated automatically upon CREATE submission. The folio number follows the format WO-YYMMDD-###. All WOs are tracked digitally from creation to closure.
+
+**Execution and Monitoring**
+
+Technicians execute the corrective action following safety protocols. The supervisor monitors progress and ensures minimal disruption to production.
+
+**[ADKINTOR]** In Adkintor, technicians execute work through TECHNICAL REPORT. The supervisor monitors progress via FORESIGHT → WORK ORDERS → MY TASKS, viewing each technician's assigned workload.
+
+**Work Completion and Inspection**
+
+Once completed, the supervisor or requester verifies proper functioning. If unsatisfactory, the work order is returned for rework. Inspections are documented.
+
+**[ADKINTOR]** In Adkintor, the supervisor closes the WO in CLOSE, verifying hours, parts, and description before authorizing final closure.
+
+**Data Logging and Feedback**
+
+Technicians must complete the technical section of the work order. This includes:
+- Observations on failure causes.
+- Details of tasks performed.
+- Replaced parts.
+- Time to repair (TTR).
+
+**[ADKINTOR]** In Adkintor, all data is entered digitally in TECHNICAL REPORT. The system calculates labor hours automatically from start and end times. Spare parts are recorded by SKU or Part Number.
+
+**Root Cause Analysis (if applicable)**
+
+For recurrent or critical failures, a Root Cause Analysis (RCA) will be conducted to identify underlying issues and propose long-term corrective actions.
+
+**[ADKINTOR]** In Adkintor, recurring failures are highlighted in FORESIGHT → PVT recommendations, suggesting preventive measures to avoid future failures.
+
+**Integration into Preventive Maintenance**
+
+Failures addressed through corrective maintenance will be reviewed to determine if preventive measures can be implemented in the regular PM plan to avoid recurrence.
+
+**[ADKINTOR]** In Adkintor, the PVT MANUAL module allows adding preventive tasks for specific assets. The PVT ACTIVITY module enables creating and cloning maintenance activities across similar equipment.
+
+---
+
+**Maintenance Scope by System**
+
+**Energy Systems**
+
+To ensure plant functionality, maintenance covers two key systems:
+- Compressed Air System
+- Electrical System
+
+**Compressed Air Network**
+
+This network supplies the pressurized air essential for manufacturing operations. Its main components include:
+- Main air compressor
+- Backup air compressor
+- Air dryer unit
+- Accumulation tank
+- Air distribution piping
+
+**Electrical Network**
+
+The electrical system consists of:
+- Medium and low voltage substations
+- Main power and lighting panels
+- Distribution boards
+- Electrical wiring network
+
+**Production Equipment**
+
+Includes all machines and tools involved in the manufacturing process.
+
+**Storage Systems**
+
+Includes equipment used for storing raw materials, supplies, and finished goods.
+
+**Vehicle Systems**
+
+Includes all mobile equipment used in internal logistics and production operations, such as forklifts and reach trucks.
+
+**Building Systems**
+
+Includes all structures and systems that, while not directly involved in production, are critical to plant operation. Maintenance tasks include:
+- Building infrastructure
+- Potable water system
+- Wastewater and sewage systems
+
+Requests for this type of work must be submitted in person or via email. Tasks may include repairs, structural changes, or remodeling. Basic periodic tasks, such as sump pit cleaning, are also scheduled to avoid operational interruptions.
+
+**Heating and Air Conditioning System**
+
+This system includes the equipment responsible for maintaining adequate thermal conditions throughout the plant, both for staff comfort and for the proper functioning of production equipment.
+
+The system includes, but is not limited to:
+- HVAC units (Heating, Ventilation, and Air Conditioning)
+- Programmable thermostats
+- Air ducts and diffusers
+- Electric or gas heaters
+- Split, central, or portable air conditioning units
+- Exhaust fans
+
+Maintenance activities for this system include periodic inspections, filter cleaning, electrical connection checks, performance testing, and refrigerant recharging when required.
+
+These tasks will be scheduled in the Preventive Maintenance Plan and executed by qualified personnel, with their completion recorded in the corresponding Work Order.
+
+The objective of this subprogram is to ensure energy efficiency, thermal comfort, and failure prevention during peak usage seasons (summer and winter).
+
+---
+
+**Work Instructions**
+
+All standard procedures and technical guidelines are stored in the designated shared directory.
+
+**[ADKINTOR]** For organizations using Adkintor, work instructions can be linked to assets in the ASSET module or referenced in the WORK DESCRIPTION field during WO execution.
+
+---
+
+**Activity-Standards Correlation Matrix**
+
+This matrix establishes the correlation between key preventive maintenance activities and the applicable execution standards, technical documentation, and assigned responsibilities. It ensures traceability, promotes standardization, and supports compliance with quality and safety requirements.
+
+| Maintenance Activity | Work Instruction (WI) Code | Applicable Standard / Reference | Frequency | Responsible Party |
+|---|---|---|---|---|
+| HVAC filter cleaning | WI-HVAC-001 | Manufacturer Manual / CSA B52 | Monthly | Maintenance Technician |
+| Fire alarm system test | WI-FIRE-007 | NFPA 72 / Local Fire Code | Quarterly | External Certified Vendor |
+| Compressor inspection | WI-COMP-002 | ISO 8573 / Manufacturer Technical Guide | Quarterly | Technician / Supervisor |
+
+Note: This matrix is subject to periodic review and updates in alignment with changes to work instructions, operational needs, and applicable regulations. The latest version is available in the designated maintenance directory.
+
+---
+
+**Process Performance Indicators**
+
+These indicators are recorded and analyzed to evaluate maintenance effectiveness.
+
+**[ADKINTOR]** In Adkintor, all KPIs are calculated automatically in real-time and displayed in FORESIGHT → KPI. Manual recording is only required for organizations not using Adkintor.
+
+**Code:** CPM
+**Name:** Preventive Maintenance Plan Compliance
+**Definition:** Indicator that measures the degree to which planned preventive maintenance tasks are executed as scheduled.
+**Objective:** To assess the percentage of compliance with the preventive maintenance plan.
+**Metric:** CPM = ((Number of Completed Work Orders / Number of Planned Work Orders) × 100)
+**Parameters:** Completed Work Orders: Maintenance tasks actually executed during the month. Planned Work Orders: Total preventive tasks theoretically scheduled for the month.
+**Unit of Measure:** Percentage (%)
+**Frequency:** Monthly
+**Threshold:** Equal to or greater than 85% (≥ 85%)
+**Responsible:** Maintenance Supervisor
+
+---
+
+**Code:** MTTR
+**Name:** Mean Time to Repair
+**Definition:** Indicator that measures the average time required to repair a piece of equipment and return it to operational condition.
+**Objective:** To monitor the responsiveness and efficiency of the corrective maintenance process.
+**Metric:** MTTR = (Total Downtime Due to Failures) / (Number of Failures)
+**Parameters:** Downtime: Total time equipment was out of service. Failures: Number of breakdowns requiring repair.
+**Unit of Measure:** Hours
+**Frequency:** Monthly
+**Threshold:** ≤ 4 hours (adjustable based on equipment criticality)
+**Responsible:** Maintenance Supervisor
+
+---
+
+**Code:** MTBF
+**Name:** Mean Time Between Failures
+**Definition:** Indicator that measures the average operational time between two consecutive equipment failures.
+**Objective:** To assess the reliability of equipment.
+**Metric:** MTBF = (Total Operating Time) / (Number of Failures)
+**Parameters:** Operating Time: Total time equipment was functioning properly. Failures: Number of failures recorded.
+**Unit of Measure:** Hours
+**Frequency:** Monthly
+**Threshold:** ≥ 100 hours (reference value; may vary by equipment type)
+**Responsible:** Maintenance Supervisor
+
+---
+
+**Control of the adequacy and use of corrective and preventive actions**
+
+This procedure will be reviewed periodically to ensure that what is described here accurately reflects the overall maintenance process of the plant.
+
+This procedure will be adapted to changes in various areas, such as:
+- Incorporation of new equipment.
+- Decommissioned equipment.
+- Internal changes within the company that could affect those involved in the process.
+
+**Evaluation and Improvement**
+
+Both internal and external audits will be conducted to keep this process under constant evaluation and contribute to its continuous improvement.
+
+---
+
+8. REFERENCE DOCUMENTS
+
+The following documents serve as supporting references for this maintenance plan:
+
+**[ADKINTOR]** For organizations using Adkintor, all reference documents are available digitally within the system. The following manual records are only required for organizations not using Adkintor:
+
+- **Preventive Maintenance Annual Calendar** – Schedule and distribution of weekly preventive maintenance tasks.
+- **Preventive Maintenance Checklist** – Checklists for each preventive maintenance task.
+- **Corrective Maintenance Log** – Registration, tracking, and evaluation of corrective maintenance requests.
+- **Work Order Record** – Issuance, assignment, and closure of work orders for both preventive and corrective maintenance tasks.
+- **Maintenance Work Instructions** – Technical documents detailing procedures for each maintenance task.
+- **Activity-Standards Correlation Matrix** – Matrix showing alignment between maintenance activities and applicable technical or quality standards.
+
+**[ADKINTOR]** **Adkintor System Documentation:**
+- **Adkintor User Manual** – Complete guide to all system functions.
+- **Adkintor Quick Start Guide** – Emergency reference for all roles.
+- **Role-Specific FAQs** – Technician, Supervisor, Executive, and Viewer FAQs.
+
+---
+
+9. REVISION HISTORY
+
+| Version | Date | Description of the Modifications |
+|---|---|---|
+| A | 05-28-2025 | Initial version. Review format. |
+| B | XX-XX-20XX | Adaptation of the change from Enterprise to Company. |
+| C | XX-XX-20XX | **[ADKINTOR]** Added Adkintor integration references. |
+| D | XX-XX-20XX | Change adaptation. |
+
+---
+
+10. ANNEXES
+
+**[ADKINTOR]** The following annexes are available as separate templates for each organization to customize:
+
+- **Annex A – Maintenance Management Flowchart** (provided separately as PDF)
+- **Annex B – Master Equipment List Template** (PDF)
+- **Annex C – Preventive Maintenance Annual Calendar Template** (Adkintor)
+- **Annex D – Preventive Maintenance Checklist Template** (Adkintor)
+- **Annex E – Corrective Maintenance Log Template** (Adkintor)
+- **Annex F – Work Order Record Template** (Adkintor)
+- **Annex G – Activity-Standards Correlation Matrix Template** (Excel)
+
+---
+
+11. DISTRIBUTION LIST
+
+- Company / [Plant Location]
+- Company / Public Folder
+- CEO / Company
+- QC / Company
+- Maintenance / Company
+- **[ADKINTOR]** Adkintor System (digital copy available in the WebApp document menu)
+
+---
+
+**END OF DOCUMENT**
+
