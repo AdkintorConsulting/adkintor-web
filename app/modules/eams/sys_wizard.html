@@ -832,6 +832,11 @@
                     <div class="module-name">CALIBRATION</div>
                     <div class="module-desc">Instrument Types, Responsibles</div>
                 </div>
+                <div class="module-card" data-module="SYS">
+                    <div class="module-icon">💰</div>
+                    <div class="module-name">BUDGET</div>
+                    <div class="module-desc">Annual budget configuration</div>
+                </div>                
             </div>
         </div>
 
@@ -1114,7 +1119,7 @@
         document.getElementById('prevBtn').disabled = step === 1;
         
         const nextBtn = document.getElementById('nextBtn');
-        if (step === 3 && selectedEntity && selectedEntity.id !== 'budget_amounts') {
+        if (step === 3 && selectedEntity && selectedEntity.id !== 'budget') {
             nextBtn.innerHTML = '💾 SAVE';
             nextBtn.className = 'btn-success';
         } else {
@@ -1230,7 +1235,7 @@
         selectedEntity = moduleData.entities.find(function(e) { return e.id === entityId; });
         
         // Budget editor special case (eliminado si ya no existe SYS)
-        if (selectedModule === 'SYS' && selectedEntity.id === 'budget_amounts') {
+        if (selectedModule === 'SYS' && selectedEntity.id === 'budget') {
             goToStep(3);
             loadBudgetEditor();
             return;
@@ -1426,6 +1431,11 @@
     // ============================================
     
     function renderEntityEditor() {
+        // === BUDGET EDITOR (CASO ESPECIAL) ===
+        if (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget') {
+            renderBudgetEditor();
+            return;
+        }      
         const container = document.getElementById('tableWrapper');
         const headers = selectedEntity.columnHeaders;
         const rules = selectedEntity.columnRules;
@@ -1585,6 +1595,230 @@
         headerHtml += '</tbody></table>';
         container.innerHTML = headerHtml;
     }
+
+    // ============================================
+    // BUDGET EDITOR (12 MESES)
+    // ============================================
+    function renderBudgetEditor() {
+        const container = document.getElementById('tableWrapper');
+        const entity = selectedEntity;
+        
+        // Obtener datos de budget desde moduleData
+        let budgetData = {};
+        let availableYears = [];
+        
+        if (moduleData && moduleData.entityData && moduleData.entityData.budget) {
+            const rows = moduleData.entityData.budget.rows;
+            for (let i = 0; i < rows.length; i++) {
+                const year = rows[i][0];
+                const month = parseInt(rows[i][1]);
+                const amount = parseFloat(rows[i][2]) || 0;
+                if (!budgetData[year]) {
+                    budgetData[year] = Array(12).fill(0);
+                    availableYears.push(year);
+                }
+                if (month >= 1 && month <= 12) {
+                    budgetData[year][month - 1] = amount;
+                }
+            }
+            availableYears.sort();
+        }
+        
+        // Si no hay años, usar año actual
+        if (availableYears.length === 0) {
+            const currentYear = new Date().getFullYear();
+            availableYears.push(currentYear);
+            budgetData[currentYear] = Array(12).fill(0);
+        }
+        
+        // Año seleccionado (último año por defecto)
+        let selectedYear = availableYears[availableYears.length - 1];
+        let currentAmounts = budgetData[selectedYear] || Array(12).fill(0);
+        
+        // Generar HTML
+        let yearsOptions = '';
+        for (let i = 0; i < availableYears.length; i++) {
+            const y = availableYears[i];
+            yearsOptions += '<option value="' + y + '" ' + (y === selectedYear ? 'selected' : '') + '>' + y + '</option>';
+        }
+        
+        let tableHtml = 
+            '<div class="budget-controls">' +
+                '<div class="budget-select">' +
+                    '<label>Select Year</label>' +
+                    '<select id="budgetYearSelect">' +
+                        yearsOptions +
+                    '</select>' +
+                '</div>' +
+                '<div>' +
+                    '<button class="btn-success" id="addYearBtn"><i class="fas fa-plus"></i> ADD NEW YEAR</button>' +
+                '</div>' +
+            '</div>' +
+            '<div style="max-height: calc(100vh - 400px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 10px; background: white;">' +
+                '<table class="data-table" style="width:100%;">' +
+                    '<thead>' +
+                        '<tr>' +
+                            '<th style="width:33%;">Month</th>' +
+                            '<th style="width:33%;">Budget Amount ($)</th>' +
+                            '<th style="width:33%;">Status</th>' +
+                        '</tr>' +
+                    '</thead>' +
+                    '<tbody>';
+        
+        const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        for (let i = 0; i < 12; i++) {
+            const amount = currentAmounts[i] || 0;
+            const status = amount > 0 ? '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>' : '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
+            tableHtml += 
+                '<tr>' +
+                    '<td style="font-weight: 600;">' + MONTHS[i] + '</td>' +
+                    '<td>' +
+                        '<input type="number" step="0.01" min="0" value="' + amount + '" ' +
+                              'data-month="' + (i + 1) + '" ' +
+                              'class="budget-amount-input" ' +
+                              'style="width: 150px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px;">' +
+                    '</td>' +
+                    '<td>' + status + '</td>' +
+                '</tr>';
+        }
+        
+        tableHtml += 
+                    '</tbody>' +
+                '</table>' +
+            '</div>' +
+            '<div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">' +
+                '<button class="btn-success" id="saveBudgetBtn"><i class="fas fa-save"></i> SAVE ALL CHANGES</button>' +
+                '<button class="btn-secondary" id="resetBudgetBtn"><i class="fas fa-undo"></i> RESET TO ZEROS</button>' +
+            '</div>';
+        
+        container.innerHTML = tableHtml;
+        
+        // === EVENTOS ===
+        
+        // Cambio de año
+        document.getElementById('budgetYearSelect').addEventListener('change', function(e) {
+            const newYear = parseInt(e.target.value);
+            // Actualizar amounts con los datos guardados
+            const amounts = budgetData[newYear] || Array(12).fill(0);
+            const inputs = document.querySelectorAll('.budget-amount-input');
+            for (let i = 0; i < inputs.length; i++) {
+                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
+                inputs[i].value = amounts[month] || 0;
+            }
+            // Actualizar estados
+            updateBudgetStatus();
+            selectedYear = newYear;
+        });
+        
+        // ADD NEW YEAR
+        document.getElementById('addYearBtn').addEventListener('click', function() {
+            const nextYear = Math.max.apply(null, availableYears) + 1;
+            showConfirmation('Add year ' + nextYear + ' with all amounts set to $0?', async function() {
+                try {
+                    const session = JSON.parse(localStorage.getItem('adkintor_session'));
+                    const userEmail = session ? session.email : 'system';
+                    
+                    // Crear 12 filas para el nuevo año (meses 1-12)
+                    const newRows = [];
+                    for (let m = 1; m <= 12; m++) {
+                        newRows.push([nextYear, m, 0]);
+                    }
+                    
+                    // Agregar a currentEntityRows
+                    for (let i = 0; i < newRows.length; i++) {
+                        currentEntityRows.push(newRows[i]);
+                    }
+                    
+                    // Guardar
+                    await saveEntity();
+                    
+                    // Recargar módulo
+                    await loadModule('SYS');
+                    
+                    // Seleccionar entidad budget nuevamente
+                    const entity = moduleData.entities.find(function(e) { return e.id === 'budget'; });
+                    if (entity) {
+                        selectedEntity = entity;
+                        const entityData = moduleData.entityData['budget'];
+                        currentEntityRows = entityData.rows.map(function(row) { return row.slice(); });
+                        renderBudgetEditor();
+                    }
+                    
+                    showToast('Year ' + nextYear + ' added successfully', 'success');
+                } catch (error) {
+                    showToast('Error: ' + error.message, 'error');
+                }
+            });
+        });
+        
+        // SAVE
+        document.getElementById('saveBudgetBtn').addEventListener('click', async function() {
+            const inputs = document.querySelectorAll('.budget-amount-input');
+            const newAmounts = Array(12).fill(0);
+            for (let i = 0; i < inputs.length; i++) {
+                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
+                newAmounts[month] = parseFloat(inputs[i].value) || 0;
+            }
+            
+            // Actualizar currentEntityRows con los nuevos valores
+            const year = parseInt(document.getElementById('budgetYearSelect').value);
+            for (let m = 0; m < 12; m++) {
+                // Buscar si existe fila para este año/mes
+                let found = false;
+                for (let r = 0; r < currentEntityRows.length; r++) {
+                    if (currentEntityRows[r][0] == year && currentEntityRows[r][1] == (m + 1)) {
+                        currentEntityRows[r][2] = newAmounts[m];
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    currentEntityRows.push([year, m + 1, newAmounts[m]]);
+                }
+            }
+            
+            await saveEntity();
+            showToast('Budget for ' + year + ' saved successfully', 'success');
+            
+            // Recargar el editor para reflejar cambios
+            const entity = moduleData.entities.find(function(e) { return e.id === 'budget'; });
+            if (entity) {
+                selectedEntity = entity;
+                const entityData = moduleData.entityData['budget'];
+                currentEntityRows = entityData.rows.map(function(row) { return row.slice(); });
+                renderBudgetEditor();
+            }
+        });
+        
+        // RESET
+        document.getElementById('resetBudgetBtn').addEventListener('click', function() {
+            showConfirmation('Reset all amounts to $0 for this year?', function() {
+                const inputs = document.querySelectorAll('.budget-amount-input');
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].value = 0;
+                }
+                updateBudgetStatus();
+                showToast('All amounts reset to $0', 'success');
+            });
+        });
+        
+        function updateBudgetStatus() {
+            const inputs = document.querySelectorAll('.budget-amount-input');
+            const statusCells = document.querySelectorAll('tbody tr td:last-child');
+            for (let i = 0; i < inputs.length; i++) {
+                const amount = parseFloat(inputs[i].value) || 0;
+                const statusCell = statusCells[i];
+                if (statusCell) {
+                    if (amount > 0) {
+                        statusCell.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>';
+                    } else {
+                        statusCell.innerHTML = '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
+                    }
+                }
+            }
+        }
+    }    
     
     // ============================================
     // VALIDACIONES
@@ -1726,174 +1960,10 @@
     // BUDGET EDITOR (Especial para SYS)
     // ============================================
     
-    async function loadBudgetEditor() {
-        document.getElementById('modifyBtn').style.display = 'none';
-        document.getElementById('addRowBtn').style.display = 'none';
-        
-        try {
-            availableYears = await callApi('SYS_getBudgetYears', []);
-            if (availableYears.length === 0) {
-                const currentYear = new Date().getFullYear();
-                availableYears = [currentYear];
-            }
-            currentBudgetYear = availableYears[availableYears.length - 1];
-            await loadBudgetData();
-        } catch (error) {
-            showToast('Error loading years: ' + error.message, 'error');
-        }
-    }
-    
-    async function loadBudgetData() {
-        showLoading('Loading budget data for ' + currentBudgetYear + '...');
-        
-        try {
-            const response = await callApi('SYS_getBudgetDataByYear', [currentBudgetYear]);
-            if (response.success) {
-                currentBudgetAmounts = response.monthlyAmounts;
-                renderBudgetEditor();
-            } else {
-                showToast('Error loading budget data', 'error');
-            }
-            hideLoading();
-        } catch (error) {
-            hideLoading();
-            showToast('Error: ' + error.message, 'error');
-        }
-    }
-    
-    function renderBudgetEditor() {
-        const container = document.getElementById('tableWrapper');
-        
-        let yearsOptions = '';
-        for (let i = 0; i < availableYears.length; i++) {
-            yearsOptions += '<option value="' + availableYears[i] + '" ' + (availableYears[i] === currentBudgetYear ? 'selected' : '') + '>' + availableYears[i] + '</option>';
-        }
-        
-        let tableHtml = 
-            '<div class="budget-controls">' +
-                '<div class="budget-select">' +
-                    '<label>Select Year</label>' +
-                    '<select id="budgetYearSelect">' +
-                        yearsOptions +
-                    '</select>' +
-                '</div>' +
-                '<div>' +
-                    '<button class="btn-success" id="addYearBtn"><i class="fas fa-plus"></i> ADD NEW YEAR</button>' +
-                '</div>' +
-            '</div>' +
-            '<div style="max-height: calc(100vh - 380px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 10px; background: white;">' +
-                '<table class="data-table" style="width:100%;">' +
-                    '<thead>' +
-                        '<tr>' +
-                            '<th style="width:33%;">Month</th>' +
-                            '<th style="width:33%;">Budget Amount ($)</th>' +
-                            '<th style="width:33%;">Status</th>' +
-                        '</tr>' +
-                    '</thead>' +
-                    '<tbody>';
-        
-        for (let i = 0; i < 12; i++) {
-            const amount = currentBudgetAmounts[i];
-            const status = amount > 0 ? '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>' : '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
-            const monthName = MONTH_NAMES[i];
-            const monthNum = i + 1;
-            
-            tableHtml += 
-                '<tr>' +
-                    '<td style="font-weight: 600; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + monthName + '</td>' +
-                    '<td>' +
-                        '<input type="number" step="0.01" min="0" value="' + amount + '" ' +
-                               'data-month="' + monthNum + '" ' +
-                               'class="budget-amount-input" ' +
-                               'style="width: 150px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px;">' +
-                    '</td>' +
-                    '<td>' + status + '</td>' +
-                '</tr>';
-        }
-        
-        tableHtml += 
-                    '</tbody>' +
-                '</table>' +
-            '</div>' +
-            '<div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">' +
-                '<button class="btn-success" id="saveBudgetBtn"><i class="fas fa-save"></i> SAVE ALL CHANGES</button>' +
-            '</div>';
-        
-        container.innerHTML = tableHtml;
-        
-        // Bind events
-        document.getElementById('budgetYearSelect').addEventListener('change', function(e) {
-            currentBudgetYear = parseInt(e.target.value);
-            loadBudgetData();
-        });
-        
-        document.getElementById('addYearBtn').addEventListener('click', function() {
-            const nextYear = Math.max.apply(null, availableYears) + 1;
-            showConfirmation('Add year ' + nextYear + ' with all amounts set to $0?', async function() {
-                try {
-                    // ✅ Añadir userEmail al payload
-                    let userEmail = 'system';
-                    try {
-                        const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                        if (session && session.email) {
-                            userEmail = session.email;
-                        }
-                    } catch(e) {}
-                    const response = await callApi('SYS_addBudgetYear', [nextYear, userEmail]);
-                    if (response.success) {
-                        showToast(response.message, 'success');
-                        availableYears = await callApi('SYS_getBudgetYears', []);
-                        currentBudgetYear = nextYear;
-                        currentBudgetAmounts = Array(12).fill(0);
-                        renderBudgetEditor();
-                    } else {
-                        showToast('Error: ' + response.error, 'error');
-                    }
-                } catch (error) {
-                    showToast('Error: ' + error.message, 'error');
-                }
-            });
-        });
-        
-        document.getElementById('saveBudgetBtn').addEventListener('click', async function() {
-            const inputs = document.querySelectorAll('.budget-amount-input');
-            const newAmounts = Array(12).fill(0);
-            for (let i = 0; i < inputs.length; i++) {
-                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
-                newAmounts[month] = parseFloat(inputs[i].value) || 0;
-            }
-            
-            showLoading('Saving budget for ' + currentBudgetYear + '...');
-            
-            try {
-                // ✅ Añadir userEmail al payload
-                let userEmail = 'system';
-                try {
-                    const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                    if (session && session.email) {
-                        userEmail = session.email;
-                    }
-                } catch(e) {}
-                const response = await callApi('SYS_saveBudgetYear', [currentBudgetYear, newAmounts, userEmail]);
-                hideLoading();
-                if (response.success) {
-                    const totalBudget = newAmounts.reduce(function(a,b) { return a + b; }, 0);
-                    logConfigChange('budget', 'MODIFY_BUDGET', 'Budget ' + currentBudgetYear + ' saved - Total: $' + totalBudget).catch(function(e) { /* console.warn('[SYS] Budget log failed:', e); */ });  // COMENTADO
-                    
-                    showToast(response.message, 'success');
-                    await loadBudgetData();
-                } else {
-                    showToast('Error: ' + response.error, 'error');
-                }
-            } catch (error) {
-                if (window.Logger && typeof window.Logger.error === 'function') {
-                    window.Logger.error('SYS', 'saveBudget', error.message).catch(function(e) { /* console.warn('[SYS] Error log failed:', e); */ });  // COMENTADO
-                }
-                hideLoading();
-                showToast('Error: ' + error.message, 'error');
-            }
-        });
-    }
+    //async function loadBudgetEditor()
+    //async function loadBudgetData()
+    //renderBudgetEditor()
+
     
     // ============================================
     // EVENT LISTENERS
@@ -1919,7 +1989,7 @@
                 return;
             }
         } else if (currentStep === 3) {
-            const isBudgetEntity = (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget_amounts');
+            const isBudgetEntity = (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget');
             if (!isBudgetEntity) {
                 saveEntity();
             } else {
