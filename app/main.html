@@ -315,13 +315,13 @@ const DOCS_CONFIG = {
             EN: '/app/docs/downloads/SOP_Maintenance_EN.txt'
         }
     },
-    'Workflow WO': {
+    'Workflow Maintenance': {
         type: 'download',
         icon: 'fa-diagram-project',
         section: 'SOP & WORKFLOW',
         files: {
-            ES: '/app/docs/downloads/Workflow_Preventivo.pptx',
-            EN: '/app/docs/downloads/Workflow_Correctivo.pptx'
+            ES: '/app/docs/downloads/Workflow_Maintenance.pptx',
+            EN: '/app/docs/downloads/Workflow_Maintenance.pptx'
         }
     },
     'Technician Manual': {
@@ -558,7 +558,7 @@ function downloadDocument() {
 function getDocDescription(docName) {
     const descriptions = {
         'SOP Maintenance': 'Standard Operating Procedure template for creating your organization\'s maintenance procedures.',
-        'Workflow WO': 'Workflow diagram template showing the work order process flow.'
+        'Workflow Maintenance': 'Workflow diagram template showing the maintenance process flow, including both preventive and corrective maintenance paths.'
     };
     return descriptions[docName] || 'This document is available as a downloadable file.';
 }
