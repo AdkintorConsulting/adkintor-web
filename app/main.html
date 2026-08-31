@@ -168,7 +168,19 @@
                 </div>
             </div>
             <div class="doc-modal-body">
-                <iframe id="docIframe" src="" frameborder="0"></iframe>
+                <iframe id="docIframe" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
+                
+                <!-- Vista para documentos descargables -->
+                <div id="downloadView" style="display: none; padding: 40px; text-align: center;">
+                    <div class="download-content">
+                        <i class="fas fa-file-download" style="font-size: 60px; color: #1a237e; margin-bottom: 20px;"></i>
+                        
+                        <p style="color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto 20px;">
+                            <span id="downloadDescription">This document is available as a downloadable file.</span><br>
+                            Press <strong>"Download"</strong> to obtain it and edit it for your organization.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -439,11 +451,16 @@ function openDocument(docName) {
         iframe.style.display = 'block';
         printBtn.style.display = 'flex';
         downloadBtn.style.display = 'none';
+        document.getElementById('downloadView').style.display = 'none';
     } else {
         // Para archivos descargables
         iframe.style.display = 'none';
         printBtn.style.display = 'none';
         downloadBtn.style.display = 'flex';
+        
+        // Mostrar vista de descarga
+        document.getElementById('downloadView').style.display = 'block';
+        document.getElementById('downloadDescription').textContent = getDocDescription(docName);
         
         // Configurar botón de descarga
         downloadBtn.onclick = function() {
@@ -535,6 +552,15 @@ function downloadDocument() {
         const docUrl = currentDocConfig.files[lang] || currentDocConfig.files['ES'];
         downloadFile(docUrl, currentDoc);
     }
+}
+
+// Función para obtener descripción del documento
+function getDocDescription(docName) {
+    const descriptions = {
+        'SOP Maintenance': 'Standard Operating Procedure template for creating your organization\'s maintenance procedures.',
+        'Workflow WO': 'Workflow diagram template showing the work order process flow.'
+    };
+    return descriptions[docName] || 'This document is available as a downloadable file.';
 }
 
 // Actualizar menú de documentos (TODOS visibles)
