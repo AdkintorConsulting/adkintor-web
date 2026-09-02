@@ -119,6 +119,13 @@
                     <button class="eams-btn" data-eams="calibrations" data-permission="CAL_MainDispatcherUI">CALIBRATIONS</button>
                     <button class="eams-btn" data-eams="plant_layout" data-permission="SYS_PlantLayoutUI">PLANT LAYOUT</button>
                     <button class="eams-btn" data-eams="sys_wizard" data-permission="SYS_WizardUI">CONFIG</button>
+                    
+                    <!-- BOTÓN DEL CHAT -->
+                    <button id="chatbot-toggle" class="eams-btn" style="background: #1a237e; color: white; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; font-size: 14px; transition: all 0.3s ease;" 
+                            onmouseover="this.style.background='#283593'" 
+                            onmouseout="this.style.background='#1a237e'">
+                        💬🤖 CHAT
+                    </button>
                 </div>
 
                 <!-- DYNAMIC CONTENT CONTAINER -->
@@ -646,38 +653,32 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 });
 
 </script>
-<!-- BOTPRESS CHATBOT - VERSIÓN DEFINITIVA CON POSICIÓN FIJA -->
+<!-- BOTPRESS CHATBOT - VERSIÓN CORREGIDA -->
 <style>
-  /* Contenedor del chat en el header */
-  #chatbot-container {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 15px;
-    position: relative;
-  }
-  
-  /* Botón del chat (burbuja pequeña en el header) */
+  /* Botón del chat en la barra de menús EAMS */
   #chatbot-toggle {
     background: #1a237e;
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
+    border-radius: 4px;
+    padding: 8px 16px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    font-weight: bold;
+    font-size: 14px;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    height: 40px;
+    font-family: inherit;
   }
   #chatbot-toggle:hover {
     background: #283593;
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
   
-  /* Panel del chat (se despliega al hacer clic) */
+  /* Panel del chat (desplegable) */
   #chatbot-panel {
     position: fixed;
     bottom: 20px;
@@ -730,12 +731,7 @@ document.getElementById('docModal').addEventListener('click', function(e) {
   }
 </style>
 
-<!-- Botón en el header (al lado del nombre del cliente) -->
-<div id="chatbot-container">
-  <button id="chatbot-toggle" title="Abrir chat">💬</button>
-</div>
-
-<!-- Panel del chat (desplegable) -->
+<!-- PANEL DEL CHAT (desplegable) -->
 <div id="chatbot-panel">
   <div id="chatbot-panel-header">
     <span class="title">AdkintorBot</span>
@@ -787,15 +783,11 @@ document.getElementById('docModal').addEventListener('click', function(e) {
     // ============================================
     function openChat() {
       clearBotpressStorage();
-      panel.classList.add('open');
+      panel.style.display = 'block';
       isOpen = true;
-      
-      // Recargar iframe con un timestamp único
       const baseUrl = 'https://cdn.botpress.cloud/webchat/v3.7/shareable.html';
       const configUrl = 'https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json';
       iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + Date.now();
-      
-      //console.log('✅ Chat abierto (conversación reseteada)');
     }
 
     // ============================================
@@ -803,9 +795,8 @@ document.getElementById('docModal').addEventListener('click', function(e) {
     // ============================================
     function closeChat() {
       clearBotpressStorage();
-      panel.classList.remove('open');
+      panel.style.display = 'none';
       isOpen = false;
-      //console.log('✅ Chat cerrado');
     }
 
     // ============================================
@@ -815,7 +806,6 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       e.preventDefault();
       const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
       const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
-      
       const rect = panel.getBoundingClientRect();
       dragOffsetX = clientX - rect.left;
       dragOffsetY = clientY - rect.top;
@@ -848,14 +838,8 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       const rect = panel.getBoundingClientRect();
       const width = rect.width || 380;
       const height = rect.height || 500;
-      
-      let newX = x;
-      let newY = y;
-      
-      // Limitar dentro de la pantalla
-      newX = Math.max(MARGIN, Math.min(window.innerWidth - width - MARGIN, newX));
-      newY = Math.max(MARGIN, Math.min(window.innerHeight - height - MARGIN, newY));
-      
+      let newX = Math.max(MARGIN, Math.min(window.innerWidth - width - MARGIN, x));
+      let newY = Math.max(MARGIN, Math.min(window.innerHeight - height - MARGIN, y));
       panel.style.left = newX + 'px';
       panel.style.top = newY + 'px';
       panel.style.right = 'auto';
@@ -891,21 +875,16 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       closeChat();
     });
 
-    // Arrastrar desde el header
     header.addEventListener('mousedown', startDrag);
     header.addEventListener('touchstart', startDrag, { passive: false });
 
-    // Cerrar al hacer clic fuera del panel
     document.addEventListener('click', function(e) {
       if (isOpen && !panel.contains(e.target) && e.target !== toggleBtn) {
         closeChat();
       }
     });
 
-    // ============================================
-    // INICIALIZACIÓN
-    // ============================================
-    //console.log('✅ Chatbot cargado en el header (sin historial compartido)');
+    //console.log('✅ Chatbot cargado en la barra de menús');
   })();
 </script>
 </body>
