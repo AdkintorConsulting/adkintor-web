@@ -646,30 +646,37 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 });
 
 </script>
-<!-- BOTPRESS CHATBOT - VERSIÓN MEJORADA -->
-<div id="chatbot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; cursor: pointer; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); overflow: hidden; transition: all 0.3s ease; background: #1a237e; display: flex; align-items: center; justify-content: center;">
-  <!-- Icono de burbuja (se muestra cuando está cerrado) -->
-  <div id="chatbot-icon" style="color: white; font-size: 28px; transition: all 0.3s ease; pointer-events: none;">
-    💬
+<!-- BOTPRESS CHATBOT - CON BOTÓN DE CIERRE Y RESET -->
+<div id="chatbot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); overflow: hidden; transition: all 0.3s ease; background: #1a237e; display: flex; align-items: center; justify-content: center;">
+  <!-- Icono de burbuja -->
+  <div id="chatbot-icon" style="color: white; font-size: 28px; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+    🤖
   </div>
   
-  <!-- Iframe del chat (se muestra cuando está abierto) -->
+  <!-- Iframe del chat -->
   <iframe 
     src="https://cdn.botpress.cloud/webchat/v3.7/shareable.html?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json&hideConversations=true"
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0; transition: all 0.3s ease;"
     id="adkinbot-iframe"
   ></iframe>
+  
+  <!-- Botón de cerrar (X) -->
+  <div id="close-btn" style="position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: rgba(0,0,0,0.6); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 16px; cursor: pointer; z-index: 10; pointer-events: auto; font-family: Arial, sans-serif;"
+    onclick="event.stopPropagation(); window.closeChatbot();">
+    ✕
+  </div>
 </div>
 
 <script>
-  const wrapper = document.getElementById('chatbot-wrapper');
-  const iframe = document.getElementById('adkinbot-iframe');
-  const icon = document.getElementById('chatbot-icon');
-  let isOpen = false;
+  (function() {
+    const wrapper = document.getElementById('chatbot-wrapper');
+    const iframe = document.getElementById('adkinbot-iframe');
+    const icon = document.getElementById('chatbot-icon');
+    const closeBtn = document.getElementById('close-btn');
+    let isOpen = false;
 
-  wrapper.addEventListener('click', function() {
-    if (isOpen) {
-      // CERRAR: Volver a burbuja
+    // Función para cerrar el chat (global)
+    window.closeChatbot = function() {
       wrapper.style.width = '60px';
       wrapper.style.height = '60px';
       wrapper.style.borderRadius = '50%';
@@ -678,12 +685,16 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       iframe.style.opacity = '0';
       icon.style.display = 'flex';
       icon.style.opacity = '1';
+      closeBtn.style.display = 'none';
       isOpen = false;
       
-      // Recargar el iframe para resetear la conversación
-      iframe.src = iframe.src.split('?')[0] + '?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json&hideConversations=true';
-    } else {
-      // ABRIR: Expandir chat
+      // Resetear el iframe para borrar la conversación
+      const baseUrl = iframe.src.split('?')[0];
+      iframe.src = baseUrl + '?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json&hideConversations=true';
+    };
+
+    // Función para abrir el chat (global)
+    window.openChatbot = function() {
       wrapper.style.width = '380px';
       wrapper.style.height = '500px';
       wrapper.style.borderRadius = '12px';
@@ -692,9 +703,24 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       iframe.style.opacity = '1';
       icon.style.display = 'none';
       icon.style.opacity = '0';
+      closeBtn.style.display = 'flex';
       isOpen = true;
-    }
-  });
+    };
+
+    // Toggle al hacer clic en la burbuja
+    wrapper.addEventListener('click', function(e) {
+      if (e.target === closeBtn || closeBtn.contains(e.target)) return;
+      
+      if (isOpen) {
+        window.closeChatbot();
+      } else {
+        window.openChatbot();
+      }
+    });
+
+    // Guardar estado global para diagnóstico
+    window.isOpen = isOpen;
+  })();
 </script>
 </body>
 </html>
