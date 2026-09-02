@@ -647,8 +647,43 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 
 </script>
 
-<!-- BOTPRESS CHATBOT EMBED -->
-    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.js"></script>
+<!-- BOTPRESS CHATBOT EMBED (v3.7) -->
+<script src="https://cdn.botpress.cloud/webchat/v3.7/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/09/02/11/20260902110837-TB0RQK18.js"></script>
+<script>
+  // Inicializar y mostrar el chatbot automáticamente
+  (function() {
+    function showChatbot() {
+      try {
+        if (window.botpressWebChat) {
+          window.botpressWebChat.sendEvent({ type: "show" });
+          console.log('[BOTPRESS] Chatbot inicializado y visible ✅');
+        } else {
+          console.warn('[BOTPRESS] Widget no disponible aún, reintentando...');
+          setTimeout(showChatbot, 1000);
+        }
+      } catch(e) {
+        console.error('[BOTPRESS] Error al mostrar:', e);
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      setTimeout(showChatbot, 1500);
+    } else {
+      window.addEventListener('load', function() {
+        setTimeout(showChatbot, 1500);
+      });
+    }
+
+    document.addEventListener('bp_ready', function() {
+      console.log('[BOTPRESS] Evento bp_ready detectado');
+      setTimeout(function() {
+        try {
+          window.botpressWebChat.sendEvent({ type: "show" });
+        } catch(e) {}
+      }, 500);
+    });
+  })();
+</script>
 </body>
 </html>
