@@ -1,2074 +1,875 @@
 <!DOCTYPE html>
-<html lang="en-CA">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Configurator - ADKINTOR EAMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ADKINTOR EAMS + FORESIGHT</title>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ============================================
-           BASE
-           ============================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f9;
-            height: 100vh;
-            overflow: hidden;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* ============================================
-           WRAPPER
-           ============================================ */
-        .module-wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: #f4f6f9;
-        }
-        
-        /* ============================================
-           CABECERA - AZUL OSCURO
-           ============================================ */
-        .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background: #1a1a2e;
-            border-bottom: 2px solid #2a2f4a;
-            flex-shrink: 0;
-            min-height: 56px;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        
-        .module-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-badge {
-            font-size: 12px;
-            color: #e0e0e0;
-            background: rgba(255,255,255,0.15);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .company-logo {
-            height: 32px;
-            width: auto;
-            display: none;
-        }
-        
-        /* ============================================
-           BREADCRUMBS
-           ============================================ */
-        .breadcrumbs {
-            padding: 8px 20px;
-            font-size: 12px;
-            color: #888;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-            flex-shrink: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .breadcrumbs .current {
-            color: #1a1a2e;
-            font-weight: 600;
-        }
-        
-        /* ============================================
-           CUERPO
-           ============================================ */
-        .module-body {
-            flex: 1;
-            overflow: hidden;
-            padding: 0;
-            background: #f1f5f9;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* ============================================
-           FOOTER - BLANCO
-           ============================================ */
-        .module-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 20px;
-            background: #ffffff;
-            border-top: 1px solid #eee;
-            font-size: 11px;
-            color: #999;
-            flex-shrink: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .status-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .status-dot.connected {
-            background: #22c55e;
-        }
-        
-        .footer-version {
-            color: #4a6cf7;
-            font-weight: 500;
-        }
-        
-        /* ============================================
-           LOADING OVERLAY
-           ============================================ */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(244, 246, 249, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            gap: 12px;
-        }
-        
-        #loadingOverlay.visible {
-            display: flex;
-        }
-        
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid #e0e0e0;
-            border-top-color: #1a1a2e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* ============================================
-           TOAST - ARRIBA DERECHA
-           ============================================ */
-        #toastContainer {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 360px;
-            pointer-events: none;
-        }
-        
-        #toastContainer .toast {
-            pointer-events: auto;
-            padding: 10px 16px;
-            border-radius: 6px;
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: toastSlideIn 0.3s ease-out;
-        }
-        
-        #toastContainer .toast-success { background: #22c55e; }
-        #toastContainer .toast-error { background: #dc3545; }
-        #toastContainer .toast-warning { background: #f59e0b; }
-        #toastContainer .toast-info { background: #1a1a2e; }
-        
-        @keyframes toastSlideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes toastSlideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        /* ============================================
-           ESTILOS ESPECÍFICOS DEL MÓDULO
-           ============================================ */
-        
-        /* Step Indicator */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 24px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            flex-shrink: 0;
-        }
-        
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #94a3b8;
-            font-weight: 600;
-            font-size: 0.75rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .step.active {
-            color: #1e293b;
-        }
-        
-        .step.completed {
-            color: #10b981;
-        }
-        
-        .step-number {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.8rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .step.active .step-number {
-            background: #1e293b;
-            color: white;
-        }
-        
-        .step.completed .step-number {
-            background: #10b981;
-            color: white;
-        }
-        
-        /* Step Content */
-        .step-content {
-            flex: 1;
-            overflow: hidden;
-            display: none;
-            flex-direction: column;
-        }
-        
-        .step-content.active {
-            display: flex;
-        }
-        
-        /* Module Grid */
-        .module-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            padding: 20px 24px;
-            overflow-y: auto;
-        }
-        
-        .module-card {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .module-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-        }
-        
-        .module-card.selected {
-            border-color: #1e293b;
-            background: #f8fafc;
-        }
-        
-        .module-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        
-        .module-name {
-            font-weight: 800;
-            font-size: 0.85rem;
-            margin-bottom: 2px;
-            color: #1e293b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .module-desc {
-            font-size: 0.65rem;
-            color: #64748b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Entity Grid */
-        .entity-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            padding: 20px 24px;
-            overflow-y: auto;
-        }
-        
-        .entity-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .entity-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .entity-icon {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-        
-        .entity-name {
-            font-weight: 800;
-            font-size: 0.9rem;
-            margin-bottom: 2px;
-            color: #1e293b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .entity-desc {
-            font-size: 0.65rem;
-            color: #64748b;
-            margin-bottom: 8px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .entity-preview {
-            font-size: 0.65rem;
-            color: #3b82f6;
-            background: #f1f5f9;
-            padding: 6px 8px;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-        }
-        
-        /* Editor Header */
-        .editor-header {
-            padding: 12px 24px 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        
-        .editor-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #1e293b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .editor-warning {
-            font-size: 0.65rem;
-            color: #eab308;
-            margin-top: 2px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Buttons */
-        .btn-primary {
-            background: #1e293b;
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.2s;
-            font-size: 12px;
-        }
-        
-        .btn-primary:hover {
-            background: #334155;
-        }
-        
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.2s;
-            font-size: 12px;
-        }
-        
-        .btn-secondary:hover {
-            background: #cbd5e1;
-        }
-        
-        .btn-success {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        
-        .btn-success:hover {
-            background: #059669;
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.2s;
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        
-        .btn-primary i,
-        .btn-secondary i,
-        .btn-success i {
-            margin-right: 4px;
-        }
-        
-        /* ============================================
-           TABLE CONTAINER - CON STICKY HEADERS FIJOS
-           ============================================ */
-        .table-container {
-            flex: 1;
-            overflow: auto;
-            padding: 12px 24px 24px 24px;
-            position: relative;
-        }
-        
-        .table-wrapper {
-            overflow: auto;
-            max-height: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            background: white;
-            position: relative;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 0.75rem;
-            position: relative;
-        }
-        
-        .data-table thead {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .data-table thead tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-        
-        .data-table thead tr th {
-            background: #f8fafc;
-            padding: 8px 10px;
-            text-align: left;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: #475569;
-            border-bottom: 2px solid #1e293b;
-            position: sticky;
-            top: 0;
-            z-index: 101;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            white-space: nowrap;
-        }
-        
-        .data-table tbody tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-        
-        .data-table tbody tr td {
-            padding: 6px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.75rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            vertical-align: middle;
-        }
-        
-        .data-table tbody tr:hover {
-            background: #f8fafc;
-        }
-        
-        .data-table input,
-        .data-table select {
-            width: 100%;
-            padding: 4px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: white;
-            min-height: 28px;
-        }
-        
-        .data-table input:focus,
-        .data-table select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59,130,246,0.1);
-        }
-        
-        .data-table input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        /* Navigation Buttons */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            flex-shrink: 0;
-        }
-        
-        /* Budget Editor */
-        .budget-controls {
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            background: #f8fafc;
-            border-radius: 10px;
-            display: flex;
-            gap: 16px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-        
-        .budget-select {
-            flex: 1;
-            min-width: 150px;
-        }
-        
-        .budget-select label {
-            display: block;
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            color: #64748b;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .budget-select select {
-            width: 100%;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 0.8rem;
-        }
-        
-        .budget-amount-input {
-            width: 150px;
-            padding: 4px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .budget-amount-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .text-muted {
-            color: #64748b;
-        }
-        
-        .font-mono {
-            font-family: 'Courier New', monospace;
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-        
-        .table-wrapper::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        .table-wrapper::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-        }
-        
-        .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-        
-        @media (max-width: 900px) {
-            .module-grid {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 12px 16px;
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/app/css/layout.css">
+    <link rel="stylesheet" href="/app/css/print.css">
+    
+    <!-- Global Configuration -->
+    
+    <!-- Session Verification -->
+    <script>
+        // Verify session - redirect to login if not exists
+        const session = localStorage.getItem('adkintor_session');
+        
+        if (!session) {
+            window.location.replace('/app/index.html');
+        }
+        
+        // Prevent back button after logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                const session = localStorage.getItem('adkintor_session');
+                if (!session) {
+                    window.location.replace('/app/index.html');
+                }
             }
-            .entity-grid {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 12px 16px;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .module-grid {
-                grid-template-columns: 1fr;
-            }
-            .entity-grid {
-                grid-template-columns: 1fr;
-            }
-            .step-indicator {
-                padding: 10px 16px;
-                flex-wrap: wrap;
-                gap: 6px;
-            }
-            .step {
-                font-size: 0.6rem;
-            }
-            .step-number {
-                width: 22px;
-                height: 22px;
-                font-size: 0.6rem;
-            }
-
-            #addRowBtn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                background: #e2e8f0;
-                color: #94a3b8;
-            }
-
-            #addRowBtn:disabled:hover {
-                background: #e2e8f0;
-                transform: none;
-            }
-        }
-    </style>
+        });
+    </script>
 </head>
 <body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo-area">
+                <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR Logo" class="logo-img" id="logoBtn" style="cursor:pointer;">
+                <h1 class="app-title">ADKINTOR EAMS + FORESIGHT</h1>
+            </div>
+            <div class="header-actions">
+                <div class="client-info" id="clientInfoDisplay"></div>
+                <div class="date-week" id="dateWeekDisplay"></div>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                </button>
+                <div class="dropdown-docs">
+                    <button class="btn-docs" id="docsDropdownBtn" onclick="toggleDocsMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="dropdown-content" id="docsDropdown">
+                        <!-- Se generará dinámicamente según el rol del usuario -->
+                        <div class="dropdown-section">
+                            <div class="section-title">🤖 CHAT</div>
+                            <a href="#" id="chatbot-toggle" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #1a237e; text-decoration: none; font-weight: bold; border-radius: 4px; transition: background 0.3s;" 
+                              onmouseover="this.style.background='#e8eaf6'" 
+                              onmouseout="this.style.background='transparent'">
+                                💬 Abrir Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-<!-- LOADING -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configurator...</span>
-</div>
+        <div class="main-layout">
+            <!-- SIDEBAR - FORESIGHT (Intelligence Modules) -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">FORESIGHT</h2>
+                    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                <nav class="sidebar-nav">
+                    <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html" data-permission="WO_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-tasks"></i>
+                        <span>WORK ORDERS</span>
+                    </button>
+                    <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html" data-permission="PVT_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>PREVENTIVE</span>
+                    </button>
+                    <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html" data-permission="STK_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-boxes"></i>
+                        <span>INVENTORY</span>
+                    </button>
+                    <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html" data-permission="CAL_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-microscope"></i>
+                        <span>CALIBRATION</span>
+                    </button>
+                    <button class="sidebar-btn" data-module="kpi_intel" data-url="/app/modules/intelligence/kpi_intel.html" data-permission="KPI_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-chart-line"></i>
+                        <span>KPI</span>
+                    </button>
+                    <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html" data-permission="CONSULTING_IntelligenceUI" data-sidebar="foresight">
+                        <i class="fas fa-chalkboard-user"></i>
+                        <span>CONSULTING</span>
+                    </button>
+                </nav>
+            </aside>
 
-<!-- TOAST -->
-<div id="toastContainer"></div>
+            <!-- MAIN CONTENT - EAMS Area -->
+            <main class="content-area" id="contentArea">
+                <!-- EAMS Header -->
+                <div class="eams-header">
+                    <h2 class="eams-title">EAMS</h2>
+                </div>
+                
+                <!-- BREADCRUMBS (nueva ubicación: arriba de los botones EAMS) -->
+                <div class="breadcrumbs">
+                    <span class="breadcrumb-item active" data-path="home">Home</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item" id="dynamicBreadcrumb" style="display: none;"></span>
+                </div>
 
-<!-- CONTENIDO -->
-<div class="module-wrapper">
-    
-    <!-- CABECERA -->
-    <div class="module-header">
-        <div class="header-left">
-            <span class="module-title">Universal Configurator</span>
-        </div>
-        <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
-            <img class="company-logo" id="companyLogo" src="" alt="Logo">
+                <!-- EAMS BUTTONS (6 buttons) -->
+                <div class="eams-buttons">
+                    <button class="eams-btn" data-eams="work_order" data-permission="WO_MainDispatcherUI">WORK ORDER</button>
+                    <button class="eams-btn" data-eams="preventive" data-permission="PVT_MainDispatcherUI">PREVENTIVE</button>
+                    <button class="eams-btn" data-eams="asset" data-permission="AST_MainDispatcherUI">ASSET</button>
+                    <button class="eams-btn" data-eams="inventory" data-permission="STK_MainDispatcherUI">INVENTORY</button>
+                    <button class="eams-btn" data-eams="calibrations" data-permission="CAL_MainDispatcherUI">CALIBRATIONS</button>
+                    <button class="eams-btn" data-eams="plant_layout" data-permission="SYS_PlantLayoutUI">PLANT LAYOUT</button>
+                    <button class="eams-btn" data-eams="sys_wizard" data-permission="SYS_WizardUI">CONFIG</button>
+                </div>
+
+                <!-- DYNAMIC CONTENT CONTAINER -->
+                <div id="dynamicContent" class="dynamic-content">
+                    <div id="loadingMessage" class="welcome-message">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <h2>Loading user permissions...</h2>
+                        <p>Please wait</p>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
-    
-    <!-- BREADCRUMBS -->
-    <div class="breadcrumbs" id="breadcrumbs">
-        Home &gt; <span>SYSTEM</span> &gt; <span class="current">Universal Configurator</span>
-    </div>
-    
-    <!-- CUERPO -->
-    <div class="module-body">
-        <!-- Wizard Container -->
-        <div class="step-indicator">
-            <div class="step active" id="step1Indicator">
-                <div class="step-number">1</div>
-                <span>SELECT MODULE</span>
-            </div>
-            <div class="step" id="step2Indicator">
-                <div class="step-number">2</div>
-                <span>SELECT ENTITY</span>
-            </div>
-            <div class="step" id="step3Indicator">
-                <div class="step-number">3</div>
-                <span>EDIT ENTITY</span>
-            </div>
-        </div>
 
-        <!-- Step 1: Module Selection -->
-        <div id="step1" class="step-content active">
-            <div class="module-grid" id="moduleGrid">
-                <div class="module-card" data-module="HUB">
-                    <div class="module-icon">🔐</div>
-                    <div class="module-name">PLANT LAYOUT</div>
-                    <div class="module-desc">Roles, Permissions, Plant Layout</div>
-                </div>
-                <div class="module-card" data-module="AST">
-                    <div class="module-icon">🏭</div>
-                    <div class="module-name">ASSETS</div>
-                    <div class="module-desc">Areas, Types, Criticality</div>
-                </div>
-                <div class="module-card" data-module="WO">
-                    <div class="module-icon">📋</div>
-                    <div class="module-name">WORK ORDER</div>
-                    <div class="module-desc">Workflow, Priorities, Technicians</div>
-                </div>
-                <div class="module-card" data-module="STK">
-                    <div class="module-icon">📦</div>
-                    <div class="module-name">INVENTORY</div>
-                    <div class="module-desc">Categories, Locations, Currencies</div>
-                </div>
-                <div class="module-card" data-module="PVT">
-                    <div class="module-icon">📅</div>
-                    <div class="module-name">PREVENTIVE</div>
-                    <div class="module-desc">PM Frequencies, Peak Season</div>
-                </div>
-                <div class="module-card" data-module="CAL">
-                    <div class="module-icon">📏</div>
-                    <div class="module-name">CALIBRATION</div>
-                    <div class="module-desc">Instrument Types, Responsibles</div>
-                </div>
-                <div class="module-card" data-module="SYS">
-                    <div class="module-icon">💰</div>
-                    <div class="module-name">BUDGET</div>
-                    <div class="module-desc">Annual budget configuration</div>
-                </div>                
-            </div>
-        </div>
-
-        <!-- Step 2: Entity Selection -->
-        <div id="step2" class="step-content">
-            <div id="entityGrid" class="entity-grid"></div>
-        </div>
-
-        <!-- Step 3: Entity Editor -->
-        <div id="step3" class="step-content">
-            <div class="editor-header">
-                <div>
-                    <div class="editor-title" id="editorTitle">Edit Entity</div>
-                    <div class="editor-warning" id="editorWarning"></div>
-                </div>
-                <div id="editorButtons">
-                    <button class="btn-primary" id="modifyBtn" style="display:none;"><i class="fas fa-edit"></i> MODIFY</button>
-                    <button class="btn-success" id="addRowBtn" style="display:none;"><i class="fas fa-plus"></i> ADD ROW</button>
+    <!-- MODAL FOR IFRAMES (FORESIGHT / EAMS) -->
+    <div id="iframeModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div></div>  <!-- Espacio vacío a la izquierda -->
+                <div class="modal-controls">
+                    <button class="modal-btn" id="minimizeModalBtn">−</button>
+                    <button class="modal-btn" id="maximizeModalBtn">□</button>
+                    <button class="modal-close" id="closeModalBtn">&times;</button>
                 </div>
             </div>
-            <div class="table-container" id="tableContainer">
-                <div class="table-wrapper" id="tableWrapper">
-                    <!-- Aquí se renderiza la tabla -->
-                </div>
+            <div class="modal-body">
+                <iframe id="intelIframe" src="" frameborder="0"></iframe>
             </div>
-        </div>
-
-        <div class="nav-buttons">
-            <button class="btn-secondary" id="prevBtn" disabled>◀ BACK</button>
-            <button class="btn-primary" id="nextBtn">NEXT ▶</button>
         </div>
     </div>
-    
-    <!-- FOOTER -->
-    <div class="module-footer">
-        <span>
-            <span class="status-dot connected"></span>
-            <span>Connected</span>
-        </span>
-        <span class="footer-version" id="eamsVersion">v1.0.0</span>
+
+    <!-- MODAL FOR DOCUMENTS (HTML / DOWNLOAD) -->
+    <div id="docModal">
+        <div class="doc-modal-container">
+            <div class="doc-modal-header">
+                <h3><i class="fas fa-book-open"></i> <span id="docModalTitle">Document</span></h3>
+                <div class="doc-modal-controls">
+                    <button class="doc-modal-btn primary" id="printDocBtn" onclick="printDocument()">
+                        <i class="fas fa-print"></i> Print / PDF
+                    </button>
+                    <button class="doc-modal-btn" id="downloadDocBtn" onclick="downloadDocument()" style="display:none;">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="doc-modal-close" onclick="closeDocModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="doc-modal-body">
+                <iframe id="docIframe" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
+                
+                <!-- Vista para documentos descargables -->
+                <div id="downloadView" style="display: none; padding: 40px; text-align: center;">
+                    <div class="download-content">
+                        <i class="fas fa-file-download" style="font-size: 60px; color: #1a237e; margin-bottom: 20px;"></i>
+                        
+                        <p style="color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto 20px;">
+                            <span id="downloadDescription">This document is available as a downloadable file.</span><br>
+                            Press <strong>"Download"</strong> to obtain it and edit it for your organization.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toastContainer"></div>
+
+    <!-- SCRIPTS - orden correcto: config, logger, auth, layout -->
+    <script src="/app/js/config.js"></script>
+    <script src="/app/js/logger.js"></script>
+    <script src="/app/js/auth.js"></script>
+    <script src="/app/js/layout.js"></script>
+
+    // ============================================
+    // SESSION MONITORING (every 30 seconds)
+    // ============================================
+
+    <script>
+        (function() {
+            // console.log('[SYS] Session monitoring started...');  // COMENTADO
+            
+            let lastLogTime = 0;
+            let toastShown = false;
+            
+            setInterval(function() {
+                try {
+                    const sessionData = localStorage.getItem('adkintor_session');
+                    if (sessionData) {
+                        const session = JSON.parse(sessionData);
+                        if (session && session.timestamp) {
+                            const elapsed = Date.now() - session.timestamp;
+                            const sessionDuration = window.ADKINTOR_CONFIG?.SESSION_DURATION || (8 * 60 * 60 * 1000);
+                            
+                            if (elapsed - lastLogTime > 5 * 60 * 1000 || lastLogTime === 0) {
+                                const elapsedMinutes = Math.floor(elapsed / 60000);
+                                const elapsedHours = Math.floor(elapsedMinutes / 60);
+                                const remainingMinutes = elapsedMinutes % 60;
+                                // console.log(`⏱️ Session active: ${elapsedHours}h ${remainingMinutes}m elapsed`);  // COMENTADO
+                                lastLogTime = elapsed;
+                            }
+                            
+                            if (elapsed > sessionDuration) {
+                                // console.log('⏰ Session expired, logging out...');  // COMENTADO
+                                localStorage.removeItem('adkintor_session');
+                                window.location.replace('/app/index.html');
+                            } else {
+                                const remaining = sessionDuration - elapsed;
+                                if (remaining < 5 * 60 * 1000 && remaining > 0 && !toastShown) {
+                                    const minutes = Math.round(remaining / 60000);
+                                    // console.log(`⚠️ Session expires in ${minutes} minutes`);  // COMENTADO
+                                    
+                                    if (typeof showToast === 'function') {
+                                        showToast(`⚠️ Your session will expire in ${minutes} minutes.`, 'warning', 10000);
+                                    }
+                                    toastShown = true;
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {
+                    // console.warn('[SYS] Error checking session:', e);  // COMENTADO
+                }
+            }, 30000);
+            
+            // console.log('[SYS] Session monitoring active ✅');  // COMENTADO
+        })();
+    </script>
+
+    // ============================================
+    // LOGO CLICK - LIMPIAR CACHÉ Y RECARGAR
+    // ============================================
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoBtn = document.getElementById('logoBtn');
+      if (logoBtn) {
+        logoBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          try {
+            const sessionData = localStorage.getItem('adkintor_session');
+            if (!sessionData) {
+              location.reload();
+              return;
+            }
+            
+            const session = JSON.parse(sessionData);
+            const apiUrl = session.eamsApiUrl || session.intelligenceApiUrl;
+            const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
+            
+            if (typeof showToast === 'function') {
+              showToast('🔄 Clearing cache and reloading...', 'info', 3000);
+            }
+            
+            fetch(proxyUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                targetUrl: apiUrl,
+                payload: { action: 'clearAllSetupCache', args: [] }
+              })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(result) {
+              //console.log('[CACHE] Cleared:', result);
+              location.reload();
+            })
+            .catch(function(error) {
+              //console.error('[CACHE] Error:', error);
+              location.reload();
+            });
+            
+          } catch(e) {
+            //console.warn('[CACHE] Error:', e);
+            location.reload();
+          }
+        });
+      }
+    });
+    </script>   
+<!-- ============================================
+     DOCUMENTATION SYSTEM - ADKINTOR (SIMPLE)
+     ============================================ -->
+<script>
+// Configuración de documentos (TODOS visibles para todos)
+const DOCS_CONFIG = {
+    'SOP Maintenance': {
+        type: 'download',
+        icon: 'fa-file-alt',
+        section: 'SOP & WORKFLOW',
+        files: {
+            ES: '/app/docs/downloads/SOP_Maintenance_ES.txt',
+            EN: '/app/docs/downloads/SOP_Maintenance_EN.txt'
+        }
+    },
+    'Workflow Maintenance': {
+        type: 'download',
+        icon: 'fa-diagram-project',
+        section: 'SOP & WORKFLOW',
+        files: {
+            ES: '/app/docs/downloads/Workflow_Maintenance.pptx',
+            EN: '/app/docs/downloads/Workflow_Maintenance.pptx'
+        }
+    },
+    'Technician Manual': {
+        type: 'html',
+        icon: 'fa-wrench',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/technician_es.html',
+            EN: '/app/docs/manuals/technician_en.html'
+        }
+    },
+    'Supervisor Manual': {
+        type: 'html',
+        icon: 'fa-user-tie',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/supervisor_es.html',
+            EN: '/app/docs/manuals/supervisor_en.html'
+        }
+    },
+    'Executive Manual': {
+        type: 'html',
+        icon: 'fa-briefcase',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/executive_es.html',
+            EN: '/app/docs/manuals/executive_en.html'
+        }
+    },
+    'Viewer Manual': {
+        type: 'html',
+        icon: 'fa-eye',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/viewer_es.html',
+            EN: '/app/docs/manuals/viewer_en.html'
+        }
+    },
+    'Quick Start Guide': {
+        type: 'html',
+        icon: 'fa-rocket',
+        section: 'ADKINTOR MANUALS',
+        files: {
+            ES: '/app/docs/manuals/quickstart_es.html',
+            EN: '/app/docs/manuals/quickstart_en.html'
+        }
+    },
+    'FAQ Technician': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/technician_es.html',
+            EN: '/app/docs/faq/technician_en.html'
+        }
+    },
+    'FAQ Supervisor': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/supervisor_es.html',
+            EN: '/app/docs/faq/supervisor_en.html'
+        }
+    },
+    'FAQ Executive': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/executive_es.html',
+            EN: '/app/docs/faq/executive_en.html'
+        }
+    },
+    'FAQ Viewer': {
+        type: 'html',
+        icon: 'fa-question-circle',
+        section: "FAQ's",
+        files: {
+            ES: '/app/docs/faq/viewer_es.html',
+            EN: '/app/docs/faq/viewer_en.html'
+        }
+    }
+};
+
+// Variables globales
+let currentDoc = null;
+let currentDocConfig = null;
+
+// Obtener sesión actual
+function getSession() {
+    try {
+        return JSON.parse(localStorage.getItem('adkintor_session') || '{}');
+    } catch(e) {
+        return {};
+    }
+}
+
+// Abrir documento
+function openDocument(docName) {
+    const session = getSession();
+    const lang = (session.language || 'ES').toUpperCase();
     
+    const docConfig = DOCS_CONFIG[docName];
+    if (!docConfig) {
+        showToast('Document not found', 'error');
+        return;
+    }
+    
+    currentDoc = docName;
+    currentDocConfig = docConfig;
+    
+    // Determinar URL del documento
+    let docUrl = docConfig.files[lang] || docConfig.files['ES'];
+    
+    // Abrir modal
+    const modal = document.getElementById('docModal');
+    const iframe = document.getElementById('docIframe');
+    const title = document.getElementById('docModalTitle');
+    const printBtn = document.getElementById('printDocBtn');
+    const downloadBtn = document.getElementById('downloadDocBtn');
+    
+    title.textContent = docName;
+    
+    if (docConfig.type === 'html') {
+        iframe.src = docUrl;
+        iframe.style.display = 'block';
+        printBtn.style.display = 'flex';
+        downloadBtn.style.display = 'none';
+        document.getElementById('downloadView').style.display = 'none';
+    } else {
+        // Para archivos descargables
+        iframe.style.display = 'none';
+        printBtn.style.display = 'none';
+        downloadBtn.style.display = 'flex';
+        
+        // Mostrar vista de descarga
+        document.getElementById('downloadView').style.display = 'block';
+        document.getElementById('downloadDescription').textContent = getDocDescription(docName);
+        
+        // Configurar botón de descarga
+        downloadBtn.onclick = function() {
+            downloadFile(docUrl, docName);
+        };
+    }
+    
+    modal.classList.add('active');
+}
+
+// Cerrar modal de documentos
+function closeDocModal() {
+    const modal = document.getElementById('docModal');
+    const iframe = document.getElementById('docIframe');
+    
+    modal.classList.remove('active');
+    setTimeout(function() {
+        iframe.src = '';
+    }, 300);
+}
+
+// Imprimir documento
+function printDocument() {
+    const iframe = document.getElementById('docIframe');
+    
+    // Asegurar que el iframe esté cargado
+    if (iframe.contentDocument) {
+        // Si el documento es HTML, imprimir directamente
+        iframe.contentWindow.print();
+        
+        // Si es PDF o no se puede imprimir desde iframe, abrir en nueva ventana
+        setTimeout(function() {
+            try {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } catch(e) {
+                // Fallback: abrir en nueva ventana
+                const docUrl = iframe.src;
+                const printWindow = window.open(docUrl, '_blank');
+                if (printWindow) {
+                    printWindow.onload = function() {
+                        printWindow.print();
+                    };
+                }
+            }
+        }, 500);
+    } else {
+        // Fallback para PDFs
+        const docUrl = iframe.src;
+        const printWindow = window.open(docUrl, '_blank');
+        if (printWindow) {
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+    }
+}
+
+// Descargar archivo
+function downloadFile(url, filename) {
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+            
+            if (typeof showToast === 'function') {
+                showToast('Download started...', 'success', 3000);
+            }
+        })
+        .catch(error => {
+            if (typeof showToast === 'function') {
+                showToast('Error downloading file', 'error');
+            }
+        });
+}
+
+// Descargar documento (wrapper para botón)
+function downloadDocument() {
+    if (currentDocConfig && currentDocConfig.type === 'download') {
+        const session = getSession();
+        const lang = (session.language || 'ES').toUpperCase();
+        const docUrl = currentDocConfig.files[lang] || currentDocConfig.files['ES'];
+        downloadFile(docUrl, currentDoc);
+    }
+}
+
+// Función para obtener descripción del documento
+function getDocDescription(docName) {
+    const descriptions = {
+        'SOP Maintenance': 'Standard Operating Procedure template for creating your organization\'s maintenance procedures.',
+        'Workflow Maintenance': 'Workflow diagram template showing the maintenance process flow, including both preventive and corrective maintenance paths.'
+    };
+    return descriptions[docName] || 'This document is available as a downloadable file.';
+}
+
+// Actualizar menú de documentos (TODOS visibles)
+function updateDocsMenu() {
+    const dropdown = document.getElementById('docsDropdown');
+    
+    // Agrupar por sección
+    const sections = {};
+    Object.entries(DOCS_CONFIG).forEach(([name, config]) => {
+        if (!sections[config.section]) {
+            sections[config.section] = [];
+        }
+        sections[config.section].push({ name, config });
+    });
+    
+    // Generar HTML del menú
+    let html = '';
+    
+    // Orden de secciones
+    const sectionOrder = ['SOP & WORKFLOW', 'ADKINTOR MANUALS', "FAQ's"];
+    
+    sectionOrder.forEach(section => {
+        if (sections[section] && sections[section].length > 0) {
+            html += `<div class="dropdown-section">
+                <div class="section-title">${section}</div>`;
+            
+            sections[section].forEach(({ name, config }) => {
+                html += `<a href="#" onclick="openDocument('${name}')">
+                    <i class="fas ${config.icon}"></i> ${name}
+                </a>`;
+            });
+            
+            html += `</div>`;
+        }
+    });
+    
+    dropdown.innerHTML = html;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar menú de documentos
+    updateDocsMenu();
+    
+    // Asignar evento click al botón del menú
+    const docsDropdownBtn = document.getElementById('docsDropdownBtn');
+    if (docsDropdownBtn) {
+        docsDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('docsDropdown').classList.toggle('show');
+        });
+    }
+});
+
+// Función para abrir/cerrar el menú (accesible desde el HTML)
+function toggleDocsMenu() {
+    const dropdown = document.getElementById('docsDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Cerrar menú al hacer clic fuera
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-docs')) {
+        const dropdown = document.getElementById('docsDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+});
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDocModal();
+    }
+});
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('docModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDocModal();
+    }
+});
+
+</script>
+<!-- BOTPRESS CHATBOT - VERSIÓN CORREGIDA -->
+<style>
+  /* Botón del chat en la barra de menús EAMS */
+  #chatbot-toggle:hover {
+    background: #283593;
+    transform: scale(1.02);
+  }
+  
+  /* Panel del chat (desplegable) */
+  #chatbot-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 380px;
+    height: 500px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    overflow: hidden;
+    background: white;
+    z-index: 10000;
+    display: none;
+    transition: all 0.3s ease;
+  }
+  #chatbot-panel.open {
+    display: block;
+  }
+  
+  /* Header del panel con botón de cerrar */
+  #chatbot-panel-header {
+    background: #1a237e;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+  }
+  #chatbot-panel-header .title {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  #chatbot-panel-header .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 6px;
+  }
+  #chatbot-panel-header .close-btn:hover {
+    opacity: 0.7;
+  }
+  
+  /* Iframe del chat */
+  #chatbot-iframe {
+    width: 100%;
+    height: calc(100% - 48px);
+    border: none;
+  }
+</style>
+
+<!-- PANEL DEL CHAT (desplegable) -->
+<div id="chatbot-panel">
+  <div id="chatbot-panel-header">
+    <span class="title">AdkintorBot</span>
+    <button class="close-btn" id="chatbot-close">✕</button>
+  </div>
+  <iframe 
+    id="chatbot-iframe"
+    src="https://cdn.botpress.cloud/webchat/v3.7/shareable.html?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=1"
+  ></iframe>
 </div>
 
 <script>
+  (function() {
+    const toggleBtn = document.getElementById('chatbot-toggle');
+    const panel = document.getElementById('chatbot-panel');
+    const closeBtn = document.getElementById('chatbot-close');
+    const iframe = document.getElementById('chatbot-iframe');
+    const header = document.getElementById('chatbot-panel-header');
+    let isOpen = false;
+    let isDragging = false;
+    let dragOffsetX = 0, dragOffsetY = 0;
+    const MARGIN = 10;
+
     // ============================================
-    // RECIBIR MENSAJES DEL PADRE
+    // FUNCIÓN: Limpiar almacenamiento de Botpress
     // ============================================
-    window.addEventListener('message', function(event) {
-        const data = event.data;
-        if (data.type === 'SET_COMPANY_LOGO' && data.logoUrl) {
-            const img = document.getElementById('companyLogo');
-            if (img) { img.src = data.logoUrl; img.style.display = 'block'; }
+    function clearBotpressStorage() {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
+          keysToRemove.push(key);
         }
-        if (data.type === 'SET_VERSION' && data.version) {
-            const el = document.getElementById('eamsVersion');
-            if (el) el.innerText = data.version;
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      const sessionKeysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
+          sessionKeysToRemove.push(key);
         }
-    });
-    
-    // ============================================
-    // CARGAR USUARIO (email)
-    // ============================================
-    function loadUser() {
-        try {
-            const session = JSON.parse(localStorage.getItem('adkintor_session'));
-            if (session && session.email) {
-                document.getElementById('userDisplay').innerText = session.email;
-            }
-        } catch(e) {}
-    }
-    
-    // ============================================
-    // TOAST (usa ModuleBase si existe)
-    // ============================================
-    function showToast(message, type = 'info') {
-        if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-            ModuleBase.showToast(message, type);
-            return;
-        }
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = 'toast toast-' + type;
-        toast.textContent = message;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
-            setTimeout(() => toast.remove(), 350);
-        }, 4000);
-    }
-    
-    // ============================================
-    // LOADING
-    // ============================================
-    function showLoading(msg) {
-        const overlay = document.getElementById('loadingOverlay');
-        const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
-        overlay.classList.add('visible');
-    }
-    
-    function hideLoading() {
-        document.getElementById('loadingOverlay').classList.remove('visible');
-    }
-    
-    // ============================================
-    // CERRAR MODAL
-    // ============================================
-    function closeModal() {
-        window.parent.postMessage('closeIframe', '*');
+      }
+      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
     }
 
     // ============================================
-    // CONFIGURACIÓN Y CONSTANTES
+    // FUNCIÓN: Abrir chat
     // ============================================
-    
-    const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
-    let EAMS_API_URL = null;
-    let currentUserEmail = '';  // ✅ AÑADIR
-    
-    // Estado del Wizard
-    let currentStep = 1;
-    let selectedModule = null;
-    let moduleData = null;
-    let selectedEntity = null;
-    let currentEntityRows = [];
-    let originalEntityRows = [];
-    let editMode = false;
-    let isEntityEditable = true;
-    
-    // Estado para Budget Editor
-    let currentBudgetYear = null;
-    let currentBudgetAmounts = Array(12).fill(0);
-    let availableYears = [];
-    
-    // Nombres de meses
-    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-    // ============================================
-    // FUNCIONES DE UTILIDAD
-    // ============================================
-    function loadApiUrlAndUser() {
-        const session = localStorage.getItem('adkintor_session');
-        if (session) {
-            try {
-                const sessionData = JSON.parse(session);
-                EAMS_API_URL = sessionData.eamsApiUrl;
-                currentUserEmail = sessionData.email || '';
-                const userDisplay = document.getElementById('userDisplay');
-                // ✅ CORREGIDO: usar currentUserEmail en vez de currentUser
-                if (userDisplay) userDisplay.innerText = currentUserEmail;
-            } catch(e) {
-                // console.error('Error parsing session:', e);  // COMENTADO
-                const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = 'User';
-            }
-        }
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function updateBreadcrumbs(step) {
-        const bread = document.getElementById('breadcrumbs');
-        if (step === 1) {
-            bread.innerHTML = 'Home &gt; <span>SYSTEM</span> &gt; <span class="current">Universal Configurator</span>';
-        } else if (step === 2 && selectedModule) {
-            bread.innerHTML = 'Home &gt; <span>SYSTEM</span> &gt; <span>Universal Configurator</span> &gt; <span class="current">' + selectedModule + '</span>';
-        } else if (step === 3 && selectedModule && selectedEntity) {
-            bread.innerHTML = 'Home &gt; <span>SYSTEM</span> &gt; <span>Universal Configurator</span> &gt; <span>' + selectedModule + '</span> &gt; <span class="current">' + selectedEntity.name + '</span>';
-        }
-    }
-    
-    function showConfirmation(message, onConfirm) {
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center;';
-        
-        const modal = document.createElement('div');
-        modal.style.cssText = 'background:white; border-radius:12px; padding:24px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.2);';
-        
-        modal.innerHTML = 
-            '<i class="fas fa-question-circle" style="font-size:48px; color:#eab308; margin-bottom:16px;"></i>' +
-            '<p style="margin-bottom:24px; font-size:16px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + escapeHtml(message) + '</p>' +
-            '<div style="display:flex; gap:12px; justify-content:center;">' +
-                '<button id="confirmYes" style="background:#10b981; color:white; border:none; padding:8px 24px; border-radius:6px; cursor:pointer; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Yes</button>' +
-                '<button id="confirmNo" style="background:#94a3b8; color:white; border:none; padding:8px 24px; border-radius:6px; cursor:pointer; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No</button>' +
-            '</div>';
-        
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-        
-        document.getElementById('confirmYes').onclick = function() {
-            document.body.removeChild(overlay);
-            if (onConfirm) onConfirm();
-        };
-        document.getElementById('confirmNo').onclick = function() {
-            document.body.removeChild(overlay);
-        };
-    }
-    
-    async function callApi(action, args = []) {
-        if (!EAMS_API_URL) {
-            throw new Error('API URL not configured');
-        }
-        
-        const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                targetUrl: EAMS_API_URL,
-                payload: { action: action, args: args }
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
-        }
-        
-        return result.data;
-    }
-    
-    // ============================================
-    // FUNCIÓN DE LOGGING PARA CONFIGURACIÓN
-    // ============================================
-    async function logConfigChange(entityId, action, details) {
-        if (!window.Logger || typeof window.Logger.audit !== 'function') {
-            // console.warn('[SYS] Logger not available, skipping log');  // COMENTADO
-            return;
-        }
-        
-        try {
-            await window.Logger.audit(action, 'SYS', entityId, '', '', '', details);
-            // console.log('[SYS] Config change logged:', entityId, action);  // COMENTADO
-            
-            if (window.Logger.foresight) {
-                await window.Logger.foresight('SYS', action, details.substring(0, 200));
-            }
-        } catch (err) {
-            // console.warn('[SYS] Failed to log config change:', err);  // COMENTADO
-        }
-    }
-    
-    // ============================================
-    // NAVEGACIÓN DEL WIZARD
-    // ============================================
-    
-    function goToStep(step) {
-        document.getElementById('step1').classList.toggle('active', step === 1);
-        document.getElementById('step2').classList.toggle('active', step === 2);
-        document.getElementById('step3').classList.toggle('active', step === 3);
-        
-        document.getElementById('step1Indicator').classList.toggle('active', step === 1);
-        document.getElementById('step2Indicator').classList.toggle('active', step === 2);
-        document.getElementById('step3Indicator').classList.toggle('active', step === 3);
-        
-        if (step === 1) {
-            document.getElementById('step1Indicator').classList.remove('completed');
-            document.getElementById('step2Indicator').classList.remove('completed');
-            document.getElementById('step3Indicator').classList.remove('completed');
-        } else if (step === 2) {
-            document.getElementById('step1Indicator').classList.add('completed');
-            document.getElementById('step2Indicator').classList.remove('completed');
-            document.getElementById('step3Indicator').classList.remove('completed');
-        } else if (step === 3) {
-            document.getElementById('step1Indicator').classList.add('completed');
-            document.getElementById('step2Indicator').classList.add('completed');
-            document.getElementById('step3Indicator').classList.remove('completed');
-        }
-        
-        document.getElementById('prevBtn').disabled = step === 1;
-        
-        const nextBtn = document.getElementById('nextBtn');
-        if (step === 3 && selectedEntity && selectedEntity.id !== 'budget') {
-            nextBtn.innerHTML = '💾 SAVE';
-            nextBtn.className = 'btn-success';
-        } else {
-            nextBtn.innerHTML = 'NEXT ▶';
-            nextBtn.className = 'btn-primary';
-        }
-        
-        updateBreadcrumbs(step);
-        currentStep = step;
-    }
-    
-    // ============================================
-    // STEP 1: MÓDULOS
-    // ============================================
-    
-    async function loadModule(module) {
-        showLoading('Loading SETUP_' + module + '...');
-        selectedModule = module;
-        
-        try {
-            const response = await callApi('SYS_loadModuleSetup', [module]);
-            
-            if (response.success) {
-                moduleData = response;
-                renderEntities();
-                hideLoading();
-                showToast('Module ' + module + ' loaded successfully ✅', 'success');
-                goToStep(2);
-            } else {
-                hideLoading();
-                showToast('Error: ' + response.error, 'error');
-            }
-        } catch (error) {
-            hideLoading();
-            showToast('Server error: ' + error.message, 'error');
-        }
-    }
-    
-    // ============================================
-    // STEP 2: ENTIDADES
-    // ============================================
-    
-    function renderEntities() {
-        const container = document.getElementById('entityGrid');
-        const entities = moduleData.entities;
-        const entityData = moduleData.entityData;
-        
-        if (!entities || entities.length === 0) {
-            container.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No entities configured for this module</div>';
-            return;
-        }
-        
-        let html = '';
-        for (let i = 0; i < entities.length; i++) {
-            const entity = entities[i];
-            const data = entityData[entity.id];
-            const previewCount = data.rows.length;
-            const previewText = data.rows.slice(0, 3).map(function(r) { return r[0]; }).join(', ');
-            
-            html += 
-                '<div class="entity-card" onclick="selectEntity(\'' + entity.id + '\')">' +
-                    '<div class="entity-icon">' + entity.icon + '</div>' +
-                    '<div class="entity-name">' + escapeHtml(entity.name) + '</div>' +
-                    '<div class="entity-desc">' + escapeHtml(entity.description || '') + '</div>' +
-                    '<div class="entity-preview">' +
-                        previewCount + ' item(s)<br>' +
-                        escapeHtml(previewText.substring(0, 40)) + (previewCount > 3 ? '...' : '') +
-                    '</div>' +
-                '</div>';
-        }
-        
-        container.innerHTML = html;
-    }
-    
-    function checkEntityEditable() {
-        if (!selectedEntity) return false;
-        if (selectedEntity.editableColumns && selectedEntity.editableColumns.length > 0) {
-            return true;
-        }
-        if (selectedEntity.columnRules) {
-            for (let i = 0; i < selectedEntity.columnRules.length; i++) {
-                const rule = selectedEntity.columnRules[i];
-                if (rule.validation !== 'readonly' && rule.validation !== 'checkbox_required') {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    function sortRowsByFirstColumn(rows, isNumeric, isNaturalOrder) {
-        if (!rows || rows.length === 0) return rows;
-        const naturalOrder = ["Hourly", "Daily", "Weekly", "Bi-Weekly", "Monthly", "Quarterly", "Semi-Annual", "Annual", "2 years", "3 years", "4 years", "5 years"];
-        
-        return rows.sort(function(a, b) {
-            var aVal = a[0];
-            var bVal = b[0];
-            if (isNaturalOrder) {
-                var aIndex = naturalOrder.indexOf(aVal);
-                var bIndex = naturalOrder.indexOf(bVal);
-                if (aIndex === -1) aIndex = 999;
-                if (bIndex === -1) bIndex = 999;
-                return aIndex - bIndex;
-            }
-            if (isNumeric) {
-                return (parseFloat(aVal) || 0) - (parseFloat(bVal) || 0);
-            }
-            return String(aVal).localeCompare(String(bVal));
-        });
-    }
-    
-    function selectEntity(entityId) {
-        selectedEntity = moduleData.entities.find(function(e) { return e.id === entityId; });
-        
-        // Budget editor special case (eliminado si ya no existe SYS)
-        if (selectedModule === 'SYS' && selectedEntity.id === 'budget') {
-            goToStep(3);
-            // loadBudgetEditor() ya no existe - renderBudgetEditor() se llama desde renderEntityEditor()
-            // Forzar renderizado del budget editor
-            renderBudgetEditor();
-            return;
-        }
-        
-        const entityData = moduleData.entityData[entityId];
-        currentEntityRows = entityData.rows.map(function(row) { return row.slice(); });
-        originalEntityRows = entityData.rows.map(function(row) { return row.slice(); });
-        editMode = false;
-        
-        if (selectedEntity.sortByColumn !== undefined) {
-            var isNumeric = (selectedEntity.id === 'peak_season');
-            var isNaturalOrder = (selectedEntity.id === 'allowed_criticality');
-            currentEntityRows = sortRowsByFirstColumn(currentEntityRows, isNumeric, isNaturalOrder);
-        }
-        
-        isEntityEditable = checkEntityEditable();
-        
-        document.getElementById('editorTitle').innerHTML = selectedEntity.icon + ' ' + escapeHtml(selectedEntity.name);
-        
-        let warningHtml = '';
-        if (selectedModule === 'WO' && selectedEntity.id === 'statuses') {
-            warningHtml = '⚠️ The order of items defines the workflow sequence. Reorder with caution.';
-        } else if (selectedModule === 'AST' && selectedEntity.id === 'weighted_scores') {
-            warningHtml = '⚖️ Total sum must equal 100. Click MODIFY to edit weights.';
-        } else if (selectedModule === 'AST' && selectedEntity.id === 'ranges') {
-            warningHtml = '📏 Ranges must cover 1.0 to 5.0 continuously. Click MODIFY to edit ranges.';
-        } else if (selectedModule === 'STK' && selectedEntity.id === 'currencies') {
-            warningHtml = '💰 Use 3-letter currency codes: CAD, USD, EUR, MXN, GBP';
-        }
-        document.getElementById('editorWarning').innerHTML = warningHtml;
-        
-        const modifyBtn = document.getElementById('modifyBtn');
-        const addBtn = document.getElementById('addRowBtn');
-        
-        const isPlantLayout = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
-        
-        if (isEntityEditable) {
-            // MODIFY siempre visible y habilitado
-            modifyBtn.style.display = 'inline-block';
-            modifyBtn.onclick = enableEditMode;
-            
-            // ADD ROW: visible pero DESHABILITADO inicialmente
-            if (isPlantLayout || selectedEntity.disableAddRow) {
-                addBtn.style.display = 'none';
-            } else {
-                addBtn.style.display = 'inline-block';
-                addBtn.disabled = true;
-                addBtn.style.opacity = '0.5';
-                addBtn.style.cursor = 'not-allowed';
-                addBtn.title = 'Click MODIFY first to enable adding rows';
-            }
-        } else {
-            modifyBtn.style.display = 'none';
-            addBtn.style.display = 'none';
-        }
-        
-        renderEntityEditor();
-        goToStep(3);
-    }
-    
-    // ============================================
-    // STEP 3: EDITOR DE ENTIDAD - CON HEADERS FIJOS
-    // ============================================
-    
-    function enableEditMode() {
-        editMode = true;
-        const addBtn = document.getElementById('addRowBtn');
-        const isPlantLayout = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
-        
-        if (!isPlantLayout && !selectedEntity.disableAddRow) {
-            addBtn.disabled = false;
-            addBtn.style.opacity = '1';
-            addBtn.style.cursor = 'pointer';
-            addBtn.title = 'Add new row';
-        }
-        
-        renderEntityEditor();
-        showToast('Edit mode enabled. You can now modify values.', 'success');
-    }
-    
-    function updateCell(rowIdx, colIdx, value) {
-        if (!currentEntityRows[rowIdx]) return;
-        currentEntityRows[rowIdx][colIdx] = value;
-        
-        // Auto-generate prefix for areas
-        if (selectedModule === 'AST' && selectedEntity.id === 'areas' && colIdx === 0) {
-            const prefix = autoGeneratePrefix3(value);
-            currentEntityRows[rowIdx][1] = prefix;
-        }
-        
-        // Auto-generate prefix for asset_types
-        if (selectedModule === 'AST' && selectedEntity.id === 'asset_types' && colIdx === 0) {
-            const prefix = autoGeneratePrefix4(value);
-            currentEntityRows[rowIdx][1] = prefix;
-        }
-        
-        renderEntityEditor();
-    }
-    
-    function autoGeneratePrefix3(areaName) {
-        if (!areaName || areaName.toString().trim() === '') return '';
-        const name = areaName.toString().trim().toUpperCase();
-        if (name.length < 3) return name;
-        return name.substring(0, 3);
-    }
-    
-    function autoGeneratePrefix4(categoryName) {
-        if (!categoryName || categoryName.toString().trim() === '') return '';
-        const name = categoryName.toString().trim().toUpperCase();
-        if (name === 'CHSY') return 'CHIL';
-        if (name.length < 4) return name;
-        return name.substring(0, 4);
-    }
-    
-    function updateCriticalityCheckbox(rowIdx, optionValue, isChecked) {
-        if (!currentEntityRows[rowIdx]) return;
-        
-        const colIdx = 1;
-        let currentValue = currentEntityRows[rowIdx][colIdx] || '';
-        let selectedValues = currentValue ? currentValue.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s !== ''; }) : [];
-        
-        if (isChecked) {
-            if (selectedValues.indexOf(optionValue) === -1) {
-                selectedValues.push(optionValue);
-            }
-        } else {
-            selectedValues = selectedValues.filter(function(v) { return v !== optionValue; });
-        }
-        
-        selectedValues.sort();
-        currentEntityRows[rowIdx][colIdx] = selectedValues.join(', ');
-        renderEntityEditor();
-    }
-    
-    function updateWeightedScore(rowIdx, newWeight) {
-        if (!currentEntityRows[rowIdx]) return;
-        const currentValue = currentEntityRows[rowIdx][0];
-        const parts = currentValue.toString().split(',');
-        const label = parts[0] || '';
-        const newValue = label + ', ' + newWeight;
-        currentEntityRows[rowIdx][0] = newValue;
-        renderEntityEditor();
-    }
-    
-    function updateRange(rowIdx, colIdx, newValue) {
-        if (!currentEntityRows[rowIdx]) return;
-        const currentValue = currentEntityRows[rowIdx][0] || '1.0 - 5.0';
-        const match = currentValue.toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/);
-        let fromVal = match ? parseFloat(match[1]) : 1.0;
-        let toVal = match ? parseFloat(match[2]) : 5.0;
-        
-        if (colIdx === 1) {
-            fromVal = parseFloat(newValue);
-        } else if (colIdx === 2) {
-            toVal = parseFloat(newValue);
-        }
-        
-        if (isNaN(fromVal)) fromVal = 1.0;
-        if (isNaN(toVal)) toVal = 5.0;
-        if (fromVal > toVal) toVal = fromVal + 0.1;
-        
-        const newRange = fromVal + ' - ' + toVal;
-        currentEntityRows[rowIdx][0] = newRange;
-        renderEntityEditor();
-    }
-    
-    function addRow() {
-        if (!editMode) {
-            showToast('Please click MODIFY first to enable editing', 'error');
-            return;
-        }
-        const newRow = selectedEntity.columnHeaders.map(function() { return ''; });
-        currentEntityRows.push(newRow);
-        renderEntityEditor();
-        showToast('New row added', 'success');
-    }
-    
-    function deleteRow(rowIdx) {
-        if (!editMode) {
-            showToast('Please click MODIFY first to enable editing', 'error');
-            return;
-        }
-        showConfirmation('Are you sure you want to delete this row?', function() {
-            currentEntityRows.splice(rowIdx, 1);
-            renderEntityEditor();
-            showToast('Row deleted', 'success');
-        });
-    }
-    
-    // ============================================
-    // RENDER ENTITY EDITOR - CON TABLE WRAPPER
-    // ============================================
-    
-    function renderEntityEditor() {
-        // === BUDGET EDITOR (CASO ESPECIAL) ===
-        if (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget') {
-            renderBudgetEditor();
-            return;
-        }      
-        const container = document.getElementById('tableWrapper');
-        const headers = selectedEntity.columnHeaders;
-        const rules = selectedEntity.columnRules;
-        const editableColumns = selectedEntity.editableColumns || null;
-        
-        // Calcular ancho de columnas para table-layout: fixed
-        const colWidth = Math.floor(100 / (headers.length + 1));
-        
-        let headerHtml = '<table class="data-table"><thead><tr>';
-        for (let h = 0; h < headers.length; h++) {
-            let headerContent = escapeHtml(headers[h]);
-            if (selectedEntity.id === 'allowed_criticality' && h === 1) {
-                headerContent = 
-                    '<div>' + escapeHtml(headers[h]) + '</div>' +
-                    '<div style="display: flex; gap: 18px; justify-content: flex-start; margin-top: 4px; font-size: 0.6rem;">' +
-                        '<span style="width: 32px; text-align: center;">A</span>' +
-                        '<span style="width: 32px; text-align: center;">B</span>' +
-                        '<span style="width: 32px; text-align: center;">C</span>' +
-                    '</div>';
-            }
-            headerHtml += '<th style="width:' + colWidth + '%;">' + headerContent + '</th>';
-        }
-        headerHtml += '<th style="width:60px;">Actions</th>';
-        headerHtml += '</tr></thead><tbody>';
-        
-        for (let idx = 0; idx < currentEntityRows.length; idx++) {
-            const row = currentEntityRows[idx];
-            headerHtml += '<tr>';
-            
-            for (let colIdx = 0; colIdx < headers.length; colIdx++) {
-                const cell = row[colIdx] !== undefined ? row[colIdx] : '';
-                const rule = rules[colIdx];
-                const isEditableColumn = editableColumns ? editableColumns.indexOf(colIdx) !== -1 : true;
-                const canEdit = editMode && isEntityEditable && isEditableColumn && (!rule || rule.validation !== 'readonly');
-                
-                let inputHtml = '';
-                
-                // Weighted Scores
-                if (selectedEntity.id === 'weighted_scores') {
-                    if (colIdx === 0) {
-                        const parts = row[0] ? row[0].toString().split(',') : ['', ''];
-                        const label = parts[0] || '';
-                        inputHtml = '<span class="text-muted">' + escapeHtml(label) + '</span>';
-                    } else if (colIdx === 1) {
-                        const parts = row[0] ? row[0].toString().split(',') : ['', ''];
-                        const weight = parts[1] ? parseFloat(parts[1]) : 0;
-                        if (canEdit) {
-                            inputHtml = '<input type="number" value="' + weight + '" min="0" max="100" style="width:80px;" onchange="updateWeightedScore(' + idx + ', this.value)">';
-                        } else {
-                            inputHtml = '<span class="text-muted">' + weight + '</span>';
-                        }
-                    }
-                }
-                // Ranges
-                else if (selectedEntity.id === 'ranges') {
-                    if (colIdx === 0) {
-                        let levelName = '';
-                        if (moduleData && moduleData.entityData && moduleData.entityData.criticality_levels) {
-                            const levelsRows = moduleData.entityData.criticality_levels.rows;
-                            if (idx < levelsRows.length) {
-                                levelName = levelsRows[idx][0] || '';
-                            }
-                        }
-                        inputHtml = '<span class="text-muted">' + escapeHtml(levelName) + '</span>';
-                    } else if (colIdx === 1) {
-                        const match = row[0] ? row[0].toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/) : null;
-                        const fromVal = match ? match[1] : '';
-                        if (canEdit) {
-                            inputHtml = '<input type="number" step="0.1" value="' + fromVal + '" style="width:70px;" onchange="updateRange(' + idx + ', 1, this.value)">';
-                        } else {
-                            inputHtml = '<span class="text-muted">' + fromVal + '</span>';
-                        }
-                    } else if (colIdx === 2) {
-                        const match = row[0] ? row[0].toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/) : null;
-                        const toVal = match ? match[2] : '';
-                        if (canEdit) {
-                            inputHtml = '<input type="number" step="0.1" value="' + toVal + '" style="width:70px;" onchange="updateRange(' + idx + ', 2, this.value)">';
-                        } else {
-                            inputHtml = '<span class="text-muted">' + toVal + '</span>';
-                        }
-                    }
-                }
-                // Allowed Criticality
-                else if (selectedEntity.id === 'allowed_criticality') {
-                    if (colIdx === 1) {
-                        const selectedValues = cell ? cell.toString().split(',').map(function(s) { return s.trim(); }) : [];
-                        const options = ['A', 'B', 'C'];
-                        
-                        if (canEdit) {
-                            inputHtml = '<div class="checkbox-group">';
-                            for (let o = 0; o < options.length; o++) {
-                                const opt = options[o];
-                                const isChecked = selectedValues.indexOf(opt) !== -1;
-                                inputHtml += '<label><input type="checkbox" ' + (isChecked ? 'checked' : '') + ' onchange="updateCriticalityCheckbox(' + idx + ', \'' + opt + '\', this.checked)"> ' + opt + '</label>';
-                            }
-                            inputHtml += '</div>';
-                        } else {
-                            inputHtml = '<div class="checkbox-group">';
-                            for (let o = 0; o < options.length; o++) {
-                                const opt = options[o];
-                                const isChecked = selectedValues.indexOf(opt) !== -1;
-                                inputHtml += '<span style="background:' + (isChecked ? '#dbeafe' : '#f1f5f9') + '; padding:2px 8px; border-radius:12px;">' + opt + '</span>';
-                            }
-                            inputHtml += '</div>';
-                        }
-                    } else {
-                        inputHtml = '<span class="text-muted">' + escapeHtml(cell) + '</span>';
-                    }
-                }
-                // Others
-                else {
-                    if (!canEdit) {
-                        if (rule && rule.validation === 'checkbox') {
-                            inputHtml = '<span>' + (cell === '✓' ? '✓' : '✗') + '</span>';
-                        } else if (rule && rule.options && rule.options.length > 0) {
-                            inputHtml = '<span>' + escapeHtml(String(cell)) + '—' + '</span>';
-                        } else {
-                            inputHtml = '<span>' + escapeHtml(String(cell)) + '—' + '</span>';
-                        }
-                    } else {
-                        if (rule && rule.validation === 'checkbox') {
-                            const isChecked = cell === '✓' || cell === true;
-                            inputHtml = '<input type="checkbox" ' + (isChecked ? 'checked' : '') + ' onchange="updateCell(' + idx + ', ' + colIdx + ', this.checked ? \'✓\' : \'✗\')">';
-                        } else if (rule && rule.options && rule.options.length > 0) {
-                            inputHtml = '<select onchange="updateCell(' + idx + ', ' + colIdx + ', this.value)">';
-                            inputHtml += '<option value="">-- Select --</option>';
-                            for (let o = 0; o < rule.options.length; o++) {
-                                const opt = rule.options[o];
-                                inputHtml += '<option value="' + escapeHtml(opt) + '" ' + (String(cell) === String(opt) ? 'selected' : '') + '>' + escapeHtml(opt) + '</option>';
-                            }
-                            inputHtml += '</select>';
-                        } else if (rule && rule.validation === 'email_optional') {
-                            inputHtml = '<input type="email" value="' + escapeHtml(String(cell)) + '" placeholder="user@domain.com" onchange="updateCell(' + idx + ', ' + colIdx + ', this.value)">';
-                        } else if (rule && rule.validation === 'currency_code') {
-                            inputHtml = '<input type="text" value="' + escapeHtml(String(cell)) + '" placeholder="USD" onchange="updateCell(' + idx + ', ' + colIdx + ', this.value.toUpperCase())" style="text-transform:uppercase">';
-                        } else if (rule && rule.validation === 'single_line') {
-                            inputHtml = '<input type="text" value="' + escapeHtml(String(cell)) + '" style="width:100%;" onchange="updateCell(' + idx + ', ' + colIdx + ', this.value)">';
-                        } else {
-                            inputHtml = '<input type="text" value="' + escapeHtml(String(cell)) + '" onchange="updateCell(' + idx + ', ' + colIdx + ', this.value)">';
-                        }
-                    }
-                }
-                
-                headerHtml += '<td>' + inputHtml + '</td>';
-            }
-            
-            // Action buttons
-            const isLogoUrl = (selectedModule === 'HUB' && selectedEntity.id === 'plant_layout');
-            if (editMode && isEntityEditable && !selectedEntity.disableDelete && !isLogoUrl) {
-                headerHtml += '<td><button class="btn-danger" onclick="deleteRow(' + idx + ')"><i class="fas fa-trash"></i></button></td>';
-            } else {
-                headerHtml += '<td></td>';
-            }
-            headerHtml += '</tr>';
-        }
-        
-        headerHtml += '</tbody></table>';
-        container.innerHTML = headerHtml;
+    function openChat() {
+      clearBotpressStorage();
+      panel.style.display = 'block';
+      isOpen = true;
+      const baseUrl = 'https://cdn.botpress.cloud/webchat/v3.7/shareable.html';
+      const configUrl = 'https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json';
+      iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + Date.now();
     }
 
     // ============================================
-    // BUDGET EDITOR (12 MESES)
+    // FUNCIÓN: Cerrar chat
     // ============================================
-    function renderBudgetEditor() {
-        const container = document.getElementById('tableWrapper');
-        const entity = selectedEntity;
-        
-        // Obtener datos de budget desde moduleData
-        let budgetData = {};
-        let availableYears = [];
-        
-        if (moduleData && moduleData.entityData && moduleData.entityData.budget) {
-            const rows = moduleData.entityData.budget.rows;
-            //console.log('📊 Filas de budget:', rows);
-            
-            for (let i = 0; i < rows.length; i++) {
-                const year = rows[i][0];
-                const month = parseInt(rows[i][1]);
-                const amount = parseFloat(rows[i][2]) || 0;
-                
-                //console.log(`   Año: ${year}, Mes: ${month}, Monto: ${amount}`);
-                
-                if (year && !isNaN(year) && month >= 1 && month <= 12) {
-                    if (!budgetData[year]) {
-                        budgetData[year] = Array(12).fill(0);
-                        availableYears.push(year);
-                    }
-                    budgetData[year][month - 1] = amount;
-                }
-            }
-            availableYears.sort();
-            //console.log('📊 budgetData:', budgetData);
-            //console.log('📊 availableYears:', availableYears);
-        }
-        
-        // Si no hay años, usar año actual
-        if (availableYears.length === 0) {
-            const currentYear = new Date().getFullYear();
-            availableYears.push(currentYear);
-            budgetData[currentYear] = Array(12).fill(0);
-        }
-        
-        // Año seleccionado (último año por defecto)
-        let selectedYear = availableYears[availableYears.length - 1];
-        let currentAmounts = budgetData[selectedYear] || Array(12).fill(0);
-        
-        // Generar HTML
-        let yearsOptions = '';
-        for (let i = 0; i < availableYears.length; i++) {
-            const y = availableYears[i];
-            yearsOptions += '<option value="' + y + '" ' + (y === selectedYear ? 'selected' : '') + '>' + y + '</option>';
-        }
-        
-        let tableHtml = 
-            '<div class="budget-controls">' +
-                '<div class="budget-select">' +
-                    '<label>Select Year</label>' +
-                    '<select id="budgetYearSelect">' +
-                        yearsOptions +
-                    '</select>' +
-                '</div>' +
-                '<div>' +
-                    '<button class="btn-success" id="addYearBtn"><i class="fas fa-plus"></i> ADD NEW YEAR</button>' +
-                '</div>' +
-            '</div>' +
-            '<div style="max-height: calc(100vh - 400px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 10px; background: white;">' +
-                '<table class="data-table" style="width:100%;">' +
-                    '<thead>' +
-                        '<tr>' +
-                            '<th style="width:33%;">Month</th>' +
-                            '<th style="width:33%;">Budget Amount ($)</th>' +
-                            '<th style="width:33%;">Status</th>' +
-                        '</tr>' +
-                    '</thead>' +
-                    '<tbody>';
-        
-        const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        
-        for (let i = 0; i < 12; i++) {
-            const amount = currentAmounts[i] || 0;
-            const status = amount > 0 ? '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>' : '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
-            tableHtml += 
-                '<tr>' +
-                    '<td style="font-weight: 600;">' + MONTHS[i] + '</td>' +
-                    '<td>' +
-                        '<input type="number" step="0.01" min="0" value="' + amount + '" ' +
-                              'data-month="' + (i + 1) + '" ' +
-                              'class="budget-amount-input" ' +
-                              'style="width: 150px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px;">' +
-                    '</td>' +
-                    '<td>' + status + '</td>' +
-                '</tr>';
-        }
-        
-        tableHtml += 
-                    '</tbody>' +
-                '</table>' +
-            '</div>' +
-            '<div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">' +
-                '<button class="btn-success" id="saveBudgetBtn"><i class="fas fa-save"></i> SAVE ALL CHANGES</button>' +
-                '<button class="btn-secondary" id="resetBudgetBtn"><i class="fas fa-undo"></i> RESET TO ZEROS</button>' +
-            '</div>';
-        
-        container.innerHTML = tableHtml;
+    function closeChat() {
+      clearBotpressStorage();
+      panel.style.display = 'none';
+      isOpen = false;
+    }
 
-        // Actualizar status después de renderizar
-        setTimeout(function() {
-            updateBudgetStatus();
-        }, 100);        
-        
-        // === EVENTOS ===
-        
-        // Cambio de año
-        document.getElementById('budgetYearSelect').addEventListener('change', function(e) {
-            const newYear = parseInt(e.target.value);
-            const amounts = budgetData[newYear] || Array(12).fill(0);
-            const inputs = document.querySelectorAll('.budget-amount-input');
-            for (let i = 0; i < inputs.length; i++) {
-                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
-                inputs[i].value = amounts[month] || 0;
-            }
-            updateBudgetStatus();
-            selectedYear = newYear;
-        });
-        
-        // ADD NEW YEAR
-        document.getElementById('addYearBtn').addEventListener('click', function() {
-            const nextYear = Math.max.apply(null, availableYears) + 1;
-            showConfirmation('Add year ' + nextYear + ' with all amounts set to $0?', async function() {
-                try {
-                    // Obtener el año seleccionado actualmente
-                    const yearSelect = document.getElementById('budgetYearSelect');
-                    const currentYear = parseInt(yearSelect.value);
-                    
-                    // Obtener los montos actuales del año seleccionado
-                    const inputs = document.querySelectorAll('.budget-amount-input');
-                    const currentAmounts = Array(12).fill(0);
-                    for (let i = 0; i < inputs.length; i++) {
-                        const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
-                        currentAmounts[month] = parseFloat(inputs[i].value) || 0;
-                    }
-                    
-                    // Guardar los montos actuales ANTES de agregar el nuevo año
-                    for (let m = 0; m < 12; m++) {
-                        let found = false;
-                        for (let r = 0; r < currentEntityRows.length; r++) {
-                            if (currentEntityRows[r][0] == currentYear && currentEntityRows[r][1] == (m + 1)) {
-                                currentEntityRows[r][2] = currentAmounts[m];
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            currentEntityRows.push([currentYear, m + 1, currentAmounts[m]]);
-                        }
-                    }
-                    
-                    // Guardar los cambios del año actual
-                    await saveEntity();
-                    
-                    // Ahora agregar el nuevo año (12 filas con 0)
-                    for (let m = 1; m <= 12; m++) {
-                        currentEntityRows.push([nextYear, m, 0]);
-                    }
-                    
-                    // Guardar el nuevo año
-                    await saveEntity();
-                    
-                    // Recargar el módulo para reflejar los cambios
-                    await loadModule('SYS');
-                    
-                    // Seleccionar entidad budget nuevamente
-                    const entity = moduleData.entities.find(function(e) { return e.id === 'budget'; });
-                    if (entity) {
-                        selectedEntity = entity;
-                        const entityData = moduleData.entityData['budget'];
-                        currentEntityRows = entityData.rows.map(function(row) { return row.slice(); });
-                        renderBudgetEditor();
-                    }
-                    
-                    showToast('Year ' + nextYear + ' added successfully (previous year saved)', 'success');
-                } catch (error) {
-                    showToast('Error: ' + error.message, 'error');
-                }
-            });
-        });
-        
-        // SAVE
-        document.getElementById('saveBudgetBtn').addEventListener('click', async function() {
-            const inputs = document.querySelectorAll('.budget-amount-input');
-            const newAmounts = Array(12).fill(0);
-            for (let i = 0; i < inputs.length; i++) {
-                const month = parseInt(inputs[i].getAttribute('data-month')) - 1;
-                newAmounts[month] = parseFloat(inputs[i].value) || 0;
-            }
-            
-            // Obtener el año actual
-            const year = parseInt(document.getElementById('budgetYearSelect').value);
-            
-            // Obtener TODOS los años que existen en budgetData
-            const allYears = Object.keys(budgetData);
-            
-            // Crear un nuevo array con TODAS las filas de TODOS los años
-            const allRows = [];
-            for (const y of allYears) {
-                const yearNum = parseInt(y);
-                const amounts = budgetData[yearNum] || Array(12).fill(0);
-                for (let m = 0; m < 12; m++) {
-                    // Si es el año actual, usar los nuevos montos
-                    const amount = (yearNum === year) ? newAmounts[m] : amounts[m];
-                    allRows.push([yearNum, m + 1, amount]);
-                }
-            }
-            
-            // Reemplazar currentEntityRows con todas las filas
-            currentEntityRows = allRows;
-            
-            await saveEntity();
-            updateBudgetStatus();
-            showToast('Budget for ' + year + ' saved successfully (all years preserved)', 'success');
-            
-            // Recargar el editor para reflejar cambios
-            const entity = moduleData.entities.find(function(e) { return e.id === 'budget'; });
-            if (entity) {
-                selectedEntity = entity;
-                const entityData = moduleData.entityData['budget'];
-                currentEntityRows = entityData.rows.map(function(row) { return row.slice(); });
-                renderBudgetEditor();
-            }
-        });
-        
-        // RESET
-        document.getElementById('resetBudgetBtn').addEventListener('click', function() {
-            showConfirmation('Reset all amounts to $0 for this year?', function() {
-                const inputs = document.querySelectorAll('.budget-amount-input');
-                for (let i = 0; i < inputs.length; i++) {
-                    inputs[i].value = 0;
-                }
-                updateBudgetStatus();
-                showToast('All amounts reset to $0', 'success');
-            });
-        });
-        
-        function updateBudgetStatus() {
-            const inputs = document.querySelectorAll('.budget-amount-input');
-            const statusCells = document.querySelectorAll('tbody tr td:last-child');
-            for (let i = 0; i < inputs.length; i++) {
-                const amount = parseFloat(inputs[i].value) || 0;
-                const statusCell = statusCells[i];
-                if (statusCell) {
-                    if (amount > 0) {
-                        statusCell.innerHTML = '<span style="color: #10b981;"><i class="fas fa-check-circle"></i> Assigned</span>';
-                    } else {
-                        statusCell.innerHTML = '<span style="color: #eab308;"><i class="fas fa-exclamation-triangle"></i> Not set</span>';
-                    }
-                }
-            }
-        }
-    }    
-    
     // ============================================
-    // VALIDACIONES
+    // FUNCIÓN: Arrastrar el panel
     // ============================================
-    
-    function validateRows() {
-        // Weighted scores validation
-        if (selectedEntity.id === 'weighted_scores') {
-            let totalSum = 0;
-            for (let k = 0; k < currentEntityRows.length; k++) {
-                const val = currentEntityRows[k][0];
-                if (val && val.toString().trim() !== '') {
-                    const parts = val.toString().split(',');
-                    if (parts.length === 2) {
-                        const weight = parseFloat(parts[1].trim());
-                        if (!isNaN(weight)) totalSum += weight;
-                    }
-                }
-            }
-            if (Math.abs(totalSum - 100) > 0.01) {
-                showToast('ERROR: Weighted Scores total must equal 100. Current total: ' + totalSum, 'error');
-                return false;
-            }
-        }
-        
-        // Ranges validation (continuous 1.0 to 5.0)
-        if (selectedEntity.id === 'ranges') {
-            const ranges = [];
-            for (let k = 0; k < currentEntityRows.length; k++) {
-                const val = currentEntityRows[k][0];
-                if (val && val.toString().trim() !== '') {
-                    const match = val.toString().match(/([\d.]+)\s*[-–]\s*([\d.]+)/);
-                    if (match) {
-                        ranges.push({ from: parseFloat(match[1]), to: parseFloat(match[2]), row: k });
-                    }
-                }
-            }
-            
-            if (ranges.length > 0 && Math.abs(ranges[0].from - 1.0) > 0.01) {
-                showToast('Range must start at 1.0. First range starts at ' + ranges[0].from, 'error');
-                return false;
-            }
-            
-            if (ranges.length > 0 && Math.abs(ranges[ranges.length - 1].to - 5.0) > 0.01) {
-                showToast('Range must end at 5.0. Last range ends at ' + ranges[ranges.length - 1].to, 'error');
-                return false;
-            }
-            
-            let expectedFrom = 1.0;
-            for (let k = 0; k < ranges.length; k++) {
-                if (Math.abs(ranges[k].from - expectedFrom) > 0.01) {
-                    showToast('Gap detected: expected ' + expectedFrom + ' but found ' + ranges[k].from, 'error');
-                    return false;
-                }
-                expectedFrom = ranges[k].to;
-            }
-            if (Math.abs(expectedFrom - 5.0) > 0.01) {
-                showToast('Gap detected: last range ends at ' + expectedFrom + ', should end at 5.0', 'error');
-                return false;
-            }
-        }
-        
-        // Plan years consecutive validation
-        if (selectedEntity.id === 'plan_years') {
-            const years = [];
-            for (let k = 0; k < currentEntityRows.length; k++) {
-                const val = currentEntityRows[k][0];
-                if (val && val.toString().trim() !== '') {
-                    const year = parseInt(val);
-                    if (!isNaN(year)) years.push(year);
-                }
-            }
-            years.sort(function(a,b) { return a - b; });
-            for (let k = 1; k < years.length; k++) {
-                if (years[k] !== years[k-1] + 1) {
-                    showToast('Years must be consecutive. Gap between ' + years[k-1] + ' and ' + years[k], 'error');
-                    return false;
-                }
-            }
-        }
-        
-        // Currency code validation
-        if (selectedEntity.id === 'currencies') {
-            const currencyRegex = /^[A-Z]{3}$/;
-            for (let k = 0; k < currentEntityRows.length; k++) {
-                const val = currentEntityRows[k][0];
-                if (val && val.toString().trim() !== '') {
-                    if (!currencyRegex.test(val.toString().toUpperCase())) {
-                        showToast('Currency code must be 3 uppercase letters (CAD, USD, EUR)', 'error');
-                        return false;
-                    }
-                }
-            }
-        }
-        
-        return true;
+    function startDrag(e) {
+      e.preventDefault();
+      const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+      const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+      const rect = panel.getBoundingClientRect();
+      dragOffsetX = clientX - rect.left;
+      dragOffsetY = clientY - rect.top;
+      isDragging = true;
+      
+      document.addEventListener('mousemove', onDrag);
+      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('touchmove', onDragTouch, { passive: false });
+      document.addEventListener('touchend', endDragTouch, { passive: false });
     }
-    
-    // ============================================
-    // SAVE ENTITY
-    // ============================================
-    
-    async function saveEntity() {
-        if (!validateRows()) return;
-        
-        showLoading('Saving entity...');
-        
-        try {
-            // ✅ Añadir userEmail al payload
-            let userEmail = 'system';
-            try {
-                const session = JSON.parse(localStorage.getItem('adkintor_session'));
-                if (session && session.email) {
-                    userEmail = session.email;
-                }
-            } catch(e) {}
-            const response = await callApi('SYS_saveEntityData', [selectedModule, selectedEntity.id, currentEntityRows, userEmail]);
-            
-            hideLoading();
-            if (response.success) {
-                const changesCount = currentEntityRows.length;
-                logConfigChange(selectedEntity.id, 'MODIFY_CONFIG', 'Entity ' + selectedEntity.id + ' modified - ' + changesCount + ' rows saved').catch(function(e) { /* console.warn('[SYS] Config log failed:', e); */ });  // COMENTADO
-                
-                showToast(response.message, 'success');
-                await loadModule(selectedModule);
-            } else {
-                showToast('Error: ' + response.error, 'error');
-            }
-        } catch (error) {
-            if (window.Logger && typeof window.Logger.error === 'function') {
-                window.Logger.error('SYS', 'saveConfig', error.message).catch(function(e) { /* console.warn('[SYS] Error log failed:', e); */ });  // COMENTADO
-            }
-            hideLoading();
-            showToast('Server error: ' + error.message, 'error');
-        }
-    }
-    
-    // ============================================
-    // BUDGET EDITOR (Especial para SYS)
-    // ============================================
-    
-    //async function loadBudgetEditor()
-    //async function loadBudgetData()
-    //renderBudgetEditor()
 
-    
-    // ============================================
-    // EVENT LISTENERS
-    // ============================================
-    
-    document.getElementById('prevBtn').addEventListener('click', function() {
-        if (currentStep === 2) {
-            goToStep(1);
-        } else if (currentStep === 3) {
-            goToStep(2);
-        }
-    });
-    
-    document.getElementById('nextBtn').addEventListener('click', function() {
-        if (currentStep === 1) {
-            if (!selectedModule) {
-                showToast('Please select a module first', 'error');
-                return;
-            }
-        } else if (currentStep === 2) {
-            if (!selectedEntity) {
-                showToast('Please select an entity', 'error');
-                return;
-            }
-        } else if (currentStep === 3) {
-            const isBudgetEntity = (selectedModule === 'SYS' && selectedEntity && selectedEntity.id === 'budget');
-            if (!isBudgetEntity) {
-                saveEntity();
-            } else {
-                showToast('Use the "SAVE ALL CHANGES" button inside the budget editor', 'warning');
-            }
-        }
-    });
-    
-    document.getElementById('addRowBtn').addEventListener('click', addRow);
-    
-    // Module selection
-    document.querySelectorAll('.module-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-            document.querySelectorAll('.module-card').forEach(function(c) { c.classList.remove('selected'); });
-            this.classList.add('selected');
-            const moduleName = this.dataset.module;
-            if (moduleName) {
-                loadModule(moduleName);
-            } else {
-                showToast('Error: Module not found', 'error');
-            }
-        });
-    });
-    
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-    function init() {
-        showLoading('Loading Universal Configurator...');
-        loadUser();
-        loadApiUrlAndUser();
-        goToStep(1);
-        hideLoading();
-        // showToast('Universal Configurator loaded successfully ✅', 'success');  // ELIMINADO
+    function onDrag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const clientX = e.clientX || 0;
+      const clientY = e.clientY || 0;
+      moveTo(clientX - dragOffsetX, clientY - dragOffsetY);
     }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+
+    function onDragTouch(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (touch) {
+        moveTo(touch.clientX - dragOffsetX, touch.clientY - dragOffsetY);
+      }
     }
+
+    function moveTo(x, y) {
+      const rect = panel.getBoundingClientRect();
+      const width = rect.width || 380;
+      const height = rect.height || 500;
+      let newX = Math.max(MARGIN, Math.min(window.innerWidth - width - MARGIN, x));
+      let newY = Math.max(MARGIN, Math.min(window.innerHeight - height - MARGIN, y));
+      panel.style.left = newX + 'px';
+      panel.style.top = newY + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+    }
+
+    function endDrag() {
+      isDragging = false;
+      document.removeEventListener('mousemove', onDrag);
+      document.removeEventListener('mouseup', endDrag);
+      document.removeEventListener('touchmove', onDragTouch);
+      document.removeEventListener('touchend', endDragTouch);
+    }
+
+    function endDragTouch(e) {
+      endDrag();
+    }
+
+    // ============================================
+    // EVENTOS
+    // ============================================
+    toggleBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (isOpen) {
+        closeChat();
+      } else {
+        openChat();
+      }
+    });
+
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeChat();
+    });
+
+    header.addEventListener('mousedown', startDrag);
+    header.addEventListener('touchstart', startDrag, { passive: false });
+
+    document.addEventListener('click', function(e) {
+      if (isOpen && !panel.contains(e.target) && e.target !== toggleBtn) {
+        closeChat();
+      }
+    });
+
+    //console.log('✅ Chatbot cargado en la barra de menús');
+  })();
 </script>
 </body>
 </html>
