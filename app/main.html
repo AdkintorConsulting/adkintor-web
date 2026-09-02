@@ -646,11 +646,11 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 });
 
 </script>
-<!-- BOTPRESS CHATBOT - VERSIÓN DEFINITIVA SIN HISTORIAL -->
-<div id="chatbot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); overflow: hidden; transition: all 0.3s ease; background: #1a237e; display: flex; align-items: center; justify-content: center;">
+<!-- BOTPRESS CHATBOT - VERSIÓN ARRASTRABLE -->
+<div id="chatbot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); overflow: hidden; transition: all 0.3s ease; background: #1a237e; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none;">
   <!-- Icono de burbuja -->
   <div id="chatbot-icon" style="color: white; font-size: 28px; pointer-events: none; display: flex; align-items: center; justify-content: center;">
-    🤖
+    💬
   </div>
   
   <!-- Iframe del chat -->
@@ -660,7 +660,7 @@ document.getElementById('docModal').addEventListener('click', function(e) {
     id="adkinbot-iframe"
   ></iframe>
   
-  <!-- Botón de cerrar (X) personalizado -->
+  <!-- Botón de cerrar (X) -->
   <div id="close-btn" style="position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(0,0,0,0.7); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 18px; cursor: pointer; z-index: 10; pointer-events: auto; font-family: Arial, sans-serif; border: 2px solid rgba(255,255,255,0.3);"
     onclick="event.stopPropagation(); window.closeChatbot();">
     ✕
@@ -674,14 +674,93 @@ document.getElementById('docModal').addEventListener('click', function(e) {
     const icon = document.getElementById('chatbot-icon');
     const closeBtn = document.getElementById('close-btn');
     let isOpen = false;
-    let lastSrc = '';
+    let isDragging = false;
+    let dragStartX, dragStartY, dragOffsetX, dragOffsetY;
+
+    // ============================================
+    // FUNCIONES DE ARRASTRE
+    // ============================================
+    
+    // Iniciar arrastre
+    wrapper.addEventListener('mousedown', function(e) {
+      // Si el chat está abierto, no arrastrar (solo cerrar)
+      if (isOpen) return;
+      
+      isDragging = true;
+      const rect = wrapper.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      wrapper.style.cursor = 'grabbing';
+      wrapper.style.transition = 'none';
+      e.preventDefault();
+    });
+
+    // Mover durante arrastre
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      
+      // Calcular nueva posición
+      let newX = e.clientX - dragOffsetX;
+      let newY = e.clientY - dragOffsetY;
+      
+      // Limitar dentro de la ventana (con márgenes)
+      const wrapperWidth = 60;
+      const wrapperHeight = 60;
+      newX = Math.max(10, Math.min(window.innerWidth - wrapperWidth - 10, newX));
+      newY = Math.max(10, Math.min(window.innerHeight - wrapperHeight - 10, newY));
+      
+      wrapper.style.left = newX + 'px';
+      wrapper.style.top = newY + 'px';
+      wrapper.style.right = 'auto';
+      wrapper.style.bottom = 'auto';
+    });
+
+    // Finalizar arrastre
+    document.addEventListener('mouseup', function(e) {
+      if (isDragging) {
+        isDragging = false;
+        wrapper.style.cursor = 'grab';
+        wrapper.style.transition = 'all 0.3s ease';
+      }
+    });
+
+    // ============================================
+    // FUNCIONES DEL CHAT
+    // ============================================
+
+    // Función para limpiar el almacenamiento de Botpress
+    function clearBotpressStorage() {
+      // Limpiar localStorage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('bp-webchat-') || key.includes('botpress'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Limpiar sessionStorage
+      const sessionKeysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key.includes('bp-webchat-') || key.includes('botpress'))) {
+          sessionKeysToRemove.push(key);
+        }
+      }
+      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+    }
 
     // Función para cerrar el chat
     window.closeChatbot = function() {
+      // Limpiar almacenamiento ANTES de cerrar
+      clearBotpressStorage();
+      
       wrapper.style.width = '60px';
       wrapper.style.height = '60px';
       wrapper.style.borderRadius = '50%';
       wrapper.style.background = '#1a237e';
+      wrapper.style.cursor = 'grab';
       iframe.style.pointerEvents = 'none';
       iframe.style.opacity = '0';
       icon.style.display = 'flex';
@@ -689,29 +768,40 @@ document.getElementById('docModal').addEventListener('click', function(e) {
       closeBtn.style.display = 'none';
       isOpen = false;
       
-      // FORZAR RESET: Recargar el iframe con un timestamp único
+      // Recargar iframe para asegurar reset
       const baseUrl = 'https://cdn.botpress.cloud/webchat/v3.7/shareable.html';
       const configUrl = 'https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json';
-      const timestamp = Date.now();
-      iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + timestamp;
+      iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + Date.now();
+      
+      console.log('✅ Chat cerrado y almacenamiento limpiado');
     };
 
     // Función para abrir el chat
     window.openChatbot = function() {
+      // Limpiar almacenamiento ANTES de abrir (por si acaso)
+      clearBotpressStorage();
+      
       wrapper.style.width = '380px';
       wrapper.style.height = '500px';
       wrapper.style.borderRadius = '12px';
       wrapper.style.background = 'transparent';
+      wrapper.style.cursor = 'default';
       iframe.style.pointerEvents = 'auto';
       iframe.style.opacity = '1';
       icon.style.display = 'none';
       icon.style.opacity = '0';
       closeBtn.style.display = 'flex';
       isOpen = true;
+      
+      console.log('✅ Chat abierto');
     };
 
-    // Toggle al hacer clic en la burbuja
+    // Toggle al hacer clic en la burbuja (solo si no es arrastre)
     wrapper.addEventListener('click', function(e) {
+      // Si estamos arrastrando, no hacer toggle
+      if (isDragging) return;
+      
+      // Si el clic fue en el botón de cerrar, no hacer nada (ya lo maneja el onclick)
       if (e.target === closeBtn || closeBtn.contains(e.target)) return;
       
       if (isOpen) {
@@ -723,6 +813,8 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 
     // Guardar estado global
     window.isOpen = isOpen;
+    
+    console.log('✅ Chatbot cargado - burbuja arrastrable');
   })();
 </script>
 </body>
