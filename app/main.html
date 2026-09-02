@@ -650,12 +650,28 @@ document.getElementById('docModal').addEventListener('click', function(e) {
     <!-- FINAL DEL ARCHIVO -->
     <!-- BOTPRESS CHATBOT - VERSIÓN FUNCIONAL CON IFRAME -->
     <!-- BOTPRESS CHATBOT - BURBUJA PEQUEÑA -->
-    <iframe 
-      src="https://cdn.botpress.cloud/webchat/v3.7/shareable.html?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json"
-      style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border: none; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); z-index: 9999; cursor: pointer;"
-      id="adkinbot-iframe"
-    ></iframe>
-</body>
-</html>
+<!-- BOTPRESS CHATBOT - CON EXPANSIÓN AL CLIC -->
+<iframe 
+  src="https://cdn.botpress.cloud/webchat/v3.7/shareable.html?configUrl=https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json"
+  style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border: none; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.15); z-index: 9999; cursor: pointer; transition: all 0.3s ease;"
+  id="adkinbot-iframe"
+></iframe>
+
+<script>
+  // Esto hace que la burbuja se expanda al hacer clic
+  document.getElementById('adkinbot-iframe').addEventListener('click', function() {
+    if (this.style.width === '380px') {
+      // Si ya está grande, la achicamos
+      this.style.width = '60px';
+      this.style.height = '60px';
+      this.style.borderRadius = '50%';
+    } else {
+      // Si está chica, la agrandamos
+      this.style.width = '380px';
+      this.style.height = '500px';
+      this.style.borderRadius = '12px';
+    }
+  });
+</script>
 </body>
 </html>
