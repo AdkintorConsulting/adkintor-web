@@ -55,11 +55,11 @@
                     <div class="dropdown-content" id="docsDropdown">
                         <!-- Se generará dinámicamente según el rol del usuario -->
                         <div class="dropdown-section">
-                            <div class="section-title">🤖 CHAT</div>
+                            <div class="section-title"> AdkintorBot</div>
                             <a href="#" id="chatbot-toggle" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #1a237e; text-decoration: none; font-weight: bold; border-radius: 4px; transition: background 0.3s;" 
                               onmouseover="this.style.background='#e8eaf6'" 
                               onmouseout="this.style.background='transparent'">
-                                💬 Abrir Chat
+                                🤖 Open Chat
                             </a>
                         </div>
                     </div>
@@ -741,146 +741,166 @@ document.getElementById('docModal').addEventListener('click', function(e) {
 
 <script>
   (function() {
-    const toggleBtn = document.getElementById('chatbot-toggle');
-    const panel = document.getElementById('chatbot-panel');
-    const closeBtn = document.getElementById('chatbot-close');
-    const iframe = document.getElementById('chatbot-iframe');
-    const header = document.getElementById('chatbot-panel-header');
-    let isOpen = false;
-    let isDragging = false;
-    let dragOffsetX = 0, dragOffsetY = 0;
-    const MARGIN = 10;
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      // Buscar los elementos
+      const toggleBtn = document.getElementById('chatbot-toggle');
+      const panel = document.getElementById('chatbot-panel');
+      const closeBtn = document.getElementById('chatbot-close');
+      const iframe = document.getElementById('chatbot-iframe');
+      const header = document.getElementById('chatbot-panel-header');
+      
+      // Verificar que el botón existe
+      if (!toggleBtn) {
+        //console.log('❌ Botón del chat no encontrado');
+        return;
+      }
+      
+      let isOpen = false;
+      let isDragging = false;
+      let dragOffsetX = 0, dragOffsetY = 0;
+      const MARGIN = 10;
 
-    // ============================================
-    // FUNCIÓN: Limpiar almacenamiento de Botpress
-    // ============================================
-    function clearBotpressStorage() {
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
-          keysToRemove.push(key);
+      // ============================================
+      // FUNCIÓN: Limpiar almacenamiento de Botpress
+      // ============================================
+      function clearBotpressStorage() {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        const sessionKeysToRemove = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
+            sessionKeysToRemove.push(key);
+          }
+        }
+        sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+      }
+
+      // ============================================
+      // FUNCIÓN: Abrir chat
+      // ============================================
+      function openChat() {
+        clearBotpressStorage();
+        panel.style.display = 'block';
+        isOpen = true;
+        const baseUrl = 'https://cdn.botpress.cloud/webchat/v3.7/shareable.html';
+        const configUrl = 'https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json';
+        iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + Date.now();
+        //console.log('✅ Chat abierto');
+      }
+
+      // ============================================
+      // FUNCIÓN: Cerrar chat
+      // ============================================
+      function closeChat() {
+        clearBotpressStorage();
+        panel.style.display = 'none';
+        isOpen = false;
+        //console.log('✅ Chat cerrado');
+      }
+
+      // ============================================
+      // FUNCIÓN: Arrastrar el panel
+      // ============================================
+      function startDrag(e) {
+        e.preventDefault();
+        const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+        const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+        const rect = panel.getBoundingClientRect();
+        dragOffsetX = clientX - rect.left;
+        dragOffsetY = clientY - rect.top;
+        isDragging = true;
+        
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchmove', onDragTouch, { passive: false });
+        document.addEventListener('touchend', endDragTouch, { passive: false });
+      }
+
+      function onDrag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const clientX = e.clientX || 0;
+        const clientY = e.clientY || 0;
+        moveTo(clientX - dragOffsetX, clientY - dragOffsetY);
+      }
+
+      function onDragTouch(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        if (touch) {
+          moveTo(touch.clientX - dragOffsetX, touch.clientY - dragOffsetY);
         }
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      function moveTo(x, y) {
+        const rect = panel.getBoundingClientRect();
+        const width = rect.width || 380;
+        const height = rect.height || 500;
+        let newX = Math.max(MARGIN, Math.min(window.innerWidth - width - MARGIN, x));
+        let newY = Math.max(MARGIN, Math.min(window.innerHeight - height - MARGIN, y));
+        panel.style.left = newX + 'px';
+        panel.style.top = newY + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+      }
+
+      function endDrag() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchmove', onDragTouch);
+        document.removeEventListener('touchend', endDragTouch);
+      }
+
+      function endDragTouch(e) {
+        endDrag();
+      }
+
+      // ============================================
+      // ASIGNAR EVENTOS
+      // ============================================
       
-      const sessionKeysToRemove = [];
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key && (key.includes('bp-') || key.includes('botpress') || key.includes('webchat'))) {
-          sessionKeysToRemove.push(key);
+      // Evento de clic para abrir/cerrar el chat
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // Evitar que el enlace # navegue
+        e.stopPropagation();
+        if (isOpen) {
+          closeChat();
+        } else {
+          openChat();
         }
-      }
-      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
-    }
+      });
 
-    // ============================================
-    // FUNCIÓN: Abrir chat
-    // ============================================
-    function openChat() {
-      clearBotpressStorage();
-      panel.style.display = 'block';
-      isOpen = true;
-      const baseUrl = 'https://cdn.botpress.cloud/webchat/v3.7/shareable.html';
-      const configUrl = 'https://files.bpcontent.cloud/2026/09/02/11/20260902110837-2SSMJ6YK.json';
-      iframe.src = baseUrl + '?configUrl=' + configUrl + '&hideConversations=true&showCloseButton=false&showPoweredBy=false&_=' + Date.now();
-    }
-
-    // ============================================
-    // FUNCIÓN: Cerrar chat
-    // ============================================
-    function closeChat() {
-      clearBotpressStorage();
-      panel.style.display = 'none';
-      isOpen = false;
-    }
-
-    // ============================================
-    // FUNCIÓN: Arrastrar el panel
-    // ============================================
-    function startDrag(e) {
-      e.preventDefault();
-      const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
-      const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
-      const rect = panel.getBoundingClientRect();
-      dragOffsetX = clientX - rect.left;
-      dragOffsetY = clientY - rect.top;
-      isDragging = true;
-      
-      document.addEventListener('mousemove', onDrag);
-      document.addEventListener('mouseup', endDrag);
-      document.addEventListener('touchmove', onDragTouch, { passive: false });
-      document.addEventListener('touchend', endDragTouch, { passive: false });
-    }
-
-    function onDrag(e) {
-      if (!isDragging) return;
-      e.preventDefault();
-      const clientX = e.clientX || 0;
-      const clientY = e.clientY || 0;
-      moveTo(clientX - dragOffsetX, clientY - dragOffsetY);
-    }
-
-    function onDragTouch(e) {
-      if (!isDragging) return;
-      e.preventDefault();
-      const touch = e.touches[0];
-      if (touch) {
-        moveTo(touch.clientX - dragOffsetX, touch.clientY - dragOffsetY);
-      }
-    }
-
-    function moveTo(x, y) {
-      const rect = panel.getBoundingClientRect();
-      const width = rect.width || 380;
-      const height = rect.height || 500;
-      let newX = Math.max(MARGIN, Math.min(window.innerWidth - width - MARGIN, x));
-      let newY = Math.max(MARGIN, Math.min(window.innerHeight - height - MARGIN, y));
-      panel.style.left = newX + 'px';
-      panel.style.top = newY + 'px';
-      panel.style.right = 'auto';
-      panel.style.bottom = 'auto';
-    }
-
-    function endDrag() {
-      isDragging = false;
-      document.removeEventListener('mousemove', onDrag);
-      document.removeEventListener('mouseup', endDrag);
-      document.removeEventListener('touchmove', onDragTouch);
-      document.removeEventListener('touchend', endDragTouch);
-    }
-
-    function endDragTouch(e) {
-      endDrag();
-    }
-
-    // ============================================
-    // EVENTOS
-    // ============================================
-    toggleBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (isOpen) {
+      // Evento para cerrar con el botón X
+      closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         closeChat();
-      } else {
-        openChat();
-      }
+      });
+
+      // Evento para arrastrar desde el header
+      header.addEventListener('mousedown', startDrag);
+      header.addEventListener('touchstart', startDrag, { passive: false });
+
+      // Evento para cerrar al hacer clic fuera del panel
+      document.addEventListener('click', function(e) {
+        if (isOpen && !panel.contains(e.target) && e.target !== toggleBtn) {
+          closeChat();
+        }
+      });
+
+      //console.log('✅ Chatbot cargado correctamente');
     });
-
-    closeBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      closeChat();
-    });
-
-    header.addEventListener('mousedown', startDrag);
-    header.addEventListener('touchstart', startDrag, { passive: false });
-
-    document.addEventListener('click', function(e) {
-      if (isOpen && !panel.contains(e.target) && e.target !== toggleBtn) {
-        closeChat();
-      }
-    });
-
-    //console.log('✅ Chatbot cargado en la barra de menús');
   })();
 </script>
 </body>
