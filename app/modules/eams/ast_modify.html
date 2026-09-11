@@ -699,7 +699,8 @@
                                 </div>
                                 <div class="field-group required-field" style="grid-column: span 2;">
                                     <label>Equipment Name</label>
-                                    <input id="v-name" name="name" required>
+                                    <input id="v-name" name="name" required oninput="sanitizeFieldLive(this)">
+                                    <div class="field-note" style="font-size: 0.6rem; color: #6c757d; margin-top: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Special characters &lt; &gt; { } [ ] \ are not allowed</div>
                                 </div>
                                 <div class="field-group required-field">
                                     <label>Asset Type</label>
@@ -721,15 +722,15 @@
                                 </div>
                                 <div class="field-group">
                                     <label>Manufacturer</label>
-                                    <input id="v-man" name="manufacturer">
+                                    <input id="v-man" name="manufacturer" oninput="sanitizeFieldLive(this)">
                                 </div>
                                 <div class="field-group">
                                     <label>Model</label>
-                                    <input id="v-model" name="model">
+                                    <input id="v-model" name="model" oninput="sanitizeFieldLive(this)">
                                 </div>
                                 <div class="field-group">
                                     <label>Serial Number</label>
-                                    <input id="v-serial" name="serial">
+                                    <input id="v-serial" name="serial" oninput="sanitizeFieldLive(this)">
                                 </div>
                                 <div class="field-group">
                                     <label>Installation Year</label>
@@ -919,6 +920,34 @@
     function sanitizeInput(str) {
         if (!str) return '';
         return String(str).replace(/[<>{}[\]\\]/g, '').trim();
+    }
+
+    // ✅ A-07 FIX: Sanitización en vivo para inputs de texto libre.
+    // Elimina caracteres especiales mientras el usuario escribe/pega,
+    // muestra feedback visual y avisa con un toast si se removieron caracteres.
+    // ⚠️ NO activa markDirty() intencionalmente, para no alterar el comportamiento
+    // actual del dirty flag (bug separado a tratar en D-08).
+    function sanitizeFieldLive(el) {
+        if (!el) return;
+        const original = el.value;
+        const cleaned = String(original).replace(/[<>{}[\]\\]/g, '');
+        if (cleaned !== original) {
+            // Reposicionar el cursor
+            const pos = el.selectionStart || 0;
+            const removed = original.length - cleaned.length;
+            el.value = cleaned;
+            const newPos = Math.max(0, pos - removed);
+            try { el.setSelectionRange(newPos, newPos); } catch(e) {}
+            // Feedback visual momentáneo
+            el.classList.add('invalid-field');
+            setTimeout(() => el.classList.remove('invalid-field'), 800);
+            // Toast informativo
+            if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
+                ModuleBase.showToast('⚠️ Special characters removed: < > { } [ ] \\', 'warning');
+            } else {
+                showMessage('⚠️ Special characters removed: < > { } [ ] \\', true);
+            }
+        }
     }
     
     function escapeHtml(str) {
