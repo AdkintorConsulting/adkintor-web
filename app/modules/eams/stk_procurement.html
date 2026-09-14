@@ -1777,7 +1777,7 @@
             
             // ✅ Actualizar PO number
             showLoading('Updating PO number...');
-            var res = await callApi('STK_updatePONumber', [currentTempPoNumber, newPoNumber]);
+            var res = await callApi('STK_updatePONumber', [currentTempPoNumber, newPoNumber, currentUser || 'system']);  // ✅ P-14 FIX
             showToast(res.message, 'success');
             document.getElementById('tempPoSection').style.display = 'none';
             currentTempPoNumber = null;
@@ -2344,7 +2344,8 @@
             paymentMethod: selectedPO.paymentMethod,
             receiptDate: document.getElementById('receiptDate').value,
             notes: document.getElementById('receiptNotes').value || 'No notes',
-            items: items
+            items: items,
+            userEmail: currentUser || 'system'  // ✅ P-14 FIX
         };
         showLoading('Processing receipt...');
         try {
@@ -2379,7 +2380,7 @@
             
             showLoading('Cancelling...');
             try {
-                var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber, noteText]);
+                var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber, noteText, currentUser || 'system']);  // ✅ P-14 FIX
                 logPOCancellation(selectedPO.poNumber, noteText, currentUser).catch(function(e) { /*console.warn('[STK] Cancel log failed:', e);*/ });
                 showToast(res.message, 'success');
                 // ✅ Refrescar todo
@@ -2418,7 +2419,7 @@
             
             showLoading('Closing PO...');
             try {
-                var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber, noteText]);
+                var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber, noteText, currentUser || 'system']);  // ✅ P-14 FIX
                 showToast(res.message, 'success');
                 document.getElementById('receiptForm').style.display = 'none';
                 document.getElementById('poSearchInput').value = '';
