@@ -921,6 +921,12 @@
         var auditPanel = document.getElementById('auditPanel');
         if (auditPanel) auditPanel.style.display = 'none';
         
+        // ✅ P-18 FIX: Limpiar checkboxes de PM al cambiar de modo,
+        // para evitar que queden marcados al volver a PREVENTIVE.
+        document.querySelectorAll('.pm-chk').forEach(function(cb) {
+            cb.checked = false;
+        });
+        
         validateFields();
     }
 
@@ -1072,11 +1078,14 @@
             fillSelect('apprSelect', response.approvers || [], '-- Select Approver --');
             fillSelect('smartSelect', response.smartComments || [], '-- Quick Fill --');
             
+            // ✅ P-18 FIX: renderPMs() SIEMPRE debe ejecutarse para limpiar checkboxes obsoletos.
+            // El banner solo se muestra si hay PMs pendientes, pero el contenedor
+            // pmList debe refrescarse siempre (vacío si ya no quedan PMs).
             var pmBanner = document.getElementById('preventiveBanner');
-            if (pmBanner && pmWOs.length > 0) {
-                pmBanner.style.display = 'block';
-                renderPMs();
+            if (pmBanner) {
+                pmBanner.style.display = (pmWOs.length > 0) ? 'block' : 'none';
             }
+            renderPMs();
             
             // console.log('[WO_APPROVE] Data loaded');  // COMENTADO
             // showToast('Data loaded: ' + woData.length + ' open work orders', 'success');  // ELIMINADO
@@ -1267,23 +1276,23 @@
                 showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
                 // console.log('[WO_APPROVE] Processed', response.count, 'WO(s)');  // COMENTADO
                 
-                if (document.getElementById('folioSelect')) document.getElementById('folioSelect').value = '';
+                // ✅ P-18 FIX: Reset ordenado — limpiar ANTES de recargar (para no mostrar
+                // estados intermedios), y luego recargar los datos frescos del backend.
                 if (document.getElementById('comments')) document.getElementById('comments').value = '';
                 if (document.getElementById('realCreationDate')) document.getElementById('realCreationDate').value = '';
+                if (document.getElementById('techSelect')) document.getElementById('techSelect').value = '';
+                if (document.getElementById('typeSelect')) document.getElementById('typeSelect').value = '';
+                if (document.getElementById('apprSelect')) document.getElementById('apprSelect').value = '';
+                if (document.getElementById('smartSelect')) document.getElementById('smartSelect').value = '';
                 removeErrorHighlights();
                 
+                // Recargar datos frescos (repuebla dropdowns y llama a renderPMs())
                 await loadData();
-                // Limpiar selección actual
-                if (document.getElementById('folioSelect')) {
-                    document.getElementById('folioSelect').value = '';
-                }
-                // Resetear auditoría
-                document.getElementById('auditPanel').style.display = 'none';
-                // Resetear campos
-                document.getElementById('techSelect').value = '';
-                document.getElementById('typeSelect').value = '';
-                document.getElementById('apprSelect').value = '';
-                document.getElementById('comments').value = '';
+                
+                // Después de recargar, limpiar selecciones dependientes de los nuevos datos
+                if (document.getElementById('folioSelect')) document.getElementById('folioSelect').value = '';
+                var auditPanel = document.getElementById('auditPanel');
+                if (auditPanel) auditPanel.style.display = 'none';
             } else {
                 throw new Error(response.error || 'Unknown error');
             }
