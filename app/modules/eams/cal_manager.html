@@ -862,7 +862,7 @@
                     </div>
                     <div class="full-width">
                         <label class="field-label">PERFORMED BY *</label>
-                        <input type="text" id="performedBy" placeholder="Type name (min 2 chars)..." autocomplete="off" >
+                        <input type="text" id="performedBy" placeholder="Company Name or Performer..." autocomplete="off" >
                         <div id="performerSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                     <div class="full-width">
@@ -1455,12 +1455,15 @@
             var today = new Date().toISOString().split('T')[0];
             document.getElementById('calibrationDate').value = today;
             
+            // ✅ C-14 FIX: NO precargar el email del usuario en PERFORMED BY.
+            // El email es quien REGISTRA la calibración, no necesariamente quien la REALIZÓ
+            // (puede ser un proveedor externo, otro departamento, un técnico específico).
+            // El campo arranca VACÍO para mostrar el placeholder correcto y habilitar
+            // el autocomplete desde el historial de calibraciones.
             var performerField = document.getElementById('performedBy');
-            if (currentUser && currentUser !== 'System' && currentUser !== '') {
-                performerField.value = currentUser;
-            } else {
+            if (performerField) {
                 performerField.value = '';
-                performerField.placeholder = 'Type name (min 2 chars)...';
+                performerField.placeholder = 'Company Name or Performer...';
             }
             
             document.getElementById('certificate').value = '';
@@ -1477,6 +1480,19 @@
 
         async function submitCalibration(event) {
             event.preventDefault();
+            
+            // ✅ C-15 FIX: Forzar currentUser desde la sesión (misma estrategia que saveNewInstrument)
+            try {
+                const sessionData = JSON.parse(localStorage.getItem('adkintor_session'));
+                if (sessionData && sessionData.email) {
+                    currentUser = sessionData.email;
+                }
+            } catch(e) {
+                // Si falla, mantener el currentUser que ya estaba
+            }
+            if (!currentUser || currentUser === 'System' || currentUser === '') {
+                currentUser = 'system';
+            }
             
             var tagId = document.getElementById('tagId').value;
             var calibrationDate = document.getElementById('calibrationDate').value;
