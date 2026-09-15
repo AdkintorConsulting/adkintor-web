@@ -86,6 +86,10 @@
             font-size: 1.1rem;
         }
         
+        .section-header.warning {
+            background: #f57c00;
+        }
+        
         .section-header i {
             font-size: 1.2rem;
         }
@@ -95,12 +99,12 @@
         }
         
         /* Listas numeradas */
-        ol {
+        ol, ul {
             padding-left: 20px;
             margin: 0;
         }
         
-        ol li {
+        ol li, ul li {
             margin-bottom: 10px;
         }
         
@@ -177,9 +181,6 @@
             margin-top: 3px;
         }
         
-        /* Botones de acción (no imprimir) */
-
-        
         /* Footer del documento */
         .doc-footer {
             background: #f5f5f5;
@@ -197,10 +198,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -232,6 +229,12 @@
                 print-color-adjust: exact;
             }
             
+            .section-header.warning {
+                background: #f57c00 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box, .success-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -252,8 +255,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-   
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -372,6 +373,7 @@
                 </div>
                 <div class="section-body">
                     <ol>
+                        <li>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat)</li>
                         <li>Ask your supervisor</li>
                         <li>Or email <strong>support@adkintor.com</strong></li>
                     </ol>
@@ -423,6 +425,45 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="section">
+                <div class="section-header warning">
+                    <i class="fas fa-exclamation-triangle"></i> Troubleshooting
+                </div>
+                <div class="section-body">
+                    <table class="roles-table">
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't see a button or module</td>
+                            <td>Your role may not have permission. Contact your supervisor if you need access.</td>
+                        </tr>
+                        <tr>
+                            <td>The system is down</td>
+                            <td>Write everything on paper. Enter data when the system is back (within 24 hours).</td>
+                        </tr>
+                        <tr>
+                            <td>I forgot my password</td>
+                            <td>Click "Forgot Password?" on the login page, or ask your supervisor to reset it.</td>
+                        </tr>
+                        <tr>
+                            <td>My session expired</td>
+                            <td>Sessions last 8 hours. Log in again to continue working.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             
             <!-- NEED HELP? -->
             <div class="section">
@@ -430,7 +471,8 @@
                     <i class="fas fa-headset"></i> Need Help?
                 </div>
                 <div class="section-body">
-                    <p><strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
