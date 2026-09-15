@@ -140,7 +140,24 @@
             border: 1px solid #e0e0e0;
         }
         
-        /* Botones de acción */
+        /* Tabla de troubleshooting */
+        .troubleshooting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .troubleshooting-table th {
+            background: #f57c00;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .troubleshooting-table td {
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
         
         /* Footer */
         .doc-footer {
@@ -154,10 +171,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -189,6 +202,13 @@
                 print-color-adjust: exact;
             }
             
+            .troubleshooting-table th {
+                background: #f57c00 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -209,8 +229,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-    
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -406,9 +424,58 @@
                 </div>
                 <div class="faq-answer">
                     <ol>
+                        <li>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat)</li>
                         <li>Ask your supervisor</li>
                         <li>Or email <strong>support@adkintor.com</strong></li>
                     </ol>
+                </div>
+            </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="faq-item">
+                <div class="faq-question" style="background: #f57c00;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Troubleshooting
+                </div>
+                <div class="faq-answer">
+                    <table class="troubleshooting-table">
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>I can't create a WO</td>
+                            <td>Make sure you complete all 5 required fields: Requester, Priority, Area, Equipment, and Work Description.</td>
+                        </tr>
+                        <tr>
+                            <td>I don't know which equipment is failing</td>
+                            <td>Go to EAMS → PLANT LAYOUT to see the plant map. If the map is empty, ask your supervisor to upload it.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't see a module or button</td>
+                            <td>Your role has read-only access. If you need more permissions, contact your supervisor.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't approve or close a WO</td>
+                            <td>Only supervisors can approve and close WOs. Your role can only CREATE WOs.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't find the WO I reported</td>
+                            <td>Go to EAMS → WORK ORDER → SEARCH & REPORT. Search by WO number, date, or equipment.</td>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I forgot my password</td>
+                            <td>Contact your supervisor to reset it.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             
@@ -419,13 +486,15 @@
                     Need Help?
                 </div>
                 <div class="faq-answer">
-                    <p>Talk to your supervisor or email <strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Supervisor:</strong> Ask your supervisor for guidance</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
         
         <div class="doc-footer">
-            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+            <i class="fas fa-copyright"></i> 2026 ADKINTOR. All rights reserved.
         </div>
     </div>
 </body>
