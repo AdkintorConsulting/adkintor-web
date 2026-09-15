@@ -86,6 +86,10 @@
             font-size: 1.1rem;
         }
         
+        .section-header.warning {
+            background: #f57c00;
+        }
+        
         .section-header i {
             font-size: 1.2rem;
         }
@@ -198,8 +202,6 @@
             margin-top: 3px;
         }
         
-        /* Botones de acción */
-        
         /* Footer */
         .doc-footer {
             background: #f5f5f5;
@@ -212,10 +214,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -247,6 +245,12 @@
                 print-color-adjust: exact;
             }
             
+            .section-header.warning {
+                background: #f57c00 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box, .success-box, .danger-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -267,8 +271,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-    
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -490,6 +492,53 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="section">
+                <div class="section-header warning">
+                    <i class="fas fa-exclamation-triangle"></i> Troubleshooting
+                </div>
+                <div class="section-body">
+                    <table>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>I can't close a WO</td>
+                            <td>Make sure you entered start time, end time, and a work description (minimum 10 characters). The system will not let you close without hours.</td>
+                        </tr>
+                        <tr>
+                            <td>My start time is after my end time</td>
+                            <td>Correct the times. The system will not accept end time before start time.</td>
+                        </tr>
+                        <tr>
+                            <td>I used a part that is not in inventory</td>
+                            <td>Write it in the work description (WORK PERFORMED). Include name and quantity.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't find the WO in TECHNICAL REPORT</td>
+                            <td>Make sure the WO was approved by your supervisor. Only approved WOs appear in the list.</td>
+                        </tr>
+                        <tr>
+                            <td>I can't finish today</td>
+                            <td>Enter partial hours and select "STILL WORKING". The WO remains available.</td>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I forgot my password</td>
+                            <td>Contact your supervisor to reset it.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             
             <!-- NEED HELP? -->
             <div class="section">
@@ -497,7 +546,9 @@
                     <i class="fas fa-headset"></i> Need Help?
                 </div>
                 <div class="section-body">
-                    <p>Talk to your supervisor or email <strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Supervisor:</strong> Ask your supervisor for guidance</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
