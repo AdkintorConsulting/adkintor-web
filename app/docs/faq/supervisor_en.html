@@ -121,8 +121,24 @@
             border-radius: 0 8px 8px 0;
         }
         
-        /* Botones de acción */
-
+        /* Tabla de troubleshooting */
+        .troubleshooting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .troubleshooting-table th {
+            background: #f57c00;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .troubleshooting-table td {
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
         
         /* Footer */
         .doc-footer {
@@ -136,10 +152,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -171,6 +183,13 @@
                 print-color-adjust: exact;
             }
             
+            .troubleshooting-table th {
+                background: #f57c00 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -184,8 +203,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-    
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -373,9 +390,58 @@
                 </div>
                 <div class="faq-answer">
                     <ol>
+                        <li>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat)</li>
                         <li>Talk to your manager</li>
                         <li>Or email <strong>support@adkintor.com</strong></li>
                     </ol>
+                </div>
+            </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="faq-item">
+                <div class="faq-question" style="background: #f57c00;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Troubleshooting
+                </div>
+                <div class="faq-answer">
+                    <table class="troubleshooting-table">
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>I can't approve a WO</td>
+                            <td>Make sure you assigned a technician. The system requires a technician before approving.</td>
+                        </tr>
+                        <tr>
+                            <td>A technician left the company</td>
+                            <td>WOs cannot be reassigned. Create a new WO and close the old one as "not performed".</td>
+                        </tr>
+                        <tr>
+                            <td>The sweeper closed WOs automatically</td>
+                            <td>Check EAMS → PREVENTIVE → SWEEPER → Transaction Audit Trail. If it was a mistake, open a new WO with high priority.</td>
+                        </tr>
+                        <tr>
+                            <td>Preventive WOs are piling up</td>
+                            <td>Release only critical PMs (A and B). Move C-class to next month. If chronic, request more technicians.</td>
+                        </tr>
+                        <tr>
+                            <td>I locked the annual plan by mistake</td>
+                            <td>The plan cannot be unlocked. Contact support@adkintor.com for assistance.</td>
+                        </tr>
+                        <tr>
+                            <td>KPIs are in red</td>
+                            <td>Review FORESIGHT → KPI. Identify the area or equipment causing the issue. Talk to the team.</td>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             
@@ -386,13 +452,15 @@
                     Need Help?
                 </div>
                 <div class="faq-answer">
-                    <p>Talk to your manager or email <strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Manager:</strong> Talk to your manager for strategic decisions</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
         
         <div class="doc-footer">
-            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+            <i class="fas fa-copyright"></i> 2026 ADKINTOR. All rights reserved.
         </div>
     </div>
 </body>
