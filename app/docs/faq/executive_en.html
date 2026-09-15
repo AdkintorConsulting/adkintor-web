@@ -129,8 +129,24 @@
             border-radius: 0 8px 8px 0;
         }
         
-        /* Botones de acción */
-
+        /* Tabla de troubleshooting */
+        .troubleshooting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .troubleshooting-table th {
+            background: #f57c00;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .troubleshooting-table td {
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
         
         /* Footer */
         .doc-footer {
@@ -144,10 +160,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -179,6 +191,13 @@
                 print-color-adjust: exact;
             }
             
+            .troubleshooting-table th {
+                background: #f57c00 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box, .success-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -192,8 +211,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-    
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -362,7 +379,58 @@
                     What if I have a question not listed here?
                 </div>
                 <div class="faq-answer">
-                    <p>Email <strong>support@adkintor.com</strong></p>
+                    <ol>
+                        <li>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat)</li>
+                        <li>Or email <strong>support@adkintor.com</strong></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="faq-item">
+                <div class="faq-question" style="background: #f57c00;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Troubleshooting
+                </div>
+                <div class="faq-answer">
+                    <table class="troubleshooting-table">
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>I can't see the KPI dashboard</td>
+                            <td>Your role may not have access to CONSULTING, but you should have access to KPI. If not, contact your administrator.</td>
+                        </tr>
+                        <tr>
+                            <td>The KPI numbers don't match my expectations</td>
+                            <td>KPIs are calculated from EAMS data. If the data is incomplete, KPIs will be inaccurate. Talk to your supervisor.</td>
+                        </tr>
+                        <tr>
+                            <td>KPIs are in red</td>
+                            <td>Review FORESIGHT → KPI → Charts to see trends. Identify the area or equipment causing the issue. Discuss with your team.</td>
+                        </tr>
+                        <tr>
+                            <td>I need a report for a board meeting</td>
+                            <td>Go to FORESIGHT → KPI → EXPORT PDF. This generates a complete executive report.</td>
+                        </tr>
+                        <tr>
+                            <td>I want to compare with last year</td>
+                            <td>Go to FORESIGHT → KPI → Compare tab. Select "Same Month Last Year".</td>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I forgot my password</td>
+                            <td>Contact your system administrator to reset it.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             
@@ -373,13 +441,15 @@
                     Need Help?
                 </div>
                 <div class="faq-answer">
-                    <p>Email <strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Supervisor:</strong> Ask your Maintenance Supervisor for operational details</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
         
         <div class="doc-footer">
-            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+            <i class="fas fa-copyright"></i> 2026 ADKINTOR. All rights reserved.
         </div>
     </div>
 </body>
