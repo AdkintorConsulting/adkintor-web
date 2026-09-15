@@ -228,8 +228,6 @@
             margin-top: 3px;
         }
         
-        /* Botones de acción */
-        
         /* Footer */
         .doc-footer {
             background: #f5f5f5;
@@ -242,10 +240,6 @@
         
         /* Estilos de impresión */
         @media print {
-            .action-buttons {
-                display: none !important;
-            }
-            
             .doc-header {
                 background: white !important;
                 color: #1a237e !important;
@@ -277,6 +271,12 @@
                 print-color-adjust: exact;
             }
             
+            .section-header.warning {
+                background: #f57c00 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
             .info-box, .warning-box, .success-box, .danger-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -297,8 +297,6 @@
     </style>
 </head>
 <body>
-    <!-- Botones de acción -->
-    
     <!-- Contenido del documento -->
     <div class="doc-container">
         <div class="doc-header">
@@ -722,6 +720,53 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="section">
+                <div class="section-header warning">
+                    <i class="fas fa-exclamation-triangle"></i> Troubleshooting
+                </div>
+                <div class="section-body">
+                    <table>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>I can't approve a WO</td>
+                            <td>Make sure you assigned a technician. The system requires a technician before approving.</td>
+                        </tr>
+                        <tr>
+                            <td>A technician left the company</td>
+                            <td>WOs cannot be reassigned. Create a new WO and close the old one as "not performed".</td>
+                        </tr>
+                        <tr>
+                            <td>The sweeper closed WOs automatically</td>
+                            <td>Check EAMS → PREVENTIVE → SWEEPER → Transaction Audit Trail. If it was a mistake, open a new WO with high priority.</td>
+                        </tr>
+                        <tr>
+                            <td>Preventive WOs are piling up</td>
+                            <td>Release only critical PMs (A and B). Move C-class to next month. If chronic, request more technicians.</td>
+                        </tr>
+                        <tr>
+                            <td>I locked the annual plan by mistake</td>
+                            <td>The plan cannot be unlocked. Contact support@adkintor.com for assistance.</td>
+                        </tr>
+                        <tr>
+                            <td>KPIs are in red</td>
+                            <td>Review FORESIGHT → KPI. Identify the area or equipment causing the issue. Talk to the team.</td>
+                        </tr>
+                        <tr>
+                            <td>The system is slow</td>
+                            <td>Click the ADKINTOR logo to clear the cache, close other tabs, and use Chrome.</td>
+                        </tr>
+                        <tr>
+                            <td>I have a question not answered here</td>
+                            <td>Ask <strong>AdkintorBot</strong> (menu ☰ → Open Chat) or email <strong>support@adkintor.com</strong>.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             
             <!-- NEED HELP? -->
             <div class="section">
@@ -729,13 +774,15 @@
                     <i class="fas fa-headset"></i> Need Help?
                 </div>
                 <div class="section-body">
-                    <p>Talk to your manager or email <strong>support@adkintor.com</strong></p>
+                    <p><strong>AdkintorBot:</strong> Menu ☰ → Open Chat</p>
+                    <p><strong>Manager:</strong> Talk to your manager for strategic decisions</p>
+                    <p><strong>Email:</strong> support@adkintor.com</p>
                 </div>
             </div>
         </div>
         
         <div class="doc-footer">
-            <i class="fas fa-copyright"></i> 2024 ADKINTOR. All rights reserved.
+            <i class="fas fa-copyright"></i> 2026 ADKINTOR. All rights reserved.
         </div>
     </div>
 </body>
