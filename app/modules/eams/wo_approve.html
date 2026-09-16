@@ -1071,24 +1071,35 @@
             pmWOs = response.preventiveWOs || [];
             techniciansWithEmails = response.techniciansWithEmails || [];
             
-            var folioOptions = woData.map(function(w) { return w.folio + ' - ' + w.equipment; });
-            fillSelect('folioSelect', folioOptions, '-- Select Folio --');
+            // ✅ PRESERVAR el valor actual del dropdown woTypeSelect
+            var currentWoType = document.getElementById('woTypeSelect') ? document.getElementById('woTypeSelect').value : 'CORRECTIVE';
+            
+            // ✅ Repoblar dropdowns base
             fillSelect('techSelect', response.technicians || [], '-- Select Technician --');
             fillSelect('typeSelect', response.maintTypes || [], '-- Select Type --');
             fillSelect('apprSelect', response.approvers || [], '-- Select Approver --');
             fillSelect('smartSelect', response.smartComments || [], '-- Quick Fill --');
             
+            // ✅ Repoblar folioSelect según el tipo ACTUAL seleccionado
+            var folioOptions = [];
+            if (currentWoType === 'PREVENTIVE') {
+                folioOptions = pmWOs.map(function(pm) { return pm.folio + ' - ' + (pm.wo?.equipment || 'N/A'); });
+                fillSelect('folioSelect', folioOptions, '-- Select PM Folio --');
+            } else if (currentWoType === 'ON_HOLD') {
+                folioOptions = onHoldData.map(function(w) { return w.folio + ' - ' + w.equipment; });
+                fillSelect('folioSelect', folioOptions, '-- Select On Hold Folio --');
+            } else {
+                folioOptions = woData.map(function(w) { return w.folio + ' - ' + w.equipment; });
+                fillSelect('folioSelect', folioOptions, '-- Select Folio --');
+            }
+            
             // ✅ P-18 FIX: renderPMs() SIEMPRE debe ejecutarse para limpiar checkboxes obsoletos.
-            // El banner solo se muestra si hay PMs pendientes, pero el contenedor
-            // pmList debe refrescarse siempre (vacío si ya no quedan PMs).
             var pmBanner = document.getElementById('preventiveBanner');
             if (pmBanner) {
                 pmBanner.style.display = (pmWOs.length > 0) ? 'block' : 'none';
             }
             renderPMs();
             
-            // console.log('[WO_APPROVE] Data loaded');  // COMENTADO
-            // showToast('Data loaded: ' + woData.length + ' open work orders', 'success');  // ELIMINADO
             validateFields();
             hideLoading();
             
