@@ -977,8 +977,34 @@
                   yearSelect.appendChild(opt);
               }
               
+              // ✅ GUARDAR meses disponibles para el filtro
+              window._availableMonths = uniqueMonths;
+              
+              // ✅ SELECCIONAR EL MES ACTUAL POR DEFECTO
+              var today = new Date();
+              var currentMonth = today.getMonth() + 1;
+              var currentYear = today.getFullYear();
+              
+              // Buscar si el año actual está en la lista
+              var currentYearStr = String(currentYear);
+              if (years.indexOf(currentYearStr) !== -1) {
+                  yearSelect.value = currentYearStr;
+              }
+              
               // ✅ Filtrar meses según año seleccionado
               updateMonthFilter();
+              
+              // ✅ SELECCIONAR EL MES ACTUAL EN EL SELECT DE MESES
+              var monthSelect = document.getElementById('monthSelect');
+              if (monthSelect) {
+                  var monthOptions = monthSelect.querySelectorAll('option');
+                  for (var m = 0; m < monthOptions.length; m++) {
+                      if (parseInt(monthOptions[m].value) === currentMonth) {
+                          monthSelect.value = currentMonth;
+                          break;
+                      }
+                  }
+              }
               
               // ✅ Evento para actualizar meses al cambiar año
               yearSelect.addEventListener('change', function() {
