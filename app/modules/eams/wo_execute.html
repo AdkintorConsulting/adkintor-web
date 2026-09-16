@@ -994,7 +994,11 @@
         <!-- Wizard Header -->
         <div class="wizard-header">
             <h3 id="stepHeader">Step 1: Context Selection</h3>
-            <div class="header-buttons">
+            <div class="header-buttons" style="position: relative;">
+                <!-- ✅ NUEVO: Indicador de WO activa (centrado a la izquierda) -->
+                <div id="activeWoBadge" style="display: none; position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: rgba(0,229,255,0.15); color: #00e5ff; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: nowrap;">
+                    <i class="fas fa-clipboard-list"></i> <span id="activeWoFolio">--</span>
+                </div>
                 <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> Back</button>
                 <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step <i class="fas fa-arrow-right"></i></button>
             </div>
@@ -1424,6 +1428,9 @@
         if (nextBtn) nextBtn.style.display = currentStep === 5 ? 'none' : 'block';
         document.getElementById('progressBar').style.width = (currentStep * 20) + '%';
         
+        // ✅ ACTUALIZAR indicador de WO activa (oculto en Step 1)
+        updateActiveWoBadge();
+        
         if (currentStep === 2) {
             var woType = document.getElementById('woSelect').getAttribute('data-wo-type');
             if (woType !== 'PREVENTIVE') {
@@ -1440,6 +1447,21 @@
         validateStep();
     }
 
+    // ✅ NUEVO: Función para actualizar el indicador de WO activa
+    function updateActiveWoBadge() {
+        var badge = document.getElementById('activeWoBadge');
+        var folioSpan = document.getElementById('activeWoFolio');
+        if (!badge || !folioSpan) return;
+        
+        // Mostrar solo en Step 2+ y si hay WO seleccionada
+        if (currentStep >= 2 && DB.selectedWO && DB.selectedWO.folio) {
+            folioSpan.innerText = DB.selectedWO.folio;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    
     function validateCurrentStep() {
         switch(currentStep) {
             case 1:
@@ -2167,6 +2189,10 @@
             document.getElementById('btnNextHeader').style.display = 'block';
             document.getElementById('progressBar').style.width = '20%';
             
+            // ✅ Ocultar badge al refrescar
+            var badge = document.getElementById('activeWoBadge');
+            if (badge) badge.style.display = 'none';
+            
             hideLoading();
             showToast('✅ Work Orders refreshed successfully', 'success');
             
@@ -2185,6 +2211,12 @@
         DB.cachedTasks = [];
         resetStep5State();
         resetCart();
+        
+        // ✅ LIMPIAR el contenedor de PM tasks de Step 1 SIEMPRE al cambiar de WO
+        var pmTasksContainer = document.getElementById('pmTasksStep1');
+        if (pmTasksContainer) {
+            pmTasksContainer.innerHTML = '';
+        }
         
         // Resetear búsqueda de repuestos
         var partSearch = document.getElementById('partSearch');
@@ -2239,6 +2271,13 @@
                 }
                 if (assetLabel) assetLabel.innerHTML = 'Specific Component Intervened <span class="required">*</span>';
                 if (assetHelpText) assetHelpText.style.display = 'block';
+                
+                // ✅ LIMPIAR el contenedor de PM tasks cuando NO es PREVENTIVE
+                var pmTasksContainer = document.getElementById('pmTasksStep1');
+                if (pmTasksContainer) {
+                    pmTasksContainer.innerHTML = '';
+                }
+                
                 // ✅ LLAMAR A refreshAssets AQUÍ para cargar componentes
                 refreshAssets();
             }
@@ -2309,8 +2348,10 @@
             }
             
             validateStep();
+            updateActiveWoBadge();  // ✅ Actualizar badge al cambiar WO
         } else {
             document.getElementById('woInfo').style.display = 'none';
+            updateActiveWoBadge();  // ✅ Ocultar badge si no hay WO
         }
     }
 
@@ -3041,6 +3082,10 @@
           DB.selectedWO = null;
           DB.cachedTasks = [];
           windowPmTasksLoadAttempted = false;
+          
+          // ✅ Ocultar badge al resetear
+          var badge = document.getElementById('activeWoBadge');
+          if (badge) badge.style.display = 'none';
           
           showToast('Ready for next work order', 'success');
           
