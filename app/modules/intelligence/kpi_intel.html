@@ -1027,12 +1027,23 @@
   function updateMonthFilter() {
       var yearSelect = document.getElementById('yearSelect');
       var monthSelect = document.getElementById('monthSelect');
-      var selectedYear = parseInt(yearSelect.value);
       
-      // Obtener meses disponibles para el año seleccionado
+      if (!yearSelect || !monthSelect) return;
+      
+      var selectedYear = String(yearSelect.value); // ✅ Convertir a STRING
       var availableMonths = window._availableMonths || {};
-      var months = availableMonths[selectedYear] || [1,2,3,4,5,6,7,8,9,10,11,12];
       
+      // ✅ Convertir claves a string para búsqueda consistente
+      var months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // Fallback
+      
+      if (availableMonths[selectedYear]) {
+          // ✅ Extraer las claves del objeto y convertir a números
+          var monthKeys = Object.keys(availableMonths[selectedYear]);
+          months = monthKeys.map(function(m) { return parseInt(m); });
+          months.sort(function(a, b) { return a - b; }); // Ordenar ascendente
+      }
+      
+      // ✅ Reconstruir el select
       monthSelect.innerHTML = '';
       var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
       
@@ -1043,7 +1054,21 @@
           opt.textContent = monthNames[m - 1];
           monthSelect.appendChild(opt);
       }
-  }  
+      
+      // ✅ SELECCIONAR EL MES ACTUAL SI ES EL AÑO ACTUAL
+      var today = new Date();
+      var currentMonth = today.getMonth() + 1;
+      var currentYear = today.getFullYear();
+      
+      if (parseInt(selectedYear) === currentYear) {
+          monthSelect.value = currentMonth;
+      } else {
+          // Seleccionar el último mes disponible
+          if (months.length > 0) {
+              monthSelect.value = months[months.length - 1];
+          }
+      }
+  } 
   
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
