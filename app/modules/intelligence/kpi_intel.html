@@ -1606,14 +1606,27 @@
     // ✅ BACKLOG
     function renderBacklogBar(label, value, color, max) {
       var percent = max > 0 ? (value / max * 100) : 0;
-      var minWidth = 40;
       var width = Math.max(percent, (value > 0 ? 10 : 0));
       var displayText = label + ': ' + value;
       
-      return '<div class="backlog-bar-container" style="min-height: 28px;">' +
-        '<div class="backlog-bar" style="width: ' + width + '%; min-width: ' + minWidth + 'px; background: ' + color + '; padding: 0 10px; white-space: nowrap; font-size: 12px;">' +
-        displayText +
-        '</div></div>';
+      // ✅ Si la barra es muy pequeña, mostrar texto FUERA
+      var showInside = width >= 20;
+      
+      if (showInside) {
+        // ✅ Texto DENTRO de la barra (color oscuro)
+        return '<div class="backlog-bar-container" style="min-height: 28px;">' +
+          '<div class="backlog-bar" style="width: ' + width + '%; min-width: 40px; background: ' + color + '; padding: 0 10px; white-space: nowrap; font-size: 12px; color: var(--bg-primary); font-weight: 600;">' +
+          displayText +
+          '</div></div>';
+      } else {
+        // ✅ Texto FUERA de la barra (color claro, a la derecha)
+        return '<div class="backlog-bar-container" style="min-height: 28px; display: flex; align-items: center; gap: 8px;">' +
+          '<div class="backlog-bar" style="width: ' + width + '%; min-width: 40px; background: ' + color + '; padding: 0; font-size: 12px;">' +
+          '</div>' +
+          '<span style="color: var(--text-primary); font-size: 12px; font-weight: 600; white-space: nowrap;">' +
+          displayText +
+          '</span></div>';
+      }
     }
 
     html += '<div class="adk-card"><div class="card-title"><i class="fas fa-clock"></i> BACKLOG (Open Work Orders)</div>' +
