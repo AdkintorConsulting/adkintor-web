@@ -1475,7 +1475,7 @@
                 '</div>' +
                 // CUARTA FILA: Received | Status
                 '<div class="tracker-row" style="margin-top:4px;">' +
-                    '<span style="font-size:0.7rem; font-weight:500; color:#475569;">📦 Rec: ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0) + '</span>' +
+                    '<span style="font-size:0.7rem; font-weight:500; color:#475569;">' + ((item.status || '').toUpperCase() === 'CLOSED' ? '' : '📦 Rec: ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0)) + '</span>' +
                     '<span class="tracker-status ' + (item.status || '') + '">' + escapeHtml(item.status || 'N/A') + '</span>' +
                 '</div>' +
             '</div>';
