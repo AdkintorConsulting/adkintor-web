@@ -2325,6 +2325,19 @@
             if (qtyInput) {
                 var qty = parseFloat(qtyInput.value) || 0;
                 if (qty > 0) {
+                    // ✅ VALIDAR que no exceda la pendiente
+                    var item = selectedPOFull.items?.[i];
+                    if (item) {
+                        var ordered = item.qtyOrdered || 0;
+                        var received = item.qtyReceived || 0;
+                        var pending = ordered - received;
+                        
+                        if (qty > pending) {
+                            showToast('Invalid quantity for ' + (item.sku || 'item') + '. You are trying to receive ' + qty + ' but only ' + pending + ' unit(s) are pending. Please enter a quantity within the pending amount.', 'error');
+                            return;
+                        }
+                    }
+                    
                     items.push({
                         sku: selectedPOFull.items?.[i]?.sku || 'SERVICE',
                         description: selectedPOFull.items?.[i]?.description || '',
