@@ -2547,7 +2547,8 @@
                     });
                 }
                 validateStep();
-                if (assetList.length > 0) {
+                // ✅ Solo mostrar toast si estamos en el Step 2
+                if (assetList.length > 0 && currentStep === 2) {
                     showToast('Components loaded: ' + assetList.length + ' found', 'success');
                 }
             } catch (error) {
