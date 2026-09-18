@@ -701,6 +701,7 @@
                                     <label>Equipment Name</label>
                                     <input id="v-name" name="name" required oninput="sanitizeFieldLive(this)">
                                     <div class="field-note" style="font-size: 0.6rem; color: #6c757d; margin-top: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Special characters &lt; &gt; { } [ ] \ are not allowed</div>
+                                    <div id="v-name_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                                 </div>
                                 <div class="field-group required-field">
                                     <label>Asset Type</label>
@@ -723,14 +724,17 @@
                                 <div class="field-group">
                                     <label>Manufacturer</label>
                                     <input id="v-man" name="manufacturer" oninput="sanitizeFieldLive(this)">
+                                    <div id="v-man_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                                 </div>
                                 <div class="field-group">
                                     <label>Model</label>
                                     <input id="v-model" name="model" oninput="sanitizeFieldLive(this)">
+                                    <div id="v-model_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                                 </div>
                                 <div class="field-group">
                                     <label>Serial Number</label>
                                     <input id="v-serial" name="serial" oninput="sanitizeFieldLive(this)">
+                                    <div id="v-serial_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                                 </div>
                                 <div class="field-group">
                                     <label>Installation Year</label>
@@ -917,6 +921,32 @@
         return result.data;
     }
     
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
+    }
+
     function sanitizeInput(str) {
         if (!str) return '';
         return String(str).replace(/[<>{}[\]\\]/g, '').trim();
@@ -1369,6 +1399,52 @@
             typeSelect.removeEventListener('change', applyTypeLogic);
             typeSelect.addEventListener('change', function() {
                 applyTypeLogic();
+                markDirty();
+            });
+        }
+
+        // ✅ NUEVO: Listeners para validar caracteres especiales
+        // (se añaden cada vez que se renderiza el editor, así que primero removemos los anteriores si existen)
+        var nameField = document.getElementById('v-name');
+        if (nameField) {
+            var newNameField = nameField.cloneNode(true);
+            nameField.parentNode.replaceChild(newNameField, nameField);
+            newNameField.addEventListener('input', function() {
+                sanitizeFieldLive(this);
+                checkSpecialChars(this, 'v-name_Warning');
+                markDirty();
+            });
+        }
+        
+        var manField = document.getElementById('v-man');
+        if (manField) {
+            var newManField = manField.cloneNode(true);
+            manField.parentNode.replaceChild(newManField, manField);
+            newManField.addEventListener('input', function() {
+                sanitizeFieldLive(this);
+                checkSpecialChars(this, 'v-man_Warning');
+                markDirty();
+            });
+        }
+        
+        var modelField = document.getElementById('v-model');
+        if (modelField) {
+            var newModelField = modelField.cloneNode(true);
+            modelField.parentNode.replaceChild(newModelField, modelField);
+            newModelField.addEventListener('input', function() {
+                sanitizeFieldLive(this);
+                checkSpecialChars(this, 'v-model_Warning');
+                markDirty();
+            });
+        }
+        
+        var serialField = document.getElementById('v-serial');
+        if (serialField) {
+            var newSerialField = serialField.cloneNode(true);
+            serialField.parentNode.replaceChild(newSerialField, serialField);
+            newSerialField.addEventListener('input', function() {
+                sanitizeFieldLive(this);
+                checkSpecialChars(this, 'v-serial_Warning');
                 markDirty();
             });
         }
