@@ -463,6 +463,7 @@
                 <label>WORK DESCRIPTION <span class="required">*</span></label>
                 <textarea id="descriptionText" rows="5" data-required="true"
                           placeholder="Describe the issue, failure, or maintenance required in detail..."></textarea>
+                <div id="descriptionWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
             </div>
 
             <div class="button-group">
@@ -606,6 +607,33 @@
             throw new Error(result.error || 'Unknown error');
         }
         return result.data;
+    }
+
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            // Detectar caracteres únicos
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
     }
 
     function sanitizeInput(str) {
@@ -1003,7 +1031,12 @@
                 onFieldChange();
             });
         }
-        if (elements.description) elements.description.addEventListener('input', onFieldChange);
+        if (elements.description) {
+            elements.description.addEventListener('input', function() {
+                checkSpecialChars(this, 'descriptionWarning');
+                onFieldChange();
+            });
+        }
         if (elements.submitBtn) elements.submitBtn.addEventListener('click', submitWorkOrder);
         
         var cancelBtn = document.getElementById('cancelBtn');
