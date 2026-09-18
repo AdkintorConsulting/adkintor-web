@@ -1220,13 +1220,22 @@
     showLoading('Loading PVT data...');
     try {
       await loadCoverage();
-      // Recargar orphans y alerts en segundo plano
+      
+      // ✅ Resetear caché para forzar recarga bajo demanda
       cachedData.orphansLoaded = false;
       cachedData.alertsLoaded = false;
-      setTimeout(function() {
-        loadOrphans();
-        loadAlerts();
-      }, 300);
+      
+      // ✅ Recargar el tab actual si NO es el de Coverage
+      var activeTab = document.querySelector('.tab-btn.active');
+      if (activeTab) {
+        var tabId = activeTab.getAttribute('data-tab');
+        if (tabId === 'orphans') {
+          await loadOrphans();
+        } else if (tabId === 'alerts') {
+          await loadAlerts();
+        }
+      }
+      
       hideLoading();
       showToast('Data updated successfully', 'success');
     } catch(err) {
@@ -1601,10 +1610,8 @@
           hideLoading();
           // showToast('PVT Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
-          // ✅ Carga en segundo plano: Orphans (para que estén listos)
-          setTimeout(function() {
-              loadOrphans();
-          }, 500);
+          // ✅ Orphans y Alerts se cargan solo cuando el usuario hace click en sus tabs
+          // (no cargar en segundo plano para ahorrar recursos)
           
       } catch(err) {
           hideLoading();
