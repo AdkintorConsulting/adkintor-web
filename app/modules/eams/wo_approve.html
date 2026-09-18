@@ -644,6 +644,7 @@
             <div class="form-group">
                 <label>Observations <span class="required" id="obsRequired" style="display:none;">*</span></label>
                 <textarea id="comments" rows="3" placeholder="Required for rejection..." oninput="validateFields()"></textarea>
+                <div id="commentsWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
             </div>
 
             <div class="button-group">
@@ -796,6 +797,32 @@
     // ============================================
     // UTILITY FUNCTIONS
     // ============================================
+
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
+    }
 
     function sanitizeInput(str) {
         if (!str) return '';
@@ -1344,6 +1371,7 @@
                 if (smartSelect && this.value !== smartSelect.value) {
                     smartSelect.value = '';
                 }
+                checkSpecialChars(this, 'commentsWarning');  // ✅ AÑADIDO
                 validateFields();
             });
         }
