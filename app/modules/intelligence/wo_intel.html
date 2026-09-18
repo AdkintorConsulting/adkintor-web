@@ -1112,13 +1112,25 @@
       await logForesight('WO', 'REFRESH_DATA', 'User manually refreshed dashboard data');
       
       showLoading('Refreshing data...');
-      //allDataLoaded = { priorities: false, users: false, workload: false, alerts: false };
       
+      // ✅ Resetear caché para forzar recarga
+      cachedData.users = null;
+      cachedData.alerts = null;
+      
+      // ✅ Siempre recargar Priorities
       await loadPriorities();
-      await loadUsers();
-      await loadAlerts();
       
-      // ✅ FALTA ESTO:
+      // ✅ Recargar solo el tab actual si NO es Priorities
+      var activeTab = document.querySelector('.tab-btn.active');
+      if (activeTab) {
+          var tabId = activeTab.getAttribute('data-tab');
+          if (tabId === 'mytasks') {
+              await loadUsers();
+          } else if (tabId === 'alerts') {
+              await loadAlerts();
+          }
+      }
+      
       hideLoading();
       showToast('Data refreshed successfully', 'success');
   }
@@ -1484,10 +1496,8 @@
           hideLoading();
           // showToast('WO Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
-          // ✅ Carga en segundo plano: Users (para que estén listos cuando se necesiten)
-          setTimeout(function() {
-              loadUsers();
-          }, 500);
+          // ✅ Users y Alerts se cargan solo cuando el usuario hace click en sus tabs
+          // (no cargar en segundo plano para ahorrar recursos)
           
       } catch(err) {
           hideLoading();
