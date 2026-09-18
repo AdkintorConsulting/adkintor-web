@@ -412,6 +412,7 @@
                     <label>Asset Name</label>
                     <input type="text" id="name" name="name" placeholder="e.g. Centrifugal Pump P-101" required oninput="sanitizeFieldLive(this)">
                     <div class="field-note">Special characters &lt; &gt; { } [ ] \ are not allowed</div>
+                    <div id="name_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
             </div>
 
@@ -433,18 +434,21 @@
             <div class="grid-2">
                 <div class="field-group">
                     <label>Manufacturer</label>
-                    <input type="text" name="mfr" class="lockable" placeholder="e.g. Siemens" oninput="sanitizeFieldLive(this)">
+                    <input type="text" name="mfr" id="mfr" class="lockable" placeholder="e.g. Siemens" oninput="sanitizeFieldLive(this)">
+                    <div id="mfr_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
                 <div class="field-group">
                     <label>Model</label>
-                    <input type="text" name="model" class="lockable" placeholder="e.g. P-1000" oninput="sanitizeFieldLive(this)">
+                    <input type="text" name="model" id="model" class="lockable" placeholder="e.g. P-1000" oninput="sanitizeFieldLive(this)">
+                    <div id="model_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="field-group">
                     <label>Serial Number</label>
-                    <input type="text" name="serial" class="lockable" placeholder="e.g. SN-12345" oninput="sanitizeFieldLive(this)">
+                    <input type="text" name="serial" id="serial" class="lockable" placeholder="e.g. SN-12345" oninput="sanitizeFieldLive(this)">
+                    <div id="serial_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
                 <div class="field-group">
                     <label>Year of Install</label>
@@ -599,6 +603,32 @@
             throw new Error(result.error || 'Unknown error');
         }
         return result.data;
+    }
+
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
     }
 
     function sanitizeInput(str) {
@@ -1068,6 +1098,35 @@
                 updateFieldStates();
                 hideLoading();
                 // showMessage('Add Asset loaded successfully ✅', false);  // ELIMINADO (innecesario)
+                
+                // ✅ NUEVO: Listeners para validar caracteres especiales
+                var nameField = document.getElementById('name');
+                if (nameField) {
+                    nameField.addEventListener('input', function() {
+                        checkSpecialChars(this, 'name_Warning');
+                    });
+                }
+                
+                var mfrField = document.getElementById('mfr');
+                if (mfrField) {
+                    mfrField.addEventListener('input', function() {
+                        checkSpecialChars(this, 'mfr_Warning');
+                    });
+                }
+                
+                var modelField = document.getElementById('model');
+                if (modelField) {
+                    modelField.addEventListener('input', function() {
+                        checkSpecialChars(this, 'model_Warning');
+                    });
+                }
+                
+                var serialField = document.getElementById('serial');
+                if (serialField) {
+                    serialField.addEventListener('input', function() {
+                        checkSpecialChars(this, 'serial_Warning');
+                    });
+                }
             }, 300);
         } else {
             showMessage('API URL not configured. Please log in again.', true);
