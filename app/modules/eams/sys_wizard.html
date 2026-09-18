@@ -851,6 +851,7 @@
                 <div>
                     <div class="editor-title" id="editorTitle">Edit Entity</div>
                     <div class="editor-warning" id="editorWarning"></div>
+                    <div id="editorWarningSpecial" style="display:none;"></div>
                 </div>
                 <div id="editorButtons">
                     <button class="btn-primary" id="modifyBtn" style="display:none;"><i class="fas fa-edit"></i> MODIFY</button>
@@ -997,6 +998,65 @@
         }
     }
     
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto (delegación)
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+            warningEl.style.background = '#fff3cd';
+            warningEl.style.padding = '8px 12px';
+            warningEl.style.borderLeft = '3px solid #f59e0b';
+            warningEl.style.borderRadius = '4px';
+            warningEl.style.marginTop = '6px';
+            warningEl.style.fontSize = '11px';
+            warningEl.style.color = '#856404';
+        } else {
+            warningEl.style.display = 'none';
+        }
+    }
+
+    // ✅ Delegación de eventos: un solo listener para toda la tabla
+    function setupSpecialCharsDelegation() {
+        var wrapper = document.getElementById('tableWrapper');
+        if (!wrapper) return;
+        
+        // ✅ Marcar para no duplicar listeners
+        if (wrapper.dataset.specialCharsBound === 'true') return;
+        wrapper.dataset.specialCharsBound = 'true';
+        
+        wrapper.addEventListener('input', function(e) {
+            var target = e.target;
+            if (!target || target.tagName !== 'INPUT') return;
+            
+            // ✅ SOLO aplicar a inputs de texto libre (excluir number, email, checkbox, etc.)
+            var type = (target.type || 'text').toLowerCase();
+            if (type !== 'text') return;
+            
+            // ✅ Excluir inputs con validaciones específicas (email, currency_code)
+            // Los inputs de email tienen type="email" → ya excluidos arriba
+            // Los inputs de currency_code tienen onchange con toUpperCase
+            if (target.getAttribute('placeholder') === 'USD') return;
+            
+            checkSpecialChars(target, 'editorWarningSpecial');
+        });
+    }
+
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -1129,6 +1189,12 @@
         
         updateBreadcrumbs(step);
         currentStep = step;
+        
+        // ✅ NUEVO: Ocultar warning de caracteres especiales al navegar
+        if (step === 1 || step === 2) {
+            var specialWarn = document.getElementById('editorWarningSpecial');
+            if (specialWarn) specialWarn.style.display = 'none';
+        }
     }
     
     // ============================================
@@ -1145,6 +1211,12 @@
             if (response.success) {
                 moduleData = response;
                 renderEntities();
+                // ✅ NUEVO: Resetear flag para asegurar que la delegación siga activa
+                var wrapper = document.getElementById('tableWrapper');
+                if (wrapper) {
+                    wrapper.dataset.specialCharsBound = 'false';
+                    setupSpecialCharsDelegation();
+                }
                 hideLoading();
                 showToast('Module ' + module + ' loaded successfully ✅', 'success');
                 goToStep(2);
@@ -1269,6 +1341,10 @@
             warningHtml = '💰 Use 3-letter currency codes: CAD, USD, EUR, MXN, GBP';
         }
         document.getElementById('editorWarning').innerHTML = warningHtml;
+        
+        // ✅ NUEVO: Ocultar warning de caracteres especiales al cambiar de entidad
+        var specialWarn = document.getElementById('editorWarningSpecial');
+        if (specialWarn) specialWarn.style.display = 'none';
         
         const modifyBtn = document.getElementById('modifyBtn');
         const addBtn = document.getElementById('addRowBtn');
@@ -2059,6 +2135,7 @@
         showLoading('Loading Universal Configurator...');
         loadUser();
         loadApiUrlAndUser();
+        setupSpecialCharsDelegation();  // ✅ NUEVO: Activar delegación de caracteres especiales
         goToStep(1);
         hideLoading();
         // showToast('Universal Configurator loaded successfully ✅', 'success');  // ELIMINADO
