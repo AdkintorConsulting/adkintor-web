@@ -1063,23 +1063,7 @@
           hideLoading();
           // showToast('Inventory Foresight loaded successfully ✅', 'success');  // ELIMINADO
           
-          // ✅ Cargar Alerts en segundo plano
-          setTimeout(async function() {
-              try {
-                  var alertsData = await callApi('STK_getAlertsData', []);
-                  if (alertsData && !alertsData.error) {
-                      currentData.alerts = alertsData;
-                      cachedData.alertsData = alertsData;
-                      cachedData.alertsLoaded = true;
-                      renderSummaryCards(currentData);  // ← ACTUALIZAR TARJETAS
-                      if (document.querySelector('.tab-btn[data-tab="alerts"]').classList.contains('active')) {
-                          renderAlertsTab(alertsData);
-                      }
-                  }
-              } catch(e) {
-                  // console.warn('[STK] Error loading alerts in background:', e);  // COMENTADO
-              }
-          }, 300);
+          // ✅ Cargar Alerts en segundo plano eiminado, solo se deja bajo demanda
           
           await logForesight('STK', 'DATA_LOADED', 'Total SKUs: ' + (summary.totalSKUs || 0) + ', Pending POs: ' + (pendingData?.length || 0));
       } catch (error) {
