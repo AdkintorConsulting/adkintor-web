@@ -735,7 +735,7 @@
         <div id="optimize-tab" class="tab-pane">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
                 <button id="printOptimizeBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                <button id="refreshBtnOptimize" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
             </div>
             <div class="card-container">
                 <div class="card-header">📊 Stock Optimization Suggestions</div>
@@ -1517,10 +1517,15 @@
       
       // Setup buttons
       var refreshBtn = document.getElementById('refreshBtn');
+      var refreshBtnOptimize = document.getElementById('refreshBtnOptimize');
       var printBtn = document.getElementById('printBtn');
       
       if (refreshBtn) {
         refreshBtn.addEventListener('click', function() { refreshAllData(); });
+      }
+      
+      if (refreshBtnOptimize) {
+        refreshBtnOptimize.addEventListener('click', function() { refreshAllData(); });
       }
       
       // Botón Print Pending POs (Tab 1)
