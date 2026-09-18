@@ -1299,8 +1299,8 @@
               currentData = kpiData;
               renderKPITab(kpiData);
               
-              // ✅ Cargar datos de otros tabs en segundo plano
-              await loadBackgroundData(year, month);
+              // ✅ Los demás tabs se cargan bajo demanda al hacer click
+              // (no cargar en segundo plano para ahorrar recursos)
               
               // ✅ Actualizar visibilidad de tabs DESPUÉS de cargar
               updateTabVisibility();
@@ -1321,55 +1321,8 @@
       }
   }
 
-  // ✅ NUEVA FUNCIÓN: Carga otros tabs en segundo plano
-  async function loadBackgroundData(year, month) {
-      try {
-          // ✅ Cargar Charts
-          var chartsData = await callApi('KPI_getCharts', [year, month]);
-          if (chartsData && chartsData.success !== false) {
-              if (!currentData) currentData = {};
-              currentData.trends = chartsData.trends || { months: [], availability: [], pmCompliance: [], mtbf: [], mttr: [], actualSpend: [], budgetSpend: [], correctiveTrend: [], preventiveTrend: [], otherTrend: [] };
-              currentData.woDistribution = chartsData.woDistribution || { corrective: 0, preventive: 0, opService: 0, generalService: 0, others: 0 };
-          }
-          
-          // ✅ Cargar Financial
-          var financialData = await callApi('KPI_getFinancial', [year, month]);
-          if (financialData && financialData.success !== false) {
-              if (!currentData) currentData = {};
-              currentData.financial = financialData.financial || { budget: 0, actual: 0, variance: 0, variancePercent: 0, areas: [] };
-              currentData.topAssetsByCost = financialData.topAssetsByCost || [];
-          }
-          
-          // ✅ Cargar Compare
-          var compareType = document.getElementById('compareSelect').value;
-          var compareData = await callApi('KPI_getCompare', [year, month, compareType]);
-          if (compareData && compareData.success !== false) {
-              if (!currentData) currentData = {};
-              currentData.compareData = compareData;
-          }
-          
-          // ✅ Renderizar tab activo si ya tiene datos
-          // ✅ Renderizar tab activo si ya tiene datos
-          var activeTab = document.querySelector('.tab.active');
-          if (activeTab) {
-              var tabId = activeTab.dataset.tab;
-              //console.log('[KPI] Renderizando tab activo:', tabId);  // ← LOG PARA DEBUG
-              if (tabId === 'charts' && currentData) {
-                  renderChartsTab(currentData);
-              } else if (tabId === 'financial' && currentData) {
-                  renderFinancialTab(currentData);
-              } else if (tabId === 'compare' && currentData) {
-                  renderCompareTab(currentData);
-              }
-          } else {
-              // ✅ Si no hay tab activo, renderizar KPIs por defecto
-              //console.log('[KPI] No hay tab activo, renderizando KPIs');
-          }
-          
-      } catch (bgError) {
-          //console.warn('[KPI] Background load error:', bgError.message);
-      }
-  }
+  // ✅ FUNCIÓN loadBackgroundData ELIMINADA
+  // Los tabs 2, 3 y 4 se cargan bajo demanda mediante loadTabData(tabId)
   
   async function loadCompareData() {
     var month = parseInt(document.getElementById('monthSelect').value);
