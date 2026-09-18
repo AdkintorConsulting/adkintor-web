@@ -817,6 +817,7 @@
                     <div class="full-width">
                         <label class="field-label">Description *</label>
                         <input type="text" id="skuDescription" required autocomplete="off">
+                        <div id="skuDescription_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
                         <label class="field-label">Category</label>
@@ -834,10 +835,12 @@
                     <div>
                         <label class="field-label">Manufacturer</label>
                         <input type="text" id="skuManufacturer">
+                        <div id="skuManufacturer_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
                         <label class="field-label">Model / Part #</label>
                         <input type="text" id="skuModel">
+                        <div id="skuModel_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
                         <label class="field-label">Unit Price</label>
@@ -859,6 +862,7 @@
                         <label class="field-label">Vendor Name</label>
                         <input type="text" id="skuVendor" placeholder="Type vendor name (min 3 chars)" autocomplete="off">
                         <div id="vendorSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+                        <div id="skuVendor_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1020,6 +1024,32 @@
         const result = await response.json();
         if (!result.success) throw new Error(result.error || 'API call failed');
         return result.data;
+    }
+
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
     }
 
     function escapeHtml(str) {
@@ -1294,6 +1324,12 @@
         document.getElementById('skuCurrency').value = 'CAD';
         document.getElementById('skuMinStock').value = '';
         document.getElementById('skuVendor').value = '';
+        // ✅ Limpiar warnings al abrir modal
+        var warns = ['skuDescription_Warning', 'skuManufacturer_Warning', 'skuModel_Warning', 'skuVendor_Warning'];
+        for (var i = 0; i < warns.length; i++) {
+            var w = document.getElementById(warns[i]);
+            if (w) w.style.display = 'none';
+        }
         document.getElementById('skuModal').classList.add('active');
     }
 
@@ -1333,6 +1369,12 @@
             for (var j = 0; j < sel.options.length; j++) {
                 if (sel.options[j].value === item.Unit) { sel.selectedIndex = j; break; }
             }
+        }
+        // ✅ Limpiar warnings al abrir modal
+        var warns = ['skuDescription_Warning', 'skuManufacturer_Warning', 'skuModel_Warning', 'skuVendor_Warning'];
+        for (var k = 0; k < warns.length; k++) {
+            var w = document.getElementById(warns[k]);
+            if (w) w.style.display = 'none';
         }
         document.getElementById('skuModal').classList.add('active');
     }
@@ -1644,6 +1686,28 @@
     }    
 
     // ============================================
+    // ✅ NUEVO: Listeners para validar caracteres especiales
+    // ============================================
+    function setupSpecialCharsListeners() {
+        var fields = [
+            { id: 'skuDescription', warning: 'skuDescription_Warning' },
+            { id: 'skuManufacturer', warning: 'skuManufacturer_Warning' },
+            { id: 'skuModel', warning: 'skuModel_Warning' },
+            { id: 'skuVendor', warning: 'skuVendor_Warning' }
+        ];
+        
+        for (var i = 0; i < fields.length; i++) {
+            (function(fieldCfg) {
+                var el = document.getElementById(fieldCfg.id);
+                if (!el) return;
+                el.addEventListener('input', function() {
+                    checkSpecialChars(this, fieldCfg.warning);
+                });
+            })(fields[i]);
+        }
+    }
+
+    // ============================================
     // MAIN INIT
     // ============================================
     async function init() {
@@ -1687,6 +1751,7 @@
             await loadCurrencies();
             setupVendorSuggestions(); // ✅ NUEVO - Sugerencias al tercer caracter
             setupAssetSuggestions();  // ✅ NUEVO: Sugerencias para Asset Linkage
+            setupSpecialCharsListeners();  // ✅ NUEVO: Warnings de caracteres especiales
             await refreshCatalog(false);
             
             // console.log('[STK] Connected');  // COMENTADO
