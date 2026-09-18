@@ -912,6 +912,13 @@
   const PROXY_URL = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
   let EAMS_API_URL = null;
   
+  // ✅ CACHÉ DE TABS (para evitar recargas innecesarias)
+  var tabCache = {
+    dashboard: false,
+    alerts: false,
+    trends: false
+  };
+  
   function loadApiUrl() {
     const session = localStorage.getItem('adkintor_session');
     if (session) {
@@ -994,6 +1001,12 @@
       var targetPane = document.getElementById(tabId + '-tab');
       if (targetPane) targetPane.classList.add('active');
       
+      // ✅ Si el tab YA está cacheado, no recargar
+      if (tabCache[tabId]) {
+          return;
+      }
+      
+      // ✅ Cargar solo la primera vez
       if (tabId === 'dashboard') {
           loadDashboard();
       } else if (tabId === 'alerts') {
@@ -1002,6 +1015,7 @@
           showLoading('Loading instruments...');
           callApi('CAL_getInstrumentsForTrend', []).then(function(instruments) {
               renderTrendSelector(instruments);
+              tabCache.trends = true;  // ✅ Marcar como cacheado
               hideLoading();
           }).catch(function(err) {
               hideLoading();
@@ -1033,6 +1047,7 @@
           }
           
           renderAlertsList(list);
+          tabCache.alerts = true;  // ✅ Marcar como cacheado
           hideLoading();
           
           // ✅ Log solo si hay datos
@@ -1061,6 +1076,11 @@
           await callApi('CAL_clearCache', []);
           //console.log('[CAL] Cache cleared');
           
+          // ✅ Resetear caché de tabs para forzar recarga
+          tabCache.dashboard = false;
+          tabCache.alerts = false;
+          tabCache.trends = false;
+          
           // ✅ Cargar el tab actual
           var activeTab = document.querySelector('.tab-btn.active');
           if (activeTab) {
@@ -1087,6 +1107,7 @@
       var data = await callApi('CAL_getDashboardData', []);
       if (data && data.success) {
         renderDashboard(data);
+        tabCache.dashboard = true;  // ✅ Marcar como cacheado
         await logForesight('CAL', 'DASHBOARD_LOADED', 'Total: ' + data.summary?.total + ', Overdue: ' + data.summary?.overdue);
       } else {
         document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + (data?.error || 'Unknown error') + '</div>';
