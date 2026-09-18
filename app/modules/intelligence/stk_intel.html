@@ -1086,7 +1086,7 @@
     document.getElementById('optimizationsCount').innerText = optCount;
   }
   
-  function renderAlertsTab(alerts) {
+function renderAlertsTab(alerts) {
       var container = document.getElementById('alertsContent');
       var html = '';
       
@@ -1117,6 +1117,19 @@
           html += '</tbody></table></div>';
       } else {
           html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts out of stock.</div>';
+      }
+      
+      // ✅ NUEVA SECCIÓN: Critical Stock - Below Minimum
+      html += '<h3 style="margin:24px 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">⚠️ Critical Stock - Below Minimum</h3>';
+      if (alerts.lowStockCritical && alerts.lowStockCritical.length > 0) {
+          html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Current Stock</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>';
+          for (var i = 0; i < alerts.lowStockCritical.length; i++) {
+              var item = alerts.lowStockCritical[i];
+              html += '<tr><td><strong>' + escapeHtml(item.sku) + '</strong></td><td>' + escapeHtml(item.description || '-') + '</td><td>' + item.currentStock + '</td><td>' + item.minStock + '</td><td>' + escapeHtml(item.recommendation) + '</td></tr>';
+          }
+          html += '</tbody></table></div>';
+      } else {
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts below minimum stock.</div>';
       }
       
       container.innerHTML = html;
