@@ -986,6 +986,7 @@
                             <div class="form-group">
                                 <label>Notes / Justification</label>
                                 <textarea id="reqNotes" rows="2"></textarea>
+                                <div id="reqNotesWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                             </div>
                             <div class="btn-container">
                                 <button type="button" class="btn-secondary" onclick="clearReqForm()"><i class="fas fa-eraser"></i> Clear</button>
@@ -1052,6 +1053,7 @@
                             <div class="form-group">
                                 <label>Delivery Note / Comments</label>
                                 <textarea id="receiptNotes" rows="2"></textarea>
+                                <div id="receiptNotesWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
                                 <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
@@ -1301,6 +1303,32 @@
         const result = await response.json();
         if (!result.success) throw new Error(result.error || 'API call failed');
         return result.data;
+    }
+
+    // ============================================
+    // ✅ NUEVO: Validar caracteres especiales en campos de texto
+    // ============================================
+    function checkSpecialChars(field, warningId) {
+        if (!field) return;
+        var warningEl = document.getElementById(warningId);
+        if (!warningEl) return;
+        
+        var value = field.value || '';
+        var specialChars = /[<>{}[\]\\`]/g;
+        var matches = value.match(specialChars);
+        
+        if (matches && matches.length > 0) {
+            var unique = [];
+            for (var i = 0; i < matches.length; i++) {
+                if (unique.indexOf(matches[i]) === -1) {
+                    unique.push(matches[i]);
+                }
+            }
+            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.style.display = 'block';
+        } else {
+            warningEl.style.display = 'none';
+        }
     }
 
     function escapeHtml(str) {
@@ -2598,6 +2626,21 @@
                     vendorDiv.style.display = 'none';
                 }
             });
+            
+            // ✅ AÑADIR: Listeners para caracteres especiales en textareas
+            var reqNotesEl = document.getElementById('reqNotes');
+            if (reqNotesEl) {
+                reqNotesEl.addEventListener('input', function() {
+                    checkSpecialChars(this, 'reqNotesWarning');
+                });
+            }
+            
+            var receiptNotesEl = document.getElementById('receiptNotes');
+            if (receiptNotesEl) {
+                receiptNotesEl.addEventListener('input', function() {
+                    checkSpecialChars(this, 'receiptNotesWarning');
+                });
+            }
             
             // Agregar item por defecto
             addReqItem();
