@@ -274,7 +274,7 @@
                         userAgent: navigator.userAgent || ''
                     }
                 },
-                { retries: 2, baseDelayMs: 800, label: 'MASTER', timeoutMs: 12000 }
+                { retries: 1, baseDelayMs: 800, label: 'MASTER', timeoutMs: 45000 }
             );
             
             _dbg('[Auth] ◀ MASTER result', {
@@ -313,7 +313,7 @@
                         userAgent: navigator.userAgent || ''
                     }
                 },
-                { retries: 2, baseDelayMs: 800, label: 'CLIENT', timeoutMs: 12000 }
+                { retries: 1, baseDelayMs: 800, label: 'CLIENT', timeoutMs: 45000 }
             );
             
             _dbg('[Auth] ◀ CLIENT result', {
