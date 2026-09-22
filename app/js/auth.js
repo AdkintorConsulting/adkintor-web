@@ -28,6 +28,79 @@
     const _dbgErr = (...args) => { if (window.ADKINTOR_AUTH_DEBUG) console.error(...args); };
     // ============================================
     
+    // ============================================
+    // FETCH CON RETRY - Mitiga cold starts de Apps Script
+    // ============================================
+    /**
+     * Hace un fetch POST al proxy y devuelve el JSON parseado.
+     * Si la respuesta no es JSON o hay error de red, reintenta.
+     * 
+     * @param {string} proxyUrl - URL del Cloudflare Worker
+     * @param {object} body - Cuerpo del POST
+     * @param {object} opts - { retries, baseDelayMs, label }
+     * @returns {Promise<{ok, data, httpStatus, ms, attempts, rawSnippet}>}
+     */
+    async function _fetchJsonWithRetry(proxyUrl, body, opts = {}) {
+        const retries = (typeof opts.retries === 'number') ? opts.retries : 2;
+        const baseDelayMs = (typeof opts.baseDelayMs === 'number') ? opts.baseDelayMs : 800;
+        const label = opts.label || 'fetch';
+        const t0 = Date.now();
+        let lastRaw = '';
+        let lastStatus = 0;
+        let lastError = '';
+        
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            if (attempt > 0) {
+                const delay = baseDelayMs * Math.pow(2, attempt - 1) + Math.random() * 300;
+                _dbg(`[${label}] retry ${attempt}/${retries} in ${Math.round(delay)}ms`);
+                await new Promise(r => setTimeout(r, delay));
+            }
+            
+            try {
+                const res = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                lastStatus = res.status;
+                
+                const raw = await res.text();
+                lastRaw = raw;
+                
+                try {
+                    const data = JSON.parse(raw);
+                    return {
+                        ok: true,
+                        data: data,
+                        httpStatus: res.status,
+                        ms: Date.now() - t0,
+                        attempts: attempt + 1,
+                        rawSnippet: ''
+                    };
+                } catch (parseErr) {
+                    _dbgErr(`[${label}] attempt ${attempt + 1}: non-JSON response (HTTP ${res.status})`);
+                    lastError = 'non_json';
+                    // continúa el loop para reintentar
+                }
+            } catch (netErr) {
+                _dbgErr(`[${label}] attempt ${attempt + 1}: network error: ${netErr.message}`);
+                lastError = 'network: ' + netErr.message;
+                // continúa el loop para reintentar
+            }
+        }
+        
+        return {
+            ok: false,
+            data: null,
+            httpStatus: lastStatus,
+            ms: Date.now() - t0,
+            attempts: retries + 1,
+            error: lastError,
+            rawSnippet: lastRaw.substring(0, 500)
+        };
+    }
+    // ============================================
+    
     const Auth = {
         session: null,
         
@@ -90,7 +163,7 @@
                 }
                 
                 // Call Master API with domain as client_id
-                const masterResponse = await this.callMasterAPI(emailDomain);
+                const masterResponse = await this.callMasterAPI(emailDomain, email);
                 
                 // Validate Master API response
                 if (!masterResponse || masterResponse.status !== 'success') {
@@ -164,34 +237,82 @@
             }
         },
         
-        callMasterAPI: async function(clientId) {
+        callMasterAPI: async function(clientId, email) {
             // Master API now receives client_id (domain) instead of email/password
-            const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            _dbg('[Auth] ▶ MASTER call', { clientId, email });
+            
+            const result = await _fetchJsonWithRetry(
+                window.ADKINTOR_CONFIG.PROXY_URL,
+                {
                     targetUrl: window.ADKINTOR_CONFIG.MASTER_API_URL,
-                    payload: { action: 'web_login_master', client_id: clientId }
-                })
+                    payload: {
+                        action: 'web_login_master',
+                        client_id: clientId,
+                        email: email || '',
+                        userAgent: navigator.userAgent || ''
+                    }
+                },
+                { retries: 2, baseDelayMs: 800, label: 'MASTER' }
+            );
+            
+            _dbg('[Auth] ◀ MASTER result', {
+                ok: result.ok,
+                ms: result.ms,
+                attempts: result.attempts,
+                httpStatus: result.httpStatus,
+                data: result.data,
+                error: result.error
             });
-            return await response.json();
+            
+            if (!result.ok) {
+                return {
+                    status: 'error',
+                    message: 'Connection error. Please try again.',
+                    _stage: 'master',
+                    _detail: result.error
+                };
+            }
+            
+            return result.data;
         },
         
         callClientAPI: async function(apiUrl, email, password) {
-            const response = await fetch(window.ADKINTOR_CONFIG.PROXY_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            _dbg('[Auth] ▶ CLIENT call', { apiUrl, email });
+            
+            const result = await _fetchJsonWithRetry(
+                window.ADKINTOR_CONFIG.PROXY_URL,
+                {
                     targetUrl: apiUrl,
-                    payload: { 
-                        action: 'web_login', 
-                        email: email, 
+                    payload: {
+                        action: 'web_login',
+                        email: email,
                         password: password,
-                        userEmail: email  // ✅ AÑADIR ESTA LÍNEA
+                        userEmail: email,
+                        userAgent: navigator.userAgent || ''
                     }
-                })
+                },
+                { retries: 2, baseDelayMs: 800, label: 'CLIENT' }
+            );
+            
+            _dbg('[Auth] ◀ CLIENT result', {
+                ok: result.ok,
+                ms: result.ms,
+                attempts: result.attempts,
+                httpStatus: result.httpStatus,
+                data: result.data,
+                error: result.error
             });
-            return await response.json();
+            
+            if (!result.ok) {
+                return {
+                    success: false,
+                    error: 'Connection error. Please try again.',
+                    _stage: 'client',
+                    _detail: result.error
+                };
+            }
+            
+            return result.data;
         }
     };
     
