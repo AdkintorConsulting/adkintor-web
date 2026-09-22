@@ -3,7 +3,7 @@
  * AUTH MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-20
+ * FECHA: 2026-09-22
  * 
  * Gestión de autenticación y sesión:
  * - Login con dominio de email (Opción B)
@@ -17,6 +17,16 @@
         return;
     }
     window.__ADKINTOR_AUTH_LOADED__ = true;
+    
+    // ============================================
+    // DEBUG FLAG - Solo para diagnóstico
+    // false = consola limpia (producción)
+    // true  = logs en consola (cuando estemos diagnosticando)
+    // ============================================
+    window.ADKINTOR_AUTH_DEBUG = window.ADKINTOR_AUTH_DEBUG || false;
+    const _dbg = (...args) => { if (window.ADKINTOR_AUTH_DEBUG) console.log(...args); };
+    const _dbgErr = (...args) => { if (window.ADKINTOR_AUTH_DEBUG) console.error(...args); };
+    // ============================================
     
     const Auth = {
         session: null,
