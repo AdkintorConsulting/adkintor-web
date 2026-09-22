@@ -29,20 +29,22 @@
     // ============================================
     
     // ============================================
-    // FETCH CON RETRY - Mitiga cold starts de Apps Script
+    // FETCH CON RETRY + TIMEOUT - Mitiga cold starts de Apps Script
     // ============================================
     /**
      * Hace un fetch POST al proxy y devuelve el JSON parseado.
-     * Si la respuesta no es JSON o hay error de red, reintenta.
+     * - Timeout explícito por intento (AbortController)
+     * - Reintenta si: timeout, HTTP >= 400, non-JSON, network error
      * 
      * @param {string} proxyUrl - URL del Cloudflare Worker
      * @param {object} body - Cuerpo del POST
-     * @param {object} opts - { retries, baseDelayMs, label }
-     * @returns {Promise<{ok, data, httpStatus, ms, attempts, rawSnippet}>}
+     * @param {object} opts - { retries, baseDelayMs, label, timeoutMs }
+     * @returns {Promise<{ok, data, httpStatus, ms, attempts, rawSnippet, error}>}
      */
     async function _fetchJsonWithRetry(proxyUrl, body, opts = {}) {
         const retries = (typeof opts.retries === 'number') ? opts.retries : 2;
         const baseDelayMs = (typeof opts.baseDelayMs === 'number') ? opts.baseDelayMs : 800;
+        const timeoutMs = (typeof opts.timeoutMs === 'number') ? opts.timeoutMs : 12000;
         const label = opts.label || 'fetch';
         const t0 = Date.now();
         let lastRaw = '';
@@ -56,22 +58,27 @@
                 await new Promise(r => setTimeout(r, delay));
             }
             
+            // ✅ AbortController para timeout explícito
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            
             try {
                 const res = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify(body),
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 lastStatus = res.status;
                 
                 const raw = await res.text();
                 lastRaw = raw;
                 
-                // ✅ NUEVO: Si HTTP >= 400, es un fallo recuperable (incluso si el JSON es válido)
+                // Si HTTP >= 400, es un fallo recuperable (incluso si el JSON es válido)
                 if (res.status >= 400) {
                     _dbgErr(`[${label}] attempt ${attempt + 1}: HTTP ${res.status} (recoverable)`);
                     lastError = 'http_' + res.status;
-                    // continúa el loop para reintentar
                     continue;
                 }
                 
@@ -88,12 +95,19 @@
                 } catch (parseErr) {
                     _dbgErr(`[${label}] attempt ${attempt + 1}: non-JSON response (HTTP ${res.status})`);
                     lastError = 'non_json';
-                    // continúa el loop para reintentar
+                    continue;
                 }
             } catch (netErr) {
-                _dbgErr(`[${label}] attempt ${attempt + 1}: network error: ${netErr.message}`);
-                lastError = 'network: ' + netErr.message;
-                // continúa el loop para reintentar
+                clearTimeout(timeoutId);
+                const isAbort = (netErr.name === 'AbortError');
+                if (isAbort) {
+                    _dbgErr(`[${label}] attempt ${attempt + 1}: timeout after ${timeoutMs}ms (recoverable)`);
+                    lastError = 'timeout_' + timeoutMs + 'ms';
+                } else {
+                    _dbgErr(`[${label}] attempt ${attempt + 1}: network error: ${netErr.message}`);
+                    lastError = 'network: ' + netErr.message;
+                }
+                continue;
             }
         }
         
@@ -260,7 +274,7 @@
                         userAgent: navigator.userAgent || ''
                     }
                 },
-                { retries: 2, baseDelayMs: 800, label: 'MASTER' }
+                { retries: 2, baseDelayMs: 800, label: 'MASTER', timeoutMs: 12000 }
             );
             
             _dbg('[Auth] ◀ MASTER result', {
@@ -299,7 +313,7 @@
                         userAgent: navigator.userAgent || ''
                     }
                 },
-                { retries: 2, baseDelayMs: 800, label: 'CLIENT' }
+                { retries: 2, baseDelayMs: 800, label: 'CLIENT', timeoutMs: 12000 }
             );
             
             _dbg('[Auth] ◀ CLIENT result', {
