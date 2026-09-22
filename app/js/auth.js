@@ -67,6 +67,14 @@
                 const raw = await res.text();
                 lastRaw = raw;
                 
+                // ✅ NUEVO: Si HTTP >= 400, es un fallo recuperable (incluso si el JSON es válido)
+                if (res.status >= 400) {
+                    _dbgErr(`[${label}] attempt ${attempt + 1}: HTTP ${res.status} (recoverable)`);
+                    lastError = 'http_' + res.status;
+                    // continúa el loop para reintentar
+                    continue;
+                }
+                
                 try {
                     const data = JSON.parse(raw);
                     return {
