@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma ADKINTOR — PHVA para la Excelencia Operacional</title>
+    <meta name="description" content="La plataforma ADKINTOR aplica PHVA al mantenimiento industrial: Órdenes de Trabajo, Pañol y Repuestos, calibración, KPI, Disponibilidad y OEE en un solo sistema.">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="alternate" hreflang="es" href="https://adkintor.com/es/platform.html">
+    <link rel="alternate" hreflang="en" href="https://adkintor.com/en/platform.html">
+    <link rel="alternate" hreflang="x-default" href="https://adkintor.com/">
+    <link rel="canonical" href="https://adkintor.com/es/platform.html">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background-color: #0f172a; color: #f1f5f9; line-height: 1.6; overflow-x: hidden; }
+        .header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(51, 65, 85, 0.5); padding: 1.2rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .logo-area { display: flex; align-items: center; gap: 1rem; }
+        .logo-img { max-height: 42px; width: auto; object-fit: contain; }
+        .logo-text { font-size: 0.75rem; color: #94a3b8; border-left: 1px solid rgba(51, 65, 85, 0.5); padding-left: 1rem; }
+        .nav-actions { display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 1rem; transition: color 0.3s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: #38bdf8; }
+        .user-access-btn { background: rgba(56, 189, 248, 0.15); padding: 0.45rem 1.2rem; border-radius: 30px; font-size: 0.85rem; text-decoration: none; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); transition: all 0.3s ease; font-weight: 500; }
+        .user-access-btn:hover { background: rgba(56, 189, 248, 0.3); color: #fff; border-color: #38bdf8; }
+
+        .lang-switch { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; background: rgba(51, 65, 85, 0.35); border: 1px solid rgba(51, 65, 85, 0.6); border-radius: 30px; padding: 0.3rem 0.8rem; }
+        .lang-globe { font-size: 0.9rem; opacity: 0.8; }
+        .lang-sep { color: #475569; }
+        .lang-link { color: #94a3b8; text-decoration: none; font-weight: 600; letter-spacing: 0.5px; transition: color 0.2s ease; }
+        .lang-link:hover, .lang-link.active { color: #38bdf8; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+        .page-title { text-align: center; margin-bottom: 4rem; }
+        .page-title h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f8fafc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        .page-title p { font-size: 1.35rem; color: #94a3b8; max-width: 750px; margin: 0 auto; }
+        .highlight-banner { background: linear-gradient(135deg, #0eaeec 0%, #1d4ed8 100%); border-radius: 24px; padding: 3rem; margin: 4rem 0; text-align: center; box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.25); }
+        .highlight-banner h4 { font-size: 2rem; margin-bottom: 1rem; color: #ffffff; font-weight: 700; }
+        .highlight-banner p { font-size: 1.2rem; color: #e0f2fe; max-width: 700px; margin: 0 auto; }
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 4rem 0; }
+        .card { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 24px; padding: 2.5rem; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 15px 30px -10px rgba(56, 189, 248, 0.1); }
+        .card h3 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #38bdf8; }
+        .pdca-icon { font-size: 1rem; font-weight: 700; letter-spacing: 2px; color: #38bdf8; background: rgba(14, 165, 233, 0.15); padding: 0.3rem 1rem; border-radius: 50px; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(14, 165, 233, 0.2); }
+        .card h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: #818cf8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card p { color: #94a3b8; font-size: 1rem; margin-bottom: 1rem; }
+        .card ul { list-style: none; margin: 1rem 0; }
+        .card li { padding: 0.5rem 0; color: #cbd5e1; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3); }
+        .card li:last-child { border-bottom: none; }
+        .check-mark { color: #38bdf8; font-weight: bold; }
+        .pricing-summary { text-align: center; margin: 2rem 0 1rem; font-size: 1.2rem; color: #cbd5e1; }
+        .pricing-summary strong { color: #38bdf8; font-size: 1.4rem; }
+        .btn-primary { background: linear-gradient(135deg, #38bdf8, #1d4ed8); padding: 0.9rem 2rem; border-radius: 40px; text-decoration: none; color: white; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; display: inline-block; border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.4); }
+        .footer { background: #090d16; border-top: 1px solid rgba(51, 65, 85, 0.5); padding: 2.5rem; text-align: center; color: #64748b; font-size: 0.95rem; margin-top: 5rem; }
+        @media (max-width: 768px) { .header-container { flex-direction: column; text-align: center; } .nav-actions { flex-direction: column; gap: 1rem; } .page-title h1 { font-size: 2.3rem; } .grid-2col { grid-template-columns: 1fr; } .highlight-banner, .card { padding: 2rem; } .logo-area { flex-direction: column; text-align: center; } .logo-text { border-left: none; padding-left: 0; border-top: 1px solid rgba(51, 65, 85, 0.5); padding-top: 0.5rem; } .lang-switch { margin-top: 0.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img src="https://i.imgur.com/EqqJRKt.png" alt="Adkintor Logo" class="logo-img">
+                <div class="logo-text">Adkintor | Gestión de Activos y Consultoría de Mantenimiento</div>
+            </div>
+            <div class="nav-actions">
+                <div class="nav-menu">
+                    <a href="/es/index.html">Inicio</a>
+                    <a href="/es/platform.html" class="active">Plataforma</a>
+                    <a href="/es/contacto.html">Contacto</a>
+                </div>
+                <div class="lang-switch" role="group" aria-label="Selector de idioma">
+                    <span class="lang-globe" aria-hidden="true">🌐</span>
+                    <a href="/es/platform.html" data-lang="es" class="lang-link" hreflang="es">ES</a>
+                    <span class="lang-sep" aria-hidden="true">|</span>
+                    <a href="/en/platform.html" data-lang="en" class="lang-link" hreflang="en">EN</a>
+                </div>
+                <a href="https://adkintor.com/app/" class="user-access-btn" target="_blank" rel="noopener">🔐 Acceso Usuarios</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>Plataforma ADKINTOR: el PHVA para la Excelencia Operacional</h1>
+            <p>Planificar. Hacer. Verificar. Actuar. Todo en un solo lugar.</p>
+        </div>
+
+        <div class="grid-2col">
+            <!-- PLANIFICAR -->
+            <div class="card">
+                <div class="pdca-icon">📋 PLANIFICAR</div>
+                <h3>Planificar</h3>
+                <p><strong>Tu equipo sabe exactamente qué hacer — y por qué</strong></p>
+                <h4>Qué incluye:</h4>
+                <ul>
+                    <li><span class="check-mark">✓</span> PTS de mantenimiento descargable (PDF)</li>
+                    <li><span class="check-mark">✓</span> Flujos preventivos y correctivos (diagramas descargables)</li>
+                    <li><span class="check-mark">✓</span> Matriz de criticidad de activos (clasificación A / B / C)</li>
+                    <li><span class="check-mark">✓</span> Plan anual de mantenimiento preventivo generado automáticamente</li>
+                </ul>
+            </div>
+
+            <!-- HACER -->
+            <div class="card">
+                <div class="pdca-icon">⚙️ HACER</div>
+                <h3>Hacer</h3>
+                <p><strong>Los técnicos ejecutan de forma consistente — sin atajos ni errores</strong></p>
+                <h4>Qué incluye:</h4>
+                <ul>
+                    <li><span class="check-mark">✓</span> Listas de verificación estandarizadas para cada OT preventiva</li>
+                    <li><span class="check-mark">✓</span> Check-lists autogenerados desde ADKINTOR</li>
+                    <li><span class="check-mark">✓</span> Portal de ejecución compatible con móviles</li>
+                    <li><span class="check-mark">✓</span> Consumo de Pañol y Repuestos en tiempo real, asociado a cada OT</li>
+                </ul>
+            </div>
+
+            <!-- VERIFICAR -->
+            <div class="card">
+                <div class="pdca-icon">📊 VERIFICAR</div>
+                <h3>Verificar</h3>
+                <p><strong>Ve en tiempo real lo que pasa en toda tu planta</strong></p>
+                <h4>Qué incluye:</h4>
+                <ul>
+                    <li><span class="check-mark">✓</span> Tablero ejecutivo de KPI (Disponibilidad, MTBF, MTTR, OTIF, Cumplimiento de MP)</li>
+                    <li><span class="check-mark">✓</span> EAMS completo: Órdenes de Trabajo, inventario, calibraciones, seguimiento de OC</li>
+                    <li><span class="check-mark">✓</span> Control de inventario con bloqueo de stock negativo</li>
+                    <li><span class="check-mark">✓</span> Monitoreo de deriva de calibración en instrumentos críticos</li>
+                </ul>
+            </div>
+
+            <!-- ACTUAR -->
+            <div class="card">
+                <div class="pdca-icon">🔄 ACTUAR</div>
+                <h3>Actuar / Mejorar</h3>
+                <p><strong>El sistema te dice qué mejorar — sin consultor externo</strong></p>
+                <h4>Qué incluye:</h4>
+                <ul>
+                    <li><span class="check-mark">✓</span> <strong>Priorización Inteligente</strong> — motor que puntúa cada OT por criticidad e impacto</li>
+                    <li><span class="check-mark">✓</span> <strong>Protección Preventiva</strong> — barrido automático que elimina el atraso de MP</li>
+                    <li><span class="check-mark">✓</span> <strong>Confiabilidad Predictiva</strong> — detección de patrones de falla y optimización de frecuencias de MP</li>
+                    <li><span class="check-mark">✓</span> Informe ejecutivo mensual con recomendaciones accionables</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-banner">
+            <h4>ADKINTOR FORESIGHT es más que un EAMS</h4>
+            <p>Es un sistema de inteligencia que transforma datos en decisiones.</p>
+            <a href="mailto:info@adkintor.com?subject=Solicitud%20de%20demo%20-%20ADKINTOR%20FORESIGHT" class="btn-primary" style="margin-top: 2rem;">📅 Solicitar Demo de 30 min</a>
+        </div>
+
+        <div class="pricing-summary">
+            <p><strong>Alcance a medida, cotizado en UF</strong> — solicita una propuesta personalizada.</p>
+            <p style="font-size: 0.95rem; color: #64748b; margin-top: 0.5rem;">Sin precio de lista fijo. Respondemos en menos de 24 horas.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 Adkintor. Todos los derechos reservados. | info@adkintor.com</p>
+    </div>
+
+    <script src="/js/lang-switch.js" defer></script>
+</body>
+</html>
