@@ -181,7 +181,7 @@
                 // Extract domain from email (Opción B)
                 const emailDomain = email.split('@')[1];
                 if (!emailDomain) {
-                    return { success: false, error: 'Invalid email format' };
+                    return { success: false, error: window.t ? t('auth.invalidEmail') : 'Invalid email format' };
                 }
                 
                 // Call Master API with domain as client_id
@@ -189,7 +189,7 @@
                 
                 // Validate Master API response
                 if (!masterResponse || masterResponse.status !== 'success') {
-                    const errorMsg = masterResponse?.message || 'Client not found. Please contact your administrator.';
+                    const errorMsg = masterResponse?.message || (window.t ? t('auth.clientNotFound') : 'Client not found. Please contact your administrator.');
                     return { success: false, error: errorMsg };
                 }
                 
@@ -198,7 +198,7 @@
                 const clientName = masterResponse.data.client_name;
                 
                 if (!intelligenceApiUrl) {
-                    return { success: false, error: 'No API URL found for this client' };
+                    return { success: false, error: window.t ? t('auth.noApiUrl') : 'No API URL found for this client' };
                 }
                 
           
@@ -208,13 +208,13 @@
                 // Intelligence API returns { success: true, data: {...} }
                 // Verificar si data tiene status 'error'
                 if (!clientResponse || !clientResponse.success) {
-                    const errorMsg = clientResponse?.error || 'Invalid email or password';
+                    const errorMsg = clientResponse?.error || (window.t ? t('auth.invalidCreds') : 'Invalid email or password');
                     return { success: false, error: errorMsg };
                 }
                 
                 // IMPORTANTE: Verificar si la API devolvió un error en data.status
                 if (clientResponse.data && clientResponse.data.status === 'error') {
-                    const errorMsg = clientResponse.data.message || 'Invalid email or password';
+                    const errorMsg = clientResponse.data.message || (window.t ? t('auth.invalidCreds') : 'Invalid email or password');
                     return { success: false, error: errorMsg };
                 }
                 
@@ -238,6 +238,7 @@
                 
                 // Save to localStorage
                 localStorage.setItem('adkintor_session', JSON.stringify(sessionData));
+                localStorage.setItem('adkintor_lang', String(sessionData.language).toLowerCase().startsWith('es') ? 'es' : 'en');
                 this.session = sessionData;
 
                 // ============================================
@@ -255,7 +256,7 @@
                 return { success: true };
                 
             } catch (error) {
-                return { success: false, error: error.message || 'Connection error. Please try again.' };
+                return { success: false, error: error.message || (window.t ? t('auth.connectionError') : 'Connection error. Please try again.') };
             }
         },
         
@@ -289,7 +290,7 @@
             if (!result.ok) {
                 return {
                     status: 'error',
-                    message: 'Connection error. Please try again.',
+                    message: window.t ? t('auth.connectionError') : 'Connection error. Please try again.',
                     _stage: 'master',
                     _detail: result.error
                 };
@@ -328,7 +329,7 @@
             if (!result.ok) {
                 return {
                     success: false,
-                    error: 'Connection error. Please try again.',
+                    error: window.t ? t('auth.connectionError') : 'Connection error. Please try again.',
                     _stage: 'client',
                     _detail: result.error
                 };
