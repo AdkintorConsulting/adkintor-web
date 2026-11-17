@@ -3,7 +3,7 @@
  * MODULE BASE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-07-20
+ * FECHA: 2026-11-17
  * 
  * Archivo base para todos los módulos (EAMS y FORESIGHT):
  * - Usuario desde localStorage
@@ -98,8 +98,9 @@
     async function callApi(action, args = [], apiUrl = null) {
         const url = apiUrl || eamsApiUrl || intelligenceApiUrl;
         if (!url) {
-            showToast('API URL not available', 'error');
-            throw new Error('API URL not available');
+            const msg = window.t ? t('common.apiNotConfigured') : 'API URL not available';
+            showToast(msg, 'error');
+            throw new Error(msg);
         }
         
         try {
@@ -253,13 +254,15 @@
         const logoSrc = logoImg ? logoImg.src : 'https://i.imgur.com/aQol7vU.png';
         
         // Obtener usuario y fecha
+        const locale = window.I18n ? I18n.getLocale() : 'en-US';
+        const atWord = window.t ? t('layout.atTime') : 'at';
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { 
+        const dateStr = now.toLocaleDateString(locale, { 
             year: 'numeric', 
             month: 'short', 
             day: 'numeric' 
         });
-        const timeStr = now.toLocaleTimeString('en-US', { 
+        const timeStr = now.toLocaleTimeString(locale, { 
             hour: '2-digit', 
             minute: '2-digit' 
         });
@@ -274,7 +277,7 @@
             </div>
             <div class="print-meta">
                 <span>${userName} (${userEmail})</span>
-                <span>${dateStr} at ${timeStr}</span>
+                <span>${dateStr} ${atWord} ${timeStr}</span>
             </div>
         `;
         
@@ -287,9 +290,10 @@
         let footer = document.querySelector('.print-footer');
         if (footer) return;
         
+        const locale = window.I18n ? I18n.getLocale() : 'en-US';
         const version = CONFIG.VERSION;
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { 
+        const dateStr = now.toLocaleDateString(locale, { 
             year: 'numeric', 
             month: 'short', 
             day: 'numeric' 
