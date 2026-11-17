@@ -81,7 +81,21 @@ window.ADKINTOR_TRANSLATIONS = {
             'C - STANDAR': 'C - STANDAR',
             'HIGH': 'HIGH',
             'MEDIUM': 'MEDIUM',
-            'LOW': 'LOW'
+            'LOW': 'LOW',
+            'C - STANDARD': 'C - STANDARD',
+            'Technical Location': 'Technical Location',
+            'Main Equipment': 'Main Equipment',
+            'Sub-Assembly': 'Sub-Assembly',
+            'Auxiliary': 'Auxiliary',
+            'Component': 'Component',
+            'Commissioning': 'Commissioning',
+            'Out of Service': 'Out of Service',
+            'Under Maintenance': 'Under Maintenance',
+            'HSE Impact': 'HSE Impact',
+            'Production Impact': 'Production Impact',
+            'Usage Factor': 'Usage Factor',
+            'Operational Crit.': 'Operational Crit.',
+            'Redundancy': 'Redundancy'
         },
 
         validation: {
@@ -578,7 +592,21 @@ ast: {
             'C - STANDAR': 'C - ESTÁNDAR',
             'HIGH': 'ALTA',
             'MEDIUM': 'MEDIA',
-            'LOW': 'BAJA'
+            'LOW': 'BAJA',
+            'C - STANDARD': 'C - ESTÁNDAR',
+            'Technical Location': 'Ubicación Técnica',
+            'Main Equipment': 'Equipo Principal',
+            'Sub-Assembly': 'Subconjunto',
+            'Auxiliary': 'Equipo Auxiliar',
+            'Component': 'Componente',
+            'Commissioning': 'Puesta en Marcha',
+            'Out of Service': 'Fuera de Servicio',
+            'Under Maintenance': 'En Mantenimiento',
+            'HSE Impact': 'Impacto HSE',
+            'Production Impact': 'Impacto en Producción',
+            'Usage Factor': 'Factor de Uso',
+            'Operational Crit.': 'Criticidad Operacional',
+            'Redundancy': 'Redundancia'
         },
 
         validation: {
