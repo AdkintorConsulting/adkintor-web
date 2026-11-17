@@ -1083,7 +1083,7 @@
           document.getElementById('d-id').innerText = t('ast.master.tag') + ': ' + sanitizeString(asset.id);
           document.getElementById('d-area').innerText = sanitizeString(asset.area);
           document.getElementById('d-category').innerText = sanitizeString(asset.category) || '—';
-          document.getElementById('d-type').innerText = sanitizeString(asset.type);
+          document.getElementById('d-type').innerText = tStatus(sanitizeString(asset.type));
           document.getElementById('d-status').innerText = tStatus(sanitizeString(asset.status));
           document.getElementById('d-man').innerText = sanitizeString(asset.manufacturer) || '—';
           document.getElementById('d-model').innerText = sanitizeString(asset.model) || '—';
@@ -1192,7 +1192,7 @@
                   </div>
                   <div>
                       <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.assetClass')}</div>
-                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.type)}</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${tStatus(s(asset.type))}</div>
                   </div>
               </div>
               <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -1258,7 +1258,7 @@
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.area || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.id) + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + (a.nameRaw || a.name || '—') + '</td>';
-                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.type || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + tStatus(sanitizeString(a.type || '—')) + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.manufacturer || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.model || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + tStatus(sanitizeString(a.status || '—')) + '</td>';
