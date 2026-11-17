@@ -46,7 +46,7 @@
                 <div class="client-info" id="clientInfoDisplay"></div>
                 <div class="date-week" id="dateWeekDisplay"></div>
                 <button class="btn-logout" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="layout.logout">LOGOUT</span>
                 </button>
                 <div class="dropdown-docs">
                     <button class="btn-docs" id="docsDropdownBtn" onclick="toggleDocsMenu()">
@@ -59,7 +59,7 @@
                             <a href="#" id="chatbot-toggle" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #1a237e; text-decoration: none; font-weight: bold; border-radius: 4px; transition: background 0.3s;" 
                               onmouseover="this.style.background='#e8eaf6'" 
                               onmouseout="this.style.background='transparent'">
-                                🤖 Open Chat
+                                🤖 <span data-i18n="layout.openChat">Open Chat</span>
                             </a>
                         </div>
                     </div>
@@ -79,27 +79,27 @@
                 <nav class="sidebar-nav">
                     <button class="sidebar-btn" data-module="wo_intel" data-url="/app/modules/intelligence/wo_intel.html" data-permission="WO_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-tasks"></i>
-                        <span>WORK ORDERS</span>
+                        <span data-i18n="layout.navWorkOrders">WORK ORDERS</span>
                     </button>
                     <button class="sidebar-btn" data-module="pvt_intel" data-url="/app/modules/intelligence/pvt_intel.html" data-permission="PVT_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-calendar-alt"></i>
-                        <span>PREVENTIVE</span>
+                        <span data-i18n="layout.navPreventive">PREVENTIVE</span>
                     </button>
                     <button class="sidebar-btn" data-module="stk_intel" data-url="/app/modules/intelligence/stk_intel.html" data-permission="STK_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-boxes"></i>
-                        <span>INVENTORY</span>
+                        <span data-i18n="layout.navInventory">INVENTORY</span>
                     </button>
                     <button class="sidebar-btn" data-module="cal_intel" data-url="/app/modules/intelligence/cal_intel.html" data-permission="CAL_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-microscope"></i>
-                        <span>CALIBRATION</span>
+                        <span data-i18n="layout.navCalibration">CALIBRATION</span>
                     </button>
                     <button class="sidebar-btn" data-module="kpi_intel" data-url="/app/modules/intelligence/kpi_intel.html" data-permission="KPI_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-chart-line"></i>
-                        <span>KPI</span>
+                        <span data-i18n="layout.navKpi">KPI</span>
                     </button>
                     <button class="sidebar-btn" data-module="consulting" data-url="/app/modules/intelligence/consulting.html" data-permission="CONSULTING_IntelligenceUI" data-sidebar="foresight">
                         <i class="fas fa-chalkboard-user"></i>
-                        <span>CONSULTING</span>
+                        <span data-i18n="layout.navConsulting">CONSULTING</span>
                     </button>
                 </nav>
             </aside>
@@ -113,28 +113,28 @@
                 
                 <!-- BREADCRUMBS (nueva ubicación: arriba de los botones EAMS) -->
                 <div class="breadcrumbs">
-                    <span class="breadcrumb-item active" data-path="home">Home</span>
+                    <span class="breadcrumb-item active" data-path="home" data-i18n="common.home">Home</span>
                     <span class="breadcrumb-separator">></span>
                     <span class="breadcrumb-item" id="dynamicBreadcrumb" style="display: none;"></span>
                 </div>
 
                 <!-- EAMS BUTTONS (6 buttons) -->
                 <div class="eams-buttons">
-                    <button class="eams-btn" data-eams="work_order" data-permission="WO_MainDispatcherUI">WORK ORDER</button>
-                    <button class="eams-btn" data-eams="preventive" data-permission="PVT_MainDispatcherUI">PREVENTIVE</button>
-                    <button class="eams-btn" data-eams="asset" data-permission="AST_MainDispatcherUI">ASSET</button>
-                    <button class="eams-btn" data-eams="inventory" data-permission="STK_MainDispatcherUI">INVENTORY</button>
-                    <button class="eams-btn" data-eams="calibrations" data-permission="CAL_MainDispatcherUI">CALIBRATIONS</button>
-                    <button class="eams-btn" data-eams="plant_layout" data-permission="SYS_PlantLayoutUI">PLANT LAYOUT</button>
-                    <button class="eams-btn" data-eams="sys_wizard" data-permission="SYS_WizardUI">CONFIG</button>
+                    <button class="eams-btn" data-eams="work_order" data-permission="WO_MainDispatcherUI" data-i18n="layout.eamsWorkOrder">WORK ORDER</button>
+                    <button class="eams-btn" data-eams="preventive" data-permission="PVT_MainDispatcherUI" data-i18n="layout.eamsPreventive">PREVENTIVE</button>
+                    <button class="eams-btn" data-eams="asset" data-permission="AST_MainDispatcherUI" data-i18n="layout.eamsAsset">ASSET</button>
+                    <button class="eams-btn" data-eams="inventory" data-permission="STK_MainDispatcherUI" data-i18n="layout.eamsInventory">INVENTORY</button>
+                    <button class="eams-btn" data-eams="calibrations" data-permission="CAL_MainDispatcherUI" data-i18n="layout.eamsCalibrations">CALIBRATIONS</button>
+                    <button class="eams-btn" data-eams="plant_layout" data-permission="SYS_PlantLayoutUI" data-i18n="layout.eamsPlantLayout">PLANT LAYOUT</button>
+                    <button class="eams-btn" data-eams="sys_wizard" data-permission="SYS_WizardUI" data-i18n="layout.eamsConfig">CONFIG</button>
                 </div>
 
                 <!-- DYNAMIC CONTENT CONTAINER -->
                 <div id="dynamicContent" class="dynamic-content">
                     <div id="loadingMessage" class="welcome-message">
                         <i class="fas fa-spinner fa-pulse"></i>
-                        <h2>Loading user permissions...</h2>
-                        <p>Please wait</p>
+                        <h2 data-i18n="layout.loadingPermissions">Loading user permissions...</h2>
+                        <p data-i18n="layout.pleaseWait">Please wait</p>
                     </div>
                 </div>
             </main>
@@ -162,13 +162,13 @@
     <div id="docModal">
         <div class="doc-modal-container">
             <div class="doc-modal-header">
-                <h3><i class="fas fa-book-open"></i> <span id="docModalTitle">Document</span></h3>
+                <h3><i class="fas fa-book-open"></i> <span id="docModalTitle" data-i18n="docs.document">Document</span></h3>
                 <div class="doc-modal-controls">
                     <button class="doc-modal-btn primary" id="printDocBtn" onclick="printDocument()">
-                        <i class="fas fa-print"></i> Print / PDF
+                        <i class="fas fa-print"></i> <span data-i18n="docs.printPdf">Print / PDF</span>
                     </button>
                     <button class="doc-modal-btn" id="downloadDocBtn" onclick="downloadDocument()" style="display:none;">
-                        <i class="fas fa-download"></i> Download
+                        <i class="fas fa-download"></i> <span data-i18n="docs.download">Download</span>
                     </button>
                     <button class="doc-modal-close" onclick="closeDocModal()">
                         <i class="fas fa-times"></i>
@@ -184,8 +184,8 @@
                         <i class="fas fa-file-download" style="font-size: 60px; color: #1a237e; margin-bottom: 20px;"></i>
                         
                         <p style="color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto 20px;">
-                            <span id="downloadDescription">This document is available as a downloadable file.</span><br>
-                            Press <strong>"Download"</strong> to obtain it and edit it for your organization.
+                            <span id="downloadDescription" data-i18n="docs.downloadViewDefault">This document is available as a downloadable file.</span><br>
+                            <span data-i18n-html="docs.downloadPressHint">Press <strong>"Download"</strong> to obtain it and edit it for your organization.</span>
                         </p>
                     </div>
                 </div>
@@ -196,7 +196,9 @@
     <!-- TOAST NOTIFICATIONS -->
     <div id="toastContainer"></div>
 
-    <!-- SCRIPTS - orden correcto: config, logger, auth, layout -->
+    <!-- SCRIPTS - orden correcto: translations, i18n, config, logger, auth, layout -->
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <script src="/app/js/config.js"></script>
     <script src="/app/js/logger.js"></script>
     <script src="/app/js/auth.js"></script>
@@ -241,7 +243,7 @@
                                     // console.log(`⚠️ Session expires in ${minutes} minutes`);  // COMENTADO
                                     
                                     if (typeof showToast === 'function') {
-                                        showToast(`⚠️ Your session will expire in ${minutes} minutes.`, 'warning', 10000);
+                                        showToast(t('layout.sessionExpiring', { minutes: minutes }), 'warning', 10000);
                                     }
                                     toastShown = true;
                                 }
@@ -279,7 +281,7 @@
             const proxyUrl = 'https://adkintor-proxy.empty-bonus-1852.workers.dev/';
             
             if (typeof showToast === 'function') {
-              showToast('🔄 Clearing cache and reloading...', 'info', 3000);
+              showToast(t('layout.clearingCache'), 'info', 3000);
             }
             
             fetch(proxyUrl, {
@@ -428,6 +430,26 @@ function getSession() {
     }
 }
 
+const DOC_LABEL_KEYS = {
+    'SOP Maintenance': 'docs.docSop',
+    'Workflow Maintenance': 'docs.docWorkflow',
+    'Technician Manual': 'docs.docTechManual',
+    'Supervisor Manual': 'docs.docSupManual',
+    'Executive Manual': 'docs.docExecManual',
+    'Viewer Manual': 'docs.docViewerManual',
+    'Quick Start Guide': 'docs.docQuickStart',
+    'FAQ Technician': 'docs.docFaqTech',
+    'FAQ Supervisor': 'docs.docFaqSup',
+    'FAQ Executive': 'docs.docFaqExec',
+    'FAQ Viewer': 'docs.docFaqViewer'
+};
+
+const DOC_SECTION_KEYS = {
+    'SOP & WORKFLOW': 'docs.secSop',
+    'ADKINTOR MANUALS': 'docs.secManuals',
+    "FAQ's": 'docs.secFaqs'
+};
+
 // Abrir documento
 function openDocument(docName) {
     const session = getSession();
@@ -435,7 +457,7 @@ function openDocument(docName) {
     
     const docConfig = DOCS_CONFIG[docName];
     if (!docConfig) {
-        showToast('Document not found', 'error');
+        showToast(t('docs.docNotFound'), 'error');
         return;
     }
     
@@ -452,7 +474,7 @@ function openDocument(docName) {
     const printBtn = document.getElementById('printDocBtn');
     const downloadBtn = document.getElementById('downloadDocBtn');
     
-    title.textContent = docName;
+    title.textContent = DOC_LABEL_KEYS[docName] ? t(DOC_LABEL_KEYS[docName]) : docName;
     
     if (docConfig.type === 'html') {
         iframe.src = docUrl;
@@ -542,12 +564,12 @@ function downloadFile(url, filename) {
             window.URL.revokeObjectURL(downloadUrl);
             
             if (typeof showToast === 'function') {
-                showToast('Download started...', 'success', 3000);
+                showToast(t('docs.downloadStarted'), 'success', 3000);
             }
         })
         .catch(error => {
             if (typeof showToast === 'function') {
-                showToast('Error downloading file', 'error');
+                showToast(t('docs.downloadError'), 'error');
             }
         });
 }
@@ -564,11 +586,9 @@ function downloadDocument() {
 
 // Función para obtener descripción del documento
 function getDocDescription(docName) {
-    const descriptions = {
-        'SOP Maintenance': 'Standard Operating Procedure template (Word format) for creating your organization\'s maintenance procedures. Download, edit, and customize it for your needs.',
-        'Workflow Maintenance': 'Workflow diagram template showing the maintenance process flow, including both preventive and corrective maintenance paths.'
-    };
-    return descriptions[docName] || 'This document is available as a downloadable file.';
+    if (docName === 'SOP Maintenance') return t('docs.descSop');
+    if (docName === 'Workflow Maintenance') return t('docs.descWorkflow');
+    return t('docs.downloadViewDefault');
 }
 
 // Actualizar menú de documentos (TODOS visibles)
@@ -592,12 +612,14 @@ function updateDocsMenu() {
     
     sectionOrder.forEach(section => {
         if (sections[section] && sections[section].length > 0) {
+            const sectionLabel = DOC_SECTION_KEYS[section] ? t(DOC_SECTION_KEYS[section]) : section;
             html += `<div class="dropdown-section">
-                <div class="section-title">${section}</div>`;
+                <div class="section-title">${sectionLabel}</div>`;
             
             sections[section].forEach(({ name, config }) => {
+                const docLabel = DOC_LABEL_KEYS[name] ? t(DOC_LABEL_KEYS[name]) : name;
                 html += `<a href="#" onclick="openDocument('${name}')">
-                    <i class="fas ${config.icon}"></i> ${name}
+                    <i class="fas ${config.icon}"></i> ${docLabel}
                 </a>`;
             });
             
@@ -613,7 +635,7 @@ function updateDocsMenu() {
         <a href="#" id="chatbot-toggle" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #1a237e; text-decoration: none; font-weight: bold; border-radius: 4px; transition: background 0.3s;" 
            onmouseover="this.style.background='#e8eaf6'" 
            onmouseout="this.style.background='transparent'">
-            🤖 Open Chat
+            🤖 ${t('layout.openChat')}
         </a>
     </div>`;
     
