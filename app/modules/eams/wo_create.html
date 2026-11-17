@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Work Order - ADKINTOR EAMS</title>
+    <title data-i18n="wo.create.pageTitle">Create Work Order - ADKINTOR EAMS</title>
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ============================================
@@ -393,7 +395,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="wo.create.loadingConfig">Loading configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -405,70 +407,70 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Create Work Order</span>
+            <span class="module-title" data-i18n="wo.create.title">Create Work Order</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>WORK ORDERS</span> &gt; <span class="current">Create Work Order</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="wo.breadcrumbModule">WORK ORDERS</span> &gt; <span class="current" data-i18n="wo.create.title">Create Work Order</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <div class="card-creation">
             <div class="folio-banner" id="folioDisplay">
-                📋 WO NUMBER: <span id="folioPreview" style="font-weight:800;">-- PENDING --</span>
+                📋 <span data-i18n="wo.create.woNumber">WO NUMBER</span>: <span id="folioPreview" style="font-weight:800;" data-i18n="wo.create.pending">-- PENDING --</span>
             </div>
 
             <div class="form-group">
-                <label>REQUESTER <span class="required">*</span></label>
+                <label><span data-i18n="wo.fields.requester">REQUESTER</span> <span class="required">*</span></label>
                 <select id="requesterSelect" data-required="true">
-                    <option value="">-- Select Requester --</option>
+                    <option value="" data-i18n="wo.create.selectRequester">-- Select Requester --</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>PRIORITY <span class="required">*</span></label>
+                <label><span data-i18n="wo.fields.priority">PRIORITY</span> <span class="required">*</span></label>
                 <select id="prioritySelect" data-required="true">
-                    <option value="">-- Select Priority --</option>
+                    <option value="" data-i18n="wo.create.selectPriority">-- Select Priority --</option>
                 </select>
             </div>
 
             <div class="double-group">
                 <div class="form-group">
-                    <label>AREA <span class="required">*</span></label>
+                    <label><span data-i18n="wo.fields.area">AREA</span> <span class="required">*</span></label>
                     <select id="areaSelect" data-required="true">
-                        <option value="">-- Select Area --</option>
+                        <option value="" data-i18n="wo.create.selectArea">-- Select Area --</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>EQUIPMENT <span class="required">*</span></label>
+                    <label><span data-i18n="wo.fields.equipment">EQUIPMENT</span> <span class="required">*</span></label>
                     <select id="equipmentSelect" data-required="true" disabled>
-                        <option value="">-- Select Area First --</option>
+                        <option value="" data-i18n="wo.create.selectAreaFirst">-- Select Area First --</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>ASSET ID & CRITICALITY</label>
-                <input type="text" id="assetInfo" class="readonly-field" readonly placeholder="Auto-populated after selecting equipment">
+                <label data-i18n="wo.create.assetIdCriticality">ASSET ID & CRITICALITY</label>
+                <input type="text" id="assetInfo" class="readonly-field" readonly placeholder="Auto-populated after selecting equipment" data-i18n-placeholder="wo.create.assetPlaceholder">
             </div>
 
             <div class="form-group">
-                <label>WORK DESCRIPTION <span class="required">*</span></label>
+                <label><span data-i18n="wo.fields.description">WORK DESCRIPTION</span> <span class="required">*</span></label>
                 <textarea id="descriptionText" rows="5" data-required="true"
-                          placeholder="Describe the issue, failure, or maintenance required in detail..."></textarea>
+                          placeholder="Describe the issue, failure, or maintenance required in detail..." data-i18n-placeholder="wo.create.descriptionPlaceholder"></textarea>
                 <div id="descriptionWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
             </div>
 
             <div class="button-group">
-                <button id="cancelBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> REFRESH</button>
-                <button id="submitBtn" class="btn-primary" disabled><i class="fas fa-check"></i> SUBMIT WORK ORDER</button>
+                <button id="cancelBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> <span data-i18n="wo.create.refreshBtn">REFRESH</span></button>
+                <button id="submitBtn" class="btn-primary" disabled><i class="fas fa-check"></i> <span data-i18n="wo.create.submitBtn">SUBMIT WORK ORDER</span></button>
             </div>
         </div>
     </div>
@@ -477,7 +479,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -538,7 +540,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -578,19 +580,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('wo.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error: Please login again', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('No session found. Please login.', 'error');
+            showToast(t('common.sessionNotFound'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please login again.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -604,7 +606,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -629,7 +631,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -696,7 +698,7 @@
         });
         
         submitBtn.disabled = !allValid || isSubmitting;
-        submitBtn.textContent = isSubmitting ? 'PROCESSING...' : 'SUBMIT WORK ORDER';
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> ' + (isSubmitting ? t('wo.create.processing') : t('wo.create.submitBtn'));
     }
 
     function onFieldChange() {
@@ -712,7 +714,7 @@
         if (elements.priority) elements.priority.value = '';
         if (elements.area) elements.area.value = '';
         if (elements.equipment) {
-            elements.equipment.innerHTML = '<option value="">-- Select Area First --</option>';
+            elements.equipment.innerHTML = '<option value="">' + t('wo.create.selectAreaFirst') + '</option>';
             elements.equipment.disabled = true;
         }
         if (elements.assetInfo) elements.assetInfo.value = '';
@@ -742,7 +744,7 @@
         const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.textContent = 'SUBMIT WORK ORDER';
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> ' + t('wo.create.submitBtn');
         }
         
         updateSubmitButton(false);
@@ -756,7 +758,7 @@
         const selectedArea = elements.area ? elements.area.value : '';
         
         if (!selectedArea) {
-            elements.equipment.innerHTML = '<option value="">-- Select Area First --</option>';
+            elements.equipment.innerHTML = '<option value="">' + t('wo.create.selectAreaFirst') + '</option>';
             elements.equipment.disabled = true;
             if (elements.assetInfo) elements.assetInfo.value = '';
             currentAsset = null;
@@ -766,7 +768,7 @@
         
         const filteredAssets = assetLibrary.filter(asset => asset.area === selectedArea);
         
-        elements.equipment.innerHTML = '<option value="">-- Select Equipment --</option>';
+        elements.equipment.innerHTML = '<option value="">' + t('wo.create.selectEquipment') + '</option>';
         filteredAssets.forEach(asset => {
             const option = document.createElement('option');
             option.value = asset.name;
@@ -793,8 +795,8 @@
         currentAsset = assetLibrary.find(asset => asset.name === selectedName);
         
         if (currentAsset && elements.assetInfo) {
-            const critText = currentAsset.crit ? ' | CRITICALITY: ' + currentAsset.crit : '';
-            elements.assetInfo.value = '📌 ASSET ID: ' + currentAsset.id + critText;
+            const critText = currentAsset.crit ? ' | ' + t('wo.create.criticalityLabel') + ': ' + tStatus(currentAsset.crit) : '';
+            elements.assetInfo.value = '📌 ' + t('wo.create.assetIdLabel') + ': ' + currentAsset.id + critText;
         }
         updateSubmitButton(true);
     }
@@ -839,13 +841,13 @@
     // DATA LOADING
     // ============================================
     async function loadInitialData() {
-        showLoading('Loading configuration data...');
+        showLoading(t('wo.create.loadingConfigData'));
         
         try {
             const response = await callApi('WO_loadWOCreateData', []);
             
             if (!response.success) {
-                throw new Error(response.message || 'Failed to load data');
+                throw new Error(response.message || t('wo.create.failedLoadData'));
             }
             
             const data = response.data;
@@ -861,7 +863,7 @@
             const elements = getElements();
             
             if (elements.requester && data.requesterList) {
-                elements.requester.innerHTML = '<option value="">-- Select Requester --</option>';
+                elements.requester.innerHTML = '<option value="">' + t('wo.create.selectRequester') + '</option>';
                 data.requesterList.forEach(function(r) {
                     var opt = document.createElement('option');
                     opt.value = r;
@@ -871,17 +873,17 @@
             }
             
             if (elements.priority && data.priorityList) {
-                elements.priority.innerHTML = '<option value="">-- Select Priority --</option>';
+                elements.priority.innerHTML = '<option value="">' + t('wo.create.selectPriority') + '</option>';
                 data.priorityList.forEach(function(p) {
                     var opt = document.createElement('option');
                     opt.value = p;
-                    opt.textContent = p;
+                    opt.textContent = tStatus(p);
                     elements.priority.appendChild(opt);
                 });
             }
             
             if (elements.area && data.areaList) {
-                elements.area.innerHTML = '<option value="">-- Select Area --</option>';
+                elements.area.innerHTML = '<option value="">' + t('wo.create.selectArea') + '</option>';
                 data.areaList.forEach(function(a) {
                     var opt = document.createElement('option');
                     opt.value = a;
@@ -904,7 +906,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading data: ' + error.message, 'error');
+            showToast(t('wo.create.errorLoadingData', { error: error.message }), 'error');
             // console.error('Load error:', error);  // COMENTADO
         }
     }
@@ -916,21 +918,21 @@
         if (isSubmitting) return;
         
         if (!validateAndHighlight()) {
-            showToast('Please fill all required fields', 'error');
+            showToast(t('wo.create.fillRequired'), 'error');
             return;
         }
         
         var elements = getElements();
         var description = sanitizeInput(elements.description ? elements.description.value : '');
         if (description.length < 3) {
-            showToast('Work description must be at least 3 characters', 'error');
+            showToast(t('wo.create.minDescChars'), 'error');
             if (elements.description) elements.description.classList.add('error');
             return;
         }
         
         isSubmitting = true;
         updateSubmitButton(true);
-        showLoading('Creating Work Order...');
+        showLoading(t('wo.create.creatingWO'));
         
         // Obtener usuario de la sesión
         let userEmail = 'unknown';
@@ -979,14 +981,14 @@
                 
                 var emailStatusMsg = '';
                 if (response.emailSent) {
-                    emailStatusMsg = ' 📧 Notification email sent.';
+                    emailStatusMsg = ' 📧 ' + t('wo.create.emailSent');
                 } else if (response.emailError) {
-                    emailStatusMsg = ' ⚠️ Notification email failed: ' + response.emailError;
+                    emailStatusMsg = ' ⚠️ ' + t('wo.create.emailFailed', { error: response.emailError });
                 } else {
-                    emailStatusMsg = ' ℹ️ No notification email configured.';
+                    emailStatusMsg = ' ℹ️ ' + t('wo.create.emailNotConfigured');
                 }
                 
-                showToast('✅ Work Order ' + response.generatedFolio + ' created successfully!' + emailStatusMsg, 'success');
+                showToast('✅ ' + t('wo.create.createdSuccess', { folio: response.generatedFolio }) + emailStatusMsg, 'success');
                 // console.log('[WO] WO Created:', response.generatedFolio);  // COMENTADO
                 
                 // Resetear el formulario automáticamente después del éxito
@@ -994,7 +996,7 @@
                 loadInitialData();
                 
             } else {
-                throw new Error(response.message || 'Unknown error');
+                throw new Error(response.message || t('common.unknownError'));
             }
             
         } catch (error) {
@@ -1003,7 +1005,7 @@
             }
             
             hideLoading();
-            showToast('Error: ' + error.message, 'error');
+            showToast(t('common.error') + ': ' + error.message, 'error');
             // console.error('Submit error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
@@ -1054,7 +1056,7 @@
             setupEventListeners();
             loadInitialData();
         } else {
-            showToast('Please login to access EAMS', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
     
