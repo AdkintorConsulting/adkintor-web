@@ -1025,7 +1025,7 @@
                 var item = items[i];
                 var value = typeof item === 'object' ? item.name : item;
                 var label = typeof item === 'object' ? item.name : item;
-                if (elementId === 'v-status') label = tStatus(label);
+                if (elementId === 'v-status' || elementId === 'v-type') label = tStatus(label);
                 if (value) {
                     var isSelected = (String(value).toLowerCase() === valToCompare);
                     var selected = isSelected ? 'selected' : '';
@@ -1116,7 +1116,7 @@
                 if (canBeParent) {
                     var selected = (currentParentId === asset.id) ? 'selected' : '';
                     html += '<option value="' + escapeHtml(asset.id) + '" ' + selected + '>' + 
-                            escapeHtml(asset.id) + ' - ' + escapeHtml(asset.name) + ' (' + escapeHtml(assetType) + ')</option>';
+                            escapeHtml(asset.id) + ' - ' + escapeHtml(asset.name) + ' (' + escapeHtml(tStatus(assetType)) + ')</option>';
                 }
             }
         }
@@ -1469,7 +1469,7 @@
             var currentVal = assetData[fieldName] || 1;
             
             critHtml += '<div class="field-group required-field">';
-            critHtml += '<label>' + escapeHtml(crit.name) + '</label>';
+            critHtml += '<label>' + escapeHtml(tStatus(crit.name)) + '</label>';
             critHtml += '<select class="crit-input" data-crit="' + fieldName + '" name="' + fieldName + '" onchange="markDirty(); recalc();">';
             critHtml += '<option value="1" ' + (currentVal == 1 ? 'selected' : '') + '>1 (' + t('ast.criticality.low') + ': ' + escapeHtml(crit.low) + ')</option>';
             critHtml += '<option value="3" ' + (currentVal == 3 ? 'selected' : '') + '>3 (' + t('ast.criticality.medium') + ': ' + escapeHtml(crit.med) + ')</option>';
