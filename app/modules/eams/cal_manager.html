@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calibration Manager - ADKINTOR EAMS</title>
+    <title data-i18n="cal.pageTitle">Calibration Manager - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -647,7 +649,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Calibration Manager...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="cal.loadingModule">Loading Calibration Manager...</span>
 </div>
 
 <!-- TOAST -->
@@ -659,17 +661,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Calibration Manager</span>
+            <span class="module-title" data-i18n="cal.title">Calibration Manager</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>CALIBRATION</span> &gt; <span class="current">Calibration Manager</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="cal.breadcrumbSection">CALIBRATION</span> &gt; <span class="current" data-i18n="cal.title">Calibration Manager</span>
     </div>
     
     <!-- CUERPO -->
@@ -678,15 +680,15 @@
             <!-- HEATMAP -->
             <div class="heatmap-container">
                 <div class="heatmap-card critical">
-                    <p class="heatmap-label"><i class="fas fa-exclamation-circle"></i> CRITICAL (&lt; 30 DAYS)</p>
+                    <p class="heatmap-label"><i class="fas fa-exclamation-circle"></i> <span data-i18n="cal.criticalLabel">CRITICAL (&lt; 30 DAYS)</span></p>
                     <h2 class="heatmap-number" id="criticalCount" style="color: #dc3545;">0</h2>
                 </div>
                 <div class="heatmap-card warning">
-                    <p class="heatmap-label"><i class="fas fa-clock"></i> UPCOMING (30-90 DAYS)</p>
+                    <p class="heatmap-label"><i class="fas fa-clock"></i> <span data-i18n="cal.upcomingLabel">UPCOMING (30-90 DAYS)</span></p>
                     <h2 class="heatmap-number" id="warningCount" style="color: #f59e0b;">0</h2>
                 </div>
                 <div class="heatmap-card compliant">
-                    <p class="heatmap-label"><i class="fas fa-check-circle"></i> COMPLIANT (&gt; 90 DAYS)</p>
+                    <p class="heatmap-label"><i class="fas fa-check-circle"></i> <span data-i18n="cal.compliantLabel">COMPLIANT (&gt; 90 DAYS)</span></p>
                     <h2 class="heatmap-number" id="compliantCount" style="color: #22c55e;">0</h2>
                 </div>
             </div>
@@ -694,30 +696,30 @@
             <!-- FILTERS -->
             <div class="filter-bar">
                 <div class="filter-group">
-                    <label><i class="fas fa-search"></i> SEARCH</label>
-                    <input type="text" id="searchInput" placeholder="Tag ID or Name...">
+                    <label><i class="fas fa-search"></i> <span data-i18n="cal.searchLabel">SEARCH</span></label>
+                    <input type="text" id="searchInput" placeholder="Tag ID or Name..." data-i18n-placeholder="cal.searchPlaceholder">
                 </div>
                 <div class="filter-group">
-                    <label><i class="fas fa-tag"></i> TYPE</label>
+                    <label><i class="fas fa-tag"></i> <span data-i18n="cal.typeLabel">TYPE</span></label>
                     <select id="filterType">
-                        <option value="">All Types</option>
+                        <option value="" data-i18n="cal.allTypes">All Types</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label><i class="fas fa-map-marker-alt"></i> AREA</label>
+                    <label><i class="fas fa-map-marker-alt"></i> <span data-i18n="cal.areaLabel">AREA</span></label>
                     <select id="filterArea">
-                        <option value="">All Areas</option>
+                        <option value="" data-i18n="cal.allAreas">All Areas</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label><i class="fas fa-circle"></i> STATUS</label>
+                    <label><i class="fas fa-circle"></i> <span data-i18n="cal.statusLabel">STATUS</span></label>
                     <select id="filterStatus">
-                        <option value="">All Status</option>
+                        <option value="" data-i18n="cal.allStatus">All Status</option>
                     </select>
                 </div>
                 <div>
                     <button class="btn-primary" id="newInstrumentBtn">
-                        <i class="fas fa-plus-circle"></i> NEW INSTRUMENT
+                        <i class="fas fa-plus-circle"></i> <span data-i18n="cal.newInstrumentBtn">NEW INSTRUMENT</span>
                     </button>
                 </div>
             </div>
@@ -727,19 +729,19 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>TAG ID</th>
-                            <th>INSTRUMENT</th>
-                            <th>TYPE</th>
-                            <th>AREA</th>
-                            <th>LAST CAL</th>
-                            <th>NEXT DUE</th>
-                            <th>DAYS LEFT</th>
-                            <th>STATUS</th>
-                            <th>ACTIONS</th>
+                            <th data-i18n="cal.colTagId">TAG ID</th>
+                            <th data-i18n="cal.colInstrument">INSTRUMENT</th>
+                            <th data-i18n="cal.colType">TYPE</th>
+                            <th data-i18n="cal.colArea">AREA</th>
+                            <th data-i18n="cal.colLastCal">LAST CAL</th>
+                            <th data-i18n="cal.colNextDue">NEXT DUE</th>
+                            <th data-i18n="cal.colDaysLeft">DAYS LEFT</th>
+                            <th data-i18n="cal.colStatus">STATUS</th>
+                            <th data-i18n="cal.colActions">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody id="instrumentTableBody">
-                        <tr><td colspan="9" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-hourglass-half fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading instruments...</td></tr>
+                        <tr><td colspan="9" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-hourglass-half fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> <span data-i18n="cal.loadingInstruments">Loading instruments...</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -750,7 +752,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -761,73 +763,73 @@
 <div id="instrumentModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4 id="instModalTitle">Register New Instrument</h4>
+            <h4 id="instModalTitle" data-i18n="cal.modalRegisterTitle">Register New Instrument</h4>
             <button class="btn-close-modal" id="closeInstModalBtn">&times;</button>
         </div>
         <div class="modal-body">
             <form id="instrumentForm">
                 <div class="form-grid">
                     <div class="full-width">
-                        <label class="field-label">TAG ID</label>
+                        <label class="field-label" data-i18n="cal.fieldTagId">TAG ID</label>
                         <input type="text" id="newTagId" readonly>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">INSTRUMENT NAME *</label>
+                        <label class="field-label" data-i18n="cal.fieldInstrumentName">INSTRUMENT NAME *</label>
                         <input type="text" id="newInstrumentName" >
                     </div>
                     <div>
-                        <label class="field-label">TYPE *</label>
+                        <label class="field-label" data-i18n="cal.fieldType">TYPE *</label>
                         <select id="newType" ></select>
                     </div>
                     <div>
-                        <label class="field-label">AREA *</label>
+                        <label class="field-label" data-i18n="cal.fieldArea">AREA *</label>
                         <select id="newArea" ></select>
                     </div>
                     <div>
-                        <label class="field-label">MODEL</label>
+                        <label class="field-label" data-i18n="cal.fieldModel">MODEL</label>
                         <input type="text" id="newModel">
                     </div>
                     <div>
-                        <label class="field-label">SERIAL #</label>
+                        <label class="field-label" data-i18n="cal.fieldSerial">SERIAL #</label>
                         <input type="text" id="newSerial">
                     </div>
                     <div>
-                        <label class="field-label">FREQUENCY (MONTHS) *</label>
+                        <label class="field-label" data-i18n="cal.fieldFrequency">FREQUENCY (MONTHS) *</label>
                         <input type="number" id="newFrequency" min="1" >
                     </div>
                     <div>
-                        <label class="field-label">LAST CALIBRATION *</label>
+                        <label class="field-label" data-i18n="cal.fieldLastCal">LAST CALIBRATION *</label>
                         <input type="date" id="newLastCal" >
                     </div>
                     <div>
-                        <label class="field-label">TOLERANCE VALUE</label>
-                        <input type="text" id="newToleranceValue" placeholder="e.g., 0.02, 1.00, 100.00">
+                        <label class="field-label" data-i18n="cal.fieldToleranceVal">TOLERANCE VALUE</label>
+                        <input type="text" id="newToleranceValue" placeholder="e.g., 0.02, 1.00, 100.00" data-i18n-placeholder="cal.fieldTolerancePlaceholder">
                     </div>
                     <div>
-                        <label class="field-label">TOLERANCE UNIT</label>
+                        <label class="field-label" data-i18n="cal.fieldToleranceUnit">TOLERANCE UNIT</label>
                         <select id="newToleranceUnit">
-                            <option value="">-- Unit --</option>
+                            <option value="" data-i18n="cal.unitDefault">-- Unit --</option>
                         </select>
                     </div>
                     <div>
-                        <label class="field-label">STATUS</label>
+                        <label class="field-label" data-i18n="cal.fieldStatus">STATUS</label>
                         <select id="newStatus"></select>
                     </div>
                     <div>
-                        <label class="field-label">RESPONSIBLE</label>
+                        <label class="field-label" data-i18n="cal.fieldResponsible">RESPONSIBLE</label>
                         <select id="newResponsible">
-                            <option value="">-- Select --</option>
+                            <option value="" data-i18n="common.selectPlaceholder">-- Select --</option>
                         </select>
                     </div>
                     <div class="full-width relative">
-                        <label class="field-label">ASSOCIATED ASSET</label>
-                        <input type="text" id="newAssociatedAsset" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
+                        <label class="field-label" data-i18n="cal.fieldAssociatedAsset">ASSOCIATED ASSET</label>
+                        <input type="text" id="newAssociatedAsset" placeholder="Type TL ID or name (min 3 chars)" data-i18n-placeholder="cal.associatedAssetPlaceholder" autocomplete="off">
                         <div id="assetSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" id="cancelInstBtn"><i class="fas fa-times"></i> CANCEL</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> SAVE INSTRUMENT</button>
+                    <button type="button" class="btn-secondary" id="cancelInstBtn"><i class="fas fa-times"></i> <span data-i18n="common.cancel">CANCEL</span></button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> <span data-i18n="cal.btnSaveInstrument">SAVE INSTRUMENT</span></button>
                 </div>
             </form>
         </div>
@@ -838,73 +840,73 @@
 <div id="calibrationModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4 id="modalTitle">Record Calibration</h4>
+            <h4 id="modalTitle" data-i18n="cal.modalRecordTitle">Record Calibration</h4>
             <button class="btn-close-modal" id="closeCalModalBtn">&times;</button>
         </div>
         <div class="modal-body">
             <form id="calibrationForm">
                 <div class="form-grid">
                     <div class="full-width">
-                        <label class="field-label">TAG ID</label>
+                        <label class="field-label" data-i18n="cal.fieldTagId">TAG ID</label>
                         <input type="text" id="tagId" readonly>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">INSTRUMENT NAME</label>
+                        <label class="field-label" data-i18n="cal.fieldInstNameReadonly">INSTRUMENT NAME</label>
                         <input type="text" id="instrumentName" readonly>
                     </div>
                     <div>
-                        <label class="field-label">CALIBRATION DATE *</label>
+                        <label class="field-label" data-i18n="cal.fieldCalDate">CALIBRATION DATE *</label>
                         <input type="date" id="calibrationDate" >
                     </div>
                     <div>
-                        <label class="field-label">FREQUENCY (MONTHS)</label>
+                        <label class="field-label" data-i18n="cal.fieldFreqReadonly">FREQUENCY (MONTHS)</label>
                         <input type="number" id="frequency" readonly>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">PERFORMED BY *</label>
-                        <input type="text" id="performedBy" placeholder="Company Name or Performer..." autocomplete="off" >
+                        <label class="field-label" data-i18n="cal.fieldPerformedBy">PERFORMED BY *</label>
+                        <input type="text" id="performedBy" placeholder="Company Name or Performer..." data-i18n-placeholder="cal.performedByPlaceholder" autocomplete="off" >
                         <div id="performerSuggestions" style="position:absolute; top:100%; left:0; right:0; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">CERTIFICATE # OR LINK *</label>
-                        <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." >
+                        <label class="field-label" data-i18n="cal.fieldCertificate">CERTIFICATE # OR LINK *</label>
+                        <input type="text" id="certificate" placeholder="e.g., CERT-2026-045 or https://drive.link/..." data-i18n-placeholder="cal.certificatePlaceholder" >
                         <div id="certificate_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">COMMENTS / NOTES</label>
-                        <textarea id="comments" rows="3" placeholder="Any observations, out of tolerance notes, etc."></textarea>
+                        <label class="field-label" data-i18n="cal.fieldComments">COMMENTS / NOTES</label>
+                        <textarea id="comments" rows="3" placeholder="Any observations, out of tolerance notes, etc." data-i18n-placeholder="cal.commentsPlaceholder"></textarea>
                         <div id="comments_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
-                        <label class="field-label">EXPECTED VALUE</label>
-                        <input type="number" step="any" id="expectedValue" placeholder="e.g., 100.0" oninput="calculateCalibrationResult()">
+                        <label class="field-label" data-i18n="cal.fieldExpectedVal">EXPECTED VALUE</label>
+                        <input type="number" step="any" id="expectedValue" placeholder="e.g., 100.0" data-i18n-placeholder="cal.expectedPlaceholder" oninput="calculateCalibrationResult()">
                     </div>
                     <div>
-                        <label class="field-label">MEASURED VALUE</label>
-                        <input type="number" step="any" id="measuredValue" placeholder="e.g., 100.02" oninput="calculateCalibrationResult()">
+                        <label class="field-label" data-i18n="cal.fieldMeasuredVal">MEASURED VALUE</label>
+                        <input type="number" step="any" id="measuredValue" placeholder="e.g., 100.02" data-i18n-placeholder="cal.measuredPlaceholder" oninput="calculateCalibrationResult()">
                     </div>
                     <div>
-                        <label class="field-label">DEVIATION (auto-calculated)</label>
+                        <label class="field-label" data-i18n="cal.fieldDeviation">DEVIATION (auto-calculated)</label>
                         <input type="text" id="deviation" readonly style="background:#f1f5f9; color:#475569;">
                     </div>
                     <div>
-                        <label class="field-label">DEVIATION UNIT</label>
+                        <label class="field-label" data-i18n="cal.fieldDeviationUnit">DEVIATION UNIT</label>
                         <select id="deviationUnit">
-                            <option value="">-- Select --</option>
+                            <option value="" data-i18n="common.selectPlaceholder">-- Select --</option>
                         </select>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">RESULT (auto-calculated)</label>
+                        <label class="field-label" data-i18n="cal.fieldResult">RESULT (auto-calculated)</label>
                         <input type="text" id="resultDisplay" readonly style="background:#f1f5f9; color:#475569; font-weight:bold;">
                     </div>
                     <div class="full-width" style="display:none;">
-                        <label class="field-label">TOLERANCE (from instrument)</label>
+                        <label class="field-label" data-i18n="cal.fieldTolerance">TOLERANCE (from instrument)</label>
                         <input type="text" id="toleranceDisplay" readonly style="background:#f1f5f9; color:#475569;">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" id="cancelCalBtn"><i class="fas fa-times"></i> CANCEL</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-check"></i> RECORD CALIBRATION</button>
+                    <button type="button" class="btn-secondary" id="cancelCalBtn"><i class="fas fa-times"></i> <span data-i18n="common.cancel">CANCEL</span></button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-check"></i> <span data-i18n="cal.btnRecordCal">RECORD CALIBRATION</span></button>
                 </div>
             </form>
         </div>
@@ -915,11 +917,11 @@
 <div id="historyModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4><i class="fas fa-history"></i> Calibration History</h4>
+            <h4><i class="fas fa-history"></i> <span data-i18n="cal.modalHistoryTitle">Calibration History</span></h4>
             <button class="btn-close-modal" id="closeHistoryBtn">&times;</button>
         </div>
         <div class="modal-body" id="historyContent">
-            <p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</p>
+            <p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="common.loading">Loading...</p>
         </div>
     </div>
 </div>
@@ -979,7 +981,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -1010,17 +1012,17 @@
                 if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -1034,7 +1036,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -1058,7 +1060,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -1151,17 +1153,17 @@
             var tolerance = parseFloat(toleranceMatch[1]);
             if (!isNaN(tolerance)) {
                 if (deviationAbs <= tolerance) {
-                    resultField.value = '✅ PASS (Deviation ' + deviationAbs.toFixed(4) + ' ≤ ' + tolerance + ')';
+                    resultField.value = t('cal.resultPass', { dev: deviationAbs.toFixed(4), tol: tolerance });
                     resultField.style.color = '#22c55e';
                 } else {
-                    resultField.value = '❌ FAIL (Deviation ' + deviationAbs.toFixed(4) + ' > ' + tolerance + ')';
+                    resultField.value = t('cal.resultFail', { dev: deviationAbs.toFixed(4), tol: tolerance });
                     resultField.style.color = '#dc3545';
                 }
                 return;
             }
         }
         
-        resultField.value = '⚠️ No tolerance defined';
+        resultField.value = t('cal.resultNoTolerance');
         resultField.style.color = '#f59e0b';
     }
 
@@ -1190,13 +1192,13 @@
         // INITIALIZATION
         // ============================================
         async function init() {
-            showLoading('Synchronizing metrology data...');
+            showLoading(t('cal.syncingData'));
             
             loadUser();
             loadApiUrl();
             
             if (!EAMS_API_URL) {
-                showToast('Session not found. Please login from the main application.', 'error');
+                showToast(t('common.sessionNotFound'), 'error');
                 hideLoading();
                 return;
             }
@@ -1215,7 +1217,7 @@
             setupPerformerSuggestions();
             hideLoading();
             // console.log('[CAL] Ready');  // COMENTADO
-            showToast('Calibration Manager loaded successfully ✅', 'success');
+            showToast(t('cal.loadedSuccess'), 'success');
         }
 
         async function loadConfig() {
@@ -1228,24 +1230,24 @@
                     if (config.toleranceUnits && config.toleranceUnits.length > 0) {
                         var unitSelect = document.getElementById('newToleranceUnit');
                         if (unitSelect) {
-                            unitSelect.innerHTML = '<option value="">-- Unit --</option>';
+                            unitSelect.innerHTML = '<option value="">' + t('cal.unitDefault') + '</option>';
                             for (var i = 0; i < config.toleranceUnits.length; i++) {
                                 unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
                             }
                         }
                     }
                 } else {
-                    showToast(response.message || 'Config load failed', 'error');
+                    showToast(response.message || t('cal.configLoadFailed', { error: '' }), 'error');
                 }
             } catch (error) {
-                showToast('Config load failed: ' + error.message, 'error');
+                showToast(t('cal.configLoadFailed', { error: error.message }), 'error');
             }
         }
 
         function populateDropdowns() {
             var typeFilter = document.getElementById('filterType');
             if (typeFilter && config.types) {
-                var typeHtml = '<option value="">All Types</option>';
+                var typeHtml = '<option value="">' + t('cal.allTypes') + '</option>';
                 for (var i = 0; i < config.types.length; i++) {
                     typeHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
                 }
@@ -1254,7 +1256,7 @@
 
             var areaFilter = document.getElementById('filterArea');
             if (areaFilter && config.areas) {
-                var areaHtml = '<option value="">All Areas</option>';
+                var areaHtml = '<option value="">' + t('cal.allAreas') + '</option>';
                 for (var i = 0; i < config.areas.length; i++) {
                     areaHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
                 }
@@ -1263,9 +1265,9 @@
 
             var statusFilter = document.getElementById('filterStatus');
             if (statusFilter && config.statuses) {
-                var statusHtml = '<option value="">All Status</option>';
+                var statusHtml = '<option value="">' + t('cal.allStatus') + '</option>';
                 for (var i = 0; i < config.statuses.length; i++) {
-                    statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+                    statusHtml += '<option value="' + config.statuses[i] + '">' + tStatus(config.statuses[i]) + '</option>';
                 }
                 statusFilter.innerHTML = statusHtml;
             }
@@ -1273,7 +1275,7 @@
             // ✅ MODIFICAR - AÑADIR "-- SELECT --" EN LOS SELECTS DEL FORMULARIO
             var typeField = document.getElementById('newType');
             if (typeField && config.types) {
-                var typeFieldHtml = '<option value="">-- Select Type --</option>';
+                var typeFieldHtml = '<option value="">' + t('cal.selectType') + '</option>';
                 for (var i = 0; i < config.types.length; i++) {
                     typeFieldHtml += '<option value="' + config.types[i] + '">' + config.types[i] + '</option>';
                 }
@@ -1282,7 +1284,7 @@
 
             var areaField = document.getElementById('newArea');
             if (areaField && config.areas) {
-                var areaFieldHtml = '<option value="">-- Select Area --</option>';
+                var areaFieldHtml = '<option value="">' + t('cal.selectArea') + '</option>';
                 for (var i = 0; i < config.areas.length; i++) {
                     areaFieldHtml += '<option value="' + config.areas[i] + '">' + config.areas[i] + '</option>';
                 }
@@ -1291,16 +1293,16 @@
 
             var statusField = document.getElementById('newStatus');
             if (statusField && config.statuses) {
-                var statusFieldHtml = '<option value="">-- Select Status --</option>';
+                var statusFieldHtml = '<option value="">' + t('cal.selectStatus') + '</option>';
                 for (var i = 0; i < config.statuses.length; i++) {
-                    statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
+                    statusFieldHtml += '<option value="' + config.statuses[i] + '">' + tStatus(config.statuses[i]) + '</option>';
                 }
                 statusField.innerHTML = statusFieldHtml;
             }
 
             var respField = document.getElementById('newResponsible');
             if (respField && config.responsibles) {
-                var respHtml = '<option value="">-- Select Responsible --</option>';
+                var respHtml = '<option value="">' + t('cal.selectResponsible') + '</option>';
                 for (var i = 0; i < config.responsibles.length; i++) {
                     respHtml += '<option value="' + config.responsibles[i] + '">' + config.responsibles[i] + '</option>';
                 }
@@ -1309,7 +1311,7 @@
 
             var unitSelect = document.getElementById('newToleranceUnit');
             if (unitSelect && config.toleranceUnits) {
-                unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
+                unitSelect.innerHTML = '<option value="">' + t('cal.selectUnit') + '</option>';
                 for (var i = 0; i < config.toleranceUnits.length; i++) {
                     unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
                 }
@@ -1322,10 +1324,10 @@
                 renderTable(instruments);
                 updateHeatmap(instruments);
             } catch (error) {
-                showToast('Failed to load instruments: ' + error.message, 'error');
+                showToast(t('cal.failedLoadInstruments', { error: error.message }), 'error');
                 var tbody = document.getElementById('instrumentTableBody');
                 if (tbody) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-circle fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Error loading instruments: ' + error.message + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-exclamation-circle fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> ' + t('cal.errorLoadingInstruments', { error: error.message }) + '</td></tr>';
                 }
             }
         }
@@ -1335,7 +1337,7 @@
             if (!tbody) return;
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No instruments found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> ' + t('cal.noInstrumentsFound') + '</td></tr>';
                 return;
             }
 
@@ -1364,12 +1366,12 @@
                         '<td>' + escapeHtml(inst.area || '-') + '</td>' +
                         '<td>' + (inst.lastCal || '-') + '</td>' +
                         '<td>' + (inst.nextCal || '-') + '</td>' +
-                        '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' days</span></td>' +
-                        '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(inst.status || 'Active') + '</span></td>' +
+                        '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' ' + t('common.days') + '</span></td>' +
+                        '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(tStatus(inst.status || 'Active')) + '</span></td>' +
                         '<td>' +
-                            '<button class="btn-record" data-tag="' + inst.tagId + '" data-action="record"><i class="fas fa-microchip"></i> RECORD</button>' +
-                            '<button class="btn-edit" data-tag="' + inst.tagId + '" data-action="edit"><i class="fas fa-edit"></i> EDIT</button>' +
-                            '<button class="btn-history" data-tag="' + inst.tagId + '" data-action="history"><i class="fas fa-history"></i> HISTORY</button>' +
+                            '<button class="btn-record" data-tag="' + inst.tagId + '" data-action="record"><i class="fas fa-microchip"></i> ' + t('cal.btnRecord') + '</button>' +
+                            '<button class="btn-edit" data-tag="' + inst.tagId + '" data-action="edit"><i class="fas fa-edit"></i> ' + t('cal.btnEdit') + '</button>' +
+                            '<button class="btn-history" data-tag="' + inst.tagId + '" data-action="history"><i class="fas fa-history"></i> ' + t('cal.btnHistory') + '</button>' +
                         '</td>' +
                     '</tr>';
             }
@@ -1437,7 +1439,7 @@
         // MODAL FUNCTIONS
         // ============================================
         function openCalibrationModal(tagId) {
-            showLoading("Loading instrument data...");
+            showLoading(t('cal.loadingInstData'));
             
             var inst = null;
             for (var i = 0; i < instruments.length; i++) {
@@ -1448,24 +1450,24 @@
             }
             if (!inst) {
                 hideLoading();
-                showToast("Instrument not found", "error");
+                showToast(t('cal.instNotFound'), "error");
                 return;
             }
 
-            document.getElementById('modalTitle').innerText = 'Record Calibration: ' + inst.tagId;
+            document.getElementById('modalTitle').innerText = t('cal.modalRecordTitleWithTag', { tagId: inst.tagId });
             document.getElementById('tagId').value = inst.tagId;
             document.getElementById('instrumentName').value = inst.name;
             document.getElementById('frequency').value = inst.frequency;
             
             var toleranceDisplay = document.getElementById('toleranceDisplay');
             if (toleranceDisplay) {
-                var toleranceText = inst.toleranceValue ? inst.toleranceValue + ' ' + (inst.toleranceUnit || '') : 'No tolerance defined';
+                var toleranceText = inst.toleranceValue ? inst.toleranceValue + ' ' + (inst.toleranceUnit || '') : t('cal.noToleranceDefined');
                 toleranceDisplay.value = toleranceText;
             }
             
             var unitSelect = document.getElementById('deviationUnit');
             if (unitSelect) {
-                unitSelect.innerHTML = '<option value="">-- Select --</option>';
+                unitSelect.innerHTML = '<option value="">' + t('common.selectPlaceholder') + '</option>';
                 if (config.toleranceUnits && config.toleranceUnits.length > 0) {
                     for (var i = 0; i < config.toleranceUnits.length; i++) {
                         unitSelect.innerHTML += '<option value="' + config.toleranceUnits[i] + '">' + config.toleranceUnits[i] + '</option>';
@@ -1491,7 +1493,7 @@
             var performerField = document.getElementById('performedBy');
             if (performerField) {
                 performerField.value = '';
-                performerField.placeholder = 'Company Name or Performer...';
+                performerField.placeholder = t('cal.performedByPlaceholder');
             }
             
             document.getElementById('certificate').value = '';
@@ -1534,22 +1536,22 @@
             var result = document.getElementById('resultDisplay').value;
             
             if (!calibrationDate) {
-                showToast("Calibration date is required", "error");
+                showToast(t('cal.reqCalDate'), "error");
                 return;
             }
             
             if (!performedBy) {
-                showToast("Performed By is required", "error");
+                showToast(t('cal.reqPerformedBy'), "error");
                 document.getElementById('performedBy').classList.add('invalid-field');
                 return;
             }
             
             if (!certificate) {
-                showToast("Certificate # or Link is required", "error");
+                showToast(t('cal.reqCertificate'), "error");
                 return;
             }
 
-            showLoading("Recording calibration...");
+            showLoading(t('cal.recordingCal'));
             
             var inst = null;
             for (var i = 0; i < instruments.length; i++) {
@@ -1559,14 +1561,14 @@
                 }
             }
             if (!inst) {
-                showToast("Instrument not found", "error");
+                showToast(t('cal.instNotFound'), "error");
                 hideLoading();
                 return;
             }
             
             var resultStatus = 'UNKNOWN';
-            if (result.includes('PASS')) resultStatus = 'PASS';
-            else if (result.includes('FAIL')) resultStatus = 'FAIL';
+            if (result.includes('PASS') || result.includes('APROBADO') || result.includes('✅')) resultStatus = 'PASS';
+            else if (result.includes('FAIL') || result.includes('RECHAZADO') || result.includes('❌')) resultStatus = 'FAIL';
             
             var payload = {
                 tagId: tagId,
@@ -1612,12 +1614,12 @@
                         .catch(function(e) { /* console.warn('[CAL] Error log failed:', e); */ });  // COMENTADO
                 }
                 hideLoading();
-                showToast("Save failed: " + error.message, "error");
+                showToast(t('common.saveFailed', { error: error.message }), "error");
             }
         }
 
         async function openNewInstrumentModal() {
-            showLoading("Generating Tag ID...");
+            showLoading(t('cal.generatingTagId'));
             
             // ✅ Asegurar que currentUser esté disponible
             var session = localStorage.getItem('adkintor_session');
@@ -1634,7 +1636,7 @@
             try {
                 var tagId = await callApi('CAL_generateTagId', []);
                 
-                document.getElementById('instModalTitle').innerText = "Register New Instrument";
+                document.getElementById('instModalTitle').innerText = t('cal.modalRegisterTitle');
                 document.getElementById('newTagId').value = tagId;
                 document.getElementById('newInstrumentName').value = '';
                 document.getElementById('newModel').value = '';
@@ -1662,7 +1664,7 @@
                 
             } catch (error) {
                 hideLoading();
-                showToast("Failed to generate Tag ID: " + error.message, "error");
+                showToast(t('cal.failedGenTagId', { error: error.message }), "error");
             }
         }
 
@@ -1687,12 +1689,12 @@
             var frequency = parseInt(frequencyValue);
             
             if (!frequencyValue || frequencyValue === "") {
-                showToast("Frequency is required", "error");
+                showToast(t('cal.reqFrequency'), "error");
                 return;
             }
             
             if (isNaN(frequency) || frequency <= 0) {
-                showToast("Frequency must be a number greater than 0", "error");
+                showToast(t('cal.valFrequencyPositive'), "error");
                 return;
             }
             
@@ -1700,17 +1702,17 @@
             var toleranceUnit = document.getElementById('newToleranceUnit').value;
             
             if (toleranceValue && isNaN(parseFloat(toleranceValue))) {
-                showToast("Tolerance value must be a valid number (e.g., 0.02, 1.00, 100.00)", "error");
+                showToast(t('cal.valToleranceNumber'), "error");
                 return;
             }
             
             if (toleranceValue && parseFloat(toleranceValue) < 0) {
-                showToast("Tolerance value cannot be negative", "error");
+                showToast(t('cal.valToleranceNegative'), "error");
                 return;
             }
             
             if (!toleranceValue && toleranceUnit) {
-                showToast("Please enter a tolerance value before selecting a unit", "error");
+                showToast(t('cal.valToleranceUnitFirst'), "error");
                 return;
             }
             
@@ -1740,23 +1742,23 @@
             };
             
             if (!payload.name) {
-                showToast("Instrument Name is required", "error");
+                showToast(t('cal.reqInstName'), "error");
                 return;
             }
             if (!payload.type) {
-                showToast("Instrument Type is required", "error");
+                showToast(t('cal.reqInstType'), "error");
                 return;
             }
             if (!payload.area) {
-                showToast("Area is required", "error");
+                showToast(t('cal.reqArea'), "error");
                 return;
             }
             if (!payload.lastCal) {
-                showToast("Last Calibration date is required", "error");
+                showToast(t('cal.reqLastCal'), "error");
                 return;
             }
 
-            showLoading("Saving instrument...");
+            showLoading(t('cal.savingInstrument'));
             
             try {
                 var response = await callApi('CAL_saveInstrument', [payload]);
@@ -1764,7 +1766,7 @@
                 
                 // ✅ VALIDACIÓN: Verificar que response existe
                 if (!response) {
-                    showToast("Error: No response from server. Please try again.", "error");
+                    showToast(t('common.noServerResponse'), "error");
                     return;
                 }
                 
@@ -1776,17 +1778,17 @@
                     closeInstrumentModal();
                     await loadInstruments();
                 } else {
-                    showToast(response.message || "Unknown error", "error");
+                    showToast(response.message || t('common.unknownError'), "error");
                 }
             } catch (error) {
                 hideLoading();
                 console.error('❌ Error en saveNewInstrument:', error);
-                showToast("Save failed: " + error.message, "error");
+                showToast(t('common.saveFailed', { error: error.message }), "error");
             }
         }
 
         async function showHistory(tagId) {
-            showLoading("Loading history...");
+            showLoading(t('cal.loadingHistory'));
             try {
                 var history = await callApi('CAL_getInstrumentHistory', [tagId]);
                 hideLoading();
@@ -1809,7 +1811,7 @@
                 }
                 
                 if (history.length === 0) {
-                    container.innerHTML = headerHtml + '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif; padding:20px;">No calibration records found for this instrument</p>';
+                    container.innerHTML = headerHtml + '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif; padding:20px;">' + t('cal.noHistory') + '</p>';
                 } else {
                     var html = headerHtml;
                     for (var i = 0; i < history.length; i++) {
@@ -1817,9 +1819,9 @@
                         html += 
                             '<div class="history-item">' +
                                 '<div class="history-date">📅 ' + h.date + '</div>' +
-                                '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + h.result + '</div>' +
-                                '<div class="history-cert">📄 Certificate: ' + escapeHtml(h.certificate || 'N/A') + '</div>' +
-                                '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
+                                '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + escapeHtml(tStatus(h.result)) + '</div>' +
+                                '<div class="history-cert">📄 ' + t('cal.certificatePrefix') + ' ' + escapeHtml(h.certificate || t('cal.na')) + '</div>' +
+                                '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || t('cal.noComments')) + '</div>' +
                             '</div>';
                     }
                     container.innerHTML = html;
@@ -1827,7 +1829,7 @@
                 document.getElementById('historyModal').classList.add('active');
             } catch (error) {
                 hideLoading();
-                showToast("Failed to load history: " + error.message, "error");
+                showToast(t('cal.failedLoadHistory', { error: error.message }), "error");
             }
         }
 
@@ -1862,17 +1864,17 @@
                 currentUser = 'system';
             }
             
-            showLoading("Loading instrument data...");
+            showLoading(t('cal.loadingInstData'));
             try {
                 var instrument = await callApi('CAL_getInstrumentFullDetails', [tagId]);
                 
                 if (!instrument) {
                     hideLoading();
-                    showToast("Instrument not found", "error");
+                    showToast(t('cal.instNotFound'), "error");
                     return;
                 }
                 
-                document.getElementById('instModalTitle').innerText = "✏️ EDIT INSTRUMENT: " + instrument.tagId;
+                document.getElementById('instModalTitle').innerText = t('cal.modalEditTitle', { tagId: instrument.tagId });
                 
                 document.getElementById('newTagId').value = instrument.tagId;
                 document.getElementById('newInstrumentName').value = instrument.name || '';
@@ -1958,7 +1960,7 @@
                 
             } catch (error) {
                 hideLoading();
-                showToast("Failed to load instrument: " + error.message, "error");
+                showToast(t('cal.failedLoadInst', { error: error.message }), "error");
             }
         }
 
@@ -2082,7 +2084,7 @@
                 
                 if (term.length >= 3) {
                     suggestionsDiv.style.display = 'block';
-                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('cal.searching') + '</div>';
                     
                     callApi('CAL_searchTechnicalLocations', [term])
                         .then(function(assets) {
@@ -2098,13 +2100,13 @@
                                 suggestionsDiv.style.display = 'block';
                                 // console.log('[CAL] ✅ Sugerencias mostradas:', html.length);  // COMENTADO
                             } else {
-                                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
+                                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('cal.noTlFound') + '</div>';
                                 suggestionsDiv.style.display = 'block';
                             }
                         })
                         .catch(function(err) {
                             // console.warn('[CAL] Error searching assets:', err);  // COMENTADO
-                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
+                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">' + t('cal.errorSearching') + '</div>';
                             suggestionsDiv.style.display = 'block';
                         });
                 } else {
@@ -2138,7 +2140,7 @@
                 
                 if (term.length >= 2) {
                     suggestionsDiv.style.display = 'block';
-                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('cal.searching') + '</div>';
                     
                     callApi('CAL_searchPerformers', [term])
                         .then(function(performers) {
@@ -2162,13 +2164,13 @@
                                     });
                                 });
                             } else {
-                                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No performers found. Type manually.</div>';
+                                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('cal.noPerformersFound') + '</div>';
                                 suggestionsDiv.style.display = 'block';
                             }
                         })
                         .catch(function(err) {
                             // console.warn('[CAL] Error searching performers:', err);  // COMENTADO
-                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
+                            suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">' + t('cal.errorSearching') + '</div>';
                             suggestionsDiv.style.display = 'block';
                         });
                 } else {
