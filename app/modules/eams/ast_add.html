@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Asset - ADKINTOR EAMS</title>
+    <title data-i18n="ast.add.pageTitle">Add Asset - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -357,7 +359,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="ast.add.loadingConfig">Loading configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -369,17 +371,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Add Asset</span>
+            <span class="module-title" data-i18n="ast.add.title">Add Asset</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>ASSETS</span> &gt; <span class="current">Add Asset</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="ast.breadcrumb">ASSETS</span> &gt; <span class="current" data-i18n="ast.add.title">Add Asset</span>
     </div>
     
     <!-- CUERPO -->
@@ -388,84 +390,84 @@
         <form id="assetForm" novalidate>
             <div class="grid-2">
                 <div class="field-group required-field">
-                    <label>Operational Area</label>
+                    <label data-i18n="ast.fields.area">Operational Area</label>
                     <select id="area" name="area" onchange="syncUI()" required>
-                        <option value=""> — Select — </option>
+                        <option value="" data-i18n="common.selectPlaceholder"> — Select — </option>
                     </select>
                 </div>
                 <div class="field-group required-field">
-                    <label>Asset Type</label>
+                    <label data-i18n="ast.fields.type">Asset Type</label>
                     <select id="type" name="type" onchange="syncUI()" required>
-                        <option value=""> — Select — </option>
+                        <option value="" data-i18n="common.selectPlaceholder"> — Select — </option>
                     </select>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="field-group">
-                    <label>Parent Asset ID</label>
+                    <label data-i18n="ast.fields.parentId">Parent Asset ID</label>
                     <select id="parentID" name="parentID">
-                        <option value="N/A">N/A - None / Root Level</option>
+                        <option value="N/A" data-i18n="ast.add.parentNA">N/A - None / Root Level</option>
                     </select>
                 </div>
                 <div class="field-group required-field">
-                    <label>Asset Name</label>
-                    <input type="text" id="name" name="name" placeholder="e.g. Centrifugal Pump P-101" required oninput="sanitizeFieldLive(this)">
-                    <div class="field-note">Special characters &lt; &gt; { } [ ] \ are not allowed</div>
+                    <label data-i18n="ast.fields.name">Asset Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Centrifugal Pump P-101" data-i18n-placeholder="ast.add.namePlaceholder" required oninput="sanitizeFieldLive(this)">
+                    <div class="field-note" data-i18n="ast.add.specialCharsNote">Special characters &lt; &gt; { } [ ] \ are not allowed</div>
                     <div id="name_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="field-group required-field">
-                    <label>Category / Subtype</label>
+                    <label data-i18n="ast.fields.category">Category / Subtype</label>
                     <select id="category" name="category" class="lockable" required>
-                        <option value=""> — Select — </option>
+                        <option value="" data-i18n="common.selectPlaceholder"> — Select — </option>
                     </select>
                 </div>
                 <div class="field-group required-field">
-                    <label>Current Status</label>
+                    <label data-i18n="ast.fields.status">Current Status</label>
                     <select id="status" name="status" required>
-                        <option value=""> — Select — </option>
+                        <option value="" data-i18n="common.selectPlaceholder"> — Select — </option>
                     </select>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="field-group">
-                    <label>Manufacturer</label>
-                    <input type="text" name="mfr" id="mfr" class="lockable" placeholder="e.g. Siemens" oninput="sanitizeFieldLive(this)">
+                    <label data-i18n="ast.fields.manufacturer">Manufacturer</label>
+                    <input type="text" name="mfr" id="mfr" class="lockable" placeholder="e.g. Siemens" data-i18n-placeholder="ast.add.mfrPlaceholder" oninput="sanitizeFieldLive(this)">
                     <div id="mfr_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
                 <div class="field-group">
-                    <label>Model</label>
-                    <input type="text" name="model" id="model" class="lockable" placeholder="e.g. P-1000" oninput="sanitizeFieldLive(this)">
+                    <label data-i18n="ast.fields.model">Model</label>
+                    <input type="text" name="model" id="model" class="lockable" placeholder="e.g. P-1000" data-i18n-placeholder="ast.add.modelPlaceholder" oninput="sanitizeFieldLive(this)">
                     <div id="model_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="field-group">
-                    <label>Serial Number</label>
-                    <input type="text" name="serial" id="serial" class="lockable" placeholder="e.g. SN-12345" oninput="sanitizeFieldLive(this)">
+                    <label data-i18n="ast.fields.serial">Serial Number</label>
+                    <input type="text" name="serial" id="serial" class="lockable" placeholder="e.g. SN-12345" data-i18n-placeholder="ast.add.serialPlaceholder" oninput="sanitizeFieldLive(this)">
                     <div id="serial_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
                 <div class="field-group">
-                    <label>Year of Install</label>
-                    <input type="number" name="year" class="lockable" placeholder="e.g. 2020" min="1950" max="2030">
-                    <div class="field-note">Optional - Format: YYYY</div>
+                    <label data-i18n="ast.fields.year">Year of Install</label>
+                    <input type="number" name="year" class="lockable" placeholder="e.g. 2020" data-i18n-placeholder="ast.add.yearPlaceholder" min="1950" max="2030">
+                    <div class="field-note" data-i18n="ast.add.yearNote">Optional - Format: YYYY</div>
                 </div>
             </div>
 
             <div class="criteria-box">
-                <span class="crit-title">⚙️ Criticality Matrix Evaluation</span>
+                <span class="crit-title" data-i18n="ast.criticality.title">⚙️ Criticality Matrix Evaluation</span>
                 <div id="critGrid" class="grid-2"></div>
-                <div id="critBadge">AWAITING DATA...</div>
+                <div id="critBadge" data-i18n="ast.criticality.awaiting">AWAITING DATA...</div>
             </div>
 
             <div class="btn-container">
-                <button type="button" class="btn-secondary" onclick="refreshForm()">🔄 Refresh</button>
-                <button type="submit" id="btnSubmit" class="btn-primary">Register Asset</button>
+                <button type="button" class="btn-secondary" onclick="refreshForm()" data-i18n="ast.add.btnRefresh">🔄 Refresh</button>
+                <button type="submit" id="btnSubmit" class="btn-primary" data-i18n="ast.add.btnRegister">Register Asset</button>
             </div>
         </form>
         
@@ -475,7 +477,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -537,7 +539,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -556,11 +558,11 @@
         document.getElementById('assetForm').reset();
         const critInputs = document.querySelectorAll('.crit-input');
         critInputs.forEach(el => el.value = '');
-        document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+        document.getElementById('critBadge').innerHTML = t('ast.criticality.awaiting');
         document.getElementById('critBadge').style.background = '#ddd';
         document.getElementById('critBadge').style.color = '#333';
         loadConfig();
-        showMessage('Form refreshed ✅', false);
+        showMessage(t('ast.add.formRefreshed'), false);
     }    
     
     // ============================================
@@ -588,7 +590,7 @@
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured');
+            throw new Error(t('common.apiNotConfigured'));
         }
         const response = await fetch(PROXY_URL, {
             method: 'POST',
@@ -600,7 +602,7 @@
         });
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -624,7 +626,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -655,9 +657,9 @@
             setTimeout(() => el.classList.remove('invalid-field'), 800);
             // Toast informativo
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                ModuleBase.showToast('⚠️ Special characters removed: < > { } [ ] \\', 'warning');
+                ModuleBase.showToast(t('ast.add.specialCharsRemoved'), 'warning');
             } else {
-                showMessage('⚠️ Special characters removed: < > { } [ ] \\', true);
+                showMessage(t('ast.add.specialCharsRemoved'), true);
             }
         }
     }
@@ -665,11 +667,12 @@
     function fillSelect(id, list) {
         const s = document.getElementById(id);
         if (!s) return;
-        let html = `<option value=""> — Select — </option>`;
+        let html = `<option value="">${t('common.selectPlaceholder')}</option>`;
         if (list && list.length > 0) {
             list.forEach(v => {
                 const value = typeof v === 'object' ? v.name : v;
-                html += `<option value="${value.replace(/"/g, '&quot;')}">${value}</option>`;
+                const label = (id === 'status') ? tStatus(value) : value;
+                html += `<option value="${value.replace(/"/g, '&quot;')}">${label}</option>`;
             });
         }
         s.innerHTML = html;
@@ -680,7 +683,7 @@
         if (!grid) return;
         grid.innerHTML = '';
         if (!DB.criteria || DB.criteria.length === 0) {
-            grid.innerHTML = '<div class="field-group" style="color: red;">No criteria found in SETUP_AST. Please configure column H.</div>';
+            grid.innerHTML = `<div class="field-group" style="color: red;">${t('ast.criticality.noCriteria')}</div>`;
             return;
         }
         const staticNames = ['hse', 'prod', 'usage', 'oper', 'redun'];
@@ -691,10 +694,10 @@
                 <div class="field-group required-field">
                     <label>${c.name}</label>
                     <select name="${staticName}" class="crit-input" data-crit-name="${c.name.toLowerCase()}" onchange="recalc()" required>
-                        <option value=""> — Select — </option>
-                        <option value="1">1 (Low: ${c.low})</option>
-                        <option value="3">3 (Medium: ${c.med})</option>
-                        <option value="5">5 (High: ${c.high})</option>
+                        <option value="">${t('common.selectPlaceholder')}</option>
+                        <option value="1">1 (${t('ast.criticality.low')}: ${c.low})</option>
+                        <option value="3">3 (${t('ast.criticality.medium')}: ${c.med})</option>
+                        <option value="5">5 (${t('ast.criticality.high')}: ${c.high})</option>
                     </select>
                 </div>`;
         }
@@ -717,7 +720,7 @@
             values[critName] = parseInt(value);
         }
         if (!allSelected) {
-            document.getElementById('critBadge').innerHTML = '⚠️ Complete all criteria above';
+            document.getElementById('critBadge').innerHTML = t('ast.criticality.completeAll');
             document.getElementById('critBadge').style.background = '#f1c40f';
             document.getElementById('critBadge').style.color = '#333';
             return { score: 0, level: 'INCOMPLETE' };
@@ -751,7 +754,7 @@
         }
         badge.style.background = bgColor;
         badge.style.color = textColor;
-        badge.innerHTML = `${level} (SCORE: ${score.toFixed(2)})`;
+        badge.innerHTML = `${tStatus(level)} (${t('ast.criticality.score')}: ${score.toFixed(2)})`;
         return { score: score.toFixed(2), level: level };
     }
 
@@ -769,14 +772,14 @@
         // Si es TL, el padre es el área (ya se maneja en updateFieldStates)
         if (selectedType === 'Technical Location') {
             pSel.disabled = true;
-            pSel.innerHTML = `<option value="${area}">${area} (Root Area)</option>`;
+            pSel.innerHTML = `<option value="${area}">${area} (${t('ast.add.rootArea')})</option>`;
             pSel.value = area;
             return;
         }
         
         // Si no hay área, limpiar
         if (!area || !DB.parents) {
-            pSel.innerHTML = '<option value="N/A">N/A - None / Root Level</option>';
+            pSel.innerHTML = `<option value="N/A">${t('ast.add.parentNA')}</option>`;
             pSel.value = 'N/A';
             return;
         }
@@ -799,7 +802,7 @@
             filtered = DB.parents.filter(p => p.area === area && p.type === 'Technical Location');
         }
         
-        let html = '<option value="N/A">N/A - None / Root Level</option>';
+        let html = `<option value="N/A">${t('ast.add.parentNA')}</option>`;
         filtered.forEach(p => {
             html += `<option value="${p.id}">${p.id} - ${p.name} (${p.type})</option>`;
         });
@@ -819,7 +822,7 @@
         
         // Si status está deshabilitado, no hacer nada
         if (statusSelect.disabled) {
-            statusSelect.innerHTML = '<option value=""> — Select — </option>';
+            statusSelect.innerHTML = `<option value="">${t('common.selectPlaceholder')}</option>`;
             return;
         }
         
@@ -832,10 +835,10 @@
             statusOptions = allStatuses.filter(s => s !== 'Active-PM');
         }
         
-        let html = '<option value=""> — Select — </option>';
+        let html = `<option value="">${t('common.selectPlaceholder')}</option>`;
         statusOptions.forEach(s => {
             const selected = (s === currentStatus) ? 'selected' : '';
-            html += `<option value="${s}" ${selected}>${s}</option>`;
+            html += `<option value="${s}" ${selected}>${tStatus(s)}</option>`;
         });
         statusSelect.innerHTML = html;
     }
@@ -903,7 +906,7 @@
             if (year) { year.disabled = true; year.value = ''; }
             critInputs.forEach(el => { el.disabled = true; el.value = ''; });
             
-            document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+            document.getElementById('critBadge').innerHTML = t('ast.criticality.awaiting');
             document.getElementById('critBadge').style.background = '#ddd';
             document.getElementById('critBadge').style.color = '#333';
             return;
@@ -925,7 +928,7 @@
             if (year) { year.disabled = true; year.value = ''; }
             critInputs.forEach(el => { el.disabled = true; el.value = ''; });
             
-            document.getElementById('critBadge').innerHTML = 'AWAITING DATA...';
+            document.getElementById('critBadge').innerHTML = t('ast.criticality.awaiting');
             document.getElementById('critBadge').style.background = '#ddd';
             document.getElementById('critBadge').style.color = '#333';
             return;
@@ -943,7 +946,7 @@
         if (isTL) {
             if (parentID) {
                 parentID.disabled = true;
-                parentID.innerHTML = `<option value="${areaValue}">${areaValue} (Root Area)</option>`;
+                parentID.innerHTML = `<option value="${areaValue}">${areaValue} (${t('ast.add.rootArea')})</option>`;
                 parentID.value = areaValue;
             }
         } else {
@@ -989,7 +992,7 @@
         const btn = document.getElementById(id);
         if (btn) {
             btn.disabled = false;
-            btn.textContent = 'Register Asset';
+            btn.textContent = t('ast.add.btnRegister');
         }
     }
 
@@ -1034,7 +1037,7 @@
             }
         }
         if (!isValid) {
-            showMessage('Please complete all required fields', true);
+            showMessage(t('ast.add.completeRequired'), true);
         }
         return isValid;
     }
@@ -1055,7 +1058,7 @@
             setupCriticalityGrid();
             // ✅ NO llamar a syncUI() aquí, se llama desde init con timeout
         } catch (error) {
-            showMessage('Failed to load configuration: ' + error.message, 'error');
+            showMessage(t('ast.add.loadConfigError', { error: error.message }), 'error');
             document.getElementById('btnSubmit').disabled = true;
         }
     }
@@ -1082,7 +1085,7 @@
     async function init() {
         loadApiUrl();
         if (EAMS_API_URL) {
-            showLoading('Loading configuration...');
+            showLoading(t('ast.add.loadingConfig'));
             await loadConfig();
             
             // ✅ Asegurar que los selects están vacíos al inicio
@@ -1129,15 +1132,15 @@
                 }
             }, 300);
         } else {
-            showMessage('API URL not configured. Please log in again.', true);
+            showMessage(t('ast.add.apiNotConfiguredLogin'), true);
         }
     }
 
     document.getElementById('assetForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-        disableButton('btnSubmit', 'REGISTERING...');
-        showLoading('Processing Transaction...');
+        disableButton('btnSubmit', t('ast.add.btnRegistering'));
+        showLoading(t('ast.add.processing'));
         const f = new FormData(e.target);
         const payload = Object.fromEntries(f.entries());
         const categoryEl = document.getElementById('category');
@@ -1148,7 +1151,7 @@
         if (crit.level === 'INCOMPLETE') {
             hideLoading();
             enableButton('btnSubmit');
-            showMessage('Please complete all criticality criteria', 'error');
+            showMessage(t('ast.add.completeCriticality'), 'error');
             return;
         }
         payload.name = sanitizeInput(payload.name);
@@ -1195,7 +1198,7 @@
                 //console.log('❌ NO ENTRO AL IF - result.status NO es "error"');
             }
             if (result.status === 'error') {
-                const errorMsg = result.message || 'Unknown error';
+                const errorMsg = result.message || t('common.unknownError');
                 // console.error('[AST] Error:', errorMsg);  // COMENTADO
                 if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                     ModuleBase.showToast('❌ ' + errorMsg, 'error');
@@ -1207,9 +1210,9 @@
                 if (errorMsg.toLowerCase().includes('duplicate') || 
                     errorMsg.toLowerCase().includes('already exists') ||
                     errorMsg.toLowerCase().includes('name already')) {
-                    showMessage('❌ Duplicate asset name found. Please try a different name.', 'error');
+                    showMessage(t('ast.add.duplicateError'), 'error');
                     if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                        ModuleBase.showToast('⚠️ Duplicate name! Please choose a different name.', 'error');
+                        ModuleBase.showToast(t('ast.add.duplicateToast'), 'error');
                     }
                     const nameField = document.getElementById('name');
                     if (nameField) {
@@ -1234,16 +1237,16 @@
             hideLoading();
             enableButton('btnSubmit');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
-                ModuleBase.showToast('Asset saved successfully! ✅', 'success');
+                ModuleBase.showToast(t('ast.add.saveSuccess'), 'success');
             }
-            showMessage(result.message || 'Asset saved successfully!', false);
+            showMessage(result.message || t('ast.add.saveSuccess'), false);
             setTimeout(() => {
                 refreshForm();
             }, 2000);
         } catch (error) {
             // ✅ ERROR DE RED O EXCEPCIÓN
             // console.error('[AST] Exception:', error);  // COMENTADO
-            const errorMsg = error.message || 'Unknown error';
+            const errorMsg = error.message || t('common.unknownError');
             if (window.ModuleBase && typeof ModuleBase.showToast === 'function') {
                 ModuleBase.showToast('❌ ' + errorMsg, 'error');
             } else {
