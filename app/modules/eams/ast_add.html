@@ -671,7 +671,7 @@
         if (list && list.length > 0) {
             list.forEach(v => {
                 const value = typeof v === 'object' ? v.name : v;
-                const label = (id === 'status') ? tStatus(value) : value;
+                const label = (id === 'status' || id === 'type') ? tStatus(value) : value;
                 html += `<option value="${value.replace(/"/g, '&quot;')}">${label}</option>`;
             });
         }
@@ -692,7 +692,7 @@
             const staticName = staticNames[i];
             grid.innerHTML += `
                 <div class="field-group required-field">
-                    <label>${c.name}</label>
+                    <label>${tStatus(c.name)}</label>
                     <select name="${staticName}" class="crit-input" data-crit-name="${c.name.toLowerCase()}" onchange="recalc()" required>
                         <option value="">${t('common.selectPlaceholder')}</option>
                         <option value="1">1 (${t('ast.criticality.low')}: ${c.low})</option>
@@ -804,7 +804,7 @@
         
         let html = `<option value="N/A">${t('ast.add.parentNA')}</option>`;
         filtered.forEach(p => {
-            html += `<option value="${p.id}">${p.id} - ${p.name} (${p.type})</option>`;
+            html += `<option value="${p.id}">${p.id} - ${p.name} (${tStatus(p.type)})</option>`;
         });
         pSel.innerHTML = html;
         
