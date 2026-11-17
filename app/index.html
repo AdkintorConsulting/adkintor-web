@@ -6,7 +6,7 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADKINTOR - Login</title>
+    <title data-i18n="login.pageTitle">ADKINTOR - Login</title>
     <style>
         * {
             margin: 0;
@@ -255,7 +255,11 @@
 </head>
 <body>
     <div class="login-container">
-        <div class="login-box">
+<div class="login-box">
+            <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:10px;">
+                <button type="button" class="lang-switch-btn" data-lang="en" onclick="switchLoginLang('en')" style="background:transparent; border:1px solid #2a2f4a; color:#8a8faa; padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">EN</button>
+                <button type="button" class="lang-switch-btn" data-lang="es" onclick="switchLoginLang('es')" style="background:transparent; border:1px solid #2a2f4a; color:#8a8faa; padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">ES</button>
+            </div>
             <div class="login-logo">
                 <img src="https://i.imgur.com/aQol7vU.png" alt="ADKINTOR Logo">
                 <h1>ADKINTOR</h1>
@@ -264,20 +268,20 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required autocomplete="email" placeholder="user@company.com">
+                    <label for="email" data-i18n="login.emailLabel">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email" placeholder="user@company.com" data-i18n-placeholder="login.emailPlaceholder">
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password" data-i18n="login.passwordLabel">Password</label>
                     <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
                 </div>
                 
                 <div class="forgot-password">
-                    <a id="forgotPasswordBtn">Forgot Password?</a>
+                    <a id="forgotPasswordBtn" data-i18n="login.forgotPassword">Forgot Password?</a>
                 </div>
                 
-                <button type="submit" class="btn-primary" id="loginBtn">
+                <button type="submit" class="btn-primary" id="loginBtn" data-i18n="login.signIn">
                     Sign In
                 </button>
             </form>
@@ -290,20 +294,22 @@
     <div id="forgotModal" class="modal-overlay" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
-                <h3>Reset Password</h3>
+                <h3 data-i18n="login.resetTitle">Reset Password</h3>
                 <button class="modal-close" id="closeModalBtn">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Please contact support to reset your password.</p>
+                <p data-i18n="login.resetMessage">Please contact support to reset your password.</p>
                 <div class="support-email">
                     <a href="mailto:support@adkintor.com">support@adkintor.com</a>
                 </div>
-                <p style="font-size: 12px; text-align: center;">Include your email address and company name in the message.</p>
-                <button class="btn-modal" id="closeModalActionBtn">Got it</button>
+                <p style="font-size: 12px; text-align: center;" data-i18n="login.resetNote">Include your email address and company name in the message.</p>
+                <button class="btn-modal" id="closeModalActionBtn" data-i18n="login.gotIt">Got it</button>
             </div>
         </div>
     </div>
     
+    <script src="js/translations.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
@@ -356,9 +362,9 @@
             const email = emailInput.value.trim();
             const password = passwordInput.value;
             
-            // Basic validation
+        // Basic validation
             if (!email || !password) {
-                showError('Please enter both email and password');
+                showError(t('login.errEmpty'));
                 return;
             }
             
@@ -371,12 +377,12 @@
                 if (result.success) {
                     window.location.href = 'main.html';
                 } else {
-                    let errorMsg = 'Authentication failed';
+                    let errorMsg = t('login.errAuthFailed');
                     if (result.error) {
                         if (result.error.includes('timeout') || result.error.includes('network')) {
-                            errorMsg = 'Network error. Please check your connection.';
+                            errorMsg = t('login.errNetwork');
                         } else if (result.error.includes('password') || result.error.includes('credentials')) {
-                            errorMsg = 'Invalid email or password';
+                            errorMsg = t('login.errInvalidCreds');
                         } else {
                             errorMsg = result.error;
                         }
@@ -385,7 +391,7 @@
                 }
             } catch (error) {
                 // console.error('Login error:', error);  // COMENTADO
-                showError('Connection error. Please try again later.');
+                showError(t('login.errConnection'));
             } finally {
                 setLoading(false);
             }
@@ -406,16 +412,30 @@
         function setLoading(isLoading) {
             if (isLoading) {
                 loginBtn.disabled = true;
-                loginBtn.innerHTML = '<div class="spinner"></div> Signing in...';
+                loginBtn.innerHTML = '<div class="spinner"></div> ' + t('login.signingIn');
                 emailInput.disabled = true;
                 passwordInput.disabled = true;
             } else {
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = 'Sign In';
+                loginBtn.innerHTML = t('login.signIn');
                 emailInput.disabled = false;
                 passwordInput.disabled = false;
             }
         }
+
+        function switchLoginLang(lang) {
+            if (window.I18n) {
+                I18n.setLang(lang, true);
+            }
+            document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
+                var active = btn.getAttribute('data-lang') === (window.I18n ? I18n.getLang() : lang);
+                btn.style.borderColor = active ? '#4a6cf7' : '#2a2f4a';
+                btn.style.color = active ? '#ffffff' : '#8a8faa';
+                btn.style.background = active ? 'rgba(74, 108, 247, 0.2)' : 'transparent';
+            });
+        }
+
+        switchLoginLang(window.I18n ? I18n.getLang() : 'en');
     </script>
 </body>
 </html>
