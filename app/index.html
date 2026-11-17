@@ -255,7 +255,7 @@
 </head>
 <body>
     <div class="login-container">
-<div class="login-box">
+        <div class="login-box">
             <div style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:10px;">
                 <button type="button" class="lang-switch-btn" data-lang="en" onclick="switchLoginLang('en')" style="background:transparent; border:1px solid #2a2f4a; color:#8a8faa; padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">EN</button>
                 <button type="button" class="lang-switch-btn" data-lang="es" onclick="switchLoginLang('es')" style="background:transparent; border:1px solid #2a2f4a; color:#8a8faa; padding:3px 9px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">ES</button>
@@ -362,7 +362,7 @@
             const email = emailInput.value.trim();
             const password = passwordInput.value;
             
-        // Basic validation
+            // Basic validation
             if (!email || !password) {
                 showError(t('login.errEmpty'));
                 return;
