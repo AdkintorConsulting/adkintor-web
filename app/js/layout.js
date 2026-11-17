@@ -3,7 +3,7 @@
  * LAYOUT MODULE - ADKINTOR WEB APP
  * ============================================
  * VERSIÓN: 1.0.0
- * FECHA: 2026-08-26
+ * FECHA: 2026-11-17
  * 
  * Controlador principal de la interfaz:
  * - Sidebar navigation (FORESIGHT modules)
@@ -62,16 +62,18 @@ function updateDateAndWeek() {
     const dateWeekElement = document.getElementById('dateWeekDisplay');
     if (!dateWeekElement) return;
     
+    const locale = window.I18n ? I18n.getLocale() : 'en-US';
+    const weekLabel = window.t ? t('layout.week') : 'Week';
     const now = new Date();
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    const formattedDate = now.toLocaleDateString('en-US', options);
+    const formattedDate = now.toLocaleDateString(locale, options);
     
     // Calcular número de semana
     const startDate = new Date(now.getFullYear(), 0, 1);
     const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
     const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
     
-    dateWeekElement.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | Week ${weekNumber}`;
+    dateWeekElement.innerHTML = `<i class="fas fa-calendar-week"></i> ${formattedDate} | ${weekLabel} ${weekNumber}`;
 }
 
 // Función para mostrar nombre del cliente
@@ -85,7 +87,7 @@ function updateClientInfo() {
         clientInfoElement.innerHTML = `<i class="fas fa-building"></i> ${clientName}`;
     } catch (error) {
         //console.error('Error loading client info:', error);
-        clientInfoElement.innerHTML = `<i class="fas fa-building"></i> CLIENT`;
+        clientInfoElement.innerHTML = `<i class="fas fa-building"></i> ${window.t ? t('layout.clientFallback') : 'CLIENT'}`;
     }
 }
 
@@ -352,8 +354,8 @@ function showPlaceholderInModal(moduleTitle) {
                 <div class="placeholder">
                     <i class="fas fa-code-branch"></i>
                     <h2>${moduleTitle}</h2>
-                    <p>Module under development</p>
-                    <p style="font-size: 0.9rem;">Coming soon in the next release</p>
+                    <p>${window.t ? t('layout.underDevelopment') : 'Module under development'}</p>
+                    <p style="font-size: 0.9rem;">${window.t ? t('layout.comingSoon') : 'Coming soon in the next release'}</p>
                 </div>
             </body>
             </html>
@@ -439,9 +441,10 @@ function openAssetDispatcher() {
                 const scripts = tempDiv.querySelectorAll('script');
                 scripts.forEach(script => script.remove());
                 dynamicContent.innerHTML = tempDiv.innerHTML;
+                if (window.I18n) I18n.applyTranslations(dynamicContent);
                 
                 if (breadcrumbDynamic) {
-                    breadcrumbDynamic.textContent = 'ASSETS';
+                    breadcrumbDynamic.textContent = window.t ? t('layout.bcAssets') : 'ASSETS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
@@ -457,7 +460,7 @@ function openAssetDispatcher() {
             })
             .catch(error => {
                 //console.error('Error loading ASSET dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Asset Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>${window.t ? t('layout.errLoadAssetDisp') : 'Error loading Asset Dispatcher'}</h3><p>${window.t ? t('common.tryAgainLater') : 'Please try again later'}</p></div>`;
             });
     }
 }
@@ -482,9 +485,10 @@ function openWorkOrderDispatcher() {
                 const scripts = tempDiv.querySelectorAll('script');
                 scripts.forEach(script => script.remove());
                 dynamicContent.innerHTML = tempDiv.innerHTML;
+                if (window.I18n) I18n.applyTranslations(dynamicContent);
                 
                 if (breadcrumbDynamic) {
-                    breadcrumbDynamic.textContent = 'WORK ORDERS';
+                    breadcrumbDynamic.textContent = window.t ? t('layout.bcWorkOrders') : 'WORK ORDERS';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
@@ -500,7 +504,7 @@ function openWorkOrderDispatcher() {
             })
             .catch(error => {
                 //console.error('Error loading WO dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Work Order Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>${window.t ? t('layout.errLoadWoDisp') : 'Error loading Work Order Dispatcher'}</h3><p>${window.t ? t('common.tryAgainLater') : 'Please try again later'}</p></div>`;
             });
     }
 }
@@ -595,9 +599,10 @@ function openPreventiveDispatcher() {
                 const scripts = tempDiv.querySelectorAll('script');
                 scripts.forEach(script => script.remove());
                 dynamicContent.innerHTML = tempDiv.innerHTML;
+                if (window.I18n) I18n.applyTranslations(dynamicContent);
                 
                 if (breadcrumbDynamic) {
-                    breadcrumbDynamic.textContent = 'PREVENTIVE';
+                    breadcrumbDynamic.textContent = window.t ? t('layout.bcPreventive') : 'PREVENTIVE';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
@@ -613,7 +618,7 @@ function openPreventiveDispatcher() {
             })
             .catch(error => {
                 //console.error('Error loading PVT dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Preventive Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>${window.t ? t('layout.errLoadPvtDisp') : 'Error loading Preventive Dispatcher'}</h3><p>${window.t ? t('common.tryAgainLater') : 'Please try again later'}</p></div>`;
             });
     }
 }
@@ -708,9 +713,10 @@ function openInventoryDispatcher() {
                 const scripts = tempDiv.querySelectorAll('script');
                 scripts.forEach(script => script.remove());
                 dynamicContent.innerHTML = tempDiv.innerHTML;
+                if (window.I18n) I18n.applyTranslations(dynamicContent);
                 
                 if (breadcrumbDynamic) {
-                    breadcrumbDynamic.textContent = 'INVENTORY';
+                    breadcrumbDynamic.textContent = window.t ? t('layout.bcInventory') : 'INVENTORY';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
@@ -726,7 +732,7 @@ function openInventoryDispatcher() {
             })
             .catch(error => {
                 //console.error('Error loading STK dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Inventory Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>${window.t ? t('layout.errLoadStkDisp') : 'Error loading Inventory Dispatcher'}</h3><p>${window.t ? t('common.tryAgainLater') : 'Please try again later'}</p></div>`;
             });
     }
 }
@@ -801,9 +807,10 @@ function openCalibrationDispatcher() {
                 const scripts = tempDiv.querySelectorAll('script');
                 scripts.forEach(script => script.remove());
                 dynamicContent.innerHTML = tempDiv.innerHTML;
+                if (window.I18n) I18n.applyTranslations(dynamicContent);
                 
                 if (breadcrumbDynamic) {
-                    breadcrumbDynamic.textContent = 'CALIBRATION';
+                    breadcrumbDynamic.textContent = window.t ? t('layout.bcCalibration') : 'CALIBRATION';
                     breadcrumbDynamic.style.display = 'inline';
                 }
                 
@@ -819,7 +826,7 @@ function openCalibrationDispatcher() {
             })
             .catch(error => {
                 //console.error('Error loading CAL dispatcher:', error);
-                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>Error loading Calibration Dispatcher</h3><p>Please try again later</p></div>`;
+                dynamicContent.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h3>${window.t ? t('layout.errLoadCalDisp') : 'Error loading Calibration Dispatcher'}</h3><p>${window.t ? t('common.tryAgainLater') : 'Please try again later'}</p></div>`;
             });
     }
 }
@@ -891,7 +898,7 @@ function openPlantLayout() {
     // Actualizar breadcrumb
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     if (breadcrumbDynamic) {
-        breadcrumbDynamic.textContent = 'PLANT LAYOUT';
+        breadcrumbDynamic.textContent = window.t ? t('layout.bcPlantLayout') : 'PLANT LAYOUT';
         breadcrumbDynamic.style.display = 'inline';
     }
 }
@@ -913,7 +920,7 @@ function openSysWizard() {
     // Actualizar breadcrumb
     const breadcrumbDynamic = document.getElementById('dynamicBreadcrumb');
     if (breadcrumbDynamic) {
-        breadcrumbDynamic.textContent = 'SYSTEM > Configurator';
+        breadcrumbDynamic.textContent = window.t ? t('layout.bcSysConfigurator') : 'SYSTEM > Configurator';
         breadcrumbDynamic.style.display = 'inline';
     }
 }
@@ -941,9 +948,29 @@ function openIframeModalWithTitle(title, url) {
             if (maximizeBtn) maximizeBtn.innerHTML = '❐';
         }
         
-        // Enviar logo y versión al iframe
+        // Enviar logo, versión e idioma al iframe
         loadCompanyLogoForIframe(iframe);
         sendVersionToIframe(iframe);
+        sendLanguageToIframe(iframe);
+    }
+}
+
+function sendLanguageToIframe(iframe) {
+    const lang = window.I18n ? I18n.getLang() : 'en';
+    const send = () => {
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'SET_LANGUAGE',
+                lang: lang
+            }, '*');
+        }
+    };
+    if (iframe && iframe.contentWindow && iframe.contentWindow.document &&
+        iframe.contentWindow.document.readyState === 'complete') {
+        send();
+    }
+    if (iframe) {
+        iframe.addEventListener('load', send, { once: true });
     }
 }
 
@@ -1127,9 +1154,9 @@ function openAssetModal(type) {
     if (breadcrumbDynamic) {
         let path = '';
         switch(type) {
-            case 'add': path = 'ASSETS > Add Asset'; break;
-            case 'master': path = 'ASSETS > Asset Master'; break;
-            case 'modify': path = 'ASSETS > Modify Asset'; break;
+            case 'add': path = window.t ? t('layout.bcAssetsAdd') : 'ASSETS > Add Asset'; break;
+            case 'master': path = window.t ? t('layout.bcAssetsMaster') : 'ASSETS > Asset Master'; break;
+            case 'modify': path = window.t ? t('layout.bcAssetsModify') : 'ASSETS > Modify Asset'; break;
         }
         breadcrumbDynamic.textContent = path;
         breadcrumbDynamic.style.display = 'inline';
@@ -1267,9 +1294,9 @@ async function loadUserRoleAndPermissions() {
             loadingDiv.innerHTML = `
                 <div class="welcome-message">
                     <i class="fas fa-chalkboard-user"></i>
-                    <h2>Welcome back, ${userName}!</h2>
-                    <p>Role: ${userRole}</p>
-                    <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                    <h2>${window.t ? t('layout.welcomeBack', { name: userName }) : `Welcome back, ${userName}!`}</h2>
+                    <p>${window.t ? t('layout.roleLabel', { role: userRole }) : `Role: ${userRole}`}</p>
+                    <p>${window.t ? t('layout.selectModuleHint') : 'Select a module from the sidebar or EAMS buttons to get started'}</p>
                 </div>
             `;
         }
@@ -1279,8 +1306,8 @@ async function loadUserRoleAndPermissions() {
             loadingDiv.innerHTML = `
                 <div class="welcome-message">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <h2>Welcome</h2>
-                    <p>Select a module from the sidebar or EAMS buttons to get started</p>
+                    <h2>${window.t ? t('layout.welcomeFallback') : 'Welcome'}</h2>
+                    <p>${window.t ? t('layout.selectModuleHint') : 'Select a module from the sidebar or EAMS buttons to get started'}</p>
                 </div>
             `;
         }
@@ -1417,6 +1444,15 @@ window.addEventListener('message', function(event) {
                 version: versionSpan.innerText
             }, '*');
         }
+        return;
+    }
+    
+    // ✅ Manejar solicitud de idioma
+    if (data.type === 'REQUEST_LANGUAGE') {
+        event.source.postMessage({
+            type: 'SET_LANGUAGE',
+            lang: window.I18n ? I18n.getLang() : 'en'
+        }, '*');
         return;
     }
     
