@@ -204,7 +204,7 @@ window.ADKINTOR_TRANSLATIONS = {
             reqLastCal: 'Last Calibration date is required'
         }
 
-,
+        ,
         login: {
             pageTitle: 'ADKINTOR - Login',
             emailLabel: 'Email',
@@ -504,7 +504,7 @@ window.ADKINTOR_TRANSLATIONS = {
             reqLastCal: 'La fecha de Última Calibración es obligatoria'
         }
 
-,
+        ,
         login: {
             pageTitle: 'ADKINTOR - Iniciar Sesión',
             emailLabel: 'Correo Electrónico',
