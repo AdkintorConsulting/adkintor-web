@@ -1267,7 +1267,7 @@
             if (statusFilter && config.statuses) {
                 var statusHtml = '<option value="">' + t('cal.allStatus') + '</option>';
                 for (var i = 0; i < config.statuses.length; i++) {
-                    statusHtml += '<option value="' + config.statuses[i] + '">' + tStatus(config.statuses[i]) + '</option>';
+                    statusHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
                 }
                 statusFilter.innerHTML = statusHtml;
             }
@@ -1295,7 +1295,7 @@
             if (statusField && config.statuses) {
                 var statusFieldHtml = '<option value="">' + t('cal.selectStatus') + '</option>';
                 for (var i = 0; i < config.statuses.length; i++) {
-                    statusFieldHtml += '<option value="' + config.statuses[i] + '">' + tStatus(config.statuses[i]) + '</option>';
+                    statusFieldHtml += '<option value="' + config.statuses[i] + '">' + config.statuses[i] + '</option>';
                 }
                 statusField.innerHTML = statusFieldHtml;
             }
