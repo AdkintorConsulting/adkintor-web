@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Master - ADKINTOR EAMS</title>
+    <title data-i18n="ast.master.pageTitle">Asset Master - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
       /* ============================================
           BASE
@@ -613,7 +615,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading assets...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="ast.master.loadingAssets">Loading assets...</span>
 </div>
 
 <!-- TOAST -->
@@ -625,31 +627,31 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Asset Master</span>
+            <span class="module-title" data-i18n="ast.master.title">Asset Master</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>ASSETS</span> &gt; <span class="current">Asset Master</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="ast.breadcrumb">ASSETS</span> &gt; <span class="current" data-i18n="ast.master.title">Asset Master</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <div class="master-container">
             <div class="left-pane">
-                <div class="pane-header">📁 Asset Explorer</div>
+                <div class="pane-header" data-i18n="ast.master.explorerTitle">📁 Asset Explorer</div>
                 <div class="search-area">
                     <div class="search-group">
-                        <input type="text" id="search-input" placeholder="Search by Asset ID or Name..." autocomplete="off">
-                        <button id="search-btn">SEARCH</button>
+                        <input type="text" id="search-input" placeholder="Search by Asset ID or Name..." data-i18n-placeholder="ast.master.searchPlaceholder" autocomplete="off">
+                        <button id="search-btn" data-i18n="ast.master.btnSearchUpper">SEARCH</button>
                     </div>
                     <div class="search-group" style="margin-top: 8px;">
-                        <button class="btn-primary" onclick="printMasterList()" style="background: #2c3e50; width: 100%;">
+                        <button class="btn-primary" onclick="printMasterList()" style="background: #2c3e50; width: 100%;" data-i18n-html="ast.master.btnPrintMaster">
                             <i class="fas fa-print"></i> Print Master List
                         </button>
                     </div>
@@ -657,7 +659,7 @@
                 </div>
                 <div class="tree-view" id="tree-view">
                     <div style="text-align:center;padding:20px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
-                        <i class="fas fa-spinner fa-spin"></i> Loading assets...
+                        <i class="fas fa-spinner fa-spin"></i> <span data-i18n="ast.master.loadingAssets">Loading assets...</span>
                     </div>
                 </div>
             </div>
@@ -665,8 +667,8 @@
             <div class="right-pane">
                 <div id="welcome-msg" class="welcome-msg">
                     <div class="emoji-big">📑</div>
-                    <h2 style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Asset Intelligence Terminal</h2>
-                    <p style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Search or click on an asset in the tree, then click <strong>SEARCH</strong> to view details.</p>
+                    <h2 style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="ast.master.terminalTitle">Asset Intelligence Terminal</h2>
+                    <p style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="ast.master.terminalDesc">Search or click on an asset in the tree, then click <strong>SEARCH</strong> to view details.</p>
                 </div>
                 <div id="dashboard" style="display: none;">
                     <div class="dashboard-header">
@@ -675,10 +677,10 @@
                             <span class="asset-id" id="d-id">TAG: ---</span>
                         </div>
                         <div class="button-group">
-                            <button class="btn-secondary" onclick="backToSearch()">
+                            <button class="btn-secondary" onclick="backToSearch()" data-i18n-html="ast.master.btnBack">
                                 <i class="fas fa-arrow-left"></i> Back to Search
                             </button>
-                            <button class="btn-primary" onclick="printDashboard()">
+                            <button class="btn-primary" onclick="printDashboard()" data-i18n-html="ast.master.btnPrintDatasheet">
                                 <i class="fas fa-print"></i> Print Datasheet
                             </button>
                         </div>
@@ -687,59 +689,59 @@
                     
                     <div class="grid-2">
                         <div class="field-group">
-                            <label>Functional Area</label>
+                            <label data-i18n="ast.master.functionalArea">Functional Area</label>
                             <div id="d-area" class="data-value">---</div>
                         </div>
                         <div class="field-group">
-                            <label>Category / Subtype</label>
+                            <label data-i18n="ast.fields.category">Category / Subtype</label>
                             <div id="d-category" class="data-value">---</div>
                         </div>
                     </div>
                     
                     <div class="grid-2">
                         <div class="field-group">
-                            <label>Manufacturer</label>
+                            <label data-i18n="ast.fields.manufacturer">Manufacturer</label>
                             <div id="d-man" class="data-value">---</div>
                         </div>
                         <div class="field-group">
-                            <label>Model</label>
+                            <label data-i18n="ast.fields.model">Model</label>
                             <div id="d-model" class="data-value">---</div>
                         </div>
                     </div>
                     
                     <div class="grid-2">
                         <div class="field-group">
-                            <label>Serial Number</label>
+                            <label data-i18n="ast.fields.serial">Serial Number</label>
                             <div id="d-serial" class="data-value">---</div>
                         </div>
                         <div class="field-group">
-                            <label>Installation Year</label>
+                            <label data-i18n="ast.master.installYear">Installation Year</label>
                             <div id="d-year" class="data-value">---</div>
                         </div>
                     </div>
                     
                     <div class="grid-2">
                         <div class="field-group">
-                            <label>Asset Status</label>
+                            <label data-i18n="ast.master.assetStatus">Asset Status</label>
                             <div id="d-status" class="data-value">---</div>
                         </div>
                         <div class="field-group">
-                            <label>Asset Classification</label>
+                            <label data-i18n="ast.master.assetClass">Asset Classification</label>
                             <div id="d-type" class="data-value">---</div>
                         </div>
                     </div>
                     
                     <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 20px;">
-                        <label style="font-size: 0.8rem; font-weight: bold; color: #2c3e50; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                        <label style="font-size: 0.8rem; font-weight: bold; color: #2c3e50; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="ast.master.riskSectionTitle">
                             <i class="fas fa-chart-line"></i> RISK & CRITICALITY ASSESSMENT
                         </label>
                         <div class="grid-2" style="margin-top: 15px;">
                             <div class="crit-card">
-                                <div style="font-size: 0.7rem; font-weight: bold; color: #64748b; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">WEIGHTED RISK SCORE</div>
+                                <div style="font-size: 0.7rem; font-weight: bold; color: #64748b; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="ast.master.weightedScore">WEIGHTED RISK SCORE</div>
                                 <div id="d-score" class="crit-value-large">0.00</div>
                             </div>
                             <div class="crit-card">
-                                <div style="font-size: 0.7rem; font-weight: bold; color: #64748b; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">CRITICALITY RANKING</div>
+                                <div style="font-size: 0.7rem; font-weight: bold; color: #64748b; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="ast.master.criticalityRanking">CRITICALITY RANKING</div>
                                 <div id="d-level" class="crit-value-large">---</div>
                             </div>
                         </div>
@@ -753,7 +755,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -827,7 +829,7 @@
   function showLoading(msg) {
       const overlay = document.getElementById('loadingOverlay');
       const span = overlay.querySelector('span');
-      if (span) span.innerText = msg || 'Loading...';
+      if (span) span.innerText = msg || t('common.loading');
       overlay.classList.add('visible');
   }
   
@@ -865,7 +867,7 @@
               const sessionData = JSON.parse(session);
               EAMS_API_URL = sessionData.eamsApiUrl;
               const userDisplay = document.getElementById('userDisplay');
-              if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+              if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('ast.master.userFallback');
           } catch(e) {
               // console.error('Error parsing session:', e);  // COMENTADO
           }
@@ -878,7 +880,7 @@
   
   async function callApi(action, args = []) {
       if (!EAMS_API_URL) {
-          throw new Error('API URL not configured');
+          throw new Error(t('common.apiNotConfigured'));
       }
       
       const response = await fetch(PROXY_URL, {
@@ -893,7 +895,7 @@
       const result = await response.json();
       
       if (!result.success) {
-          throw new Error(result.error || 'Unknown error');
+          throw new Error(result.error || t('common.unknownError'));
       }
       
       return result.data;
@@ -946,7 +948,7 @@
       var treeDiv = document.getElementById('tree-view');
       if (!treeDiv) return;
       if (!hierarchy || hierarchy.length === 0) {
-          treeDiv.innerHTML = '<div style="text-align:center;padding:20px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No assets found</div>';
+          treeDiv.innerHTML = `<div style="text-align:center;padding:20px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">${t('ast.master.noAssetsFound')}</div>`;
           return;
       }
       treeDiv.innerHTML = buildTreeHTML(hierarchy);
@@ -971,7 +973,7 @@
                       var type = el.getAttribute('data-type');
                       if (id && id !== '' && type !== 'AREA_ROOT') {
                           document.getElementById('search-input').value = id;
-                          showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+                          showMessage(t('ast.master.assetIdLoaded'), false);
                       }
                   };
               })(header, container);
@@ -981,7 +983,7 @@
                   var id = this.getAttribute('data-id');
                   if (id && id !== '') {
                       document.getElementById('search-input').value = id;
-                      showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+                      showMessage(t('ast.master.assetIdLoaded'), false);
                   }
               };
           }
@@ -989,18 +991,18 @@
   }
   
   async function loadTree() {
-      showLoading('Loading assets...');
+      showLoading(t('ast.master.loadingAssets'));
       try {
           const response = await callApi('AST_getAssetHierarchy', []);
           flatAssetsList = response.flatList || [];
           currentHierarchy = response.hierarchy || [];
           renderTree(currentHierarchy);
-          showMessage('Ready: ' + (response.totalAssets || 0) + ' assets loaded', false);
+          showMessage(t('ast.master.readyLoaded', { count: response.totalAssets || 0 }), false);
           hideLoading();
       } catch (error) {
           hideLoading();
-          showMessage('Error loading assets: ' + error.message, true);
-          document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading data</div>';
+          showMessage(t('ast.master.errorLoadingAssets', { error: error.message }), true);
+          document.getElementById('tree-view').innerHTML = `<div style="text-align:center;padding:20px;color:#dc2626;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">${t('ast.master.errorLoadingData')}</div>`;
       }
   }
   
@@ -1042,7 +1044,7 @@
   function selectSuggestion(assetId) {
       document.getElementById('search-input').value = assetId;
       document.getElementById('suggestions').style.display = 'none';
-      showMessage('Asset ID loaded. Click SEARCH to view details.', false);
+      showMessage(t('ast.master.assetIdLoaded'), false);
   }
   
   // ============================================
@@ -1059,30 +1061,30 @@
   async function performSearch(searchValue) {
       if (isSearching) return;
       if (!searchValue || searchValue.trim() === '') {
-          showMessage('Please enter an Asset ID or Name', true);
+          showMessage(t('ast.master.enterIdOrName'), true);
           return;
       }
       
       isSearching = true;
-      showLoading('Searching...');
+      showLoading(t('ast.master.searching'));
       
       try {
           const result = await callApi('AST_getAssetById', [searchValue.trim()]);
           const asset = result.asset || result;
           
           if (!asset || !asset.id) {
-              throw new Error('Asset not found');
+              throw new Error(t('ast.master.assetNotFound'));
           }
           
           currentAsset = asset;
           document.getElementById('welcome-msg').style.display = 'none';
           document.getElementById('dashboard').style.display = 'block';
           document.getElementById('d-name').innerText = sanitizeString(asset.name);
-          document.getElementById('d-id').innerText = 'TAG: ' + sanitizeString(asset.id);
+          document.getElementById('d-id').innerText = t('ast.master.tag') + ': ' + sanitizeString(asset.id);
           document.getElementById('d-area').innerText = sanitizeString(asset.area);
           document.getElementById('d-category').innerText = sanitizeString(asset.category) || '—';
           document.getElementById('d-type').innerText = sanitizeString(asset.type);
-          document.getElementById('d-status').innerText = sanitizeString(asset.status);
+          document.getElementById('d-status').innerText = tStatus(sanitizeString(asset.status));
           document.getElementById('d-man').innerText = sanitizeString(asset.manufacturer) || '—';
           document.getElementById('d-model').innerText = sanitizeString(asset.model) || '—';
           document.getElementById('d-serial').innerText = sanitizeString(asset.serial) || '—';
@@ -1091,13 +1093,13 @@
           
           var lvl = asset.criticality || 'C - STANDARD';
           var lvlEl = document.getElementById('d-level');
-          lvlEl.innerText = sanitizeString(lvl);
+          lvlEl.innerText = tStatus(sanitizeString(lvl));
           lvlEl.className = 'crit-value-large ' + getCriticalityClass(lvl);
           
           hideLoading();
       } catch (error) {
           hideLoading();
-          showMessage(error.message || 'Asset not found', true);
+          showMessage(error.message || t('ast.master.assetNotFound'), true);
       }
       
       isSearching = false;
@@ -1109,7 +1111,7 @@
   
   function printDashboard() {
       if (!currentAsset) {
-          showMessage('No asset selected to print', true);
+          showMessage(t('ast.master.noAssetToPrint'), true);
           return;
       }
       
@@ -1146,61 +1148,61 @@
               <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('ast.master.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewDatasheet()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('ast.master.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET DATASHEET</h1>
+              <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">${t('ast.master.datasheetTitle')}</h1>
               <div style="margin-bottom: 20px;">
                   <div style="font-size: 20px; font-weight: bold;">${s(asset.name)}</div>
-                  <div style="font-family: monospace; color: #1a56db; font-size: 14px;">TAG: ${s(asset.id)}</div>
+                  <div style="font-family: monospace; color: #1a56db; font-size: 14px;">${t('ast.master.tag')}: ${s(asset.id)}</div>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Functional Area</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.functionalArea')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.area)}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Category / Subtype</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.fields.category')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.category)}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Manufacturer</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.fields.manufacturer')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.manufacturer)}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Model</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.fields.model')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.model)}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Serial Number</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.fields.serial')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.serial)}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Installation Year</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.installYear')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${asset.installYear || asset.year || '—'}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Status</div>
-                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.status)}</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.assetStatus')}</div>
+                      <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${tStatus(s(asset.status))}</div>
                   </div>
                   <div>
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Asset Classification</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.assetClass')}</div>
                       <div style="font-size: 14px; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">${s(asset.type)}</div>
                   </div>
               </div>
               <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                   <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Weighted Risk Score</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.weightedScore')}</div>
                       <div style="font-size: 28px; font-weight: 800; margin-top: 10px;">${(asset.weightedScore || 0).toFixed(2)}</div>
                   </div>
                   <div style="padding: 20px; border-radius: 6px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Criticality Ranking</div>
-                      <div style="font-size: 28px; font-weight: 800; margin-top: 10px; ${getCriticalityClass(asset.criticality) ? 'color: ' + (getCriticalityClass(asset.criticality) === 'lvl-A' ? '#dc2626' : getCriticalityClass(asset.criticality) === 'lvl-B' ? '#d97706' : '#10b981') : ''}">${s(asset.criticality)}</div>
+                      <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">${t('ast.master.criticalityRanking')}</div>
+                      <div style="font-size: 28px; font-weight: 800; margin-top: 10px; ${getCriticalityClass(asset.criticality) ? 'color: ' + (getCriticalityClass(asset.criticality) === 'lvl-A' ? '#dc2626' : getCriticalityClass(asset.criticality) === 'lvl-B' ? '#d97706' : '#10b981') : ''}">${tStatus(s(asset.criticality))}</div>
                   </div>
               </div>
           </div>
@@ -1229,13 +1231,13 @@
   }
   
   async function printMasterList() {
-      showLoading('Generating Master List...');
+      showLoading(t('ast.master.generatingMasterList'));
       
       try {
           const res = await callApi('AST_getAssetHierarchyFlat', []);
           const assets = res.assets;
           const stats = res.stats;
-          const generatedDate = res.generatedDate || new Date().toLocaleString();
+          const generatedDate = res.generatedDate || new Date().toLocaleString(I18n.getLocale());
           
           // Construir tabla
           let tableRows = '';
@@ -1259,8 +1261,8 @@
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.type || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.manufacturer || '—') + '</td>';
                   tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.model || '—') + '</td>';
-                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.status || '—') + '</td>';
-                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + sanitizeString(a.criticality || '—') + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + tStatus(sanitizeString(a.status || '—')) + '</td>';
+                  tableRows += '<td style="padding:8px; border-bottom:1px solid #e2e8f0;">' + tStatus(sanitizeString(a.criticality || '—')) + '</td>';
                   tableRows += '</tr>';
               }
           }
@@ -1274,56 +1276,56 @@
                   <div class="no-print" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:12px;">
                       <div style="display:flex; gap:10px;">
                           <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                              <i class="fas fa-times"></i> CLOSE
+                              <i class="fas fa-times"></i> ${t('ast.master.btnCloseUpper')}
                           </button>
                           <button class="btn-outline" onclick="printPreviewMasterList()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                              <i class="fas fa-print"></i> PRINT
+                              <i class="fas fa-print"></i> ${t('ast.master.btnPrintUpper')}
                           </button>
                       </div>
                   </div>
                   
-                  <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">ASSET MASTER REGISTER</h1>
-                  <div style="text-align: right; font-size: 11px; color: #64748b; margin-bottom: 20px;">Generated: ${generatedDate}</div>
+                  <h1 style="font-size: 22px; margin-bottom: 20px; color: #1a1a2e;">${t('ast.master.masterRegisterTitle')}</h1>
+                  <div style="text-align: right; font-size: 11px; color: #64748b; margin-bottom: 20px;">${t('ast.master.generated')}: ${generatedDate}</div>
                   <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                       <thead>
                           <tr style="background: #2c3e50; color: white;">
-                              <th style="padding: 8px; text-align: left;">AREA</th>
-                              <th style="padding: 8px; text-align: left;">ASSET ID</th>
-                              <th style="padding: 8px; text-align: left;">ASSET NAME</th>
-                              <th style="padding: 8px; text-align: left;">TYPE</th>
-                              <th style="padding: 8px; text-align: left;">MANUFACTURER</th>
-                              <th style="padding: 8px; text-align: left;">MODEL</th>
-                              <th style="padding: 8px; text-align: left;">STATUS</th>
-                              <th style="padding: 8px; text-align: left;">CRITICALITY</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colArea')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colAssetId')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colAssetName')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colType')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colManufacturer')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colModel')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colStatus')}</th>
+                              <th style="padding: 8px; text-align: left;">${t('ast.master.colCriticality')}</th>
                           </tr>
                       </thead>
                       <tbody>${tableRows}</tbody>
                   </table>
                   <div style="margin-top: 30px; border-top: 2px solid #2c3e50; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 30px;">
                       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">📊 GENERAL COUNTS</h4>
-                          <p>Areas: <strong>${stats.totalAreas || 0}</strong></p>
-                          <p>Technical Locations: <strong>${stats.totalTechLocations || 0}</strong></p>
-                          <p>Main Equipment: <strong>${stats.totalMainEquipment || 0}</strong></p>
-                          <p>Other Equipment: <strong>${stats.totalOtherEquipment || 0}</strong></p>
-                          <p><strong>TOTAL EQUIPMENT: ${stats.totalEquipment || 0}</strong></p>
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">${t('ast.master.generalCounts')}</h4>
+                          <p>${t('ast.master.areasCount')} <strong>${stats.totalAreas || 0}</strong></p>
+                          <p>${t('ast.master.techLocationsCount')} <strong>${stats.totalTechLocations || 0}</strong></p>
+                          <p>${t('ast.master.mainEquipmentCount')} <strong>${stats.totalMainEquipment || 0}</strong></p>
+                          <p>${t('ast.master.otherEquipmentCount')} <strong>${stats.totalOtherEquipment || 0}</strong></p>
+                          <p><strong>${t('ast.master.totalEquipment')} ${stats.totalEquipment || 0}</strong></p>
                       </div>
                       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">⚙️ BY STATUS</h4>
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">${t('ast.master.byStatus')}</h4>
                           ${Object.keys(stats.statusCounts || {}).length > 0 ? 
                               Object.entries(stats.statusCounts).map(([key, value]) => 
-                                  `<p>${key}: <strong>${value}</strong></p>`
+                                  `<p>${tStatus(key)}: <strong>${value}</strong></p>`
                               ).join('') : 
-                              '<p>No status data</p>'
+                              `<p>${t('ast.master.noStatusData')}</p>`
                           }
-                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${Object.values(stats.statusCounts || {}).reduce((a,b) => a + b, 0)}</strong></p>
+                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>${t('ast.master.total')} ${Object.values(stats.statusCounts || {}).reduce((a,b) => a + b, 0)}</strong></p>
                       </div>
                       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 20px; min-width: 180px;">
-                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">🎯 BY CRITICALITY</h4>
-                          <p>A - CRITICAL: <strong>${stats.criticalityCounts?.A || 0}</strong></p>
-                          <p>B - IMPORTANT: <strong>${stats.criticalityCounts?.B || 0}</strong></p>
-                          <p>C - STANDARD: <strong>${stats.criticalityCounts?.C || 0}</strong></p>
-                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>TOTAL: ${(stats.criticalityCounts?.A || 0) + (stats.criticalityCounts?.B || 0) + (stats.criticalityCounts?.C || 0)}</strong></p>
+                          <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 12px;">${t('ast.master.byCriticality')}</h4>
+                          <p>${tStatus('A - CRITICAL')}: <strong>${stats.criticalityCounts?.A || 0}</strong></p>
+                          <p>${tStatus('B - IMPORTANT')}: <strong>${stats.criticalityCounts?.B || 0}</strong></p>
+                          <p>${tStatus('C - STANDARD')}: <strong>${stats.criticalityCounts?.C || 0}</strong></p>
+                          <p style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;"><strong>${t('ast.master.total')} ${(stats.criticalityCounts?.A || 0) + (stats.criticalityCounts?.B || 0) + (stats.criticalityCounts?.C || 0)}</strong></p>
                       </div>
                   </div>
               </div>
@@ -1348,7 +1350,7 @@
           
       } catch (error) {
           hideLoading();
-          showMessage('Error generating master list: ' + error.message, true);
+          showMessage(t('ast.master.errorMasterList', { error: error.message }), true);
       }
   }
 
@@ -1397,8 +1399,8 @@
       if (EAMS_API_URL) {
           loadTree();
       } else {
-          showMessage('API URL not configured. Please log in again.', true);
-          document.getElementById('tree-view').innerHTML = '<div style="text-align:center;padding:20px;color:#dc2626;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Authentication required. Please refresh the page.</div>';
+          showMessage(t('ast.add.apiNotConfiguredLogin'), true);
+          document.getElementById('tree-view').innerHTML = `<div style="text-align:center;padding:20px;color:#dc2626;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">${t('ast.master.authRequired')}</div>`;
       }
       
       var searchInput = document.getElementById('search-input');
