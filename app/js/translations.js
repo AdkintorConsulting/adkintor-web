@@ -305,6 +305,55 @@ window.ADKINTOR_TRANSLATIONS = {
             docFaqViewer: 'FAQ Viewer'
         }
 
+        ,
+        disp: {
+            astTitle: 'ASSET MANAGEMENT HUB',
+            astAddTitle: 'ADD ASSET',
+            astAddDesc: 'Register new equipment',
+            astMasterTitle: 'ASSET MASTER',
+            astMasterDesc: 'View and manage database',
+            astModifyTitle: 'MODIFY ASSET',
+            astModifyDesc: 'Update existing information',
+
+            calTitle: 'CALIBRATION HUB',
+            calViewerTitle: 'CALIBRATION VIEWER',
+            calViewerDesc: 'Read-only instrument viewer',
+            calManagerTitle: 'CALIBRATION MANAGER',
+            calManagerDesc: 'Manage instruments & certificates',
+
+            pvtTitle: 'PREVENTIVE MAINTENANCE HUB',
+            pvtReleaseTitle: 'WEEKLY RELEASE',
+            pvtReleaseDesc: 'Generate work orders',
+            pvtManualTitle: 'MANUAL PM',
+            pvtManualDesc: 'Custom schedules',
+            pvtActivityTitle: 'ACTIVITY BUILDER',
+            pvtActivityDesc: 'Task library management',
+            pvtPlannerTitle: 'STRATEGIC PLANNER',
+            pvtPlannerDesc: 'Annual strategy',
+            pvtSweeperTitle: 'SYSTEM SWEEPER',
+            pvtSweeperDesc: 'Automated hygiene',
+
+            stkTitle: 'INVENTORY CONTROL CENTER',
+            stkViewerTitle: 'INVENTORY VIEWER',
+            stkViewerDesc: 'Read-only catalog viewer',
+            stkHubTitle: 'INVENTORY HUB',
+            stkHubDesc: 'Manage stock and catalog',
+            stkProcTitle: 'PROCUREMENT HUB',
+            stkProcDesc: 'Requisitions and POs',
+
+            woTitle: 'WORK ORDER HUB',
+            woCreateTitle: 'CREATE',
+            woCreateDesc: 'New work order request',
+            woSearchTitle: 'SEARCH & REPORT',
+            woSearchDesc: 'Find and generate reports',
+            woExecuteTitle: 'TECHNICAL REPORT',
+            woExecuteDesc: 'Record work performed',
+            woApproveTitle: 'APPROVAL',
+            woApproveDesc: 'Review completed work',
+            woCloseTitle: 'CLOSURE',
+            woCloseDesc: 'Audit and archive'
+        }
+
         // === [INSERTAR AQUÍ NUEVOS MÓDULOS EN INGLÉS] ===
     },
 
@@ -603,6 +652,55 @@ window.ADKINTOR_TRANSLATIONS = {
             docFaqSup: 'FAQ Supervisor',
             docFaqExec: 'FAQ Ejecutivo',
             docFaqViewer: 'FAQ Visor'
+        }
+
+        ,
+        disp: {
+            astTitle: 'CENTRO DE GESTIÓN DE ACTIVOS',
+            astAddTitle: 'REGISTRAR ACTIVO',
+            astAddDesc: 'Dar de alta nuevos equipos',
+            astMasterTitle: 'MAESTRO DE ACTIVOS',
+            astMasterDesc: 'Ver y gestionar base de datos',
+            astModifyTitle: 'MODIFICAR ACTIVO',
+            astModifyDesc: 'Actualizar información existente',
+
+            calTitle: 'CENTRO DE CALIBRACIONES',
+            calViewerTitle: 'VISOR DE CALIBRACIONES',
+            calViewerDesc: 'Consulta de instrumentos (solo lectura)',
+            calManagerTitle: 'GESTOR DE CALIBRACIONES',
+            calManagerDesc: 'Gestionar instrumentos y certificados',
+
+            pvtTitle: 'CENTRO DE MANTENIMIENTO PREVENTIVO',
+            pvtReleaseTitle: 'LIBERACIÓN SEMANAL',
+            pvtReleaseDesc: 'Generar órdenes de trabajo',
+            pvtManualTitle: 'PM MANUAL',
+            pvtManualDesc: 'Programaciones personalizadas',
+            pvtActivityTitle: 'GESTOR DE ACTIVIDADES',
+            pvtActivityDesc: 'Biblioteca de tareas preventivas',
+            pvtPlannerTitle: 'PLANIFICADOR ESTRATÉGICO',
+            pvtPlannerDesc: 'Estrategia y plan anual',
+            pvtSweeperTitle: 'DEPURADOR DEL SISTEMA',
+            pvtSweeperDesc: 'Limpieza automática de vencidos',
+
+            stkTitle: 'CENTRO DE CONTROL DE INVENTARIO',
+            stkViewerTitle: 'VISOR DE INVENTARIO',
+            stkViewerDesc: 'Consulta de catálogo (solo lectura)',
+            stkHubTitle: 'GESTIÓN DE INVENTARIO',
+            stkHubDesc: 'Administrar stock y catálogo',
+            stkProcTitle: 'GESTIÓN DE COMPRAS',
+            stkProcDesc: 'Requisiciones y órdenes de compra',
+
+            woTitle: 'CENTRO DE ÓRDENES DE TRABAJO',
+            woCreateTitle: 'CREAR OT',
+            woCreateDesc: 'Nueva solicitud de orden de trabajo',
+            woSearchTitle: 'BUSCAR Y REPORTES',
+            woSearchDesc: 'Consultar y generar reportes',
+            woExecuteTitle: 'REPORTE TÉCNICO',
+            woExecuteDesc: 'Registrar trabajo ejecutado',
+            woApproveTitle: 'APROBACIÓN',
+            woApproveDesc: 'Revisar y aprobar órdenes',
+            woCloseTitle: 'CIERRE FINAL',
+            woCloseDesc: 'Auditar y archivar órdenes'
         }
 
         // === [INSERTAR AQUÍ NUEVOS MÓDULOS EN ESPAÑOL] ===
