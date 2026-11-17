@@ -6,7 +6,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Final Closure Audit - ADKINTOR EAMS</title>
+    <title data-i18n="wo.close.pageTitle">Final Closure Audit - ADKINTOR EAMS</title>
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ============================================
@@ -579,7 +581,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading work orders...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="wo.close.loadingWOs">Loading work orders...</span>
 </div>
 
 <!-- TOAST -->
@@ -591,32 +593,32 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Final Closure Audit</span>
+            <span class="module-title" data-i18n="wo.close.title">Final Closure Audit</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>WORK ORDERS</span> &gt; <span class="current">Final Closure Audit</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="wo.breadcrumbModule">WORK ORDERS</span> &gt; <span class="current" data-i18n="wo.close.title">Final Closure Audit</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <div class="card-audit">
             <div class="audit-header">
-                <h3><i class="fas fa-clipboard-check"></i> Work Order Closure Audit</h3>
+                <h3><i class="fas fa-clipboard-check"></i> <span data-i18n="wo.close.cardTitle">Work Order Closure Audit</span></h3>
             </div>
 
             <!-- STAGE 1: Selection -->
             <div id="stage1">
                 <div class="form-group">
-                    <label>Select Work Order for Final Review <span class="required">*</span></label>
+                    <label><span data-i18n="wo.close.selectWO">Select Work Order for Final Review</span> <span class="required">*</span></label>
                     <select id="folioSel" data-required="true">
-                        <option value="">-- Loading work orders... --</option>
+                        <option value="" data-i18n="wo.close.loadingSelect">-- Loading work orders... --</option>
                     </select>
                 </div>
             </div>
@@ -624,19 +626,19 @@
             <!-- STAGE 2: Technical Data Review -->
             <div id="stage2" class="stage">
                 <div class="stage-title">
-                    <span>📋 Technical Data Review</span>
-                    <span class="badge">COMPLETED BY TECH</span>
+                    <span data-i18n="wo.close.techDataReview">📋 Technical Data Review</span>
+                    <span class="badge" data-i18n="wo.close.completedByTech">COMPLETED BY TECH</span>
                 </div>
                 <div id="detailsBody" class="audit-grid"></div>
                 
                 <div id="pmBox" class="pm-protocol-alert" style="display:none;">
-                    <span class="pm-title">🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE</span>
-                    <p>Tasks reported by technician:</p>
+                    <span class="pm-title" data-i18n="wo.close.pmProtocolActive">🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE</span>
+                    <p data-i18n="wo.close.tasksReported">Tasks reported by technician:</p>
                     <div style="display:flex; align-items:center; gap:10px; margin-top:10px; font-size:18px; font-weight:700; color:#1a1a2e;">
                         <span id="pmCompletedDisplay">0</span>
                         <span style="font-size:14px; color:#6c757d;">/</span>
                         <span id="pmTotalDisplay" style="font-size:18px; font-weight:700; color:#1a1a2e;">0</span>
-                        <span style="font-size:14px; font-weight:400; color:#6c757d;">Tasks</span>
+                        <span style="font-size:14px; font-weight:400; color:#6c757d;" data-i18n="wo.close.tasksWord">Tasks</span>
                     </div>
                 </div>
             </div>
@@ -645,22 +647,22 @@
             <div id="stage3" class="stage">
                 <hr>
                 <div class="form-group">
-                    <label>Approving Supervisor <span class="required">*</span></label>
+                    <label><span data-i18n="wo.close.approvingSupervisor">Approving Supervisor</span> <span class="required">*</span></label>
                     <select id="apprSel" data-required="true">
-                        <option value="">-- Select Supervisor --</option>
+                        <option value="" data-i18n="wo.close.selectSupervisor">-- Select Supervisor --</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Final Audit Remarks / Observations</label>
-                    <textarea id="note" rows="3" placeholder="Enter final quality observations for archive..."></textarea>
+                    <label data-i18n="wo.close.finalRemarks">Final Audit Remarks / Observations</label>
+                    <textarea id="note" rows="3" placeholder="Enter final quality observations for archive..." data-i18n-placeholder="wo.close.remarksPlaceholder"></textarea>
                     <div id="noteWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                 </div>
                 
                 <div class="button-group">
-                    <button id="cancelBtn" class="btn-cancel"><i class="fas fa-sync-alt"></i> REFRESH</button>
+                    <button id="cancelBtn" class="btn-cancel"><i class="fas fa-sync-alt"></i> <span data-i18n="wo.create.refreshBtn">REFRESH</span></button>
                     <button id="closeBtn" class="btn-closure" disabled>
-                        <i class="fas fa-archive"></i> AUTHORIZE FINAL CLOSURE & ARCHIVE
+                        <i class="fas fa-archive"></i> <span data-i18n="wo.close.authorizeBtn">AUTHORIZE FINAL CLOSURE & ARCHIVE</span>
                     </button>
                 </div>
             </div>
@@ -671,7 +673,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -681,11 +683,11 @@
 <!-- Confirm Modal for PM Verification -->
 <div id="pmConfirmModal" class="confirm-modal-overlay">
     <div class="confirm-modal">
-        <h3><i class="fas fa-shield-alt"></i> Preventive Maintenance Verification</h3>
+        <h3><i class="fas fa-shield-alt"></i> <span data-i18n="wo.close.pmVerifTitle">Preventive Maintenance Verification</span></h3>
         <p id="pmConfirmMessage">Tasks reported by technician: X/Y</p>
         <div class="confirm-buttons">
-            <button id="pmConfirmYes" class="btn-confirm-yes"><i class="fas fa-check"></i> Confirm</button>
-            <button id="pmConfirmNo" class="btn-confirm-no"><i class="fas fa-times"></i> Cancel</button>
+            <button id="pmConfirmYes" class="btn-confirm-yes"><i class="fas fa-check"></i> <span data-i18n="wo.close.confirmBtn">Confirm</span></button>
+            <button id="pmConfirmNo" class="btn-confirm-no"><i class="fas fa-times"></i> <span data-i18n="wo.close.cancelBtn">Cancel</span></button>
         </div>
     </div>
 </div>
@@ -744,7 +746,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -774,19 +776,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('wo.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error: Please login again', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('No session found. Please login.', 'error');
+            showToast(t('common.sessionNotFound'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please login again.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -800,7 +802,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -838,7 +840,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -906,9 +908,9 @@
         closeBtn.disabled = !(approver && isValid) || isSubmitting;
         
         if (isSubmitting) {
-            closeBtn.textContent = 'PROCESSING...';
+            closeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('wo.approve.processing');
         } else {
-            closeBtn.textContent = 'AUTHORIZE FINAL CLOSURE & ARCHIVE';
+            closeBtn.innerHTML = '<i class="fas fa-archive"></i> ' + t('wo.close.authorizeBtn');
         }
     }
 
@@ -980,13 +982,13 @@
     // ============================================
 
     async function loadInitialData() {
-        showLoading('Loading work orders...');
+        showLoading(t('wo.close.loadingWOs'));
         
         try {
             var response = await callApi('WO_getClosureInitialData', []);
             
             if (!response.success) {
-                throw new Error(response.error || 'Failed to load data');
+                throw new Error(response.error || t('wo.create.failedLoadData'));
             }
             
             supervisorEmails = response.supervisorEmails || [];
@@ -994,7 +996,7 @@
             var folioOptions = response.orders || [];
             var folioSelect = document.getElementById('folioSel');
             if (folioSelect) {
-                folioSelect.innerHTML = '<option value="">-- Select Folio --</option>';
+                folioSelect.innerHTML = '<option value="">' + t('wo.approve.selectFolio') + '</option>';
                 folioOptions.forEach(function(o) {
                     var opt = document.createElement('option');
                     opt.value = o.folio;
@@ -1003,10 +1005,10 @@
                 });
             }
             
-            fillSelect('apprSel', response.approvers || [], '-- Select Supervisor --');
+            fillSelect('apprSel', response.approvers || [], t('wo.close.selectSupervisor'));
             
             if (folioOptions.length === 0) {
-                showToast('No COMPLETED work orders pending audit', 'warning');
+                showToast(t('wo.close.noPendingAudit'), 'warning');
             } else {
                 // showToast('Loaded ' + folioOptions.length + ' completed work orders', 'success');  // ELIMINADO
             }
@@ -1017,7 +1019,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading data: ' + error.message, 'error');
+            showToast(t('wo.create.errorLoadingData', { error: error.message }), 'error');
             // console.error('Load error:', error);  // COMENTADO
         }
     }
@@ -1042,7 +1044,7 @@
         if (stage2) stage2.style.display = 'none';
         if (stage3) stage3.style.display = 'none';
         
-        showLoading('Loading work order details...');
+        showLoading(t('wo.close.loadingDetails'));
         try {
             // Invoca la nueva función exclusiva que creamos en Apps Script
             var response = await callApi('WO_getWODetailsClosure', [folio]);
@@ -1051,7 +1053,7 @@
             
             // Verificación inteligente del objeto devuelto
             if (!response) {
-                showToast('Error loading details: No response from server', 'error');
+                showToast(t('wo.close.noServerResponseError'), 'error');
                 return;
             }
             
@@ -1070,7 +1072,7 @@
             }
             
             if (!actualData || !actualData.wo) {
-                showToast('No data found for this work order', 'error');
+                showToast(t('wo.close.noDataForWO'), 'error');
                 return;
             }
             
@@ -1083,16 +1085,16 @@
                 var isPM = response.pm && response.pm.isPM;
                 var isOnHold = response.isOnHold === true;
                 if (isPM) {
-                    stageTitle.innerHTML = '📋 Preventive Maintenance Data Review';
+                    stageTitle.innerHTML = t('wo.close.pmReviewTitle');
                 } else if (isOnHold) {
-                    stageTitle.innerHTML = '⏸️ Follow Up Work Order Review';
+                    stageTitle.innerHTML = t('wo.close.onHoldReviewTitle');
                 } else {
-                    stageTitle.innerHTML = '🔧 Corrective Maintenance Data Review';
+                    stageTitle.innerHTML = t('wo.close.correctiveReviewTitle');
                 }
             }
             
             function safe(val, defaultVal) {
-                if (defaultVal === undefined) defaultVal = 'N/A';
+                if (defaultVal === undefined) defaultVal = t('wo.close.na');
                 if (val === undefined || val === null || val === '') return defaultVal;
                 return val;
             }
@@ -1100,15 +1102,15 @@
             var grid = document.getElementById('detailsBody');
             if (grid) {
                 grid.innerHTML = 
-                    '<div class="audit-item"><b>Requester</b><div class="audit-desc">' + escapeHtml(safe(wo.requester)) + '</div></div>' +
-                    '<div class="audit-item"><b>Maint. Type</b><div class="audit-desc">' + escapeHtml(safe(wo.maintType)) + '</div></div>' +
-                    '<div class="audit-item"><b>Technician</b><div class="audit-desc">' + escapeHtml(safe(wo.tech)) + '</div></div>' +
-                    '<div class="audit-item"><b>Equipment</b><div class="audit-desc">' + escapeHtml(safe(wo.equipment)) + '</div></div>' +
-                    '<div class="audit-item"><b>Start Time</b><div class="audit-desc">' + escapeHtml(safe(wo.start, '---')) + '</div></div>' +
-                    '<div class="audit-item"><b>End Time</b><div class="audit-desc">' + escapeHtml(safe(wo.end, '---')) + '</div></div>' +
-                    '<div class="audit-item"><b>Labour Hours</b><div class="audit-desc">' + escapeHtml(safe(wo.hours, '0')) + ' hrs</div></div>' +
-                    '<div class="audit-item"><b>Total Downtime</b><div class="audit-desc">' + escapeHtml(safe(wo.downtime, '0')) + ' hrs</div></div>' +
-                    '<div class="audit-item full-width"><b>Work Performed</b><div class="audit-desc" style="white-space: pre-wrap;">' + escapeHtml(safe(wo.performed, 'No description provided.')) + '</div></div>';
+                    '<div class="audit-item"><b>' + t('wo.close.colRequester') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.requester)) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.close.colMaintType') + '</b><div class="audit-desc">' + escapeHtml(wo.maintType ? tStatus(wo.maintType) : t('wo.close.na')) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.fields.technician') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.tech)) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.approve.equipmentLabel') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.equipment)) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.close.colStartTime') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.start, '---')) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.close.colEndTime') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.end, '---')) + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.close.colLabourHours') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.hours, '0')) + ' ' + t('wo.close.hrsUnit') + '</div></div>' +
+                    '<div class="audit-item"><b>' + t('wo.close.colTotalDowntime') + '</b><div class="audit-desc">' + escapeHtml(safe(wo.downtime, '0')) + ' ' + t('wo.close.hrsUnit') + '</div></div>' +
+                    '<div class="audit-item full-width"><b>' + t('wo.close.colWorkPerformed') + '</b><div class="audit-desc" style="white-space: pre-wrap;">' + escapeHtml(safe(wo.performed, t('wo.close.noDescription'))) + '</div></div>';
             }
             
             if (stage2) stage2.style.display = 'block';
@@ -1132,15 +1134,15 @@
                     
                     var pmTitle = pmBox.querySelector('.pm-title');
                     if (pmTitle) {
-                        pmTitle.innerHTML = '🛡️ SCHEDULED PREVENTIVE PROTOCOL ACTIVE';
+                        pmTitle.innerHTML = t('wo.close.pmProtocolActive');
                     }
                 } else if (isOnHold) {
                     pmBox.style.display = 'block';
                     pmBox.classList.add('follow-up');
                     pmBox.innerHTML = 
-                        '<span class="pm-title follow-up">⏸️ FOLLOW UP WORK ORDER</span>' +
-                        '<p>This is a Follow Up work order created from a previous WO.</p>' +
-                        '<p style="font-size:12px; margin-top:8px;">Standard closure procedure applies. No PM checklist required.</p>';
+                        '<span class="pm-title follow-up">' + t('wo.close.followUpTitle') + '</span>' +
+                        '<p>' + t('wo.close.followUpDesc1') + '</p>' +
+                        '<p style="font-size:12px; margin-top:8px;">' + t('wo.close.followUpDesc2') + '</p>';
                 } else {
                     pmBox.style.display = 'none';
                 }
@@ -1150,7 +1152,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading details: ' + error.message, 'error');
+            showToast(t('wo.close.errorLoadingDetails', { error: error.message }), 'error');
             // console.error('Details error:', error);  // COMENTADO
         }
     }
@@ -1167,12 +1169,12 @@
         var note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
         
         if (!folio) {
-            showToast('Please select a work order', 'error');
+            showToast(t('wo.approve.pleaseSelectWO'), 'error');
             return;
         }
         
         if (!approver) {
-            showToast('Approving Supervisor is required for legal audit', 'error');
+            showToast(t('wo.close.approverRequired'), 'error');
             var apprSel = document.getElementById('apprSel');
             if (apprSel) apprSel.classList.add('error');
             return;
@@ -1184,18 +1186,18 @@
             var max = woData.pm.maxTasks || 0;
             
             if (val > max) {
-                showToast('❌ ERROR: Cannot close with ' + val + ' tasks executed. Maximum is ' + max + '. Verify with technician.', 'error');
+                showToast(t('wo.close.pmMaxError', { val: val, max: max }), 'error');
                 return;
             }
             
             if (isNaN(val) || val < 0) {
-                showToast('PM PROTOCOL ERROR: Executed activities must be a valid number', 'error');
+                showToast(t('wo.close.pmInvalidNumber'), 'error');
                 return;
             }
             
             var reportedByTech = woData.pm.completedTasks || 0;
             if (val < reportedByTech) {
-                showToast('⚠️ Warning: Technician reported ' + reportedByTech + ' tasks completed. You are confirming ' + val + '.', 'warning');
+                showToast(t('wo.close.pmLowerWarning', { reported: reportedByTech, confirmed: val }), 'warning');
             }
             
             pendingTasksCompleted = val;
@@ -1204,7 +1206,7 @@
             var modal = document.getElementById('pmConfirmModal');
             var msg = document.getElementById('pmConfirmMessage');
             if (msg) {
-                msg.innerHTML = 'Tasks reported by technician: <strong>' + val + '/' + max + '</strong><br><br>Do you confirm that all preventive tasks were executed correctly according to standards?';
+                msg.innerHTML = t('wo.close.pmConfirmHtml', { val: val, max: max });
             }
             if (modal) {
                 modal.classList.add('active');
@@ -1226,12 +1228,12 @@
         var note = document.getElementById('note') ? sanitizeInput(document.getElementById('note').value) : '';
         
         if (!folio) {
-            showToast('Please select a work order', 'error');
+            showToast(t('wo.approve.pleaseSelectWO'), 'error');
             return;
         }
         
         if (!approver) {
-            showToast('Approving Supervisor is required for legal audit', 'error');
+            showToast(t('wo.close.approverRequired'), 'error');
             return;
         }
         
@@ -1245,7 +1247,7 @@
             }
         } catch(e) {}        
         updateSubmitButton();
-        showLoading('Finalizing archive...');
+        showLoading(t('wo.close.finalizingArchive'));
         
         var payload = {
             folio: folio,
@@ -1269,12 +1271,12 @@
                 var tasksExecuted = payload.tasksExecuted || 0;
                 logWOClosure(folio, closedBy, resolution, tasksExecuted).catch(function(e) { /* console.warn('[WO] Closure log failed:', e); */ });  // COMENTADO
                 
-                showToast('Work Order closed successfully!', 'success');
+                showToast(t('wo.close.closedSuccess'), 'success');
                 // console.log('[WO_CLOSE] WO Closed');  // COMENTADO
                 resetClosureForm();
                 await loadInitialData();
             } else {
-                throw new Error(response.error || 'Unknown error');
+                throw new Error(response.error || t('common.unknownError'));
             }
             
         } catch (error) {
@@ -1283,7 +1285,7 @@
             }
             
             hideLoading();
-            showToast('Error: ' + error.message, 'error');
+            showToast(t('common.error') + ': ' + error.message, 'error');
             // console.error('Closure error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
@@ -1336,7 +1338,7 @@
             confirmNo.addEventListener('click', function() {
                 if (confirmModal) confirmModal.classList.remove('active');
                 pendingPmValidation = false;
-                showToast('PM verification required. Please review the tasks before closing.', 'error');
+                showToast(t('wo.close.pmVerifRequired'), 'error');
             });
         }
         
@@ -1357,7 +1359,7 @@
             setupEventListeners();
             loadInitialData();
         } else {
-            showToast('Please login to access EAMS', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
     
