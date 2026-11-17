@@ -6,7 +6,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Technical Report Portal - ADKINTOR EAMS</title>
+    <title data-i18n="wo.execute.pageTitle">Technical Report Portal - ADKINTOR EAMS</title>
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
     <style>
@@ -964,7 +966,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Technical Portal...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="wo.execute.loadingPortal">Loading Technical Portal...</span>
 </div>
 
 <!-- TOAST -->
@@ -976,31 +978,31 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Technical Execution Portal</span>
+            <span class="module-title" data-i18n="wo.execute.title">Technical Execution Portal</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>WORK ORDERS</span> &gt; <span class="current">Technical Execution</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="wo.breadcrumbModule">WORK ORDERS</span> &gt; <span class="current" data-i18n="wo.execute.breadcrumb">Technical Execution</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <!-- Wizard Header -->
         <div class="wizard-header">
-            <h3 id="stepHeader">Step 1: Context Selection</h3>
+            <h3 id="stepHeader" data-i18n="wo.execute.step1Init">Step 1: Context Selection</h3>
             <div class="header-buttons" style="position: relative;">
                 <!-- ✅ NUEVO: Indicador de WO activa (centrado a la izquierda) -->
                 <div id="activeWoBadge" style="display: none; position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: rgba(0,229,255,0.15); color: #00e5ff; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: nowrap;">
                     <i class="fas fa-clipboard-list"></i> <span id="activeWoFolio">--</span>
                 </div>
-                <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> Back</button>
-                <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)">Next Step <i class="fas fa-arrow-right"></i></button>
+                <button id="btnBackHeader" class="btn btn-back" style="display:none;" onclick="move(currentStep - 1)"><i class="fas fa-arrow-left"></i> <span data-i18n="wo.execute.backBtn">Back</span></button>
+                <button id="btnNextHeader" class="btn btn-next" disabled onclick="move(currentStep + 1)"><span data-i18n="wo.execute.nextBtn">Next Step</span> <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
         <div class="progress-bar" id="progressBar"></div>
@@ -1010,27 +1012,27 @@
             <!-- STEP 1: Context -->
             <div class="step active" id="step1">
                 <div class="wo-select-container" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <label style="flex: 0 0 auto; margin-bottom: 0;">Active Work Order</label>
+                    <label style="flex: 0 0 auto; margin-bottom: 0;" data-i18n="wo.execute.activeWO">Active Work Order</label>
                     <select id="woSelect" onchange="loadWOContext()" style="flex: 1; min-width: 180px; max-width: 380px; padding: 10px 12px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px;">
-                        <option value="">-- Loading WOs --</option>
+                        <option value="" data-i18n="wo.execute.loadingWOsOpt">-- Loading WOs --</option>
                     </select>
-                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printWorkOrder()"><i class="fas fa-print"></i> Print Form</button>
-                    <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button id="printBtn" class="btn" style="background:#5f6368; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="printWorkOrder()"><i class="fas fa-print"></i> <span data-i18n="wo.execute.printFormBtn">Print Form</span></button>
+                    <button id="refreshBtn" class="btn" style="background:#1a1a2e; color:white; padding:8px 16px; font-size:12px; flex: 0 0 auto; width: auto; min-width: 110px;" onclick="refreshWOList()"><i class="fas fa-sync-alt"></i> <span data-i18n="wo.execute.refreshWord">Refresh</span></button>
                 </div>
                 <div id="woInfo" style="display:none;">
                     <div class="info-grid">
-                        <div class="info-item">Requester <b id="info-requester"></b></div>
-                        <div class="info-item">Created <b id="outDate"></b></div>
-                        <div class="info-item">Type <b id="outMaintType" style="color:#ef6c00"></b></div>
-                        <div class="info-item">Priority <b id="info-priority"></b></div>
-                        <div class="info-item">Location <b id="outArea"></b></div>
-                        <div class="info-item">Equipment <b id="outEqName"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblRequester">Requester</span> <b id="info-requester"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblCreated">Created</span> <b id="outDate"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblType">Type</span> <b id="outMaintType" style="color:#ef6c00"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblPriority">Priority</span> <b id="info-priority"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblLocation">Location</span> <b id="outArea"></b></div>
+                        <div class="info-item"><span data-i18n="wo.execute.lblEquipment">Equipment</span> <b id="outEqName"></b></div>
                         <div class="work-description-box">
-                            <label>Original Request Description</label>
+                            <label data-i18n="wo.execute.origDescBox">Original Request Description</label>
                             <span id="info-description"></span>
                         </div>
                         <div class="history-box">
-                            <label>Previous Shift Logs</label>
+                            <label data-i18n="wo.execute.prevShiftLogs">Previous Shift Logs</label>
                             <div id="info-comments"></div>
                         </div>
                         <!-- ✅ CONTENEDOR PARA PM TASKS EN STEP 1 -->
@@ -1042,11 +1044,11 @@
             <!-- STEP 2: Component Selection -->
             <div class="step" id="step2">
                 <div class="form-group">
-                    <label id="assetLabel">Specific Component Intervened <span class="required">*</span></label>
+                    <label id="assetLabel"><span data-i18n="wo.execute.specComponent">Specific Component Intervened</span> <span class="required">*</span></label>
                     <select id="assetSelect" data-required="true" onchange="validateStep()">
-                        <option value="">-- Select Component --</option>
+                        <option value="" data-i18n="wo.execute.selectComponent">-- Select Component --</option>
                     </select>
-                    <p id="assetHelpText" style="font-size: 11px; color: #666; margin-top: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">* If the specific component is not listed, select the main Equipment.</p>
+                    <p id="assetHelpText" style="font-size: 11px; color: #666; margin-top: 4px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" data-i18n="wo.execute.assetHelp">* If the specific component is not listed, select the main Equipment.</p>
                 </div>
             </div>
 
@@ -1058,10 +1060,10 @@
             <!-- STEP 4: Spare Parts -->
             <div class="step" id="step4">
                 <div class="form-group">
-                    <label>Spare Parts Search</label>
+                    <label data-i18n="wo.execute.spareSearch">Spare Parts Search</label>
                     <div class="search-container">
                         <div class="search-input-wrapper">
-                            <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." oninput="triggerSearch(this.value)">
+                            <input type="text" id="partSearch" placeholder="Enter SKU or Part Name..." data-i18n-placeholder="wo.execute.partSearchPh" oninput="triggerSearch(this.value)">
                             <div id="searchSpinner" class="search-spinner"></div>
                         </div>
                         <div id="searchResults" class="search-results"></div>
@@ -1071,101 +1073,101 @@
                 <div id="qtyPanel" class="qty-panel">
                     <label id="selectedPartLabel" style="color:#1a1a2e; font-size:12px; font-weight:600; display:block; margin-bottom:8px;"></label>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <input type="number" id="partQty" placeholder="Qty" min="1" style="flex:0 0 80px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
-                        <button class="btn" style="background:#1a1a2e; color:white; flex:0 0 auto; padding:8px 16px; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:13px;" onclick="confirmAddPart()"><i class="fas fa-plus"></i> Add</button>
-                        <button class="btn" style="background:#6c757d; color:white; flex:0 0 auto; padding:8px 16px; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:13px;" onclick="cancelAdd()">Cancel</button>
+                        <input type="number" id="partQty" placeholder="Qty" data-i18n-placeholder="wo.execute.qtyPh" min="1" style="flex:0 0 80px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        <button class="btn" style="background:#1a1a2e; color:white; flex:0 0 auto; padding:8px 16px; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:13px;" onclick="confirmAddPart()"><i class="fas fa-plus"></i> <span data-i18n="wo.execute.addBtn">Add</span></button>
+                        <button class="btn" style="background:#6c757d; color:white; flex:0 0 auto; padding:8px 16px; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:13px;" onclick="cancelAdd()" data-i18n="wo.close.cancelBtn">Cancel</button>
                     </div>
                 </div>
                 
                 <div class="cart-container">
-                    <label style="font-size:11px; font-weight:700; color:#2c3e50; text-transform:uppercase; display:block; margin-bottom:8px;">Parts consumed in this shift</label>
+                    <label style="font-size:11px; font-weight:700; color:#2c3e50; text-transform:uppercase; display:block; margin-bottom:8px;" data-i18n="wo.execute.partsConsumedShift">Parts consumed in this shift</label>
                     <div id="materialCart">
-                        <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">No parts selected yet.</p>
+                        <p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="wo.execute.noPartsYet">No parts selected yet.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 5: Closure -->
+                        <!-- STEP 5: Closure -->
             <div class="step" id="step5">
                 <div style="background:#f1f3f4; padding:12px 14px; border-radius:6px; margin-bottom:16px;">
-                    <label style="color:#1a1a2e; font-size:11px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-lock"></i> CLOSURE ACTION</label>
+                    <label style="color:#1a1a2e; font-size:11px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-lock"></i> <span data-i18n="wo.execute.closureAction">CLOSURE ACTION</span></label>
                     <div id="pmClosureSummary" style="display:none; background:#e8f0fe; padding:10px 12px; border-radius:6px; margin-top:8px;">
-                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">--</span>
+                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="wo.execute.pmTasksSummaryTitle">📋 Preventive Tasks Summary:</strong> <span id="pmClosureSummaryText" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">--</span>
                         <div style="margin-top:8px;">
-                            <label style="font-size:11px; font-weight:400; text-transform:none; display:inline; cursor:pointer;"><input type="checkbox" id="supervisorConfirmPM"> I confirm the preventive tasks were completed as reported</label>
+                            <label style="font-size:11px; font-weight:400; text-transform:none; display:inline; cursor:pointer;"><input type="checkbox" id="supervisorConfirmPM"> <span data-i18n="wo.execute.confirmPmCheck">I confirm the preventive tasks were completed as reported</span></label>
                         </div>
                     </div>
                 </div>
 
                 <div id="actionButtons" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
-                    <button class="btn btn-close" id="btnFinish" onclick="prepareClosure('COMPLETED')"><i class="fas fa-check-circle"></i> CLOSE (Completed)</button>
-                    <button class="btn btn-follow" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')"><i class="fas fa-code-branch"></i> FOLLOW UP (Create new WO)</button>
-                    <button class="btn btn-reunify" id="btnReunify" onclick="prepareClosure('REUNIFY')"><i class="fas fa-save"></i> STILL WORKING (Asset Down)</button>
+                    <button class="btn btn-close" id="btnFinish" onclick="prepareClosure('COMPLETED')"><i class="fas fa-check-circle"></i> <span data-i18n="wo.execute.btnCloseCompleted">CLOSE (Completed)</span></button>
+                    <button class="btn btn-follow" id="btnFollow" onclick="prepareClosure('FOLLOW_UP')"><i class="fas fa-code-branch"></i> <span data-i18n="wo.execute.btnFollowUp">FOLLOW UP (Create new WO)</span></button>
+                    <button class="btn btn-reunify" id="btnReunify" onclick="prepareClosure('REUNIFY')"><i class="fas fa-save"></i> <span data-i18n="wo.execute.btnReunify">STILL WORKING (Asset Down)</span></button>
                 </div>
 
                 <!-- Panel: COMPLETED -->
                 <div id="completedPanel" class="closure-panel">
-                    <label style="color:#1a1a2e;"><i class="fas fa-check-circle"></i> COMPLETED</label>
+                    <label style="color:#1a1a2e;"><i class="fas fa-check-circle"></i> <span data-i18n="wo.execute.panelCompleted">COMPLETED</span></label>
                     <div style="margin-top:8px;">
                         <div class="form-group" style="margin-bottom:0;">
-                            <label>Root Cause <span class="required">*</span></label>
+                            <label><span data-i18n="wo.execute.lblRootCause">Root Cause</span> <span class="required">*</span></label>
                             <select id="completedRootCause" data-required="true" onchange="validateConfirmButton('COMPLETED')">
-                                <option value="">-- Select Cause --</option>
+                                <option value="" data-i18n="wo.execute.selectCause">-- Select Cause --</option>
                             </select>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
-                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> CONFIRM & CLOSE</button>
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> <span data-i18n="common.cancel">CANCEL</span></button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmCompletedBtn" disabled onclick="submitFinal('COMPLETED')"><i class="fas fa-check"></i> <span data-i18n="wo.execute.confirmCloseBtn">CONFIRM & CLOSE</span></button>
                     </div>
                 </div>
 
                 <!-- Panel: FOLLOW UP -->
                 <div id="followUpPanel" class="closure-panel">
-                    <label style="color:#1a1a2e;"><i class="fas fa-code-branch"></i> FOLLOW UP</label>
+                    <label style="color:#1a1a2e;"><i class="fas fa-code-branch"></i> <span data-i18n="wo.execute.panelFollowUp">FOLLOW UP</span></label>
                     <div style="margin-top:8px;">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                             <input type="checkbox" id="fuNeedsSparePartPurchase" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Needs Spare Part Purchase</label>
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;" data-i18n="wo.execute.needsSparePurchase">Needs Spare Part Purchase</label>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                             <input type="checkbox" id="fuNeedsExternalService" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Needs External Service Coordination</label>
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;" data-i18n="wo.execute.needsExternalService">Needs External Service Coordination</label>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                             <input type="checkbox" id="fuNeedsOther" style="width:18px; height:18px; margin:0; flex-shrink:0;" onchange="toggleOtherComment(); validateConfirmButton('FOLLOW_UP')">
-                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;">Other (requires comment)</label>
+                            <label style="font-weight:400; text-transform:none; margin:0; cursor:pointer; font-size:12px;" data-i18n="wo.execute.needsOther">Other (requires comment)</label>
                         </div>
                         <div id="fuOtherCommentDiv" style="display:none; margin-top:8px; margin-left:25px;">
-                            <label style="text-transform:none; font-weight:500; margin-bottom:4px; font-size:11px;">Please describe the additional requirement:</label>
-                            <textarea id="fuOtherComment" rows="2" style="width:100%; margin-top:4px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" placeholder="Describe what else is needed... (minimum 10 characters)" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
-                            <div id="fuOtherCommentWarning" style="color:#dc3545; font-size:11px; margin-top:4px; display:none; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Please enter at least 10 characters</div>
+                            <label style="text-transform:none; font-weight:500; margin-bottom:4px; font-size:11px;" data-i18n="wo.execute.describeOtherLbl">Please describe the additional requirement:</label>
+                            <textarea id="fuOtherComment" rows="2" style="width:100%; margin-top:4px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" placeholder="Describe what else is needed... (minimum 10 characters)" data-i18n-placeholder="wo.execute.describeOtherPh" oninput="validateConfirmButton('FOLLOW_UP')"></textarea>
+                            <div id="fuOtherCommentWarning" style="color:#dc3545; font-size:11px; margin-top:4px; display:none; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="wo.execute.min10Chars">Please enter at least 10 characters</div>
                         </div>
                         <div style="margin-top:12px;">
                             <div class="form-group" style="margin-bottom:0;">
-                                <label>Root Cause <span class="required" id="fuRootCauseRequired">*</span></label>
+                                <label><span data-i18n="wo.execute.lblRootCause">Root Cause</span> <span class="required" id="fuRootCauseRequired">*</span></label>
                                 <select id="fuRootCause" data-required="true" style="margin-bottom:0;" onchange="validateConfirmButton('FOLLOW_UP')">
-                                    <option value="">-- Select Cause --</option>
+                                    <option value="" data-i18n="wo.execute.selectCause">-- Select Cause --</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
-                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> CONFIRM & CREATE FOLLOW UP</button>
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> <span data-i18n="common.cancel">CANCEL</span></button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmFollowUpBtn" disabled onclick="submitFinal('FOLLOW_UP')"><i class="fas fa-check"></i> <span data-i18n="wo.execute.confirmFollowUpBtn">CONFIRM & CREATE FOLLOW UP</span></button>
                     </div>
                 </div>
 
                 <!-- Panel: REUNIFY -->
                 <div id="reunifyPanel" class="closure-panel">
-                    <label style="color:#1a1a2e;"><i class="fas fa-save"></i> STILL WORKING (REUNIFY)</label>
+                    <label style="color:#1a1a2e;"><i class="fas fa-save"></i> <span data-i18n="wo.execute.panelReunify">STILL WORKING (REUNIFY)</span></label>
                     <div style="margin-top:8px; padding:10px 12px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:4px;">
-                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">⚠️ Equipment will be marked as DOWN</strong><br>
-                        <span style="font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.</span>
+                        <strong style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="wo.execute.reunifyWarnTitle">⚠️ Equipment will be marked as DOWN</strong><br>
+                        <span style="font-size:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="wo.execute.reunifyWarnDesc">This action does NOT close the Work Order. It only saves the current progress and marks the equipment as down.</span>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:10px; justify-content:flex-end;">
-                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> CANCEL</button>
-                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> CONFIRM & CONTINUE WORKING</button>
+                        <button class="btn btn-cancel" style="flex:0 0 auto; padding:8px 20px;" onclick="cancelClosure()"><i class="fas fa-times"></i> <span data-i18n="common.cancel">CANCEL</span></button>
+                        <button class="btn btn-confirm" style="flex:0 0 auto; padding:8px 20px;" id="confirmReunifyBtn" onclick="submitFinal('REUNIFY')"><i class="fas fa-check"></i> <span data-i18n="wo.execute.confirmReunifyBtn">CONFIRM & CONTINUE WORKING</span></button>
                     </div>
                 </div>
             </div>
@@ -1176,7 +1178,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -1266,7 +1268,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -1296,19 +1298,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('wo.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error: Please login again', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('No session found. Please login.', 'error');
+            showToast(t('common.sessionNotFound'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please login again.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -1322,7 +1324,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -1421,7 +1423,7 @@
             target.style.setProperty('display', 'block', 'important');
         }
         
-        document.getElementById('stepHeader').innerText = 'Step ' + currentStep + ': ' + stepTitles[currentStep-1];
+        document.getElementById('stepHeader').innerText = t('wo.execute.stepWord') + ' ' + currentStep + ': ' + t('wo.execute.stepTitle' + currentStep);
         var backBtn = document.getElementById('btnBackHeader');
         var nextBtn = document.getElementById('btnNextHeader');
         if (backBtn) backBtn.style.display = currentStep === 1 ? 'none' : 'block';
@@ -1479,7 +1481,7 @@
                         if (startTimeElem && startTimeElem.value) {
                             var startDateTime = new Date(startTimeElem.value);
                             if (startDateTime < creationDate) {
-                                showToast('Start time cannot be earlier than WO creation date (' + DB.selectedWO.date + ')', 'error');
+                                showToast(t('wo.execute.startBeforeCreation', { date: DB.selectedWO.date }), 'error');
                                 return false;
                             }
                         }
@@ -1525,7 +1527,7 @@
             
             if (!windowPmTasksLoadAttempted) {
                 windowPmTasksLoadAttempted = true;
-                container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> Loading preventative tasks...</div>';
+                container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> ' + t('wo.execute.loadingPmTasks') + '</div>';
                 setTimeout(function() {
                     if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
                         renderNoTasksMessage(container);
@@ -1538,7 +1540,7 @@
                 if (!DB.cachedTasks || DB.cachedTasks.length === 0) {
                     renderNoTasksMessage(container);
                 } else {
-                    container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> Waiting for tasks... select the WO again if they do not load.</div>';
+                    container.innerHTML = '<div style="padding:30px; text-align:center; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-spinner fa-spin"></i> ' + t('wo.execute.waitingTasks') + '</div>';
                 }
             }
         } else {
@@ -1558,20 +1560,20 @@
                     '</div>' +
                     '<div style="flex:1;">' +
                         '<div style="font-size:15px; font-weight:700; color:#856404; margin-bottom:8px;">' +
-                            'No Preventive Activities Loaded' +
+                            t('wo.execute.noPmActivitiesTitle') +
                         '</div>' +
                         '<div style="font-size:13px; color:#856404; line-height:1.6; margin-bottom:10px;">' +
-                            'This Preventive Work Order does not have any activities assigned to its strategy yet.' +
+                            t('wo.execute.noPmActivitiesDesc') +
                         '</div>' +
                         '<div style="background:white; padding:12px 14px; border-radius:6px; margin-top:10px;">' +
-                            '<div style="font-size:12px; font-weight:700; color:#1a1a2e; margin-bottom:6px;">You have two options:</div>' +
+                            '<div style="font-size:12px; font-weight:700; color:#1a1a2e; margin-bottom:6px;">' + t('wo.execute.twoOptionsTitle') + '</div>' +
                             '<div style="font-size:12px; color:#2c3e50; line-height:1.8;">' +
-                                '<div>🔧 <strong>Contact the Supervisor</strong> to load the activities for this strategy, then come back.</div>' +
-                                '<div>✅ <strong>Continue anyway</strong> — the WO will be saved with <strong>0 activities performed</strong>.</div>' +
+                                '<div>🔧 ' + t('wo.execute.optContactSup') + '</div>' +
+                                '<div>✅ ' + t('wo.execute.optContinueZero') + '</div>' +
                             '</div>' +
                         '</div>' +
                         '<div style="font-size:11px; color:#92400e; margin-top:10px; font-style:italic;">' +
-                            '<i class="fas fa-info-circle"></i> If you continue, please provide a technical report explaining the situation.' +
+                            '<i class="fas fa-info-circle"></i> ' + t('wo.execute.noPmProvideReport') +
                         '</div>' +
                     '</div>' +
                 '</div>' +
@@ -1591,24 +1593,24 @@
                 '<div style="padding:20px; text-align:center; background:#fff3cd; border-radius:8px; border-left:4px solid #f59e0b;">' +
                     '<i class="fas fa-info-circle" style="font-size:24px; color:#f59e0b; display:block; margin-bottom:8px;"></i>' +
                     '<div style="font-size:14px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
-                        '<strong>No preventive tasks assigned yet</strong>' +
+                        '<strong>' + t('wo.execute.noPmAssignedYet') + '</strong>' +
                     '</div>' +
                     '<div style="font-size:12px; color:#856404; margin-top:4px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
-                        'This Preventive WO does not have tasks in the checklist. You can still complete the WO with a technical report.' +
+                        t('wo.execute.noPmChecklistDesc') +
                     '</div>' +
                     '<div style="margin-top:12px; padding:10px; background:#e8f0fe; border-radius:4px; text-align:left;">' +
                         '<div class="form-group" style="margin-bottom:8px;">' +
-                            '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                            '<label><i class="fas fa-play-circle"></i> ' + t('wo.execute.startTimeLbl') + ' <span class="required">*</span></label>' +
                             '<input type="datetime-local" id="startTime" data-required="true">' +
                         '</div>' +
                         '<div class="form-group" style="margin-bottom:8px;">' +
-                            '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                            '<label><i class="fas fa-stop-circle"></i> ' + t('wo.execute.endTimeLbl') + ' <span class="required">*</span></label>' +
                             '<input type="datetime-local" id="endTime" data-required="true">' +
                         '</div>' +
                         '<div id="timeWarning" class="warning-message" style="margin-top: 4px; padding: 6px 10px; background: #fff3cd; border-radius: 4px; border-left: 3px solid #f59e0b; font-size: 12px; color: #856404;"></div>' +
                         '<div class="form-group" style="margin-top:8px;">' +
-                            '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>' +
-                            '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken... (min. 10 characters)"></textarea>' +
+                            '<label><i class="fas fa-file-alt"></i> ' + t('wo.execute.findingsLbl') + ' <span class="required">*</span></label>' +
+                            '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="' + t('wo.execute.findingsPmPh') + '"></textarea>' +
                             '<div id="reportNotesPMWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                         '</div>' +
                     '</div>' +
@@ -1648,40 +1650,40 @@
                     '<div class="task-content">' +
                         '<div class="task-equipment"><i class="fas fa-tools"></i> ' + escapeHtml(task.equipment || '') + '</div>' +
                         '<div class="task-title">' + escapeHtml(task.task || '') + '</div>' +
-                        '<div class="task-standard"><i class="fas fa-book"></i> Standard: ' + escapeHtml(task.standard || 'N/A') + '</div>' +
+                        '<div class="task-standard"><i class="fas fa-book"></i> ' + t('wo.execute.standardPrefix') + ' ' + escapeHtml(task.standard || t('wo.close.na')) + '</div>' +
                     '</div>' +
                     '<span class="task-status pending" id="taskStatus_' + i + '">✗</span>' +
                 '</div>';
         }
         
         var htmlContent = 
-            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>' +
+            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' 0.00 ' + t('wo.execute.hoursUnit') + '</div>' +
             '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">' +
                 '<div style="flex:1; min-width:180px;">' +
                     '<div class="form-group" style="margin-bottom:0;">' +
-                        '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                        '<label><i class="fas fa-play-circle"></i> ' + t('wo.execute.startTimeLbl') + ' <span class="required">*</span></label>' +
                         '<input type="datetime-local" id="startTime" data-required="true">' +
                     '</div>' +
                 '</div>' +
                 '<div style="flex:1; min-width:180px;">' +
                     '<div class="form-group" style="margin-bottom:0;">' +
-                        '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                        '<label><i class="fas fa-stop-circle"></i> ' + t('wo.execute.endTimeLbl') + ' <span class="required">*</span></label>' +
                         '<input type="datetime-local" id="endTime" data-required="true">' +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div id="timeWarning" class="warning-message" style="margin-top: 8px; padding: 6px 10px; background: #fff3cd; border-radius: 4px; border-left: 3px solid #f59e0b; font-size: 12px; color: #856404;"></div>' +
             '<div class="pm-summary-box">' +
-                '<label><i class="fas fa-clipboard-list"></i> PREVENTIVE MAINTENANCE CHECKLIST</label>' +
-                '<div id="pmSummary" style="font-size:13px; margin-top:4px;">Progress: 0/' + pmTotalTasks + ' tasks completed</div>' +
+                '<label><i class="fas fa-clipboard-list"></i> ' + t('wo.execute.pmChecklistHeader') + '</label>' +
+                '<div id="pmSummary" style="font-size:13px; margin-top:4px;">' + t('wo.execute.progressPrefix') + ' 0/' + pmTotalTasks + ' ' + t('wo.execute.tasksCompletedSuffix') + '</div>' +
             '</div>' +
             '<div id="pmTasksList" style="max-height: 300px; overflow-y: auto; border:1px solid #dadce0; border-radius:6px; margin-bottom:16px;">' +
                 tasksHtml +
             '</div>' +
             '<div style="margin-top:16px;">' +
                 '<div class="form-group" style="margin-bottom:0;">' +
-                    '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken</label>' +
-                    '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="Describe what was found and any additional actions taken..."></textarea>' +
+                    '<label><i class="fas fa-file-alt"></i> ' + t('wo.execute.findingsLbl') + '</label>' +
+                    '<textarea id="reportNotesPM" rows="3" data-required="true" placeholder="' + t('wo.execute.findingsPmSimplePh') + '"></textarea>' +
                     '<div id="reportNotesPMWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                 '</div>' +
             '</div>';
@@ -1721,12 +1723,12 @@
             
             if (end > start) {
                 var diff = (end - start) / 3600000;
-                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: ' + diff.toFixed(2) + ' hours';
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' ' + diff.toFixed(2) + ' ' + t('wo.execute.hoursUnit');
                 if (timeWarning) timeWarning.classList.remove('visible');
                 
                 if (diff > 8) {
                     if (timeWarning) {
-                        timeWarning.innerHTML = '⚠️ Warning: Working time exceeds 8 hours (' + diff.toFixed(2) + 'h). Please verify shift duration.';
+                        timeWarning.innerHTML = t('wo.execute.warnOver8h', { hours: diff.toFixed(2) });
                         timeWarning.classList.add('visible');
                     }
                     // ✅ TOAST: Advertencia de +8 horas (solo una vez, no repetir)
@@ -1740,23 +1742,23 @@
                         if (!isNaN(lastEndDate.getTime()) && start < lastEndDate) {
                             var lastEndFormatted = formatShortDate(DB.selectedWO.lastEndTime);
                             if (timeWarning) {
-                                timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + lastEndFormatted + '). Please select a later start time.';
+                                timeWarning.innerHTML = t('wo.execute.warnStartBeforeLastEnd', { date: lastEndFormatted });
                                 timeWarning.classList.add('visible');
                             }
                             // ✅ TOAST: Error de fecha
-                            showToast('Start time cannot be earlier than last End Time (' + lastEndFormatted + ')', 'error');
+                            showToast(t('wo.execute.toastStartBeforeLastEnd', { date: lastEndFormatted }), 'error');
                         }
                     } catch(e) {}
                 }
                 
             } else {
-                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: 0.00 hours';
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' 0.00 ' + t('wo.execute.hoursUnit');
                 if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ End time must be after start time';
+                    timeWarning.innerHTML = t('wo.execute.warnEndAfterStart');
                     timeWarning.classList.add('visible');
                 }
                 // ✅ TOAST: Error de fecha
-                showToast('End time must be after start time', 'error');
+                showToast(t('wo.execute.toastEndAfterStart'), 'error');
             }
         }
         // ✅ Limpiar warning si ya no hay problemas
@@ -1779,12 +1781,12 @@
             
             if (end > start) {
                 var diff = (end - start) / 3600000;
-                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: ' + diff.toFixed(2) + ' hours';
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' ' + diff.toFixed(2) + ' ' + t('wo.execute.hoursUnit');
                 if (timeWarning) timeWarning.classList.remove('visible');
                 
                 if (diff > 8) {
                     if (timeWarning) {
-                        timeWarning.innerHTML = '⚠️ Warning: Working time exceeds 8 hours (' + diff.toFixed(2) + 'h). Please verify shift duration.';
+                        timeWarning.innerHTML = t('wo.execute.warnOver8h', { hours: diff.toFixed(2) });
                         timeWarning.classList.add('visible');
                     }
                 }
@@ -1795,21 +1797,21 @@
                         var lastEndDate = new Date(DB.selectedWO.lastEndTime);
                         if (!isNaN(lastEndDate.getTime()) && start < lastEndDate) {
                             if (timeWarning) {
-                                timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + '). Please select a later start time.';
+                                timeWarning.innerHTML = t('wo.execute.warnStartBeforeLastEnd', { date: DB.selectedWO.lastEndTime });
                                 timeWarning.classList.add('visible');
                             }
-                            showToast('Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + ')', 'error');
+                            showToast(t('wo.execute.toastStartBeforeLastEnd', { date: DB.selectedWO.lastEndTime }), 'error');
                         }
                     } catch(e) {}
                 }
                 
             } else {
-                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> Total Labour: 0.00 hours';
+                if (labourDisplay) labourDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' 0.00 ' + t('wo.execute.hoursUnit');
                 if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ End time must be after start time';
+                    timeWarning.innerHTML = t('wo.execute.warnEndAfterStart');
                     timeWarning.classList.add('visible');
                 }
-                showToast('End time must be after start time', 'error');
+                showToast(t('wo.execute.toastEndAfterStart'), 'error');
             }
         }
         validatePMStep();
@@ -1849,7 +1851,7 @@
                     isValid = false;
                     var lastEndFormatted = formatShortDate(DB.selectedWO.lastEndTime);
                     if (timeWarning) {
-                        timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + lastEndFormatted + '). Please select a later start time.';
+                        timeWarning.innerHTML = t('wo.execute.warnStartBeforeLastEnd', { date: lastEndFormatted });
                         timeWarning.classList.add('visible');
                     }
                 }
@@ -1865,7 +1867,7 @@
                 isValid = false;
                 var creationFormatted = formatShortDate(DB.selectedWO.date);
                 if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + creationFormatted + ')';
+                    timeWarning.innerHTML = '⚠️ ' + t('wo.execute.startBeforeCreation', { date: creationFormatted });
                     timeWarning.classList.add('visible');
                 }
             }
@@ -1875,16 +1877,16 @@
         if (!isValid && !startTime && !endTime && !hasTasks) {
             // No mostrar warning si está todo vacío
         } else if (!isValid && !hasTasks && notes.length < 10) {
-            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
-                timeWarning.innerHTML = '⚠️ Since no tasks were checked, please provide a detailed comment explaining why (minimum 10 characters).';
+            if (timeWarning && !timeWarning.innerHTML.includes(t('wo.execute.earlierKeyword'))) {
+                timeWarning.innerHTML = t('wo.execute.warnNoTasksMin10');
                 timeWarning.classList.add('visible');
             }
         } else if (!isValid && hasTasks && !hasValidTime) {
-            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
-                timeWarning.innerHTML = '⚠️ Start and End times are required when tasks are checked.';
+            if (timeWarning && !timeWarning.innerHTML.includes(t('wo.execute.earlierKeyword'))) {
+                timeWarning.innerHTML = t('wo.execute.warnStartEndRequired');
                 timeWarning.classList.add('visible');
             }
-        } else if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+        } else if (timeWarning && !timeWarning.innerHTML.includes(t('wo.execute.earlierKeyword'))) {
             timeWarning.classList.remove('visible');
         }
         
@@ -1912,7 +1914,7 @@
                     isValid = false;
                     var lastEndFormatted = formatShortDate(DB.selectedWO.lastEndTime);
                     if (timeWarning) {
-                        timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + lastEndFormatted + '). Please select a later start time.';
+                        timeWarning.innerHTML = t('wo.execute.warnStartBeforeLastEnd', { date: lastEndFormatted });
                         timeWarning.classList.add('visible');
                     }
                 }
@@ -1928,7 +1930,7 @@
                 isValid = false;
                 var creationFormatted = formatShortDate(DB.selectedWO.date);
                 if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + creationFormatted + ')';
+                    timeWarning.innerHTML = '⚠️ ' + t('wo.execute.startBeforeCreation', { date: creationFormatted });
                     timeWarning.classList.add('visible');
                 }
             }
@@ -1936,14 +1938,14 @@
         
         // Mensajes informativos
         if (!isValid && notes.length < 10 && hasValidTime) {
-            if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
-                timeWarning.innerHTML = 'ℹ️ Please provide a detailed technical report (minimum 10 characters)';
+            if (timeWarning && !timeWarning.innerHTML.includes(t('wo.execute.earlierKeyword'))) {
+                timeWarning.innerHTML = t('wo.execute.infoProvide10Chars');
                 timeWarning.style.background = '#e8f0fe';
                 timeWarning.style.color = '#1a1a2e';
                 timeWarning.style.borderLeftColor = '#1a1a2e';
                 timeWarning.classList.add('visible');
             }
-        } else if (timeWarning && !timeWarning.innerHTML.includes('cannot be earlier')) {
+        } else if (timeWarning && !timeWarning.innerHTML.includes(t('wo.execute.earlierKeyword'))) {
             timeWarning.classList.remove('visible');
             timeWarning.style.background = '#fff3cd';
             timeWarning.style.color = '#856404';
@@ -1978,7 +1980,7 @@
         
         var summary = document.getElementById('pmSummary');
         if (summary) {
-            summary.innerHTML = '<i class="fas fa-tasks"></i> Progress: ' + pmTasksCompleted + '/' + pmTotalTasks + ' tasks completed';
+            summary.innerHTML = '<i class="fas fa-tasks"></i> ' + t('wo.execute.progressPrefix') + ' ' + pmTasksCompleted + '/' + pmTotalTasks + ' ' + t('wo.execute.tasksCompletedSuffix');
         }
         validatePMStep();
     }
@@ -2078,7 +2080,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -2090,25 +2092,25 @@
     // ============================================
     function renderCorrectiveUI(container) {
         container.innerHTML = 
-            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> Total Labour: 0.00 hours</div>' +
+            '<div id="labourDisplay" class="labour-display"><i class="fas fa-clock"></i> ' + t('wo.execute.totalLabourPrefix') + ' 0.00 ' + t('wo.execute.hoursUnit') + '</div>' +
             '<div style="display:flex; gap:10px; flex-wrap:wrap;">' +
                 '<div style="flex:1; min-width:180px;">' +
                     '<div class="form-group" style="margin-bottom:0;">' +
-                        '<label><i class="fas fa-play-circle"></i> Start Time <span class="required">*</span></label>' +
+                        '<label><i class="fas fa-play-circle"></i> ' + t('wo.execute.startTimeLbl') + ' <span class="required">*</span></label>' +
                         '<input type="datetime-local" id="startTime" data-required="true">' +
                     '</div>' +
                 '</div>' +
                 '<div style="flex:1; min-width:180px;">' +
                     '<div class="form-group" style="margin-bottom:0;">' +
-                        '<label><i class="fas fa-stop-circle"></i> End Time <span class="required">*</span></label>' +
+                        '<label><i class="fas fa-stop-circle"></i> ' + t('wo.execute.endTimeLbl') + ' <span class="required">*</span></label>' +
                         '<input type="datetime-local" id="endTime" data-required="true">' +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div id="timeWarning" class="warning-message" style="margin-top: 8px; padding: 6px 10px; background: #fff3cd; border-radius: 4px; border-left: 3px solid #f59e0b; font-size: 12px; color: #856404;"></div>' +
             '<div class="form-group" style="margin-top:12px;">' +
-                '<label><i class="fas fa-file-alt"></i> Technical Findings & Actions Taken <span class="required">*</span></label>' +
-                '<textarea id="reportNotes" rows="5" data-required="true" placeholder="Describe what you found and how you fixed it... (min. 10 characters)"></textarea>' +
+                '<label><i class="fas fa-file-alt"></i> ' + t('wo.execute.findingsLbl') + ' <span class="required">*</span></label>' +
+                '<textarea id="reportNotes" rows="5" data-required="true" placeholder="' + t('wo.execute.findingsCorrPh') + '"></textarea>' +
                 '<div id="reportNotesWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
             '</div>';
         
@@ -2143,7 +2145,7 @@
                 if (!isNaN(lastEndDate.getTime()) && startDateTime < lastEndDate) {
                     isValid = false;
                     if (timeWarning) {
-                        timeWarning.innerHTML = '⚠️ Start time cannot be earlier than last End Time (' + DB.selectedWO.lastEndTime + '). Please select a later start time.';
+                        timeWarning.innerHTML = t('wo.execute.warnStartBeforeLastEnd', { date: DB.selectedWO.lastEndTime });
                         timeWarning.classList.add('visible');
                     }
                 }
@@ -2159,11 +2161,11 @@
                 isValid = false;
                 var creationFormatted = formatShortDate(DB.selectedWO.date);
                 if (timeWarning) {
-                    timeWarning.innerHTML = '⚠️ Start time cannot be earlier than WO creation date (' + creationFormatted + ')';
+                    timeWarning.innerHTML = '⚠️ ' + t('wo.execute.startBeforeCreation', { date: creationFormatted });
                     timeWarning.classList.add('visible');
                 }
                 // ✅ TOAST: Error de fecha
-                showToast('Start time cannot be earlier than WO creation date (' + creationFormatted + ')', 'error');
+                showToast(t('wo.execute.startBeforeCreation', { date: creationFormatted }), 'error');
             }
         }
         
@@ -2171,11 +2173,11 @@
         
         if (startTime && endTime && new Date(endTime) <= new Date(startTime)) {
             if (timeWarning) {
-                timeWarning.innerHTML = '⚠️ End time must be after start time';
+                timeWarning.innerHTML = t('wo.execute.warnEndAfterStart');
                 timeWarning.classList.add('visible');
             }
             if (nextBtn) nextBtn.disabled = true;
-        } else if (timeWarning && timeWarning.innerHTML.includes('End time')) {
+        } else if (timeWarning && timeWarning.innerHTML.includes(t('wo.execute.endTimeKeyword'))) {
             timeWarning.classList.remove('visible');
         }
     }
@@ -2185,7 +2187,7 @@
     // ============================================
 
     async function loadInitialData() {
-        showLoading('Loading Technical Portal...');
+        showLoading(t('wo.execute.loadingPortal'));
         
         try {
             var response = await callApi('WO_getInitialTechData', []);
@@ -2193,16 +2195,16 @@
             DB.wos = data.wos || [];
             
             var woSel = document.getElementById('woSelect');
-            woSel.innerHTML = '<option value="">-- Select WO --</option>';
+            woSel.innerHTML = '<option value="">' + t('wo.execute.selectWOOpt') + '</option>';
             DB.wos.forEach(function(w) {
                 var opt = document.createElement('option');
                 opt.value = w.folio;
-                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType ? tStatus(w.maintType) : 'COR');
                 opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
                 woSel.appendChild(opt);
             });
             
-            var rootCausesHtml = '<option value="">-- Select Cause --</option>';
+            var rootCausesHtml = '<option value="">' + t('wo.execute.selectCause') + '</option>';
             if (data.rootCauses) {
                 data.rootCauses.forEach(function(c) {
                     rootCausesHtml += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
@@ -2223,13 +2225,13 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading data: ' + error.message, 'error');
+            showToast(t('wo.create.errorLoadingData', { error: error.message }), 'error');
             // console.error('Load error:', error);  // COMENTADO
         }
     }
 
     async function refreshWOList() {
-        showLoading('Refreshing Work Orders...');
+        showLoading(t('wo.execute.refreshingWOs'));
         
         try {
             // ✅ Recargar datos desde el backend
@@ -2239,11 +2241,11 @@
             
             // ✅ Actualizar el selector
             var woSel = document.getElementById('woSelect');
-            woSel.innerHTML = '<option value="">-- Select WO --</option>';
+            woSel.innerHTML = '<option value="">' + t('wo.execute.selectWOOpt') + '</option>';
             DB.wos.forEach(function(w) {
                 var opt = document.createElement('option');
                 opt.value = w.folio;
-                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType ? tStatus(w.maintType) : 'COR');
                 opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
                 woSel.appendChild(opt);
             });
@@ -2286,7 +2288,7 @@
                 step1.style.removeProperty('display');
                 step1.style.setProperty('display', 'block', 'important');
             }
-            document.getElementById('stepHeader').innerText = 'Step 1: ' + stepTitles[0];
+            document.getElementById('stepHeader').innerText = t('wo.execute.stepWord') + ' 1: ' + t('wo.execute.stepTitle1');
             document.getElementById('btnBackHeader').style.display = 'none';
             document.getElementById('btnNextHeader').style.display = 'block';
             document.getElementById('progressBar').style.width = '20%';
@@ -2296,11 +2298,11 @@
             if (badge) badge.style.display = 'none';
             
             hideLoading();
-            showToast('✅ Work Orders refreshed successfully', 'success');
+            showToast(t('wo.execute.refreshedSuccess'), 'success');
             
         } catch (error) {
             hideLoading();
-            showToast('Error refreshing: ' + error.message, 'error');
+            showToast(t('wo.execute.errorRefreshing', { error: error.message }), 'error');
             // console.error('Refresh error:', error);  // COMENTADO
         }
     }    
@@ -2333,7 +2335,7 @@
         // Resetear carrito visual
         var materialCart = document.getElementById('materialCart');
         if (materialCart) {
-            materialCart.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-shopping-cart"></i> No parts selected yet.</p>';
+            materialCart.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-shopping-cart"></i> ' + t('wo.execute.noPartsYet') + '</p>';
         }
         
         var val = document.getElementById('woSelect').value;
@@ -2359,9 +2361,9 @@
             if (woType === 'PREVENTIVE') {
                 if (assetSelect) {
                     assetSelect.disabled = true;
-                    assetSelect.innerHTML = '<option value="">-- No component selection needed for Preventive Maintenance --</option>';
+                    assetSelect.innerHTML = '<option value="">' + t('wo.execute.noCompNeededPm') + '</option>';
                 }
-                if (assetLabel) assetLabel.innerHTML = 'Component Selection <span style="color:#e67e22; font-size:10px;">(Not required for PM)</span>';
+                if (assetLabel) assetLabel.innerHTML = t('wo.execute.compSelectionTitle') + ' <span style="color:#e67e22; font-size:10px;">' + t('wo.execute.notReqForPm') + '</span>';
                 if (assetHelpText) assetHelpText.style.display = 'none';
                 
                 // ✅ CARGAR TAREAS INMEDIATAMENTE
@@ -2369,9 +2371,9 @@
             } else {
                 if (assetSelect) {
                     assetSelect.disabled = false;
-                    assetSelect.innerHTML = '<option value="">-- Select Component --</option>';
+                    assetSelect.innerHTML = '<option value="">' + t('wo.execute.selectComponent') + '</option>';
                 }
-                if (assetLabel) assetLabel.innerHTML = 'Specific Component Intervened <span class="required">*</span>';
+                if (assetLabel) assetLabel.innerHTML = t('wo.execute.specComponent') + ' <span class="required">*</span>';
                 if (assetHelpText) assetHelpText.style.display = 'block';
                 
                 // ✅ LIMPIAR el contenedor de PM tasks cuando NO es PREVENTIVE
@@ -2385,12 +2387,12 @@
             }
             
             document.getElementById('woInfo').style.display = 'block';
-            document.getElementById('info-requester').innerText = wo.requester || 'N/A';
-            document.getElementById('outDate').innerText = wo.date || 'N/A';
-            document.getElementById('outMaintType').innerText = wo.maintType || 'N/A';
-            document.getElementById('info-priority').innerText = wo.priority || 'N/A';
-            document.getElementById('outArea').innerText = wo.area || 'N/A';
-            document.getElementById('outEqName').innerText = wo.eqName || 'N/A';
+            document.getElementById('info-requester').innerText = wo.requester || t('wo.close.na');
+            document.getElementById('outDate').innerText = wo.date ? I18n.formatDate(wo.date) : t('wo.close.na');
+            document.getElementById('outMaintType').innerText = wo.maintType ? tStatus(wo.maintType) : t('wo.close.na');
+            document.getElementById('info-priority').innerText = wo.priority ? tStatus(wo.priority) : t('wo.close.na');
+            document.getElementById('outArea').innerText = wo.area || t('wo.close.na');
+            document.getElementById('outEqName').innerText = wo.eqName || t('wo.close.na');
             
             // ✅ Mostrar descripción
             if (woType === 'PREVENTIVE' && wo.desc && wo.desc.indexOf('[EAMS MASTER PM]') !== -1) {
@@ -2401,11 +2403,11 @@
                 }
                 document.getElementById('info-description').innerText = displayDesc;
             } else {
-                document.getElementById('info-description').innerText = wo.desc || 'No description';
+                document.getElementById('info-description').innerText = wo.desc || t('wo.execute.noDescription');
             }
             
             // ✅ Mostrar histórico
-            var historyText = wo.history || 'No logs.';
+            var historyText = wo.history || t('wo.execute.noLogs');
             try {
                 var parsedHistory = JSON.parse(historyText);
                 if (typeof parsedHistory === 'object') {
@@ -2413,24 +2415,24 @@
                     for (var key in parsedHistory) {
                         if (parsedHistory.hasOwnProperty(key)) {
                             if (key === 'spare_purchase') {
-                                formatted += '🔧 Spare Part Purchase: ' + (parsedHistory[key] ? 'Yes' : 'No') + '\n';
+                                formatted += t('wo.execute.sparePurchaseLog') + ' ' + (parsedHistory[key] ? t('common.yes') : t('common.no')) + '\n';
                             } else if (key === 'external_service') {
-                                formatted += '🔧 External Service: ' + (parsedHistory[key] ? 'Yes' : 'No') + '\n';
+                                formatted += t('wo.execute.externalServiceLog') + ' ' + (parsedHistory[key] ? t('common.yes') : t('common.no')) + '\n';
                             } else if (key === 'inherited_from') {
-                                formatted += '📎 Inherited from WO: ' + parsedHistory[key] + '\n';
+                                formatted += t('wo.execute.inheritedFromLog') + ' ' + parsedHistory[key] + '\n';
                             } else if (key === 'timestamp') {
                                 var dateObj = new Date(parsedHistory[key]);
                                 if (!isNaN(dateObj.getTime())) {
-                                    formatted += '📅 Date: ' + dateObj.toLocaleString() + '\n';
+                                    formatted += t('wo.execute.dateLog') + ' ' + dateObj.toLocaleString(I18n.getLocale()) + '\n';
                                 } else {
-                                    formatted += '📅 Date: ' + parsedHistory[key] + '\n';
+                                    formatted += t('wo.execute.dateLog') + ' ' + parsedHistory[key] + '\n';
                                 }
                             } else {
                                 formatted += key + ': ' + JSON.stringify(parsedHistory[key]) + '\n';
                             }
                         }
                     }
-                    document.getElementById('info-comments').innerText = formatted || 'No logs.';
+                    document.getElementById('info-comments').innerText = formatted || t('wo.execute.noLogs');
                 } else {
                     document.getElementById('info-comments').innerText = historyText;
                 }
@@ -2445,7 +2447,7 @@
                 // Mostrar mensaje de que no hay tareas
                 var pmTasksContainer = document.getElementById('pmTasksStep1');
                 if (pmTasksContainer) {
-                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> No preventive tasks found for this WO.</div>';
+                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> ' + t('wo.execute.noPmTasksFound') + '</div>';
                 }
             }
             
@@ -2461,23 +2463,23 @@
         if (!DB.selectedWO) return;
         
         try {
-            showLoading('Loading preventive tasks...');
+            showLoading(t('wo.execute.loadingPmTasksShort'));
             var tasks = await callApi('WO_getPMTasksByFolio', [DB.selectedWO.folio, DB.selectedWO.tl]);
             DB.cachedTasks = JSON.parse(tasks);
             hideLoading();
             
             if (DB.cachedTasks && DB.cachedTasks.length > 0) {
                 renderPmTasksInStep1();
-                showToast('✅ Preventive tasks loaded: ' + DB.cachedTasks.length + ' tasks found', 'success');
+                showToast(t('wo.execute.pmTasksLoadedCount', { count: DB.cachedTasks.length }), 'success');
             } else {
                 var pmTasksContainer = document.getElementById('pmTasksStep1');
                 if (pmTasksContainer) {
-                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> No preventive tasks found for this WO.</div>';
+                    pmTasksContainer.innerHTML = '<div style="padding:10px; background:#fff3cd; border-radius:6px; margin-top:8px;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> ' + t('wo.execute.noPmTasksFound') + '</div>';
                 }
             }
         } catch (error) {
             hideLoading();
-            showToast('Error loading PM tasks: ' + error.message, 'error');
+            showToast(t('wo.execute.errorLoadingPmTasks', { error: error.message }), 'error');
         }
     }  
 
@@ -2501,13 +2503,13 @@
             pmTasksContainer.innerHTML = 
                 '<div style="padding:10px; background:#fff3cd; border-radius:6px; border-left:4px solid #f59e0b;">' +
                     '<i class="fas fa-info-circle" style="color:#f59e0b; margin-right:8px;"></i>' +
-                    '<span style="color:#856404; font-size:13px;">No preventive tasks assigned to this WO yet.</span>' +
+                    '<span style="color:#856404; font-size:13px;">' + t('wo.execute.noPmTasksYetStep1') + '</span>' +
                 '</div>';
             return;
         }
         
         var tasksHtml = '<div style="margin-top:4px;">';
-        tasksHtml += '<label style="color:#2e7d32; font-size:10px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:6px;"><i class="fas fa-clipboard-check"></i> PREVENTIVE TASKS (' + DB.cachedTasks.length + ')</label>';
+        tasksHtml += '<label style="color:#2e7d32; font-size:10px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:6px;"><i class="fas fa-clipboard-check"></i> ' + t('wo.execute.pmTasksTitleCount', { count: DB.cachedTasks.length }) + '</label>';
         tasksHtml += '<div style="max-height:150px; overflow-y:auto; border:1px solid #c8e6c9; border-radius:4px; background:white; padding:4px 0;">';
         
         for (var i = 0; i < DB.cachedTasks.length; i++) {
@@ -2558,7 +2560,7 @@
                 }
             }
         } catch (error) {
-            showToast('Error loading PM tasks: ' + error.message, 'error');
+            showToast(t('wo.execute.errorLoadingPmTasks', { error: error.message }), 'error');
         }
     }
 
@@ -2574,12 +2576,12 @@
             if (woType === 'PREVENTIVE') return;
             
             var sel = document.getElementById('assetSelect');
-            sel.innerHTML = '<option value="">Loading components...</option>';
+            sel.innerHTML = '<option value="">' + t('wo.execute.loadingComponents') + '</option>';
             
             // ✅ VALIDAR TL
             if (!wo.tl || wo.tl.trim() === '') {
-                sel.innerHTML = '<option value="">No Technical Location assigned to this WO</option>';
-                showToast('No Technical Location found for this WO', 'warning');
+                sel.innerHTML = '<option value="">' + t('wo.execute.noTlAssigned') + '</option>';
+                showToast(t('wo.execute.noTlToast'), 'warning');
                 validateStep();
                 return;
             }
@@ -2596,9 +2598,9 @@
                         assetList = [];
                     }
                 }
-                sel.innerHTML = '<option value="">-- Select Component --</option>';
+                sel.innerHTML = '<option value="">' + t('wo.execute.selectComponent') + '</option>';
                 if (!assetList || assetList.length === 0) {
-                    sel.innerHTML += '<option value="" disabled>No components found for this Technical Location</option>';
+                    sel.innerHTML += '<option value="" disabled>' + t('wo.execute.noComponentsForTl') + '</option>';
                 } else {
                     assetList.forEach(function(a) {
                         var opt = document.createElement('option');
@@ -2610,11 +2612,11 @@
                 validateStep();
                 // ✅ Solo mostrar toast si estamos en el Step 2
                 if (assetList.length > 0 && currentStep === 2) {
-                    showToast('Components loaded: ' + assetList.length + ' found', 'success');
+                    showToast(t('wo.execute.componentsLoadedCount', { count: assetList.length }), 'success');
                 }
             } catch (error) {
-                sel.innerHTML = '<option value="">Error loading components</option>';
-                showToast('Error loading components: ' + error.message, 'error');
+                sel.innerHTML = '<option value="">' + t('wo.execute.errLoadingCompOpt') + '</option>';
+                showToast(t('wo.execute.errLoadingComponents', { error: error.message }), 'error');
             }
         }
 
@@ -2643,20 +2645,20 @@
                 spinner.style.display = 'none';
                 
                 if (partList.length === 0) {
-                    resDiv.innerHTML = '<div class="search-item">No parts found</div>';
+                    resDiv.innerHTML = '<div class="search-item">' + t('wo.execute.noPartsFound') + '</div>';
                 } else {
                     resDiv.innerHTML = partList.map(function(p) {
                         var displayName = p.reference ? escapeHtml(p.name) + ' [PN: ' + escapeHtml(p.reference) + ']' : escapeHtml(p.name);
                         return '<div class="search-item" onclick=\'selectPartForQty(' + JSON.stringify(p.id) + ', ' + JSON.stringify(p.name) + ', ' + p.price + ', ' + p.stock + ')\'>' +
                             '<span><b>' + escapeHtml(p.id) + '</b> ' + displayName + '</span>' +
-                            '<span class="stock-tag"><i class="fas fa-boxes"></i> Stock: ' + p.stock + '</span>' +
+                            '<span class="stock-tag"><i class="fas fa-boxes"></i> ' + t('wo.execute.stockPrefix') + ' ' + p.stock + '</span>' +
                         '</div>';
                     }).join('');
                 }
                 resDiv.style.display = 'block';
             } catch (error) {
                 spinner.style.display = 'none';
-                showToast('Error searching parts: ' + error.message, 'error');
+                showToast(t('wo.execute.errSearchingParts', { error: error.message }), 'error');
             }
         }, 300);
     }
@@ -2666,7 +2668,7 @@
         // ✅ Issue #6: Cerrar sugerencias al seleccionar
         document.getElementById('searchResults').style.display = 'none';
         document.getElementById('partSearch').value = '';
-        document.getElementById('selectedPartLabel').innerHTML = '<i class="fas fa-box"></i> Adding: ' + name + ' (In Stock: ' + stock + ')';
+        document.getElementById('selectedPartLabel').innerHTML = '<i class="fas fa-box"></i> ' + t('wo.execute.addingPart', { name: name, stock: stock });
         document.getElementById('qtyPanel').style.display = 'block';
         document.getElementById('partQty').focus();
     }
@@ -2677,13 +2679,13 @@
         
         // ✅ Verificar que hay un parte seleccionado
         if (!DB.tempPart) {
-            showToast('Please select a part first', 'error');
+            showToast(t('wo.execute.selectPartFirst'), 'error');
             return;
         }
         
         // ✅ Verificar que la cantidad es válida
         if (!qty || qty <= 0 || isNaN(qty)) {
-            showToast('Please enter a valid quantity (greater than 0)', 'error');
+            showToast(t('wo.execute.enterValidQty'), 'error');
             return;
         }
         
@@ -2697,7 +2699,7 @@
         
         // ✅ VALIDAR stock - BLOQUEAR si excede
         if (qty > part.stock) {
-            showToast('Invalid quantity. The requested amount (' + qty + ') exceeds available stock (' + part.stock + '). Please enter a quantity within the current stock.', 'error');
+            showToast(t('wo.execute.qtyExceedsStock', { qty: qty, stock: part.stock }), 'error');
             return;
         }
         
@@ -2712,7 +2714,7 @@
         
         renderCart();
         cancelAdd();
-        showToast('Added ' + qty + 'x ' + part.name + ' to cart', 'success');
+        showToast(t('wo.execute.addedToCart', { qty: qty, name: part.name }), 'success');
     }
 
     function cancelAdd() {
@@ -2726,7 +2728,7 @@
     function renderCart() {
         var container = document.getElementById('materialCart');
         if (DB.cart.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-shopping-cart"></i> No parts selected yet.</p>';
+            container.innerHTML = '<p style="text-align:center; color:#9aa0a6; font-size:13px; margin-top:10px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-shopping-cart"></i> ' + t('wo.execute.noPartsYet') + '</p>';
             return;
         }
         container.innerHTML = DB.cart.map(function(item, idx) {
@@ -2976,7 +2978,7 @@
       
       var folio = DB.selectedWO?.folio;
       if (!folio) {
-          showToast('Please select a work order', 'error');
+          showToast(t('wo.approve.pleaseSelectWO'), 'error');
           return;
       }
       
@@ -3000,13 +3002,13 @@
           if (action === 'COMPLETED') {
               rootCause = document.getElementById('completedRootCause')?.value || '';
               if (!rootCause) {
-                  showToast('Please select a Root Cause before closing the work order', 'error');
+                  showToast(t('wo.execute.selectRootCauseReq'), 'error');
                   return;
               }
           } else if (action === 'FOLLOW_UP') {
               rootCause = document.getElementById('fuRootCause')?.value || '';
               if (!rootCause) {
-                  showToast('Please select a Root Cause before closing the work order', 'error');
+                  showToast(t('wo.execute.selectRootCauseReq'), 'error');
                   return;
               }
               needsSparePart = document.getElementById('fuNeedsSparePartPurchase')?.checked || false;
@@ -3015,7 +3017,7 @@
               if (needsOther) {
                   otherCommentText = document.getElementById('fuOtherComment')?.value.trim() || '';
                   if (!otherCommentText || otherCommentText.length < 10) {
-                      showToast('Please enter at least 10 characters for the "Other" comment', 'error');
+                      showToast(t('wo.execute.enterOther10Chars'), 'error');
                       return;
                   }
               }
@@ -3023,7 +3025,7 @@
       }
       
       isSubmitting = true;
-      showLoading('Processing Technical Report...');
+      showLoading(t('wo.execute.processingReport'));
       
       var notes = '';
       var start = '';
@@ -3046,7 +3048,7 @@
           
           if (!isNaN(creationDate.getTime()) && startDateTime < creationDate) {
               var creationFormatted = formatShortDate(DB.selectedWO.date);
-              showToast('Start time cannot be earlier than WO creation date (' + creationFormatted + ')', 'error');
+              showToast(t('wo.execute.startBeforeCreation', { date: creationFormatted }), 'error');
               isSubmitting = false;
               hideLoading();
               return;
@@ -3131,7 +3133,7 @@
           };
           logWOExecution(folio, action, executionDetails).catch(function(e) { /* console.warn('[WO] Execution log failed:', e); */ });  // COMENTADO
           
-          showToast('Report processed successfully!', 'success');
+          showToast(t('wo.execute.reportProcessed'), 'success');
           // console.log('[WO_EXECUTE] Report Saved');  // COMENTADO
           
           // ✅ Issue #3: Reset completo después de cerrar WO
@@ -3151,11 +3153,11 @@
           // Resetear el selector
           var woSel = document.getElementById('woSelect');
           if (woSel) {
-              woSel.innerHTML = '<option value="">-- Select WO --</option>';
+              woSel.innerHTML = '<option value="">' + t('wo.execute.selectWOOpt') + '</option>';
               DB.wos.forEach(function(w) {
                   var opt = document.createElement('option');
                   opt.value = w.folio;
-                  var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType || 'COR');
+                  var maintTypeShort = w.maintType === 'Scheduled Preventive' ? 'PM' : (w.maintType ? tStatus(w.maintType) : 'COR');
                   opt.textContent = w.folio + ' | ' + w.eqName + ' | ' + maintTypeShort;
                   woSel.appendChild(opt);
               });
@@ -3177,7 +3179,7 @@
               step1.style.removeProperty('display');
               step1.style.setProperty('display', 'block', 'important');
           }
-          document.getElementById('stepHeader').innerText = 'Step 1: ' + stepTitles[0];
+          document.getElementById('stepHeader').innerText = t('wo.execute.stepWord') + ' 1: ' + t('wo.execute.stepTitle1');
           document.getElementById('btnBackHeader').style.display = 'none';
           document.getElementById('btnNextHeader').style.display = 'block';
           document.getElementById('progressBar').style.width = '20%';
@@ -3192,7 +3194,7 @@
           var badge = document.getElementById('activeWoBadge');
           if (badge) badge.style.display = 'none';
           
-          showToast('Ready for next work order', 'success');
+          showToast(t('wo.execute.readyNextWO'), 'success');
           
       } catch (error) {
           if (window.Logger && typeof window.Logger.error === 'function') {
@@ -3200,7 +3202,7 @@
           }
           
           hideLoading();
-          showToast('Error: ' + error.message, 'error');
+          showToast(t('common.error') + ': ' + error.message, 'error');
           isSubmitting = false;
       }
   }
@@ -3212,17 +3214,17 @@
     async function printWorkOrder() {
         var folio = DB.selectedWO?.folio;
         if (!folio) {
-            showToast('Please select a work order first', 'error');
+            showToast(t('wo.execute.selectWOFirst'), 'error');
             return;
         }
         
-        showLoading('Generating report preview...');
+        showLoading(t('wo.execute.generatingPreview'));
         
         try {
             // Obtener datos del WO y tareas preventivas si existen
             var response = await callApi('WO_getWODetails', [folio]);
             if (!response.success || !response.wo) {
-                throw new Error('Failed to load WO details');
+                throw new Error(t('wo.execute.failedLoadWoDetails'));
             }
             
             var wo = response.wo;
@@ -3264,7 +3266,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error generating preview: ' + error.message, 'error');
+            showToast(t('wo.execute.errGeneratingPreview', { error: error.message }), 'error');
         }
     }
 
@@ -3286,19 +3288,20 @@
             if (!dateStr) return '';
             var d = new Date(dateStr);
             if (isNaN(d.getTime())) return dateStr;
-            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + 
-                  ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            var locale = I18n.getLocale();
+            return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' }) + 
+                  ' ' + d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
         }
         
         var folio = s(wo.folio);
-        var status = s(wo.status);
+        var status = wo.status ? tStatus(wo.status) : '';
         var requester = s(wo.requester);
         var area = s(wo.area);
         var equipment = s(wo.equipment);
         var assetId = s(wo.assetId);
-        var criticality = s(wo.criticality);
-        var priority = s(wo.priority);
-        var maintType = s(wo.maintType);
+        var criticality = wo.criticality ? tStatus(wo.criticality) : '';
+        var priority = wo.priority ? tStatus(wo.priority) : '';
+        var maintType = wo.maintType ? tStatus(wo.maintType) : '';
         var technician = s(wo.tech);
         var creationDate = formatDate(wo.start || wo.date);
         var rootCause = s(wo.rootCause);
@@ -3310,7 +3313,7 @@
         
         if (isPreventive) {
             pmTasksHtml = '<div style="margin: 10px 0 0 0;">';
-            pmTasksHtml += '<span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">Preventive Tasks Checklist</span>';
+            pmTasksHtml += '<span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">' + t('wo.execute.pmTasksChecklistPrint') + '</span>';
             pmTasksHtml += '<div style="margin-top: 4px; border: 1px solid #ddd; border-radius: 4px; padding: 6px 10px; background: #fafafa;">';
             for (var i = 0; i < pmTasks.length; i++) {
                 var task = pmTasks[i];
@@ -3322,7 +3325,7 @@
                 pmTasksHtml += '<div style="flex: 1;">';
                 pmTasksHtml += '<div style="font-size: 11px; font-weight: 600; color: #1a1a2e;">' + equip + ' - ' + taskName + '</div>';
                 if (standard) {
-                    pmTasksHtml += '<div style="font-size: 9px; color: #888;">Standard: ' + standard + '</div>';
+                    pmTasksHtml += '<div style="font-size: 9px; color: #888;">' + t('wo.execute.standardPrefix') + ' ' + standard + '</div>';
                 }
                 pmTasksHtml += '</div>';
                 pmTasksHtml += '</div>';
@@ -3341,61 +3344,61 @@
                 <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                     <div style="display:flex; gap:10px;">
                         <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-times"></i> CLOSE
+                            <i class="fas fa-times"></i> ${t('wo.execute.closeBtnUpper')}
                         </button>
                         <button class="btn-outline" onclick="printPreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-print"></i> PRINT
+                            <i class="fas fa-print"></i> ${t('wo.execute.printBtnUpper')}
                         </button>
                     </div>
                 </div>
             
                 <!-- HEADER -->
                 <div style="margin-bottom: 12px;">
-                    <h1 style="margin:0; font-size:18px; letter-spacing:-0.5px;">WORK ORDER TECHNICAL REPORT</h1>
+                    <h1 style="margin:0; font-size:18px; letter-spacing:-0.5px;">${t('wo.search.reportTitle')}</h1>
                     <div style="font-size:14px; font-weight:bold; color:#1a1a2e; margin-top: 6px;">W.O. #: ${folio}</div>
                     <div style="margin-top: 2px;">
-                        <span style="font-size: 9px; color: #5f6368; font-weight: 600; text-transform: uppercase;">Current Status:</span>
+                        <span style="font-size: 9px; color: #5f6368; font-weight: 600; text-transform: uppercase;">${t('wo.search.currentStatus')}</span>
                         <span style="font-weight:bold; font-size:12px; color:#2e7d32; margin-left: 6px;">${status}</span>
                     </div>
                 </div>
 
                 <!-- FRAME 1 - Equipment Identification (COMPACTO) -->
                 <div class="frame" style="border: 1px solid #333; padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; position: relative;">
-                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">1. EQUIPMENT IDENTIFICATION</span>
+                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.frame1Title')}</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Area / Sector</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${area}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Tech. Location</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${equipment}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Asset Tag</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${assetId || '____________________'}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Name</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${equipment}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Criticality</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${criticality || '____________________'}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblAreaSector')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${area}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblTechLocation')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${equipment}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblAssetTag')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${assetId || '____________________'}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblEquipName')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${equipment}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblCriticality')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${criticality || '____________________'}</div></div>
                     </div>
                 </div>
 
                 <!-- FRAME 2 - Request Details (COMPACTO) -->
                 <div class="frame" style="border: 1px solid #333; padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; position: relative;">
-                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">2. REQUEST DETAILS</span>
+                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.frame2Title')}</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Requested By</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${requester}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Creation Date</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${creationDate}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Priority</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${priority}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblRequestedBy')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${requester}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblCreationDate')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${creationDate}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.colPriority')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${priority}</div></div>
                     </div>
                     <div style="margin-top:6px; border-top:1px solid #ddd; padding-top:4px;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Failure Description / Request Notes</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblFailureDesc')}</span>
                         <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 20px;">${description || '_________________________'}</div>
                     </div>
                 </div>
 
                 <!-- FRAME 3 - Maintenance Execution (GRANDE) -->
                 <div class="frame" style="border: 1px solid #333; padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; position: relative;">
-                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">3. MAINTENANCE EXECUTION</span>
+                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.frame3Title')}</span>
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Activity Type</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${maintType}</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Primary Technician</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${technician || '____________________'}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblActivityType')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${maintType}</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblPrimaryTech')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${technician || '____________________'}</div></div>
                     </div>
                     
                     <!-- Technical Findings - espacio abajo (sin línea a mitad) -->
                     <div style="margin: 6px 0 0 0;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Technical Findings &amp; Work Performed</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblTechFindings')}</span>
                         <div class="val" style="font-size: 11px; color: #000; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; ${findingsRows}">
                             ${isPreventive ? '' : '<br><br><br><br>'}
                         </div>
@@ -3403,7 +3406,7 @@
                     
                     <!-- Spare Parts - espacio abajo (sin línea a mitad) -->
                     <div style="margin: 6px 0 0 0;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Spare Parts &amp; Materials Consumed</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblSpareParts')}</span>
                         <div class="val" style="font-size: 11px; color: #000; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 24px;">
                             <br>
                         </div>
@@ -3414,45 +3417,45 @@
                     
                     <!-- Tiempos -->
                     <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;">
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Start Time</span>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblStartTime')}</span>
                             <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div>
                         </div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Completion Time</span>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblCompletionTime')}</span>
                             <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div>
                         </div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Man-Hours</span>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblTotalManHours')}</span>
                             <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div>
                         </div>
                     </div>
                     
                     <!-- Downtime -->
                     <div style="margin-top: 8px;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Equipment Downtime</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblEquipDowntime')}</span>
                         <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2px;">
-                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime Start</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
-                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Downtime End</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
-                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Total Downtime</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblDowntimeStart')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblDowntimeEnd')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                            <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblTotalDowntime')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
                         </div>
                     </div>
                     
                     <!-- Root Cause -->
                     <div style="margin-top: 8px;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Root Cause Analysis</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblRootCause')}</span>
                         <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${rootCause || '_________________________'}</div>
                     </div>
                 </div>
 
                 <!-- FRAME 4 - Closure & Reliability (COMPACTO) -->
                 <div class="frame" style="border: 1px solid #333; padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; position: relative;">
-                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">4. CLOSURE &amp; RELIABILITY</span>
+                    <span class="frame-title" style="position: absolute; top: -9px; left: 14px; background: white; padding: 0 8px; font-size: 8px; font-weight: bold; color: #1a1a2e; text-transform: uppercase; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.frame4Title')}</span>
                     <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approved By</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closed By</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Approve Date</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
-                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Closure Date</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblApprovedBy')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblClosedBy')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblApproveDate')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
+                        <div><span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblClosureDate')}</span><div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">____________________</div></div>
                     </div>
                     <div style="margin-top: 6px;">
-                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Additional Observations</span>
+                        <span class="label" style="font-size: 7px; color: #555; font-weight: bold; text-transform: uppercase; margin-bottom: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${t('wo.search.lblAddObs')}</span>
                         <div class="val" style="font-size: 11px; color: #000; min-height: 1em; border-bottom: 1px solid #ddd; padding-bottom: 2px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 24px;">_________________________</div>
                     </div>
                 </div>
@@ -3490,7 +3493,7 @@
         if (EAMS_API_URL) {
             loadInitialData();
         } else {
-            showToast('Please login to access EAMS', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
     
