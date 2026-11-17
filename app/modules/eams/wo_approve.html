@@ -6,7 +6,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Approval Manager - ADKINTOR EAMS</title>
+    <title data-i18n="wo.approve.pageTitle">Approval Manager - ADKINTOR EAMS</title>
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/app/js/config.js"></script>
     <script src="/app/js/logger.js"></script>
@@ -519,7 +521,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading approval data...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="wo.approve.loadingData">Loading approval data...</span>
 </div>
 
 <!-- TOAST -->
@@ -531,128 +533,128 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Approval Manager</span>
+            <span class="module-title" data-i18n="wo.approve.title">Approval Manager</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>WORK ORDERS</span> &gt; <span class="current">Approval Manager</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="wo.breadcrumbModule">WORK ORDERS</span> &gt; <span class="current" data-i18n="wo.approve.title">Approval Manager</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <div class="card-approval">
             <div class="approval-header">
-                <h3><i class="fas fa-clipboard-list"></i> Work Order Approval</h3>
+                <h3><i class="fas fa-clipboard-list"></i> <span data-i18n="wo.approve.cardTitle">Work Order Approval</span></h3>
             </div>
 
             <div id="preventiveBanner" class="preventive-banner" style="display:none;">
                 <button id="toggleModeBtn" class="btn-toggle" onclick="toggleApproveMode()">
-                    <i class="fas fa-layer-group"></i> ENABLE MULTI-APPROVAL (PM ONLY)
+                    <i class="fas fa-layer-group"></i> <span data-i18n="wo.approve.enableMulti">ENABLE MULTI-APPROVAL (PM ONLY)</span>
                 </button>
             </div>
 
             <div class="form-group">
-                <label>WO Type <span class="required">*</span></label>
+                <label><span data-i18n="wo.approve.woType">WO Type</span> <span class="required">*</span></label>
                 <select id="woTypeSelect" onchange="toggleApproveMode()">
-                    <option value="CORRECTIVE">🔧 Corrective (Normal)</option>
-                    <option value="ON_HOLD">⏸️ On Hold (Follow Up)</option>
-                    <option value="PREVENTIVE">📋 Preventive (PM)</option>
+                    <option value="CORRECTIVE" data-i18n="wo.approve.typeCorrective">🔧 Corrective (Normal)</option>
+                    <option value="ON_HOLD" data-i18n="wo.approve.typeOnHold">⏸️ On Hold (Follow Up)</option>
+                    <option value="PREVENTIVE" data-i18n="wo.approve.typePreventive">📋 Preventive (PM)</option>
                 </select>
             </div>
 
             <div id="singleArea">
                 <div class="form-group">
-                    <label>Select Work Order <span class="required">*</span></label>
+                    <label><span data-i18n="wo.approve.selectWO">Select Work Order</span> <span class="required">*</span></label>
                     <select id="folioSelect" data-required="true" onchange="updateAuditPanel()">
-                        <option value="">-- Select Folio --</option>
+                        <option value="" data-i18n="wo.approve.selectFolio">-- Select Folio --</option>
                     </select>
                 </div>
 
                 <div id="auditPanel" class="audit-panel">
                     <div class="audit-grid">
                         <div>
-                            <div class="audit-label">Original Creation Date</div>
+                            <div class="audit-label" data-i18n="wo.approve.origCreationDate">Original Creation Date</div>
                             <div class="audit-value" id="vDate">--</div>
                         </div>
                         <div>
-                            <div class="audit-label">Priority</div>
+                            <div class="audit-label" data-i18n="wo.approve.priorityLabel">Priority</div>
                             <div class="audit-value" id="vPrio">--</div>
                         </div>
                         <div>
-                            <div class="audit-label">Equipment</div>
+                            <div class="audit-label" data-i18n="wo.approve.equipmentLabel">Equipment</div>
                             <div class="audit-value" id="vEquip">--</div>
                         </div>
                         <div>
-                            <div class="audit-label">Location</div>
+                            <div class="audit-label" data-i18n="wo.approve.locationLabel">Location</div>
                             <div class="audit-value" id="vLoc">--</div>
                         </div>
                     </div>
-                    <div class="audit-label">Description</div>
+                    <div class="audit-label" data-i18n="wo.approve.descriptionLabel">Description</div>
                     <div id="vDesc" class="audit-desc">--</div>
                 </div>
             </div>
 
             <div class="form-group" id="realDateGroup" style="margin-top: 12px;">
-                <label><i class="fas fa-calendar-alt"></i> Correct Actual Failure Date/Time <span style="color:#e67e22;">(optional)</span></label>
+                <label><i class="fas fa-calendar-alt"></i> <span data-i18n="wo.approve.correctDateLabel">Correct Actual Failure Date/Time</span> <span style="color:#e67e22;" data-i18n="wo.approve.optionalTag">(optional)</span></label>
                 <input type="datetime-local" id="realCreationDate">
-                <small class="field-hint">
+                <small class="field-hint" data-i18n-html="wo.approve.correctDateHint">
                     ⚠️ If the WO was created after the actual failure occurred, correct the date here to improve OTIF accuracy.
                     <br>Leave empty to keep the original creation date.
                 </small>
             </div>
 
             <div id="multiArea" class="mass-container">
-                <span class="mass-title"><i class="fas fa-tasks"></i> BATCH PREVENTIVE MODE</span>
+                <span class="mass-title"><i class="fas fa-tasks"></i> <span data-i18n="wo.approve.batchPmMode">BATCH PREVENTIVE MODE</span></span>
                 <div id="pmList" class="pm-list"></div>
             </div>
 
             <div class="row-2cols">
                 <div class="form-group">
-                    <label>Technician <span class="required" id="techRequired">*</span></label>
+                    <label><span data-i18n="wo.fields.technician">Technician</span> <span class="required" id="techRequired">*</span></label>
                     <select id="techSelect" data-required="true" onchange="validateFields()">
-                        <option value="">-- Select Technician --</option>
+                        <option value="" data-i18n="wo.approve.selectTechnician">-- Select Technician --</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Maintenance Type <span class="required" id="typeRequired">*</span></label>
+                    <label><span data-i18n="wo.fields.maintType">Maintenance Type</span> <span class="required" id="typeRequired">*</span></label>
                     <select id="typeSelect" data-required="true" onchange="validateFields()">
-                        <option value="">-- Select Type --</option>
+                        <option value="" data-i18n="wo.approve.selectType">-- Select Type --</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Approver <span class="required" id="apprRequired">*</span></label>
+                <label><span data-i18n="wo.fields.approver">Approver</span> <span class="required" id="apprRequired">*</span></label>
                 <select id="apprSelect" data-required="true" onchange="validateFields()">
-                    <option value="">-- Select Approver --</option>
+                    <option value="" data-i18n="wo.approve.selectApprover">-- Select Approver --</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Quick Response</label>
+                <label data-i18n="wo.approve.quickResponse">Quick Response</label>
                 <select id="smartSelect" onchange="fillQuickComment()">
-                    <option value="">-- Quick Fill --</option>
+                    <option value="" data-i18n="wo.approve.quickFill">-- Quick Fill --</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Observations <span class="required" id="obsRequired" style="display:none;">*</span></label>
-                <textarea id="comments" rows="3" placeholder="Required for rejection..." oninput="validateFields()"></textarea>
+                <label><span data-i18n="wo.fields.observations">Observations</span> <span class="required" id="obsRequired" style="display:none;">*</span></label>
+                <textarea id="comments" rows="3" placeholder="Required for rejection..." data-i18n-placeholder="wo.approve.obsPlaceholder" oninput="validateFields()"></textarea>
                 <div id="commentsWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
             </div>
 
             <div class="button-group">
                 <button id="rejectBtn" class="btn-reject" onclick="runProcess('REJECTED')" disabled>
-                    <i class="fas fa-times"></i> REJECT
+                    <i class="fas fa-times"></i> <span data-i18n="wo.approve.rejectBtn">REJECT</span>
                 </button>
                 <button id="approveBtn" class="btn-approve" onclick="runProcess('APPROVED')" disabled>
-                    <i class="fas fa-check"></i> APPROVE & RELEASE
+                    <i class="fas fa-check"></i> <span data-i18n="wo.approve.approveBtn">APPROVE & RELEASE</span>
                 </button>
             </div>
         </div>
@@ -662,7 +664,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -723,7 +725,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -753,19 +755,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('wo.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error: Please login again', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('No session found. Please login.', 'error');
+            showToast(t('common.sessionNotFound'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please login again.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -779,7 +781,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -817,7 +819,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -835,7 +837,7 @@
         });
     }
 
-    function fillSelect(id, list, placeholder) {
+    function fillSelect(id, list, placeholder, translateItems) {
         var select = document.getElementById(id);
         if (!select) return;
         select.innerHTML = '<option value="">' + placeholder + '</option>';
@@ -843,7 +845,7 @@
             list.forEach(function(item) {
                 var opt = document.createElement('option');
                 opt.value = item;
-                opt.textContent = item;
+                opt.textContent = translateItems ? tStatus(item) : item;
                 select.appendChild(opt);
             });
         }
@@ -854,7 +856,7 @@
         if (!pmContainer) return;
         
         if (!pmWOs || pmWOs.length === 0) {
-            pmContainer.innerHTML = '<div style="color:gray;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No preventive WOs available</div>';
+            pmContainer.innerHTML = '<div style="color:gray;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('wo.approve.noPmAvailable') + '</div>';
             return;
         }
         
@@ -884,8 +886,8 @@
         var panel = document.getElementById('auditPanel');
         
         if (wo && panel) {
-            document.getElementById('vDate').innerText = wo.date || '--';
-            document.getElementById('vPrio').innerText = wo.priority || '--';
+            document.getElementById('vDate').innerText = wo.date ? I18n.formatDate(wo.date) : '--';
+            document.getElementById('vPrio').innerText = wo.priority ? tStatus(wo.priority) : '--';
             document.getElementById('vEquip').innerText = wo.equipment || '--';
             document.getElementById('vLoc').innerText = wo.location || '--';
             document.getElementById('vDesc').innerText = wo.description || '--';
@@ -905,13 +907,13 @@
         
         if (isPreventive) {
             var folioOptions = pmWOs.map(function(pm) { return pm.folio + ' - ' + (pm.wo?.equipment || 'N/A'); });
-            fillSelect('folioSelect', folioOptions, '-- Select PM Folio --');
+            fillSelect('folioSelect', folioOptions, t('wo.approve.selectPmFolio'));
         } else if (isOnHold) {
             var folioOptions = onHoldData.map(function(w) { return w.folio + ' - ' + w.equipment; });
-            fillSelect('folioSelect', folioOptions, '-- Select On Hold Folio --');
+            fillSelect('folioSelect', folioOptions, t('wo.approve.selectOnHoldFolio'));
         } else {
             var folioOptions = woData.map(function(w) { return w.folio + ' - ' + w.equipment; });
-            fillSelect('folioSelect', folioOptions, '-- Select Folio --');
+            fillSelect('folioSelect', folioOptions, t('wo.approve.selectFolio'));
         }
         
         var realDateInput = document.getElementById('realCreationDate');
@@ -978,20 +980,20 @@
 	    if (isSubmitting) {
 	        if (approveBtn) {
 	            approveBtn.disabled = true;
-	            approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+	            approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('wo.approve.processing');
 	        }
 	        if (rejectBtn) {
 	            rejectBtn.disabled = true;
-	            rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+	            rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('wo.approve.processing');
 	        }
 	        return;
 	    }
 	    // Restaurar texto de botones cuando no está procesando
 	    if (approveBtn) {
-	        approveBtn.innerHTML = '<i class="fas fa-check"></i> APPROVE & RELEASE';
+	        approveBtn.innerHTML = '<i class="fas fa-check"></i> ' + t('wo.approve.approveBtn');
 	    }
 	    if (rejectBtn) {
-	        rejectBtn.innerHTML = '<i class="fas fa-times"></i> REJECT';
+	        rejectBtn.innerHTML = '<i class="fas fa-times"></i> ' + t('wo.approve.rejectBtn');
 	    }
         
         var woType = document.getElementById('woTypeSelect') ? document.getElementById('woTypeSelect').value : 'CORRECTIVE';
@@ -1084,13 +1086,13 @@
     // DATA LOADING
     // ============================================
     async function loadData() {
-        showLoading('Loading approval data...');
+        showLoading(t('wo.approve.loadingData'));
         
         try {
             var response = await callApi('WO_getAllData', []);
             
             if (!response.success) {
-                throw new Error(response.error || 'Failed to load data');
+                throw new Error(response.error || t('wo.create.failedLoadData'));
             }
             
             woData = response.wos || [];
@@ -1102,22 +1104,22 @@
             var currentWoType = document.getElementById('woTypeSelect') ? document.getElementById('woTypeSelect').value : 'CORRECTIVE';
             
             // ✅ Repoblar dropdowns base
-            fillSelect('techSelect', response.technicians || [], '-- Select Technician --');
-            fillSelect('typeSelect', response.maintTypes || [], '-- Select Type --');
-            fillSelect('apprSelect', response.approvers || [], '-- Select Approver --');
-            fillSelect('smartSelect', response.smartComments || [], '-- Quick Fill --');
+            fillSelect('techSelect', response.technicians || [], t('wo.approve.selectTechnician'));
+            fillSelect('typeSelect', response.maintTypes || [], t('wo.approve.selectType'), true);
+            fillSelect('apprSelect', response.approvers || [], t('wo.approve.selectApprover'));
+            fillSelect('smartSelect', response.smartComments || [], t('wo.approve.quickFill'), true);
             
             // ✅ Repoblar folioSelect según el tipo ACTUAL seleccionado
             var folioOptions = [];
             if (currentWoType === 'PREVENTIVE') {
                 folioOptions = pmWOs.map(function(pm) { return pm.folio + ' - ' + (pm.wo?.equipment || 'N/A'); });
-                fillSelect('folioSelect', folioOptions, '-- Select PM Folio --');
+                fillSelect('folioSelect', folioOptions, t('wo.approve.selectPmFolio'));
             } else if (currentWoType === 'ON_HOLD') {
                 folioOptions = onHoldData.map(function(w) { return w.folio + ' - ' + w.equipment; });
-                fillSelect('folioSelect', folioOptions, '-- Select On Hold Folio --');
+                fillSelect('folioSelect', folioOptions, t('wo.approve.selectOnHoldFolio'));
             } else {
                 folioOptions = woData.map(function(w) { return w.folio + ' - ' + w.equipment; });
-                fillSelect('folioSelect', folioOptions, '-- Select Folio --');
+                fillSelect('folioSelect', folioOptions, t('wo.approve.selectFolio'));
             }
             
             // ✅ P-18 FIX: renderPMs() SIEMPRE debe ejecutarse para limpiar checkboxes obsoletos.
@@ -1132,7 +1134,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading data: ' + error.message, 'error');
+            showToast(t('wo.create.errorLoadingData', { error: error.message }), 'error');
             // console.error('Load error:', error);  // COMENTADO
         }
     }
@@ -1151,11 +1153,11 @@
             var comm = document.getElementById('comments') ? document.getElementById('comments').value.trim() : '';
             
             var missingFields = [];
-            if (!appr) missingFields.push('Approver');
-            if (!comm) missingFields.push('Observations (reason for rejection)');
+            if (!appr) missingFields.push(t('wo.fields.approver'));
+            if (!comm) missingFields.push(t('wo.approve.obsReasonReject'));
             
             if (missingFields.length > 0) {
-                showToast('⚠️ Required for rejection: ' + missingFields.join(', '), 'error');
+                showToast('⚠️ ' + t('wo.approve.requiredForRejection', { fields: missingFields.join(', ') }), 'error');
                 if (!appr) {
                     var el = document.getElementById('apprSelect');
                     if (el) el.classList.add('error');
@@ -1179,22 +1181,22 @@
             
             if (isPreventive) {
                 var chks = document.querySelectorAll('.pm-chk:checked');
-                if (chks.length === 0) missingFields.push('Select at least one PM');
+                if (chks.length === 0) missingFields.push(t('wo.approve.selectAtLeastOnePm'));
             } else {
                 var folioSelect = document.getElementById('folioSelect');
-                if (!folioSelect || !folioSelect.value) missingFields.push('Work Order');
+                if (!folioSelect || !folioSelect.value) missingFields.push(t('wo.approve.workOrderLabel'));
             }
             
             var tech = document.getElementById('techSelect') ? document.getElementById('techSelect').value : '';
             var type = document.getElementById('typeSelect') ? document.getElementById('typeSelect').value : '';
             var appr = document.getElementById('apprSelect') ? document.getElementById('apprSelect').value : '';
             
-            if (!tech) missingFields.push('Technician');
-            if (!isPreventive && !type) missingFields.push('Maintenance Type');
-            if (!appr) missingFields.push('Approver');
+            if (!tech) missingFields.push(t('wo.fields.technician'));
+            if (!isPreventive && !type) missingFields.push(t('wo.fields.maintType'));
+            if (!appr) missingFields.push(t('wo.fields.approver'));
             
             if (missingFields.length > 0) {
-                showToast('⚠️ Required for approval: ' + missingFields.join(', '), 'error');
+                showToast('⚠️ ' + t('wo.approve.requiredForApproval', { fields: missingFields.join(', ') }), 'error');
                 if (!tech) {
                     var el = document.getElementById('techSelect');
                     if (el) el.classList.add('error');
@@ -1217,13 +1219,13 @@
         if (!isMassMode) {
             var folioSelect = document.getElementById('folioSelect');
             if (!folioSelect || !folioSelect.value) {
-                showToast('Please select a work order', 'error');
+                showToast(t('wo.approve.pleaseSelectWO'), 'error');
                 return;
             }
         } else {
             var chks = document.querySelectorAll('.pm-chk:checked');
             if (chks.length === 0) {
-                showToast('Please select at least one PM work order', 'error');
+                showToast(t('wo.approve.pleaseSelectAtLeastOnePm'), 'error');
                 return;
             }
         }
@@ -1265,7 +1267,7 @@
             var selectedDate = new Date(realCreationDate);
             var now = new Date();
             if (selectedDate > now) {
-                showToast('⚠️ The corrected date cannot be in the future', 'error');
+                showToast('⚠️ ' + t('wo.approve.futureDateError'), 'error');
                 document.getElementById('realCreationDate').classList.add('error');
                 isSubmitting = false;
                 validateFields();
@@ -1276,7 +1278,7 @@
         // ============================================
         // MOSTRAR LOADING SOLO SI PASÓ LA VALIDACIÓN
         // ============================================
-        showLoading('Processing ' + action + '...');
+        showLoading(action === 'APPROVED' ? t('wo.approve.processingApproval') : t('wo.approve.processingRejection'));
         
         var payload = {
             folio: folio,
@@ -1310,8 +1312,8 @@
                     }
                 }
                 
-                var emailMsg = (response.emailSent === false) ? ' ⚠️ Email notification failed.' : (response.emailSent === true ? ' 📧 Email sent.' : '');
-                showToast('✅ Processed ' + (response.count || 0) + ' WO(s)' + emailMsg, 'success');
+                var emailMsg = (response.emailSent === false) ? ' ⚠️ ' + t('wo.approve.emailFailed') : (response.emailSent === true ? ' 📧 ' + t('wo.approve.emailSent') : '');
+                showToast('✅ ' + t('wo.approve.processedCount', { count: response.count || 0 }) + emailMsg, 'success');
                 // console.log('[WO_APPROVE] Processed', response.count, 'WO(s)');  // COMENTADO
                 
                 // ✅ P-18 FIX: Reset ordenado — limpiar ANTES de recargar (para no mostrar
@@ -1332,7 +1334,7 @@
                 var auditPanel = document.getElementById('auditPanel');
                 if (auditPanel) auditPanel.style.display = 'none';
             } else {
-                throw new Error(response.error || 'Unknown error');
+                throw new Error(response.error || t('common.unknownError'));
             }
             
         } catch (error) {
@@ -1341,7 +1343,7 @@
             }
             
             hideLoading();
-            showToast('Error: ' + error.message, 'error');
+            showToast(t('common.error') + ': ' + error.message, 'error');
             // console.error('Process error:', error);  // COMENTADO
         } finally {
             isSubmitting = false;
@@ -1384,7 +1386,7 @@
             setupEventListeners();
             loadData();
         } else {
-            showToast('Please login to access EAMS', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
     
