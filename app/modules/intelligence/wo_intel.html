@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - WO Intelligence</title>
+  <title data-i18n="woIntel.pageTitle">FORESIGHT - WO Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/app/js/translations.js"></script>
+  <script src="/app/js/i18n.js"></script>
   
   <style>
     /* ============================================
@@ -706,7 +708,7 @@
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif; margin-top: 12px;">Loading WO data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif; margin-top: 12px;" data-i18n="woIntel.loadingData">Loading WO data...</div>
   </div>
 </div>
 
@@ -716,26 +718,26 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-tasks"></i> WO Foresight</span>
+      <span class="module-title"><i class="fas fa-tasks"></i> <span data-i18n="woIntel.title">WO Foresight</span></span>
     </div>
     <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
+      <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
       <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">WO Foresight</span>
+    <span data-i18n="common.home">Home</span> &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current" data-i18n="woIntel.title">WO Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
        <div class="tabs">
-        <button class="tab-btn active" data-tab="priorities">🎯 Priorities</button>
-        <button class="tab-btn" data-tab="mytasks">📋 My Tasks</button>
-         <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>
+        <button class="tab-btn active" data-tab="priorities" data-i18n="woIntel.tabPriorities">🎯 Priorities</button>
+        <button class="tab-btn" data-tab="mytasks" data-i18n="woIntel.tabMyTasks">📋 My Tasks</button>
+         <button class="tab-btn" data-tab="alerts" data-i18n="woIntel.tabAlerts">⚠️ Alerts</button>
       </div>
       
       <div class="content-panel">
@@ -743,17 +745,17 @@
         <div id="priorities-tab" class="tab-pane active">
           <div class="flex-between" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;">
             <div class="stats-grid" style="flex: 1; min-width: 200px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;">
-                <div class="adk-card"><div class="label">Active WOs</div><div class="value" id="activeCount">-</div></div>
-                <div class="adk-card"><div class="label">High Priority</div><div class="value" id="highCount">-</div></div>
-                <div class="adk-card"><div class="label">On Hold</div><div class="value" id="holdCount">-</div></div>
-                <div class="adk-card"><div class="label">Open</div><div class="value" id="openCount">-</div></div>
-                <div class="adk-card"><div class="label">In Progress</div><div class="value" id="inProgressCount">-</div></div>
-                <div class="adk-card"><div class="label">Completed</div><div class="value" id="completedCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiActive">Active WOs</div><div class="value" id="activeCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiHighPriority">High Priority</div><div class="value" id="highCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiOnHold">On Hold</div><div class="value" id="holdCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiOpen">Open</div><div class="value" id="openCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiInProgress">In Progress</div><div class="value" id="inProgressCount">-</div></div>
+                <div class="adk-card"><div class="label" data-i18n="woIntel.kpiCompleted">Completed</div><div class="value" id="completedCount">-</div></div>
             </div>
             <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
-                <button id="refreshBtn" class="adk-btn adk-btn-secondary">🔄 Refresh</button>
-                <button id="showAllBtn" class="adk-btn adk-btn-secondary">📋 Show All</button>
-                <button id="printPdfBtn" class="adk-btn adk-btn-secondary">📑 Print PDF</button>
+                <button id="refreshBtn" class="adk-btn adk-btn-secondary" data-i18n="woIntel.btnRefresh">🔄 Refresh</button>
+                <button id="showAllBtn" class="adk-btn adk-btn-secondary" data-i18n="woIntel.btnShowAll">📋 Show All</button>
+                <button id="printPdfBtn" class="adk-btn adk-btn-secondary" data-i18n="woIntel.btnPrintPdf">📑 Print PDF</button>
             </div>
           </div>
           <div id="prioritiesList"></div>
@@ -763,12 +765,12 @@
         <div id="mytasks-tab" class="tab-pane">
           <div class="flex-between">
             <div>
-              <label style="margin-right: 12px; font-size: 13px; color: var(--text-secondary); font-family: 'Inter', sans-serif;">👤 View:</label>
+              <label style="margin-right: 12px; font-size: 13px; color: var(--text-secondary); font-family: 'Inter', sans-serif;" data-i18n="woIntel.viewLabel">👤 View:</label>
               <select id="userSelect" class="adk-form-control" style="display: inline-block; width: auto;">
-                <option value="">-- Select user --</option>
+                <option value="" data-i18n="woIntel.selectUser">-- Select user --</option>
               </select>
             </div>
-            <button id="printTasksBtn" class="adk-btn adk-btn-secondary">🖨️ Print Tasks</button>
+            <button id="printTasksBtn" class="adk-btn adk-btn-secondary" data-i18n="woIntel.btnPrintTasks">🖨️ Print Tasks</button>
           </div>
           <div id="tasksList"></div>
         </div>
@@ -785,7 +787,7 @@
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
-      <span>Connected</span>
+      <span data-i18n="common.connected">Connected</span>
     </span>
     <span class="footer-version" id="eamsVersion">v1.0.0</span>
   </div>
@@ -857,7 +859,7 @@
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
     const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    if (msgSpan) msgSpan.textContent = msg || t('common.loading');
     overlay.classList.add('visible');
   }
   
@@ -886,24 +888,24 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || t('woIntel.userFallback');
         }
         // console.log('[WO] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
         // console.error('[WO] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
+        if (userDisplay) userDisplay.innerText = t('woIntel.userFallback');
       }
     } else {
       // console.warn('[WO] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
+      if (userDisplay) userDisplay.innerText = t('woIntel.guestFallback');
     }
   }
   
   async function callApi(action, args = [], retries = 2) {
       if (!EAMS_API_URL) {
-          throw new Error('API URL not configured. Please check your session.');
+          throw new Error(t('common.apiNotConfigured'));
       }
       
       let lastError = null;
@@ -1017,7 +1019,7 @@
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadPriorities', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
-      document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + error.message + '</div>';
       //allDataLoaded.priorities = true;
       // checkAllDataLoaded();  ← ELIMINAR
     }
@@ -1028,7 +1030,7 @@
           // ✅ 1. Mostrar "Cargando..." en el dropdown
           var userSelect = document.getElementById('userSelect');
           if (userSelect) {
-              userSelect.innerHTML = '<option value="">⏳ Loading users...</option>';
+              userSelect.innerHTML = '<option value="">' + t('woIntel.loadingUsers') + '</option>';
               userSelect.disabled = true;
           }
           
@@ -1036,7 +1038,7 @@
           cachedData.users = users;
           
           if (userSelect && users) {
-              userSelect.innerHTML = '<option value="">-- Select user --</option>';
+              userSelect.innerHTML = '<option value="">' + t('woIntel.selectUser') + '</option>';
               for (var i = 0; i < users.length; i++) {
                   var user = users[i];
                   userSelect.innerHTML += '<option value="' + user.email + '">👤 ' + user.name + ' (' + user.role + ')</option>';
@@ -1057,23 +1059,23 @@
     var selectedEmail = select.value;
     
     if (!selectedEmail) {
-      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">Select a user to see tasks</div>';
+      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">' + t('woIntel.selectUserPrompt') + '</div>';
       return;
     }
     
-    showLoading('Loading tasks...');
+    showLoading(t('woIntel.loadingTasks'));
     try {
       var tasks = await callApi('getUserTasks', [selectedEmail]);
       renderTasksList(tasks);
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + error.message + '</div>';
     }
   }
   
   async function loadAlerts() {
-      showLoading('Loading alerts...');
+      showLoading(t('woIntel.loadingAlerts'));
       try {
           var alerts = await callApi('getAlerts', []);
           cachedData.alerts = alerts;
@@ -1085,33 +1087,33 @@
               Logger.error('WO_INTEL', 'loadAlerts', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
           }
           hideLoading();
-          document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
+          document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + error.message + '</div>';
           //allDataLoaded.alerts = true;
       }
   }
   
   async function loadAllWOs() {
-      showLoading('Loading all work orders...');
+      showLoading(t('woIntel.loadingAllWos'));
       try {
           // ✅ Cargar TOTAL para tarjetas (ya debería estar en caché, pero recargamos)
           var totalData = await callApi('getPrioritizedWOs', [false, 0]);
           // ✅ Grid muestra TODOS (sin filtro)
           renderPriorities(totalData, totalData);
           hideLoading();
-          showToast('All WOs loaded successfully', 'success');
+          showToast(t('woIntel.allWosLoaded'), 'success');
       } catch (error) {
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('WO_INTEL', 'loadAllWOs', error.message).catch(function(e) { console.warn('[WO] Error log failed:', e); });
       }
       hideLoading();
-      showToast('Error loading all WOs: ' + error.message, 'error');
+      showToast(t('woIntel.errLoadAllWos', { error: error.message }), 'error');
     }
   }
   
   async function refreshAllData() {
       await logForesight('WO', 'REFRESH_DATA', 'User manually refreshed dashboard data');
       
-      showLoading('Refreshing data...');
+      showLoading(t('woIntel.refreshingData'));
       
       // ✅ Resetear caché para forzar recarga
       cachedData.users = null;
@@ -1132,7 +1134,7 @@
       }
       
       hideLoading();
-      showToast('Data refreshed successfully', 'success');
+      showToast(t('woIntel.dataRefreshed'), 'success');
   }
   
   // ============================================
@@ -1167,12 +1169,12 @@
       // GRID (usando gridWOs)
       // ============================================
       if (!gridWOs.length) {
-          document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active work orders in the selected period</div>';
+          document.getElementById('prioritiesList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">' + t('woIntel.noActiveWos') + '</div>';
           return;
       }
       
       var html = '<div class="table-wrapper"><table><thead>';
-      html += '<tr><th>#</th><th>WO #</th><th>Creation Date</th><th>Status</th><th>Asset</th><th>Priority</th><th>Tech</th><th>Score</th></tr>';
+      html += '<tr><th>#</th><th>' + t('woIntel.colWoNum') + '</th><th>' + t('woIntel.colCreationDate') + '</th><th>' + t('woIntel.colStatus') + '</th><th>' + t('woIntel.colAsset') + '</th><th>' + t('woIntel.colPriority') + '</th><th>' + t('woIntel.colTech') + '</th><th>' + t('woIntel.colScore') + '</th></tr>';
       html += '</thead><tbody>';
 
       for (var i = 0; i < gridWOs.length; i++) {
@@ -1181,17 +1183,17 @@
           var statusBadge = '';
           
           if (wo.missingParts) {
-              statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+              statusBadge = '<span class="badge adk-badge-warning">⏸️ ' + tStatus('ON HOLD') + '</span>';
           } else if (statusUpper === 'OPEN') {
-              statusBadge = '<span class="badge adk-badge-primary">🟡 OPEN</span>';
+              statusBadge = '<span class="badge adk-badge-primary">🟡 ' + tStatus('OPEN') + '</span>';
           } else if (statusUpper === 'IN PROGRESS') {
-              statusBadge = '<span class="badge adk-badge-success">🔵 IN PROGRESS</span>';
+              statusBadge = '<span class="badge adk-badge-success">🔵 ' + tStatus('IN PROGRESS') + '</span>';
           } else if (statusUpper === 'COMPLETED') {
-              statusBadge = '<span class="badge adk-badge-success">✅ COMPLETED</span>';
+              statusBadge = '<span class="badge adk-badge-success">✅ ' + tStatus('COMPLETED') + '</span>';
           } else if (statusUpper === 'ON HOLD') {
-              statusBadge = '<span class="badge adk-badge-warning">⏸️ ON HOLD</span>';
+              statusBadge = '<span class="badge adk-badge-warning">⏸️ ' + tStatus('ON HOLD') + '</span>';
           } else {
-              statusBadge = '<span class="badge adk-badge-gray">' + (wo.status || '-') + '</span>';
+              statusBadge = '<span class="badge adk-badge-gray">' + (wo.status ? tStatus(wo.status) : '-') + '</span>';
           }
           
           // Formatear fecha sin hora
@@ -1200,12 +1202,12 @@
               try {
                   var dateObj = new Date(dateStr);
                   if (!isNaN(dateObj.getTime())) {
-                      dateStr = dateObj.toLocaleDateString('en-CA');
+                      dateStr = dateObj.toLocaleDateString(I18n.getLocale());
                   }
               } catch(e) {}
           }
           
-          html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + escapeHtml(dateStr) + '</td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel || wo.priority || '-') + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
+          html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(wo.woNumber) + '</strong></td><td>' + escapeHtml(dateStr) + '</td><td>' + statusBadge + '</td><td>' + escapeHtml(wo.assetName) + '</td><td>' + (wo.priorityLabel ? tStatus(wo.priorityLabel) : (wo.priority ? tStatus(wo.priority) : '-')) + '</td><td>' + escapeHtml(wo.assignedTechnician || '-') + '</td><td><strong>' + (wo.score || 0) + '</strong></td></tr>';
       }
       html += '</tbody></table></div>';
       document.getElementById('prioritiesList').innerHTML = html;
@@ -1213,22 +1215,22 @@
   
   function renderTasksList(tasks) {
     if (!tasks || !tasks.length) {
-      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No tasks found for this user</div>';
+      document.getElementById('tasksList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">' + t('woIntel.noTasksUser') + '</div>';
       return;
     }
     
     var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>#</th><th>WO #</th><th>Asset</th><th>Priority</th><th>Status</th><th>Action</th></tr>';
+    html += '<tr><th>#</th><th>' + t('woIntel.colWoNum') + '</th><th>' + t('woIntel.colAsset') + '</th><th>' + t('woIntel.colPriority') + '</th><th>' + t('woIntel.colStatus') + '</th><th>' + t('woIntel.colAction') + '</th></tr>';
     html += '</thead><tbody>';
     
     for (var i = 0; i < tasks.length; i++) {
       var task = tasks[i];
       var actionBadge = '';
-      if (task.status === 'OPEN') actionBadge = '<span class="badge adk-badge-primary">⏳ Approve</span>';
-      else if (task.status === 'COMPLETED') actionBadge = '<span class="badge adk-badge-success">🔒 Close</span>';
-      else actionBadge = '<span class="badge adk-badge-gray">In Progress</span>';
+      if (task.status === 'OPEN') actionBadge = '<span class="badge adk-badge-primary">⏳ ' + t('woIntel.actApprove') + '</span>';
+      else if (task.status === 'COMPLETED') actionBadge = '<span class="badge adk-badge-success">🔒 ' + t('woIntel.actClose') + '</span>';
+      else actionBadge = '<span class="badge adk-badge-gray">' + tStatus('In Progress') + '</span>';
       
-      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(task.woNumber) + '</strong></td><td>' + escapeHtml(task.assetName) + '</td><td>' + escapeHtml(task.priority) + '</td><td>' + escapeHtml(task.status) + '</td><td>' + actionBadge + '</td></tr>';
+      html += '<tr><td>' + (i+1) + '</td><td><strong>' + escapeHtml(task.woNumber) + '</strong></td><td>' + escapeHtml(task.assetName) + '</td><td>' + escapeHtml(tStatus(task.priority)) + '</td><td>' + escapeHtml(tStatus(task.status)) + '</td><td>' + actionBadge + '</td></tr>';
     }
     html += '</tbody></table></div>';
     document.getElementById('tasksList').innerHTML = html;
@@ -1236,7 +1238,7 @@
   
   function renderAlerts(alerts) {
     if (!alerts || !alerts.length) {
-      document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">No active alerts</div>';
+      document.getElementById('alertsList').innerHTML = '<div class="adk-card" style="background:rgba(0,229,255,0.1); border-color:var(--info); padding: 20px;">' + t('woIntel.noActiveAlerts') + '</div>';
       return;
     }
     
@@ -1264,14 +1266,14 @@
       var selectedUser = document.getElementById('userSelect')?.value || 'unknown';
       var tasksContent = document.getElementById('tasksList').innerHTML;
       
-      if (!tasksContent || tasksContent.indexOf('Select a user') !== -1 || tasksContent.indexOf('No tasks found') !== -1) {
-          showToast('Please select a user with tasks first', 'error');
+      if (!tasksContent || tasksContent.indexOf(t('woIntel.selectUserPrompt')) !== -1 || tasksContent.indexOf(t('woIntel.noTasksUser')) !== -1) {
+          showToast(t('woIntel.selectUserWithTasks'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
-      var userName = document.getElementById('userSelect')?.options[document.getElementById('userSelect')?.selectedIndex]?.text || 'Selected User';
+      var now = new Date().toLocaleString(I18n.getLocale());
+      var userName = document.getElementById('userSelect')?.options[document.getElementById('userSelect')?.selectedIndex]?.text || t('woIntel.selectedUserFallback');
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1286,16 +1288,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('woIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewWO('tasks')" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('woIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">WO TASKS REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">User: ${userName} | Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('woIntel.tasksReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('woIntel.reportUserLabel')} ${userName} | ${t('woIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- Tabla -->
               <div style="overflow-x: auto;">
@@ -1303,7 +1305,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  WO Foresight - Adkintor EAMS
+                  ${t('woIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1350,13 +1352,13 @@
       var prioritiesContent = document.getElementById('prioritiesList').innerHTML;
       var statsContent = document.querySelector('.stats-grid').innerHTML;
       
-      if (!prioritiesContent || prioritiesContent.indexOf('No active work orders') !== -1) {
-          showToast('No data to print', 'error');
+      if (!prioritiesContent || prioritiesContent.indexOf(t('woIntel.noActiveWos')) !== -1) {
+          showToast(t('woIntel.noDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1371,16 +1373,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('woIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewWO('priorities')" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('woIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">WO PRIORITIES REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('woIntel.prioritiesReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('woIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- Stats -->
               <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px;">
@@ -1393,7 +1395,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  WO Foresight - Adkintor EAMS
+                  ${t('woIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1425,12 +1427,12 @@
   // ============================================
   async function init() {
       loadUser();
-      showLoading('Loading WO Foresight...');
+      showLoading(t('woIntel.loadingModule'));
       loadApiUrl();
       
       if (!EAMS_API_URL) {
           hideLoading();
-          showToast('API URL not configured. Please login.', 'error');
+          showToast(t('common.apiNotConfigured'), 'error');
           return;
       }
       
@@ -1501,7 +1503,7 @@
           
       } catch(err) {
           hideLoading();
-          showToast('Error loading data: ' + err.message, 'error');
+          showToast(t('woIntel.errLoadData', { error: err.message }), 'error');
       }
   }
   
