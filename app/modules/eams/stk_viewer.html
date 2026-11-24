@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Inventory Viewer - ADKINTOR EAMS</title>
+    <title data-i18n="stk.viewer.pageTitle">Inventory Viewer - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -650,7 +652,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Inventory Viewer...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="stk.viewer.loadingViewer">Loading Inventory Viewer...</span>
 </div>
 
 <!-- TOAST -->
@@ -662,18 +664,18 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Inventory Viewer</span>
+            <span class="module-title" data-i18n="stk.viewer.title">Inventory Viewer</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>INVENTORY</span> &gt; <span class="current">Inventory Viewer</span>
-        <span style="margin-left: 10px; font-size: 0.6rem; color: #94a3b8; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="stk.breadcrumb">INVENTORY</span> &gt; <span class="current" data-i18n="stk.viewer.title">Inventory Viewer</span>
+        <span style="margin-left: 10px; font-size: 0.6rem; color: #94a3b8; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="stk.viewer.readOnlyBadge">
             <i class="fas fa-eye"></i> Read Only Mode
         </span>
     </div>
@@ -684,26 +686,26 @@
         <div class="kpi-container">
             <div class="kpi-card">
                 <div class="kpi-value" id="totalSKUs">--</div>
-                <div class="kpi-label">Total SKUs</div>
+                <div class="kpi-label" data-i18n="stk.viewer.kpiTotalSkus">Total SKUs</div>
             </div>
             <div class="kpi-card low">
                 <div class="kpi-value" id="lowStockCount">--</div>
-                <div class="kpi-label">Low Stock (Below Min)</div>
+                <div class="kpi-label" data-i18n="stk.viewer.kpiLowStock">Low Stock (Below Min)</div>
             </div>
             <div class="kpi-card critical">
                 <div class="kpi-value" id="outOfStockCount">--</div>
-                <div class="kpi-label">Out of Stock</div>
+                <div class="kpi-label" data-i18n="stk.viewer.kpiOutOfStock">Out of Stock</div>
             </div>
         </div>
 
         <!-- FILTERS -->
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description or Part Number..." onkeyup="filterAndRender()">
-            <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
-            <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
-            <button class="btn-secondary" onclick="toggleShowAll()" id="showAllBtn"><i class="fas fa-list"></i> Show All</button>
-            <button class="btn-secondary" onclick="clearFilters()"><i class="fas fa-eraser"></i> Clear Filters</button>
-            <button class="btn-primary" onclick="printReport()" style="background: #1a1a2e; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: all 0.2s; white-space: nowrap;">
+            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description or Part Number..." data-i18n-placeholder="stk.viewer.searchPlaceholder" onkeyup="filterAndRender()">
+            <select id="categoryFilter" onchange="filterAndRender()"><option value="" data-i18n="stk.viewer.allCategories">All Categories</option></select>
+            <select id="locationFilter" onchange="filterAndRender()"><option value="" data-i18n="stk.viewer.allLocations">All Locations</option></select>
+            <button class="btn-secondary" onclick="toggleShowAll()" id="showAllBtn" data-i18n-html="stk.viewer.btnShowAll"><i class="fas fa-list"></i> Show All</button>
+            <button class="btn-secondary" onclick="clearFilters()" data-i18n-html="stk.viewer.btnClearFilters"><i class="fas fa-eraser"></i> Clear Filters</button>
+            <button class="btn-primary" onclick="printReport()" data-i18n-html="stk.viewer.btnPrint" style="background: #1a1a2e; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: all 0.2s; white-space: nowrap;">
                 <i class="fas fa-print"></i> Print
             </button>
         </div>
@@ -711,17 +713,17 @@
         <!-- TABLE -->
         <div class="datagrid-container">
             <div class="datagrid-header">
-                <span><strong id="resultCount">0</strong> items</span>
-                <span class="badge-info"><i class="fas fa-hand-pointer"></i> Click any row to view history</span>
+                <span><strong id="resultCount">0</strong> <span data-i18n="stk.viewer.itemsWord">items</span></span>
+                <span class="badge-info" data-i18n-html="stk.viewer.clickRowHint"><i class="fas fa-hand-pointer"></i> Click any row to view history</span>
             </div>
             <div style="overflow-x: auto; max-height: 420px;" class="custom-scroll">
                 <table class="datagrid-table" id="inventoryTable">
                     <thead>
                         <tr>
-                            <th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th>
+                            <th data-i18n="stk.viewer.colSku">SKU</th><th data-i18n="stk.viewer.colDescription">Description</th><th data-i18n="stk.viewer.colCategory">Category</th><th data-i18n="stk.viewer.colCurrentStock">Current Stock</th><th data-i18n="stk.viewer.colMinStock">Min Stock</th><th data-i18n="stk.viewer.colLocation">Location</th><th data-i18n="stk.viewer.colUnitPrice">Unit Price</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody"><tr><td colspan="7" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-boxes fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading inventory data...</td></tr></tbody>
+                    <tbody id="tableBody"><tr><td colspan="7" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="stk.viewer.loadingTable"><i class="fas fa-boxes fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading inventory data...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -731,7 +733,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -742,12 +744,12 @@
 <div id="historyModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4 id="historyModalTitle">Transaction History</h4>
+            <h4 id="historyModalTitle" data-i18n="stk.viewer.historyModalTitle">Transaction History</h4>
             <button class="btn-close-modal" onclick="closeHistoryModal()">&times;</button>
         </div>
-        <div class="modal-body" id="historyContent"><p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</p></div>
+        <div class="modal-body" id="historyContent"><p class="text-muted text-center" style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="common.loading">Loading...</p></div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeHistoryModal()"><i class="fas fa-times"></i> CLOSE</button>
+            <button class="btn-secondary" onclick="closeHistoryModal()" data-i18n-html="stk.viewer.btnClose"><i class="fas fa-times"></i> CLOSE</button>
         </div>
     </div>
 </div>
@@ -804,7 +806,7 @@
     // FUNCIÓN DE IMPRESIÓN CON VISTA PREVIA
     // ============================================
     function printReport() {
-        const title = 'Inventory Status Report';
+        const title = t('stk.viewer.reportTitle');
         const mode = 'eams';
         
         // Crear vista previa
@@ -857,28 +859,28 @@
                 <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                     <div style="display:flex; gap:10px;">
                         <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-times"></i> CLOSE
+                            <i class="fas fa-times"></i> ${t('common.close')}
                         </button>
                         <button class="btn-outline" onclick="printPreviewInventory()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-print"></i> PRINT
+                            <i class="fas fa-print"></i> ${t('stk.viewer.btnPrintUpper')}
                         </button>
                     </div>
                 </div>
                 
-                <h1 style="font-size: 20px; margin-bottom: 16px; color: #1a1a2e;">INVENTORY STATUS REPORT</h1>
+                <h1 style="font-size: 20px; margin-bottom: 16px; color: #1a1a2e;">${t('stk.viewer.reportTitleUpper')}</h1>
                 
                 <!-- KPIs -->
                 <div style="display: flex; gap: 12px; margin-bottom: 20px;">
                     <div style="flex: 1; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
-                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">Total SKUs</div>
+                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">${t('stk.viewer.kpiTotalSkus')}</div>
                         <div style="font-size: 24px; font-weight: 700; color: #1a1a2e;">${totalSKUs}</div>
                     </div>
                     <div style="flex: 1; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; border-top: 4px solid #f59e0b;">
-                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">Low Stock (Below Min)</div>
+                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">${t('stk.viewer.kpiLowStock')}</div>
                         <div style="font-size: 24px; font-weight: 700; color: #f59e0b;">${lowStock}</div>
                     </div>
                     <div style="flex: 1; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; border-top: 4px solid #dc3545;">
-                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">Out of Stock</div>
+                        <div style="font-size: 10px; font-weight: bold; color: #6c757d; text-transform: uppercase;">${t('stk.viewer.kpiOutOfStock')}</div>
                         <div style="font-size: 24px; font-weight: 700; color: #dc3545;">${outOfStock}</div>
                     </div>
                 </div>
@@ -889,7 +891,7 @@
                 </div>
                 
                 <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                    Generated: ${new Date().toLocaleString()} | EAMS Inventory Management System
+                    ${t('stk.viewer.generatedLabel')}: ${new Date().toLocaleString(I18n.getLocale())} | ${t('stk.viewer.reportFooter')}
                 </div>
             </div>
         `;
@@ -922,7 +924,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -950,21 +952,21 @@
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('stk.common.userFallback');
             } catch(e) { /* console.error('Session parse error', e); */ }  // COMENTADO
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
-        if (!EAMS_API_URL) throw new Error('API URL not configured. Please login.');
+        if (!EAMS_API_URL) throw new Error(t('common.apiNotConfigured'));
         const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ targetUrl: EAMS_API_URL, payload: { action: action, args: args } })
         });
         const result = await response.json();
-        if (!result.success) throw new Error(result.error || 'API call failed');
+        if (!result.success) throw new Error(result.error || t('stk.common.apiCallFailed'));
         return result.data;
     }
 
@@ -1011,7 +1013,7 @@
             document.getElementById('totalSKUs').innerText = kpi.totalSKUs;
             document.getElementById('lowStockCount').innerText = kpi.lowStockCount;
             document.getElementById('outOfStockCount').innerText = kpi.outOfStockCount;
-        } catch(e) { /* console.error(e); */ showToast('Error loading KPI', 'error'); }  // COMENTADO
+        } catch(e) { /* console.error(e); */ showToast(t('stk.viewer.errLoadKpi'), 'error'); }  // COMENTADO
     }
 
     async function loadFilters() {
@@ -1021,15 +1023,15 @@
             locationsList = filterData.locations || [];
             var catSelect = document.getElementById('categoryFilter');
             var locSelect = document.getElementById('locationFilter');
-            catSelect.innerHTML = '<option value="">All Categories</option>';
+            catSelect.innerHTML = '<option value="">' + t('stk.viewer.allCategories') + '</option>';
             for (var i = 0; i < categoriesList.length; i++) {
                 catSelect.innerHTML += '<option value="' + categoriesList[i] + '">' + categoriesList[i] + '</option>';
             }
-            locSelect.innerHTML = '<option value="">All Locations</option>';
+            locSelect.innerHTML = '<option value="">' + t('stk.viewer.allLocations') + '</option>';
             for (var i = 0; i < locationsList.length; i++) {
                 locSelect.innerHTML += '<option value="' + locationsList[i] + '">' + locationsList[i] + '</option>';
             }
-        } catch(e) { showToast('Error loading filters', 'error'); }
+        } catch(e) { showToast(t('stk.viewer.errLoadFilters'), 'error'); }
     }
 
     async function refreshCatalog() {
@@ -1041,7 +1043,7 @@
             filterAndRender();
             return true;
         } catch(err) {
-            showToast('Failed to load catalog: ' + err.message, 'error');
+            showToast(t('stk.viewer.errLoadCatalog', { error: err.message }), 'error');
             throw err;
         }
     }
@@ -1072,14 +1074,14 @@
         document.getElementById('resultCount').innerText = filtered.length;
         
         if (filtered.length === 0 && searchTerm) {
-            showToast('No results for "' + searchTerm + '". Try clearing filters.', 'warning');
+            showToast(t('stk.viewer.noResultsSearch', { term: searchTerm }), 'warning');
         }
     }
 
     function renderTable(data) {
         var tbody = document.getElementById('tableBody');
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No items found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> ' + t('stk.viewer.noItemsFound') + '</td></tr>';
             return;
         }
         
@@ -1101,8 +1103,8 @@
                 '<td>' + escapeHtml(item.Category || '') + '</td>' +
                 '<td><span class="stock-badge ' + stockClass + '">' + stockIcon + ' ' + stock + ' ' + unit + '</span></td>' +
                 '<td>' + min + '</td>' +
-                '<td>' + escapeHtml(item['Storage Location'] || 'N/A') + '</td>' +
-                '<td>' + (parseFloat(item['Unit Price']) || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' ' + (item.Currency || 'CAD') + '</td>' +
+                '<td>' + escapeHtml(item['Storage Location'] || t('stk.common.na')) + '</td>' +
+                '<td>' + (parseFloat(item['Unit Price']) || 0).toLocaleString(I18n.getLocale(), {minimumFractionDigits: 2}) + ' ' + (item.Currency || 'CAD') + '</td>' +
             '</tr>';
         }
         tbody.innerHTML = html;
@@ -1125,14 +1127,14 @@
         var btn = document.getElementById('showAllBtn');
         
         if (showAllMode) {
-            btn.innerHTML = '<i class="fas fa-eye"></i> Show Recent';
-            showToast('Showing ALL items', 'info');
+            btn.innerHTML = t('stk.viewer.btnShowRecent');
+            showToast(t('stk.viewer.showingAllItems'), 'info');
         } else {
-            btn.innerHTML = '<i class="fas fa-list"></i> Show All';
-            showToast('Showing items with recent transactions', 'info');
+            btn.innerHTML = t('stk.viewer.btnShowAll');
+            showToast(t('stk.viewer.showingRecentItems'), 'info');
         }
         
-        showLoading('Refreshing catalog...');
+        showLoading(t('stk.viewer.refreshingCatalog'));
         try {
             var response = await callApi('STK_VIEWER_getCatalogFiltered', [showAllMode]);
             catalogData = response.data || [];
@@ -1140,7 +1142,7 @@
             hideLoading();
         } catch(err) {
             hideLoading();
-            showToast('Failed to refresh: ' + err.message, 'error');
+            showToast(t('stk.viewer.errRefresh', { error: err.message }), 'error');
         }
     }    
 
@@ -1148,16 +1150,16 @@
     // HISTORY MODAL
     // ============================================
     async function showHistory(sku) {
-        showLoading('Loading transaction history...');
+        showLoading(t('stk.viewer.loadingHistory'));
         try {
             var history = await callApi('STK_VIEWER_getSkuHistory', [sku]);
             var container = document.getElementById('historyContent');
-            document.getElementById('historyModalTitle').innerText = 'Transaction History: ' + sku;
+            document.getElementById('historyModalTitle').innerText = t('stk.viewer.historyTitleWithSku', { sku: sku });
             
             logInventoryView(sku, currentUser).catch(function(e) { /* console.warn('[STK] View log failed:', e); */ });  // COMENTADO
             
             if (history.length === 0) {
-                container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No transactions found for this SKU.</p>';
+                container.innerHTML = '<p class="text-muted text-center" style="font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('stk.viewer.noTransactionsSku') + '</p>';
             } else {
                 var html = '';
                 for (var i = 0; i < history.length; i++) {
@@ -1174,12 +1176,12 @@
                     var qtyColor = qty > 0 ? '#166534' : (qty < 0 ? '#991b1b' : '');
                     
                     html += '<div class="history-item">' +
-                        '<div class="history-date">📅 ' + h.date + '</div>' +
-                        '<div><span class="' + typeClass + '">' + h.type + '</span> <span style="color:' + qtyColor + '; font-weight:600; margin-left:10px;">Quantity: ' + qtyDisplay + '</span></div>' +
-                        (h.poNumber && h.poNumber !== 'N/A' ? '<div>📄 PO: ' + escapeHtml(h.poNumber) + '</div>' : '') +
-                        (h.woNumber && h.woNumber !== 'N/A' ? '<div>🔧 WO: ' + escapeHtml(h.woNumber) + '</div>' : '') +
-                        '<div>👤 ' + escapeHtml(h.responsible || 'System') + '</div>' +
-                        '<div class="small" style="margin-top:4px;">💬 ' + escapeHtml(h.comments || 'No comments') + '</div>' +
+                        '<div class="history-date">📅 ' + I18n.formatDate(h.date) + '</div>' +
+                        '<div><span class="' + typeClass + '">' + escapeHtml(tStatus(h.type)) + '</span> <span style="color:' + qtyColor + '; font-weight:600; margin-left:10px;">' + t('stk.viewer.quantityLabel') + ' ' + qtyDisplay + '</span></div>' +
+                        (h.poNumber && h.poNumber !== 'N/A' ? '<div>📄 ' + t('stk.viewer.poPrefix') + ' ' + escapeHtml(h.poNumber) + '</div>' : '') +
+                        (h.woNumber && h.woNumber !== 'N/A' ? '<div>🔧 ' + t('stk.viewer.woPrefix') + ' ' + escapeHtml(h.woNumber) + '</div>' : '') +
+                        '<div>👤 ' + escapeHtml(h.responsible || t('stk.common.system')) + '</div>' +
+                        '<div class="small" style="margin-top:4px;">💬 ' + escapeHtml(h.comments || t('stk.viewer.noComments')) + '</div>' +
                     '</div>';
                 }
                 container.innerHTML = html;
@@ -1188,7 +1190,7 @@
             hideLoading();
         } catch(err) {
             hideLoading();
-            showToast('Failed to load history: ' + err.message, 'error');
+            showToast(t('stk.viewer.errLoadHistory', { error: err.message }), 'error');
         }
     }
 
@@ -1202,7 +1204,7 @@
     async function init() {
         // ✅ Inicializar ModuleBase si existe
         if (window.ModuleBase && typeof ModuleBase.initModule === 'function') {
-            ModuleBase.initModule('Inventory Viewer');
+            ModuleBase.initModule(t('stk.viewer.title'));
         }
         
         // 1. CARGAR USUARIO DESDE localStorage
@@ -1212,14 +1214,14 @@
                 document.getElementById('userDisplay').innerText = session.email;
                 currentUser = session.email;
             } else {
-                document.getElementById('userDisplay').innerText = 'No Session';
+                document.getElementById('userDisplay').innerText = t('stk.common.noSession');
             }
         } catch(e) {
-            document.getElementById('userDisplay').innerText = 'Error';
+            document.getElementById('userDisplay').innerText = t('common.error');
         }
         
         // 2. MOSTRAR SPINNER
-        showLoading('Loading Inventory Viewer...');
+        showLoading(t('stk.viewer.loadingViewer'));
         
         // 3. CARGAR API URL
         loadApiUrl();
@@ -1227,7 +1229,7 @@
         // 4. VALIDAR
         if (!EAMS_API_URL) { 
             hideLoading();
-            showToast('Session error: missing API URL. Please login first.', 'error');
+            showToast(t('stk.viewer.errMissingApi'), 'error');
             // console.log('[STK] Not connected');  // COMENTADO
             return;
         }
@@ -1248,7 +1250,7 @@
             //}, 1500);
         } catch(err) {
             hideLoading();
-            showToast('Error loading data: ' + err.message, 'error');
+            showToast(t('stk.viewer.errLoadData', { error: err.message }), 'error');
         }
     }
     
