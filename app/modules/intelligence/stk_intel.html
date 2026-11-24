@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - Inventory Foresight</title>
+  <title data-i18n="stkIntel.pageTitle">FORESIGHT - Inventory Foresight</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/app/js/translations.js"></script>
+  <script src="/app/js/i18n.js"></script>
   
   <style>
     /* ============================================
@@ -676,7 +678,7 @@
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading inventory data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;" data-i18n="stkIntel.loadingData">Loading inventory data...</div>
   </div>
 </div>
 
@@ -686,17 +688,17 @@
   <!-- HEADER -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-boxes"></i> Inventory Foresight</span>
+      <span class="module-title"><i class="fas fa-boxes"></i> <span data-i18n="stkIntel.title">Inventory Foresight</span></span>
     </div>
     <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
+      <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
       <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
   <!-- BREADCRUMBS -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">Inventory Foresight</span>
+    <span data-i18n="common.home">Home</span> &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current" data-i18n="stkIntel.title">Inventory Foresight</span>
   </div>
   
   <!-- CUERPO -->
@@ -705,28 +707,28 @@
       
       <!-- Tabs -->
       <div class="tabs">
-          <button class="tab-btn active" data-tab="pending">📦 Pending POs</button>
-          <button class="tab-btn" data-tab="optimize">📊 Optimize Stock</button>
-          <button class="tab-btn" data-tab="alerts">⚠️ Alerts & Urgent</button>
+          <button class="tab-btn active" data-tab="pending" data-i18n="stkIntel.tabPending">📦 Pending POs</button>
+          <button class="tab-btn" data-tab="optimize" data-i18n="stkIntel.tabOptimize">📊 Optimize Stock</button>
+          <button class="tab-btn" data-tab="alerts" data-i18n="stkIntel.tabAlerts">⚠️ Alerts & Urgent</button>
       </div>
       
       <!-- Summary Cards (4 columnas) -->
       <div id="summaryCards" class="stats-grid">
-        <div class="adk-card"><div class="label">Total SKUs</div><div class="value" id="totalSKUs">--</div></div>
-        <div class="adk-card"><div class="label">Critical Alerts</div><div class="value" id="criticalAlerts">--</div></div>
-        <div class="adk-card"><div class="label">Pending POs</div><div class="value" id="pendingPOsCount">--</div></div>
-        <div class="adk-card"><div class="label">Optimizations</div><div class="value" id="optimizationsCount">--</div></div>
+        <div class="adk-card"><div class="label" data-i18n="stkIntel.kpiTotalSkus">Total SKUs</div><div class="value" id="totalSKUs">--</div></div>
+        <div class="adk-card"><div class="label" data-i18n="stkIntel.kpiCriticalAlerts">Critical Alerts</div><div class="value" id="criticalAlerts">--</div></div>
+        <div class="adk-card"><div class="label" data-i18n="stkIntel.kpiPendingPos">Pending POs</div><div class="value" id="pendingPOsCount">--</div></div>
+        <div class="adk-card"><div class="label" data-i18n="stkIntel.kpiOptimizations">Optimizations</div><div class="value" id="optimizationsCount">--</div></div>
       </div>
       
       <div class="content-panel">
         <!-- TAB 1: PENDING POs -->
         <div id="pending-tab" class="tab-pane active">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                <button id="printPendingBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                <button id="printPendingBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="stkIntel.btnPrintPdf">📑 Print PDF</button>
+                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="stkIntel.btnRefresh">🔄 Refresh</button>
             </div>
             <div class="card-container">
-                <div class="card-header">📦 Pending Purchase Orders</div>
+                <div class="card-header" data-i18n="stkIntel.hdrPendingPos">📦 Pending Purchase Orders</div>
                 <div class="card-body" id="pendingPOsContent"></div>
             </div>
         </div>
@@ -734,11 +736,11 @@
         <!-- TAB 2: OPTIMIZE STOCK -->
         <div id="optimize-tab" class="tab-pane">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                <button id="printOptimizeBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                <button id="refreshBtnOptimize" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                <button id="printOptimizeBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="stkIntel.btnPrintPdf">📑 Print PDF</button>
+                <button id="refreshBtnOptimize" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="stkIntel.btnRefresh">🔄 Refresh</button>
             </div>
             <div class="card-container">
-                <div class="card-header">📊 Stock Optimization Suggestions</div>
+                <div class="card-header" data-i18n="stkIntel.hdrOptimizeStock">📊 Stock Optimization Suggestions</div>
                 <div class="card-body" id="optimizationContent"></div>
             </div>
         </div>
@@ -746,7 +748,7 @@
         <!-- TAB 3: ALERTS -->
         <div id="alerts-tab" class="tab-pane">
             <div class="card-container">
-                <div class="card-header">⚠️ Critical Alerts</div>
+                <div class="card-header" data-i18n="stkIntel.hdrCriticalAlerts">⚠️ Critical Alerts</div>
                 <div class="card-body" id="alertsContent"></div>
             </div>
         </div>
@@ -760,7 +762,7 @@
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
-      <span>Connected</span>
+      <span data-i18n="common.connected">Connected</span>
     </span>
     <span class="footer-version" id="eamsVersion">v1.0.0</span>
   </div>
@@ -832,7 +834,7 @@
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
     const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    if (msgSpan) msgSpan.textContent = msg || t('common.loading');
     overlay.classList.add('visible');
   }
   
@@ -861,24 +863,24 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || t('stkIntel.userFallback');
         }
         // console.log('[STK] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
         // console.error('[STK] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
+        if (userDisplay) userDisplay.innerText = t('stkIntel.userFallback');
       }
     } else {
       // console.warn('[STK] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
+      if (userDisplay) userDisplay.innerText = t('stkIntel.guestFallback');
     }
   }
   
   async function callApi(action, args = []) {
       if (!EAMS_API_URL) {
-        throw new Error('API URL not configured. Please check your session.');
+        throw new Error(t('common.apiNotConfigured'));
       }
       
       const response = await fetch(PROXY_URL, {
@@ -947,13 +949,13 @@
       if (targetPane) targetPane.classList.add('active');
       
       if (!currentData) {
-          showToast('Data not loaded yet. Please wait or refresh.', 'warning');
+          showToast(t('stkIntel.dataNotLoadedYet'), 'warning');
           return;
       }
       
       // ✅ Spinner de pantalla completa (igual que el inicio)
       if (tabId === 'alerts' && !cachedData.alertsLoaded) {
-          showLoading('Loading alerts...');
+          showLoading(t('stkIntel.loadingAlerts'));
           callApi('STK_getAlertsData', []).then(function(alertsData) {
               if (alertsData && !alertsData.error) {
                   cachedData.alertsData = alertsData;
@@ -963,12 +965,12 @@
               } else {
                   hideLoading();
                   document.getElementById('alertsContent').innerHTML = 
-                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading alerts.</div>';
+                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">' + t('stkIntel.errLoadAlerts') + '</div>';
               }
           }).catch(function(err) {
               hideLoading();
               document.getElementById('alertsContent').innerHTML = 
-                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ ' + t('common.error') + ': ' + err.message + '</div>';
           });
           
       } else if (tabId === 'alerts' && cachedData.alertsLoaded) {
@@ -976,7 +978,7 @@
           renderAlertsTab(cachedData.alertsData);
           
       } else if (tabId === 'optimize' && !cachedData.optimizeLoaded) {
-          showLoading('Loading optimization suggestions...');
+          showLoading(t('stkIntel.loadingOptimizations'));
           var showAll = currentData.showAll || false;
           callApi('STK_getOptimizationsData', [showAll ? 0 : 20, 0, showAll]).then(function(optData) {
               if (optData && !optData.error) {
@@ -988,12 +990,12 @@
               } else {
                   hideLoading();
                   document.getElementById('optimizationContent').innerHTML = 
-                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading optimizations.</div>';
+                      '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">' + t('stkIntel.errLoadOptimizations') + '</div>';
               }
           }).catch(function(err) {
               hideLoading();
               document.getElementById('optimizationContent').innerHTML = 
-                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+                  '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ ' + t('common.error') + ': ' + err.message + '</div>';
           });
       }
   }  // ← ESTA LLAVE CIERRA showTab
@@ -1014,7 +1016,7 @@
           }
       }
       
-      showLoading('Loading inventory data...');
+      showLoading(t('stkIntel.loadingData'));
       
       await logForesight('STK', 'OPEN_DASHBOARD', 'User accessed Inventory Foresight Dashboard');
       
@@ -1022,7 +1024,7 @@
           // ✅ Cargar Summary
           var summary = await callApi('STK_getSummaryData', []);
           if (!summary || summary.error) {
-              showToast(summary?.error || 'Error loading summary', 'error');
+              showToast(summary?.error || t('stkIntel.errLoadSummary'), 'error');
               hideLoading();
               return;
           }
@@ -1030,7 +1032,7 @@
           // ✅ Cargar Pending POs
           var pendingData = await callApi('STK_getPendingPOsData', [showAll ? 0 : 20, 0, showAll]);
           if (!pendingData || pendingData.error) {
-              showToast(pendingData?.error || 'Error loading POs', 'error');
+              showToast(pendingData?.error || t('stkIntel.errLoadPos'), 'error');
               hideLoading();
               return;
           }
@@ -1069,7 +1071,7 @@
       } catch (error) {
           hideLoading();
           // console.error('Load data error:', error);  // COMENTADO
-          showToast('Failed to load: ' + error.message, 'error');
+          showToast(t('stkIntel.failedToLoad', { error: error.message }), 'error');
           await logForesight('STK', 'DATA_ERROR', error.message);
       }
   }
@@ -1090,46 +1092,46 @@ function renderAlertsTab(alerts) {
       var container = document.getElementById('alertsContent');
       var html = '';
       
-      html += '<h3 style="margin:0 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">🔴 Critical Overdue Purchase Orders</h3>';
+      html += '<h3 style="margin:0 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">' + t('stkIntel.secOverduePos') + '</h3>';
       
       var overduePOs = (alerts.overduePOs || []).slice(0, 20);
       if (overduePOs.length > 0) {
-          html += '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Overdue</th><th>Recommendation</th></tr></thead><tbody>';
+          html += '<div class="table-wrapper"><table><thead><tr><th>' + t('stkIntel.colPoNum') + '</th><th>' + t('stkIntel.colVendor') + '</th><th>' + t('stkIntel.colIssueDate') + '</th><th>' + t('stkIntel.colExpectedDate') + '</th><th>' + t('stkIntel.colDaysOverdue') + '</th><th>' + t('stkIntel.colRecommendation') + '</th></tr></thead><tbody>';
           for (var i = 0; i < overduePOs.length; i++) {
               var po = overduePOs[i];
               html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong></td><td>' + escapeHtml(po.vendor) + '</td><td>' + escapeHtml(po.issueDate || '--') + '</td><td>' + escapeHtml(po.expectedDate || '--') + '</td><td style="color:var(--warning); font-weight:bold;">' + po.daysOverdue + '</td><td>' + escapeHtml(po.recommendation) + '</td></tr>';
           }
           html += '</tbody></table></div>';
           if (alerts.overduePOs.length > 20) {
-              html += '<div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">Showing 20 of ' + alerts.overduePOs.length + ' overdue POs.</div>';
+              html += '<div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">' + t('stkIntel.showing20Overdue', { total: alerts.overduePOs.length }) + '</div>';
           }
       } else {
-          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; margin-bottom:16px;">✅ No critical overdue purchase orders.</div>';
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; margin-bottom:16px;">' + t('stkIntel.noOverduePos') + '</div>';
       }
       
-      html += '<h3 style="margin:24px 0 12px 0; color:var(--danger); font-family:\'Inter\',sans-serif;">🔴 Out of Stock - Critical Parts</h3>';
+      html += '<h3 style="margin:24px 0 12px 0; color:var(--danger); font-family:\'Inter\',sans-serif;">' + t('stkIntel.secOutOfStock') + '</h3>';
       if (alerts.outOfStockCritical && alerts.outOfStockCritical.length > 0) {
-          html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>';
+          html += '<div class="table-wrapper"><table><thead><tr><th>' + t('stkIntel.colSku') + '</th><th>' + t('stkIntel.colDescription') + '</th><th>' + t('stkIntel.colMinStock') + '</th><th>' + t('stkIntel.colRecommendation') + '</th></tr></thead><tbody>';
           for (var i = 0; i < alerts.outOfStockCritical.length; i++) {
               var item = alerts.outOfStockCritical[i];
               html += '<tr><td><strong>' + escapeHtml(item.sku) + '</strong></td><td>' + escapeHtml(item.description || '-') + '</td><td>' + item.minStock + '</td><td>' + escapeHtml(item.recommendation) + '</td></tr>';
           }
           html += '</tbody></table></div>';
       } else {
-          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts out of stock.</div>';
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">' + t('stkIntel.noOutOfStock') + '</div>';
       }
       
       // ✅ NUEVA SECCIÓN: Critical Stock - Below Minimum
-      html += '<h3 style="margin:24px 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">⚠️ Critical Stock - Below Minimum</h3>';
+      html += '<h3 style="margin:24px 0 12px 0; color:var(--warning); font-family:\'Inter\',sans-serif;">' + t('stkIntel.secLowStock') + '</h3>';
       if (alerts.lowStockCritical && alerts.lowStockCritical.length > 0) {
-          html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Current Stock</th><th>Min Stock</th><th>Recommendation</th></tr></thead><tbody>';
+          html += '<div class="table-wrapper"><table><thead><tr><th>' + t('stkIntel.colSku') + '</th><th>' + t('stkIntel.colDescription') + '</th><th>' + t('stkIntel.colCurrentStock') + '</th><th>' + t('stkIntel.colMinStock') + '</th><th>' + t('stkIntel.colRecommendation') + '</th></tr></thead><tbody>';
           for (var i = 0; i < alerts.lowStockCritical.length; i++) {
               var item = alerts.lowStockCritical[i];
               html += '<tr><td><strong>' + escapeHtml(item.sku) + '</strong></td><td>' + escapeHtml(item.description || '-') + '</td><td>' + item.currentStock + '</td><td>' + item.minStock + '</td><td>' + escapeHtml(item.recommendation) + '</td></tr>';
           }
           html += '</tbody></table></div>';
       } else {
-          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No critical parts below minimum stock.</div>';
+          html += '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">' + t('stkIntel.noLowStock') + '</div>';
       }
       
       container.innerHTML = html;
@@ -1140,7 +1142,7 @@ function renderAlertsTab(alerts) {
       pendingPOsData = pendingPOs || [];
       
       if (pendingPOsData.length === 0) {
-          container.innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">📭 No pending purchase orders.</div>';
+          container.innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">' + t('stkIntel.noPendingPos') + '</div>';
           return;
       }
       
@@ -1152,7 +1154,7 @@ function renderAlertsTab(alerts) {
       var html = '<div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">';
       
       if (!showAll && totalPending > showingCount) {
-          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary">📋 Show All (' + totalPending + ')</button>';
+          html += '<button id="showAllPendingBtn" class="adk-btn adk-btn-secondary">' + t('stkIntel.btnShowAllCount', { count: totalPending }) + '</button>';
       }
       html += '</div><div id="pendingPOsTable"></div>';
       
@@ -1170,18 +1172,18 @@ function renderAlertsTab(alerts) {
 
   function renderPendingTable(data) {
       if (data.length === 0) {
-          document.getElementById('pendingPOsTable').innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">No POs match filter.</div>';
+          document.getElementById('pendingPOsTable').innerHTML = '<div style="background:rgba(0,229,255,0.1); border:1px solid var(--info); border-radius:8px; padding:16px;">' + t('stkIntel.noPosMatchFilter') + '</div>';
           return;
       }
       
-      var html = '<div class="table-wrapper"><table><thead><tr><th>PO #</th><th>Vendor</th><th>Issue Date</th><th>Expected Date</th><th>Days Since</th><th>Status</th></tr></thead><tbody>';
+      var html = '<div class="table-wrapper"><table><thead><tr><th>' + t('stkIntel.colPoNum') + '</th><th>' + t('stkIntel.colVendor') + '</th><th>' + t('stkIntel.colIssueDate') + '</th><th>' + t('stkIntel.colExpectedDate') + '</th><th>' + t('stkIntel.colDaysSince') + '</th><th>' + t('stkIntel.colStatus') + '</th></tr></thead><tbody>';
 
       for (var i = 0; i < data.length; i++) {
           var po = data[i];
-          var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">Critical</span>' : '';
+          var criticalBadge = po.hasCritical ? '<span class="badge adk-badge-danger">' + t('stkIntel.badgeCritical') + '</span>' : '';
           var daysUntilExpected = po.daysUntilExpected !== undefined ? po.daysUntilExpected : '--';
           
-          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + (po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '--') + '</td><td>' + (po.expectedDate ? new Date(po.expectedDate).toLocaleDateString() : '--') + '</td><td>' + po.daysSinceIssue + 'd</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(po.statusDisplay || po.status) + '</span></td></tr>';
+          html += '<tr><td><strong>' + escapeHtml(po.poNumber) + '</strong> ' + criticalBadge + '</td><td>' + escapeHtml(po.vendor) + '</td><td>' + (po.issueDate ? new Date(po.issueDate).toLocaleDateString(I18n.getLocale()) : '--') + '</td><td>' + (po.expectedDate ? new Date(po.expectedDate).toLocaleDateString(I18n.getLocale()) : '--') + '</td><td>' + po.daysSinceIssue + t('stkIntel.daySuffix') + '</td><td><span class="' + (po.isOverdue ? 'badge adk-badge-danger' : 'badge adk-badge-warning') + '">' + escapeHtml(tStatus(po.statusDisplay || po.status)) + '</span></td></tr>';
       }
       
       html += '</tbody></table></div>';
@@ -1195,11 +1197,11 @@ function renderAlertsTab(alerts) {
         window._optimizationConfig = config || { safetyFactor: 1.5 };
         
         // ✅ Mostrar SOLO el dropdown + mensaje "Select a category"
-        var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">💡 Safety Factor: <strong>' + (config?.safetyFactor || 1.5) + '</strong> (50% buffer). Update in SETUP_STK to change.</div>';
+        var html = '<div style="margin-bottom:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">' + t('stkIntel.safetyFactorNote', { factor: (config?.safetyFactor || 1.5) }) + '</div>';
         
         // ✅ Dropdown de categorías (se carga al abrir)
-        html += '<div class="filter-bar"><label>📂 Category:</label><select id="categoryFilter"><option value="all">All Categories</option></select>';
-        html += '<button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">📋 Show All</button>';
+        html += '<div class="filter-bar"><label>' + t('stkIntel.lblCategory') + '</label><select id="categoryFilter"><option value="all">' + t('stkIntel.allCategories') + '</option></select>';
+        html += '<button id="showAllOptimizeBtn" class="adk-btn adk-btn-secondary" style="margin-left: 12px;">' + t('stkIntel.btnShowAll') + '</button>';
         html += '</div><div id="optimizationTable"></div>';
         
         container.innerHTML = html;
@@ -1210,7 +1212,7 @@ function renderAlertsTab(alerts) {
             if (!select) return;
             
             // Limpiar y agregar opciones
-            select.innerHTML = '<option value="all">All Categories</option>';
+            select.innerHTML = '<option value="all">' + t('stkIntel.allCategories') + '</option>';
             if (categories && categories.length > 0) {
                 for (var i = 0; i < categories.length; i++) {
                     select.innerHTML += '<option value="' + escapeHtml(categories[i]) + '">' + escapeHtml(categories[i]) + '</option>';
@@ -1219,7 +1221,7 @@ function renderAlertsTab(alerts) {
             
             // ✅ Mostrar mensaje inicial
             document.getElementById('optimizationTable').innerHTML = 
-                '<div style="background:rgba(0,229,255,0.05); border:1px solid var(--info); border-radius:8px; padding:16px; text-align:center; color: var(--text-secondary);">📊 Select a category to view stock optimization suggestions.</div>';
+                '<div style="background:rgba(0,229,255,0.05); border:1px solid var(--info); border-radius:8px; padding:16px; text-align:center; color: var(--text-secondary);">' + t('stkIntel.selectCategoryPrompt') + '</div>';
             
             // ✅ Evento al cambiar categoría
             select.addEventListener('change', function() {
@@ -1230,7 +1232,7 @@ function renderAlertsTab(alerts) {
         }).catch(function(err) {
             // console.error('[STK] Error loading categories:', err);  // COMENTADO
             document.getElementById('optimizationTable').innerHTML = 
-                '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading categories: ' + err.message + '</div>';
+                '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">' + t('stkIntel.errLoadCategories', { error: err.message }) + '</div>';
         });
         
         // ✅ Evento Show All
@@ -1252,14 +1254,14 @@ function renderAlertsTab(alerts) {
       if (!tableContainer) return;
       
       // ✅ Mostrar spinner de carga
-      tableContainer.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="loading-spinner" style="margin: 0 auto;"></div><div style="color: var(--text-secondary); margin-top: 10px;">Loading optimizations...</div></div>';
+      tableContainer.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="loading-spinner" style="margin: 0 auto;"></div><div style="color: var(--text-secondary); margin-top: 10px;">' + t('stkIntel.loadingOptimizationsShort') + '</div></div>';
       
       var limit = showAll ? 0 : 20;
       var offset = 0;
       
       callApi('STK_getOptimizationsByCategory', [category, limit, offset]).then(function(result) {
           if (!result || !result.data) {
-              tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error loading optimizations.</div>';
+              tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">' + t('stkIntel.errLoadOptimizations') + '</div>';
               return;
           }
           
@@ -1267,7 +1269,7 @@ function renderAlertsTab(alerts) {
           var total = result.total || 0;
           
           if (data.length === 0) {
-              tableContainer.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; text-align:center;">✅ No optimizations found for this category.</div>';
+              tableContainer.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px; text-align:center;">' + t('stkIntel.noOptForCategory') + '</div>';
               return;
           }
           
@@ -1276,7 +1278,7 @@ function renderAlertsTab(alerts) {
           
       }).catch(function(err) {
           // console.error('[STK] Error loading optimizations:', err);  // COMENTADO
-          tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ Error: ' + err.message + '</div>';
+          tableContainer.innerHTML = '<div style="background:rgba(255,82,82,0.1); border:1px solid var(--danger); border-radius:8px; padding:16px;">❌ ' + t('common.error') + ': ' + err.message + '</div>';
       });
   }
 
@@ -1298,12 +1300,12 @@ function renderAlertsTab(alerts) {
       if (!container) return;
       
       if (!optimizations || optimizations.length === 0) {
-          container.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">✅ No optimizations for this category.</div>';
+          container.innerHTML = '<div style="background:rgba(0,230,118,0.1); border:1px solid var(--success); border-radius:8px; padding:16px;">' + t('stkIntel.noOptForCategoryShort') + '</div>';
           return;
       }
       
-      var html = '<div style="margin-bottom:12px; font-size:13px; color: var(--text-secondary);">Showing ' + optimizations.length + ' of ' + (total || optimizations.length) + ' optimizations</div>';
-      html += '<div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Description</th><th>Category</th><th>Cons/Week</th><th>Lead Time (wks)</th><th>Current Min</th><th>Suggested Min</th><th>Δ</th><th>Criticality</th></tr></thead><tbody>';
+      var html = '<div style="margin-bottom:12px; font-size:13px; color: var(--text-secondary);">' + t('stkIntel.showingOptimizations', { shown: optimizations.length, total: (total || optimizations.length) }) + '</div>';
+      html += '<div class="table-wrapper"><table><thead><tr><th>' + t('stkIntel.colSku') + '</th><th>' + t('stkIntel.colDescription') + '</th><th>' + t('stkIntel.colCategory') + '</th><th>' + t('stkIntel.colConsPerWeek') + '</th><th>' + t('stkIntel.colLeadTime') + '</th><th>' + t('stkIntel.colCurrentMin') + '</th><th>' + t('stkIntel.colSuggestedMin') + '</th><th>Δ</th><th>' + t('stkIntel.colCriticality') + '</th></tr></thead><tbody>';
       
       for (var i = 0; i < optimizations.length; i++) {
           var opt = optimizations[i];
@@ -1315,7 +1317,7 @@ function renderAlertsTab(alerts) {
       }
       
       html += '</tbody></table></div>';
-      html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">📝 To apply: Go to STK → Inventory Hub → Edit SKU → Update Min Stock value manually.</div>';
+      html += '<div style="margin-top:16px; background:rgba(0,229,255,0.05); border-radius:8px; padding:12px 16px;">' + t('stkIntel.applyOptHint') + '</div>';
       container.innerHTML = html;
   }
  
@@ -1326,13 +1328,13 @@ function renderAlertsTab(alerts) {
       var pendingContent = document.getElementById('pendingPOsContent').innerHTML;
       var statsContent = document.querySelector('.stats-grid').innerHTML;
       
-      if (!pendingContent || pendingContent.indexOf('No pending purchase orders') !== -1) {
-          showToast('No data to print', 'error');
+      if (!pendingContent || pendingContent.indexOf(t('stkIntel.noPendingPos')) !== -1) {
+          showToast(t('stkIntel.noDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1347,16 +1349,16 @@ function renderAlertsTab(alerts) {
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('stkIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewSTK()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('stkIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">PENDING PURCHASE ORDERS</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('stkIntel.pendingReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('stkIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- Stats -->
               <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
@@ -1369,7 +1371,7 @@ function renderAlertsTab(alerts) {
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  Inventory Foresight - Adkintor EAMS
+                  ${t('stkIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1393,7 +1395,7 @@ function renderAlertsTab(alerts) {
       // ✅ Tomar SOLO la tabla de optimización (no el contenedor completo)
       var tableContainer = document.getElementById('optimizationTable');
       if (!tableContainer) {
-          showToast('No data to print. Please select a category first.', 'error');
+          showToast(t('stkIntel.noOptDataSelectCat'), 'error');
           return;
       }
       
@@ -1401,9 +1403,9 @@ function renderAlertsTab(alerts) {
       
       // Verificar si hay datos reales
       if (!tableContent || 
-          tableContent.indexOf('Select a category to view') !== -1 ||
-          tableContent.indexOf('No optimizations found') !== -1) {
-          showToast('No data to print. Please select a category first.', 'error');
+          tableContent.indexOf(t('stkIntel.selectCategoryPrompt')) !== -1 ||
+          tableContent.indexOf(t('stkIntel.noOptForCategory')) !== -1) {
+          showToast(t('stkIntel.noOptDataSelectCat'), 'error');
           return;
       }
       
@@ -1413,19 +1415,19 @@ function renderAlertsTab(alerts) {
       var rows = tempDiv.querySelectorAll('table tbody tr');
       
       if (!rows || rows.length === 0) {
-          showToast('No optimization data to print.', 'error');
+          showToast(t('stkIntel.noOptDataToPrint'), 'error');
           return;
       }
       
       // ✅ Obtener solo la tabla limpia (sin el mensaje de "Showing X of Y")
       var tableElement = tempDiv.querySelector('table');
       if (!tableElement) {
-          showToast('No table data to print.', 'error');
+          showToast(t('stkIntel.noTableDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // ✅ Construir SOLO la tabla en el reporte
       var tableHtml = tableElement.outerHTML;
@@ -1443,16 +1445,16 @@ function renderAlertsTab(alerts) {
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('stkIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewSTK()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('stkIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">STOCK OPTIMIZATION REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('stkIntel.optimizeReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('stkIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- ✅ SOLO LA TABLA -->
               <div style="overflow-x: auto;">
@@ -1460,7 +1462,7 @@ function renderAlertsTab(alerts) {
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  Inventory Foresight - Adkintor EAMS
+                  ${t('stkIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1516,12 +1518,12 @@ function renderAlertsTab(alerts) {
   // ============================================
   async function init() {
     loadUser();
-    showLoading('Loading inventory data...');
+    showLoading(t('stkIntel.loadingData'));
     loadApiUrl();
     
     if (!EAMS_API_URL) {
       hideLoading();
-      showToast('API URL not configured. Please login.', 'error');
+      showToast(t('common.apiNotConfigured'), 'error');
       return;
     }
     
@@ -1585,7 +1587,7 @@ function renderAlertsTab(alerts) {
       
     } catch(err) {
       hideLoading();
-      showToast('Error loading data: ' + err.message, 'error');
+      showToast(t('stkIntel.errLoadData', { error: err.message }), 'error');
     }
   }
   
