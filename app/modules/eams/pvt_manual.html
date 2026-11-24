@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Manual PM Scheduler - ADKINTOR EAMS</title>
+    <title data-i18n="pvt.manual.pageTitle">Manual PM Scheduler - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -570,7 +572,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="pvt.manual.loadingConfig">Loading configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -582,17 +584,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Manual PM Scheduler</span>
+            <span class="module-title" data-i18n="pvt.manual.title">Manual PM Scheduler</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Manual PM Scheduler</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="pvt.breadcrumb">PREVENTIVE</span> &gt; <span class="current" data-i18n="pvt.manual.breadcrumb">Manual PM Scheduler</span>
     </div>
     
     <!-- CUERPO -->
@@ -600,23 +602,23 @@
         <div class="manual-layout">
             <!-- Search Container -->
             <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
-                <button class="btn-search" id="searchBtn" onclick="searchTL()"><i class="fas fa-check-circle"></i> SELECT TL</button>
+                <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." data-i18n-placeholder="pvt.manual.searchPlaceholder" autocomplete="off">
+                <button class="btn-search" id="searchBtn" onclick="searchTL()" data-i18n-html="pvt.manual.selectTlBtn"><i class="fas fa-check-circle"></i> SELECT TL</button>
                 <div id="suggestions" class="custom-scroll"></div>
             </div>
 
             <!-- Frequency and Year -->
             <div class="grid-2">
                 <div class="form-group">
-                    <label><i class="fas fa-calendar-week"></i> Frequency</label>
+                    <label data-i18n-html="pvt.manual.freqLabel"><i class="fas fa-calendar-week"></i> Frequency</label>
                     <select id="freqSelect" class="input-main" onchange="calculateWeeks()" disabled>
-                        <option value="">-- Select Frequency --</option>
+                        <option value="" data-i18n="pvt.manual.selectFreq">-- Select Frequency --</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-calendar-alt"></i> Target Year(s)</label>
+                    <label data-i18n-html="pvt.manual.targetYearsLabel"><i class="fas fa-calendar-alt"></i> Target Year(s)</label>
                     <div id="yearCheckboxes" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;"></div>
-                    <div style="font-size: 0.6rem; color: #64748b; margin-top: 4px;">
+                    <div style="font-size: 0.6rem; color: #64748b; margin-top: 4px;" data-i18n-html="pvt.manual.targetYearsHint">
                         <i class="fas fa-info-circle"></i> Select consecutive years (e.g., 2026, 2027, 2028)
                     </div>
                 </div>
@@ -624,23 +626,23 @@
 
             <!-- Start Week -->
             <div class="form-group">
-                <label><i class="fas fa-flag-checkered"></i> Start Week (1-52)</label>
+                <label data-i18n-html="pvt.manual.startWeekLabel"><i class="fas fa-flag-checkered"></i> Start Week (1-52)</label>
                 <input type="number" id="startWeek" class="input-main" min="1" max="52" value="1" oninput="calculateWeeks()" disabled>
             </div>
 
             <!-- Preview Section -->
             <div id="previewSection" class="preview-box">
-                <strong><i class="fas fa-chart-line"></i> Schedule Forecast</strong>
+                <strong data-i18n-html="pvt.manual.scheduleForecast"><i class="fas fa-chart-line"></i> Schedule Forecast</strong>
                 <div id="weeksPreview" class="week-preview"></div>
-                <p class="helper-text">
+                <p class="helper-text" data-i18n-html="pvt.manual.manualTagNote">
                     <i class="fas fa-info-circle"></i> Tasks will be tagged as <strong>MANUAL</strong> in MAINT_PLANNER
                 </p>
             </div>
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="btn-secondary" onclick="refreshForm()"><i class="fas fa-sync-alt"></i> REFRESH</button>
-                <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled><i class="fas fa-save"></i> SAVE</button>
+                <button class="btn-secondary" onclick="refreshForm()" data-i18n-html="pvt.manual.refreshBtn"><i class="fas fa-sync-alt"></i> REFRESH</button>
+                <button id="saveBtn" class="btn-save" onclick="saveManualPlan()" disabled data-i18n-html="pvt.manual.saveBtn"><i class="fas fa-save"></i> SAVE</button>
             </div>
         </div>
     </div>
@@ -649,7 +651,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -710,7 +712,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -740,20 +742,20 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR ESTA LÍNEA
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('pvt.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -767,7 +769,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -830,7 +832,7 @@
         suggestionTimeout = setTimeout(async function() {
             try {
                 // ✅ Mostrar spinner
-                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> ' + t('pvt.manual.searching') + '</div>';
                 suggestionsDiv.style.display = 'block';
                 
                 var list = await callApi('PVT_getTLAutocompletar', [val]);
@@ -842,12 +844,12 @@
                     suggestionsDiv.innerHTML = html;
                     suggestionsDiv.style.display = 'block';
                 } else {
-                    suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #94a3b8;">No results found</div>';
+                    suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #94a3b8;">' + t('pvt.manual.noResults') + '</div>';
                     suggestionsDiv.style.display = 'block';
                 }
             } catch (e) {
                 // console.error('Error getting suggestions:', e);  // COMENTADO
-                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #dc3545;">Error searching</div>';
+                suggestionsDiv.innerHTML = '<div style="padding: 12px; text-align: center; color: #dc3545;">' + t('pvt.manual.errSearching') + '</div>';
                 suggestionsDiv.style.display = 'block';
             }
         }, 400);
@@ -857,7 +859,7 @@
         document.getElementById('search-input').value = val;
         document.getElementById('suggestions').style.display = 'none';
         // ✅ Solo cargar el valor en el input, NO buscar automáticamente
-        showToast('Asset ID loaded. Click SELECT TL to search.', 'info');
+        showToast(t('pvt.manual.assetLoadedHint'), 'info');
     }
 
     // ============================================
@@ -866,11 +868,11 @@
     async function searchTL() {
         var searchValue = document.getElementById('search-input').value;
         if (!searchValue) {
-            showToast('Please enter a Technical Location ID or Name', 'error');
+            showToast(t('pvt.manual.enterTlPrompt'), 'error');
             return;
         }
         
-        showLoading('Loading TL configuration...');
+        showLoading(t('pvt.manual.loadingTlConfig'));
         
         try {
             var rawResponse = await callApi('PVT_getManualPMConfig', []);
@@ -880,7 +882,7 @@
                 configData = response.data;
                 
                 if (!configData.assets || !Array.isArray(configData.assets)) {
-                    showToast('Error: No assets loaded. Please refresh and try again.', 'error');
+                    showToast(t('pvt.manual.errNoAssetsLoaded'), 'error');
                     return;
                 }
 
@@ -898,7 +900,7 @@
                 
                 if (selected) {
                     selectedAsset = { id: selected.id, name: selected.name };
-                    showToast('Selected: ' + selected.display, 'success');
+                    showToast(t('pvt.manual.selectedTlToast', { name: selected.display }), 'success');
                     
                     renderFreqDropdown();
                     renderYearCheckboxes();  // ✅ Cambiar nombre
@@ -913,14 +915,14 @@
                     generatedWeeks = [];
                     validateForm();
                 } else {
-                    showToast('Technical Location not found. Please try another.', 'error');
+                    showToast(t('pvt.manual.tlNotFound'), 'error');
                 }
             } else {
-                showToast('Error loading configuration', 'error');
+                showToast(t('pvt.manual.errLoadConfigShort'), 'error');
             }
         } catch (e) {
             // console.error('Error in searchTL:', e);  // COMENTADO
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         } finally {
             hideLoading();
         }
@@ -930,7 +932,7 @@
     // LOAD CONFIGURATION
     // ============================================
     async function loadConfig() {
-        showLoading('Loading configuration...');
+        showLoading(t('pvt.manual.loadingConfig'));
         
         try {
             var rawResponse = await callApi('PVT_getManualPMConfig', []);
@@ -949,11 +951,11 @@
                 // showToast('Configuration loaded. Search for a Technical Location.', 'success');  // ELIMINADO
                 // console.log('[PVT Manual] Ready');  // COMENTADO
             } else {
-                showToast('Error: ' + (response.message || 'Unknown error'), 'error');
+                showToast(t('common.error') + ': ' + (response.message || t('common.unknownError')), 'error');
             }
         } catch (e) {
             // console.error('Error loading config:', e);  // COMENTADO
-            showToast('Error loading configuration: ' + e.message, 'error');
+            showToast(t('pvt.manual.errLoadConfig', { error: e.message }), 'error');
         } finally {
             hideLoading();
         }
@@ -962,14 +964,14 @@
     function renderFreqDropdown() {
         var select = document.getElementById('freqSelect');
         if (!configData.frequencies || configData.frequencies.length === 0) {
-            select.innerHTML = '<option value="">No manual frequencies in SETUP_PVT Col F</option>';
+            select.innerHTML = '<option value="">' + t('pvt.manual.noManualFreqs') + '</option>';
             return;
         }
         
-        var html = '<option value="">-- Select Frequency --</option>';
+        var html = '<option value="">' + t('pvt.manual.selectFreq') + '</option>';
         for (var i = 0; i < configData.frequencies.length; i++) {
             var f = configData.frequencies[i];
-            html += '<option value="' + escapeHtml(f.value) + '" data-days="' + f.days + '">' + escapeHtml(f.label) + '</option>';
+            html += '<option value="' + escapeHtml(f.value) + '" data-days="' + f.days + '">' + escapeHtml(tStatus(f.label)) + '</option>';
         }
         select.innerHTML = html;
     }
@@ -1030,7 +1032,7 @@
         }
         
         if (!isConsecutive) {
-            showToast('⚠️ Please select consecutive years only', 'error');
+            showToast(t('pvt.manual.consecutiveYearsErr'), 'error');
             checked.forEach(function(cb) { cb.checked = false; });
             if (btn) btn.disabled = true;
             return;
@@ -1056,7 +1058,7 @@
         }
         
         if (isNaN(startWeek) || startWeek < 1 || startWeek > 52) {
-            showToast('Please enter a valid start week (1-52)', 'error');
+            showToast(t('pvt.manual.validStartWeekErr'), 'error');
             return;
         }
 
@@ -1100,7 +1102,7 @@
         var preview = document.getElementById('weeksPreview');
         var html = '';
         for (var i = 0; i < generatedWeeks.length; i++) {
-            html += '<div class="week-tag"><i class="fas fa-calendar-check"></i> ' + generatedWeeks[i].year + ' - W' + generatedWeeks[i].week + '</div>';
+            html += '<div class="week-tag"><i class="fas fa-calendar-check"></i> ' + generatedWeeks[i].year + ' - ' + t('pvt.manual.weekPrefix') + generatedWeeks[i].week + '</div>';
         }
         preview.innerHTML = html;
 
@@ -1129,14 +1131,14 @@
                 var warning = document.createElement('div');
                 warning.id = 'freqWarning';
                 warning.style.cssText = 'font-size: 0.7rem; color: #dc3545; margin-top: 4px; display: none;';
-                warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> This frequency is already created for this TL. Verify in Planner or change frequency.';
+                warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + t('pvt.manual.freqDuplicateWarn');
                 container.appendChild(warning);
             }
             
             var warningEl = document.getElementById('freqWarning');
             if (exists) {
                 warningEl.style.display = 'block';
-                showToast('⚠️ Frequency already created for this TL', 'warning');
+                showToast(t('pvt.manual.freqDuplicateToast'), 'warning');
             } else {
                 warningEl.style.display = 'none';
             }
@@ -1173,11 +1175,11 @@
                     '<div class="modal-icon" style="color: #f59e0b;">' +
                         '<i class="fas fa-exclamation-triangle"></i>' +
                     '</div>' +
-                    '<h3>Confirm Refresh</h3>' +
-                    '<p>Unsaved changes will be lost. Continue?</p>' +
+                    '<h3>' + t('pvt.manual.confirmRefreshTitle') + '</h3>' +
+                    '<p>' + t('pvt.manual.unsavedLost') + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeRefreshConfirmModal()">Cancel</button>' +
-                        '<button class="btn-modal-primary" id="refreshConfirmBtn">Continue</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeRefreshConfirmModal()">' + t('pvt.manual.btnCancel') + '</button>' +
+                        '<button class="btn-modal-primary" id="refreshConfirmBtn">' + t('pvt.manual.btnContinue') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1223,7 +1225,7 @@
         pendingSavePayload = null;
         
         validateForm();
-        showToast('Form reset. Search for a Technical Location.', 'success');
+        showToast(t('pvt.manual.formResetToast'), 'success');
     }
 
     // ============================================
@@ -1231,10 +1233,10 @@
     // ============================================
     async function saveManualPlan() {
         // ✅ Mostrar spinner INMEDIATAMENTE
-        showLoading('Checking...');
+        showLoading(t('pvt.manual.checking'));
         
         if (!selectedAsset || generatedWeeks.length === 0) {
-            showToast('Please select an asset and generate weeks first', 'error');
+            showToast(t('pvt.manual.selectAssetAndWeeks'), 'error');
             hideLoading();
             return;
         }
@@ -1244,7 +1246,7 @@
         
         var checkedYears = document.querySelectorAll('.year-checkbox:checked');
         if (checkedYears.length === 0) {
-            showToast('Please select at least one year', 'error');
+            showToast(t('pvt.manual.selectOneYear'), 'error');
             return;
         }
         
@@ -1271,7 +1273,7 @@
         }
         
         if (duplicateFound) {
-            showToast('⚠️ Frequency "' + frequency + '" already exists for ' + selectedAsset.id + ' year ' + duplicateYear + '. Verify in Planner or change frequency.', 'error');
+            showToast(t('pvt.manual.freqExistsForYear', { freq: tStatus(frequency), assetId: selectedAsset.id, year: duplicateYear }), 'error');
             hideLoading();  // ✅ Forzar ocultar spinner
             return;         // ✅ Detener ejecución
         }
@@ -1286,7 +1288,7 @@
         
         pendingSavePayload = payload;
         
-        showLoading('Checking annual plan status...');
+        showLoading(t('pvt.manual.checkingPlanStatus'));
         
         try {
             // ✅ Verificar CADA año seleccionado
@@ -1308,13 +1310,13 @@
             hideLoading();
             
             // ✅ Construir mensaje con resumen de TODOS los años
-            var message = 'Creation summary:\n';
+            var message = t('pvt.manual.creationSummaryTitle') + '\n';
             for (var i = 0; i < yearStatus.length; i++) {
                 var ys = yearStatus[i];
                 if (ys.hasPlan) {
-                    message += '- ' + ys.year + ': ' + ys.lockStatus + ' (inherits from PLANNER)\n';
+                    message += '- ' + ys.year + ': ' + tStatus(ys.lockStatus) + ' ' + t('pvt.manual.inheritsPlanner') + '\n';
                 } else {
-                    message += '- ' + ys.year + ': UNLOCKED (no PLANNER strategy found)\n';
+                    message += '- ' + ys.year + ': ' + tStatus('UNLOCKED') + ' ' + t('pvt.manual.noPlannerStrategy') + '\n';
                 }
             }
             
@@ -1323,7 +1325,7 @@
             
         } catch (e) {
             hideLoading();
-            showToast('Error checking plan status: ' + e.message, 'error');
+            showToast(t('pvt.manual.errCheckingPlan', { error: e.message }), 'error');
         }
     }
 
@@ -1337,11 +1339,11 @@
                     '<div class="modal-icon" style="color: #f59e0b;">' +
                         '<i class="fas fa-question-circle"></i>' +
                     '</div>' +
-                    '<h3>Confirm Action</h3>' +
-                    '<p>Save ' + generatedWeeks.length + ' manual task(s) for ' + escapeHtml(selectedAsset.name) + '?</p>' +
+                    '<h3>' + t('pvt.manual.confirmActionTitle') + '</h3>' +
+                    '<p>' + t('pvt.manual.confirmSaveTasks', { count: generatedWeeks.length, name: escapeHtml(selectedAsset.name) }) + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">Cancel</button>' +
-                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">' + t('pvt.manual.btnCancel') + '</button>' +
+                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">' + t('pvt.manual.btnConfirm') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1366,11 +1368,11 @@
                     '<div class="modal-icon" style="color: #f59e0b;">' +
                         '<i class="fas fa-exclamation-triangle"></i>' +
                     '</div>' +
-                    '<h3>⚠️ No Annual Plan Found</h3>' +
-                    '<p>No annual strategy plan found for ' + escapeHtml(selectedAsset.name) + ' (' + escapeHtml(selectedAsset.id) + ').<br><br>Manual plan will be created with UNLOCKED status.<br><br>Continue anyway?</p>' +
+                    '<h3>' + t('pvt.manual.noPlanFoundTitle') + '</h3>' +
+                    '<p>' + t('pvt.manual.noPlanFoundBody', { name: escapeHtml(selectedAsset.name), id: escapeHtml(selectedAsset.id) }) + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeWarningModal()">Cancel</button>' +
-                        '<button class="btn-modal-primary" id="warningConfirmBtn">Continue Anyway</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeWarningModal()">' + t('pvt.manual.btnCancel') + '</button>' +
+                        '<button class="btn-modal-primary" id="warningConfirmBtn">' + t('pvt.manual.btnContinueAnyway') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1391,7 +1393,7 @@
     async function executeSave() {
         if (!pendingSavePayload) return;
         
-        showLoading('Saving manual tasks...');
+        showLoading(t('pvt.manual.savingTasks'));
         
         try {
             // ✅ Añadir userEmail al payload antes de enviar
@@ -1423,11 +1425,11 @@
                 }
                 resetFormAndRefresh();
             } else {
-                showToast('Error: ' + response.message, 'error');
+                showToast(t('common.error') + ': ' + response.message, 'error');
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
@@ -1438,12 +1440,12 @@
                     '<div class="modal-icon" style="color: #f59e0b;">' +
                         '<i class="fas fa-question-circle"></i>' +
                     '</div>' +
-                    '<h3>Confirm Action</h3>' +
+                    '<h3>' + t('pvt.manual.confirmActionTitle') + '</h3>' +
                     '<p style="white-space: pre-line; text-align: left;">' + escapeHtml(message) + '</p>' +
-                    '<p style="margin-top: 12px;">Save ' + generatedWeeks.length + ' manual task(s) for ' + escapeHtml(selectedAsset.name) + '?</p>' +
+                    '<p style="margin-top: 12px;">' + t('pvt.manual.confirmSaveTasks', { count: generatedWeeks.length, name: escapeHtml(selectedAsset.name) }) + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">Cancel</button>' +
-                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">Confirm</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">' + t('pvt.manual.btnCancel') + '</button>' +
+                        '<button class="btn-modal-primary" id="confirmActionBtn" style="background:#22c55e;">' + t('pvt.manual.btnConfirm') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1485,7 +1487,7 @@
         if (EAMS_API_URL) {
             loadConfig();
         } else {
-            showToast('API URL not configured. Please log in first.', 'error');
+            showToast(t('pvt.manual.apiNotConfiguredFirst'), 'error');
             // console.log('[PVT Manual] Not Configured');  // COMENTADO
         }
     }
