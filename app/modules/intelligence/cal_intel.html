@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - CAL Intelligence</title>
+  <title data-i18n="calIntel.pageTitle">FORESIGHT - CAL Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/app/js/translations.js"></script>
+  <script src="/app/js/i18n.js"></script>
   
   <style>
     /* ============================================
@@ -751,7 +753,7 @@
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading calibration data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;" data-i18n="calIntel.loadingData">Loading calibration data...</div>
   </div>
 </div>
 
@@ -761,43 +763,43 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-microscope"></i> CAL Foresight</span>
+      <span class="module-title"><i class="fas fa-microscope"></i> <span data-i18n="calIntel.title">CAL Foresight</span></span>
     </div>
     <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
+      <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
       <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">CAL Foresight</span>
+    <span data-i18n="common.home">Home</span> &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current" data-i18n="calIntel.title">CAL Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
     <div class="dashboard-container">
       <div class="tabs">
-        <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Audit</button>
-        <button class="tab-btn" data-tab="trends">📈 Drifting Trends</button>
-        <button class="tab-btn" data-tab="alerts">⚠️ Alerts</button>        
+        <button class="tab-btn active" data-tab="dashboard" data-i18n="calIntel.tabDashboard">📊 Dashboard & Audit</button>
+        <button class="tab-btn" data-tab="trends" data-i18n="calIntel.tabTrends">📈 Drifting Trends</button>
+        <button class="tab-btn" data-tab="alerts" data-i18n="calIntel.tabAlerts">⚠️ Alerts</button>        
       </div>
 
       <!-- Refresh ahora está dentro de cada tab --> 
 
       <!-- Summary Cards (4 columnas) -->
       <div id="summaryCards" class="stats-grid">
-          <div class="adk-card"><div class="label">Total Instruments</div><div class="value" id="totalInstruments">--</div></div>
-          <div class="adk-card"><div class="label">Overdue</div><div class="value" id="overdueCount">--</div></div>
-          <div class="adk-card"><div class="label">Urgent (≤7d)</div><div class="value" id="urgentCount">--</div></div>
-          <div class="adk-card"><div class="label">Last Failed</div><div class="value" id="failedCount">--</div></div>
+          <div class="adk-card"><div class="label" data-i18n="calIntel.kpiTotal">Total Instruments</div><div class="value" id="totalInstruments">--</div></div>
+          <div class="adk-card"><div class="label" data-i18n="calIntel.kpiOverdue">Overdue</div><div class="value" id="overdueCount">--</div></div>
+          <div class="adk-card"><div class="label" data-i18n="calIntel.kpiUrgent">Urgent (≤7d)</div><div class="value" id="urgentCount">--</div></div>
+          <div class="adk-card"><div class="label" data-i18n="calIntel.kpiFailed">Last Failed</div><div class="value" id="failedCount">--</div></div>
       </div>           
       
       <div class="content-panel">
         <div id="dashboard-tab" class="tab-pane active">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                <button id="printAuditBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                <button id="printAuditBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="calIntel.btnPrintPdf">📑 Print PDF</button>
+                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="calIntel.btnRefresh">🔄 Refresh</button>
             </div>
             <div id="dashboardContent"></div>
         </div>
@@ -806,8 +808,8 @@
         </div>
         <div id="trends-tab" class="tab-pane">
             <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end;">
-                <button id="printTrendBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                <button id="printTrendBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="calIntel.btnPrintPdf">📑 Print PDF</button>
+                <button id="refreshBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="calIntel.btnRefresh">🔄 Refresh</button>
             </div>
             <div id="trendsContent"></div>
         </div>
@@ -819,7 +821,7 @@
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
-      <span>Connected</span>
+      <span data-i18n="common.connected">Connected</span>
     </span>
     <span class="footer-version" id="eamsVersion">v1.0.0</span>
   </div>
@@ -891,7 +893,7 @@
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
     const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    if (msgSpan) msgSpan.textContent = msg || t('common.loading');
     overlay.classList.add('visible');
   }
   
@@ -927,24 +929,24 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || t('calIntel.userFallback');
         }
         // console.log('[CAL] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
         // console.error('[CAL] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
+        if (userDisplay) userDisplay.innerText = t('calIntel.userFallback');
       }
     } else {
       // console.warn('[CAL] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
+      if (userDisplay) userDisplay.innerText = t('calIntel.guestFallback');
     }
   }
   
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
+      throw new Error(t('calIntel.errApiNotConfigured'));
     }
     
     // console.log('[CAL] Calling API:', action, args);  // COMENTADO
@@ -966,7 +968,7 @@
     // console.log('[CAL] API Response:', result);  // COMENTADO
     
     if (!result.success) {
-      throw new Error(result.error || 'API call failed');
+      throw new Error(result.error || t('calIntel.apiCallFailed'));
     }
     
     return result.data;
@@ -1012,14 +1014,14 @@
       } else if (tabId === 'alerts') {
           loadAlertsWithRetry();
       } else if (tabId === 'trends') {
-          showLoading('Loading instruments...');
+          showLoading(t('calIntel.loadingInstruments'));
           callApi('CAL_getInstrumentsForTrend', []).then(function(instruments) {
               renderTrendSelector(instruments);
               tabCache.trends = true;  // ✅ Marcar como cacheado
               hideLoading();
           }).catch(function(err) {
               hideLoading();
-              document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + err.message + '</div>';
+              document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + err.message + '</div>';
               showToast(err.message, 'error');
           });
       }
@@ -1028,7 +1030,7 @@
   // ✅ NUEVA FUNCIÓN: Carga de alerts con reintento
   async function loadAlertsWithRetry(retryCount = 0) {
       const maxRetries = 2;
-      showLoading('Loading alerts...');
+      showLoading(t('calIntel.loadingAlerts'));
       
       try {
           // ✅ Limpiar caché ANTES de cargar (para datos frescos)
@@ -1043,7 +1045,7 @@
                   await new Promise(resolve => setTimeout(resolve, 1000));
                   return loadAlertsWithRetry(retryCount + 1);
               }
-              throw new Error('Invalid data format received from server');
+              throw new Error(t('calIntel.errInvalidData'));
           }
           
           renderAlertsList(list);
@@ -1057,20 +1059,20 @@
           
       } catch (err) {
           hideLoading();
-          const errorMsg = err.message || 'Failed to load alerts';
+          const errorMsg = err.message || t('calIntel.errLoadAlerts');
           document.getElementById('alertsContent').innerHTML = 
               '<div class="adk-card" style="color: var(--danger); padding: 20px;">' +
-              '⚠️ Error loading alerts: ' + escapeHtml(errorMsg) + 
-              '<br><br><button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary" style="margin-top:8px;">🔄 Retry</button>' +
+              t('calIntel.errLoadAlertsPrefix') + escapeHtml(errorMsg) + 
+              '<br><br><button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary" style="margin-top:8px;">' + t('calIntel.btnRetry') + '</button>' +
               '</div>';
-          showToast('Error loading alerts: ' + errorMsg, 'error');
+          showToast(t('calIntel.errLoadAlertsMsg', { error: errorMsg }), 'error');
       }
   }
 
   async function refreshAllData() {
       await logForesight('CAL', 'REFRESH_DATA', 'User manually refreshed dashboard data');
       
-      showLoading('Refreshing data...');
+      showLoading(t('calIntel.refreshingData'));
       try {
           // ✅ Limpiar caché de CAL ANTES de recargar
           await callApi('CAL_clearCache', []);
@@ -1091,10 +1093,10 @@
           }
           
           hideLoading();
-          showToast('Data refreshed successfully ✅', 'success');
+          showToast(t('calIntel.dataRefreshed'), 'success');
       } catch(err) {
           hideLoading();
-          showToast('Error refreshing: ' + err.message, 'error');
+          showToast(t('calIntel.errRefreshing', { error: err.message }), 'error');
       }
   }
   
@@ -1102,7 +1104,7 @@
   // TAB 1: DASHBOARD & AUDIT
   // ============================================
   async function loadDashboard() {
-    showLoading('Loading dashboard...');
+    showLoading(t('calIntel.loadingDashboard'));
     try {
       var data = await callApi('CAL_getDashboardData', []);
       if (data && data.success) {
@@ -1110,13 +1112,13 @@
         tabCache.dashboard = true;  // ✅ Marcar como cacheado
         await logForesight('CAL', 'DASHBOARD_LOADED', 'Total: ' + data.summary?.total + ', Overdue: ' + data.summary?.overdue);
       } else {
-        document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + (data?.error || 'Unknown error') + '</div>';
-        showToast(data?.error || 'Failed to load dashboard', 'error');
+        document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + (data?.error || t('common.unknownError')) + '</div>';
+        showToast(data?.error || t('calIntel.errLoadDashboard'), 'error');
       }
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Connection error: ' + error.message + '</div>';
+      document.getElementById('dashboardContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('calIntel.errConnection', { error: error.message }) + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -1141,16 +1143,16 @@
       var html = '';
       
       if (data.failedAlerts && data.failedAlerts.length > 0) {
-          html += '<div class="adk-card"><div class="card-header">❌ LAST CALIBRATION FAILED</div><div class="card-body">';
+          html += '<div class="adk-card"><div class="card-header">' + t('calIntel.hdrLastFailed') + '</div><div class="card-body">';
           for (var i = 0; i < data.failedAlerts.length; i++) {
               var alert = data.failedAlerts[i];
-              html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>Result: ' + escapeHtml(alert.lastResult) + '</div>';
+              html += '<div class="alert alert-failed"><strong>' + escapeHtml(alert.tagId) + '</strong> - ' + escapeHtml(alert.name) + '<br>' + t('calIntel.resultPrefix') + ' ' + escapeHtml(tStatus(alert.lastResult)) + '</div>';
           }
           html += '</div></div>';
       }
       
       // ✅ AUDIT RECOMMENDATIONS con scroll y contador
-      html += '<div class="adk-card"><div class="card-header">📋 AUDIT RECOMMENDATIONS</div><div class="card-body" style="text-align: left; max-height: 400px; overflow-y: auto;">';
+      html += '<div class="adk-card"><div class="card-header">' + t('calIntel.hdrAuditRecs') + '</div><div class="card-body" style="text-align: left; max-height: 400px; overflow-y: auto;">';
       
       for (var i = 0; i < audit.recommendations.length; i++) {
           var rec = audit.recommendations[i];
@@ -1187,15 +1189,15 @@
           console.warn('CAL: renderAlertsList called with invalid data:', list);
           document.getElementById('alertsContent').innerHTML = 
               '<div class="adk-card" style="padding: 20px; text-align: left;">' +
-              '⚠️ No alerts data available. Please try refreshing.<br><br>' +
-              '<button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary">🔄 Retry</button>' +
+              t('calIntel.noAlertsAvailable') + '<br><br>' +
+              '<button onclick="loadAlertsWithRetry()" class="adk-btn adk-btn-primary">' + t('calIntel.btnRetry') + '</button>' +
               '</div>';
           return;
       }
       
       if (list.length === 0) {
           document.getElementById('alertsContent').innerHTML = 
-              '<div class="adk-card" style="padding: 20px; text-align: left;">✅ No instruments overdue or due in the next 30 days.</div>';
+              '<div class="adk-card" style="padding: 20px; text-align: left;">' + t('calIntel.noOverdueOrDue') + '</div>';
           return;
       }
       
@@ -1206,29 +1208,29 @@
       
       if (validItems.length === 0) {
           document.getElementById('alertsContent').innerHTML = 
-              '<div class="adk-card" style="padding: 20px; text-align: left;">⚠️ No valid alert items found.</div>';
+              '<div class="adk-card" style="padding: 20px; text-align: left;">' + t('calIntel.noValidAlerts') + '</div>';
           return;
       }
       
-      var html = '<div class="adk-card"><div class="card-header">⚠️ ALERTS - Overdue & Due (≤30 days)</div><div class="table-wrapper"><table><thead><tr><th>Tag ID</th><th>Instrument</th><th>Next Calibration</th><th>Days</th><th>Status</th></tr></thead><tbody>';
+      var html = '<div class="adk-card"><div class="card-header">' + t('calIntel.hdrAlertsList') + '</div><div class="table-wrapper"><table><thead><tr><th>' + t('calIntel.colTagId') + '</th><th>' + t('calIntel.colInstrument') + '</th><th>' + t('calIntel.colNextCal') + '</th><th>' + t('calIntel.colDays') + '</th><th>' + t('calIntel.colStatus') + '</th></tr></thead><tbody>';
       
       for (var i = 0; i < validItems.length; i++) {
           var item = validItems[i];
           var isOverdue = item.daysToExpiry < 0;
-          var status = isOverdue ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-due">Due soon</span>';
+          var status = isOverdue ? '<span class="badge badge-overdue">' + t('calIntel.badgeOverdue') + '</span>' : '<span class="badge badge-due">' + tStatus('Due Soon') + '</span>';
           var rowClass = isOverdue ? 'overdue-row' : '';
           
           // ✅ Formatear fecha de forma segura
-          var dateStr = 'N/A';
+          var dateStr = t('calIntel.na');
           try {
               if (item.nextCalibration) {
                   var d = new Date(item.nextCalibration);
                   if (!isNaN(d.getTime())) {
-                      dateStr = d.toLocaleDateString();
+                      dateStr = d.toLocaleDateString(I18n.getLocale());
                   }
               }
           } catch (e) {
-              dateStr = String(item.nextCalibration || 'N/A');
+              dateStr = String(item.nextCalibration || t('calIntel.na'));
           }
           
           html += '<tr class="' + rowClass + '">' +
@@ -1242,8 +1244,8 @@
       
       html += '</tbody></table></div>';
       html += '<div style="padding: 12px 20px; font-size: 12px; color: var(--text-secondary); text-align: left;">' +
-          'Total: ' + validItems.length + ' alert(s)' +
-          (validItems.length !== list.length ? ' (' + (list.length - validItems.length) + ' invalid entries filtered)' : '') +
+          t('calIntel.totalAlerts', { count: validItems.length }) +
+          (validItems.length !== list.length ? t('calIntel.invalidFiltered', { count: (list.length - validItems.length) }) : '') +
           '</div>';
       html += '</div>';
       
@@ -1255,18 +1257,18 @@
   // ============================================
   function renderTrendSelector(instruments) {
     if (!instruments || instruments.length === 0) {
-      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="padding: 20px;">📊 No instruments with 2+ calibrations found.</div>';
+      document.getElementById('trendsContent').innerHTML = '<div class="adk-card" style="padding: 20px;">' + t('calIntel.noInstrumentsTrend') + '</div>';
       return;
     }
     
-    var html = '<div class="adk-card"><div class="card-header">📈 DRIFTING TRENDS ANALYSIS</div><div class="card-body"><div class="filters"><select id="trendSelect" style="min-width: 300px;"><option value="">-- Select an instrument (min 2 calibrations) --</option>';
+    var html = '<div class="adk-card"><div class="card-header">' + t('calIntel.hdrDriftingTrends') + '</div><div class="card-body"><div class="filters"><select id="trendSelect" style="min-width: 300px;"><option value="">' + t('calIntel.selectInstrumentOpt') + '</option>';
     
     for (var i = 0; i < instruments.length; i++) {
       var instr = instruments[i];
-      html += '<option value="' + escapeHtml(instr.tagId) + '">' + escapeHtml(instr.tagId) + ' - ' + escapeHtml(instr.name) + ' (' + instr.historyCount + ' cal)</option>';
+      html += '<option value="' + escapeHtml(instr.tagId) + '">' + escapeHtml(instr.tagId) + ' - ' + escapeHtml(instr.name) + ' (' + instr.historyCount + ' ' + t('calIntel.calCountSuffix') + ')</option>';
     }
     
-    html += '</select><button id="analyzeTrendBtn" class="adk-btn adk-btn-primary">🔍 Analyze Trend</button></div><div id="trendResult" style="margin-top: 20px;"></div></div></div>';
+    html += '</select><button id="analyzeTrendBtn" class="adk-btn adk-btn-primary">' + t('calIntel.btnAnalyzeTrend') + '</button></div><div id="trendResult" style="margin-top: 20px;"></div></div></div>';
     
     document.getElementById('trendsContent').innerHTML = html;
     
@@ -1282,11 +1284,11 @@
     
     var tagId = select.value;
     if (!tagId) {
-      showToast('Please select an instrument', 'warning');
+      showToast(t('calIntel.selectInstrumentToast'), 'warning');
       return;
     }
     
-    showLoading('Analyzing trend...');
+    showLoading(t('calIntel.analyzingTrend'));
     try {
       var trend = await callApi('CAL_getCALTrendData', [tagId]);
       
@@ -1300,17 +1302,17 @@
       
       var html = '<div class="adk-card" style="margin-top:0;"><div class="card-body" style="text-align: left;">' +
         '<p style="text-align: left;"><strong>' + escapeHtml(trend.name) + '</strong> (' + escapeHtml(trend.tagId) + ')</p>' +
-        '<p style="text-align: left;">📆 Frequency: ' + trend.frequency + ' months | 📏 Tolerance: ' + escapeHtml(trend.tolerance) + '</p>' +
-        '<p style="text-align: left;">📊 History: ' + trend.historyCount + ' calibrations | Deviation data: ' + trend.deviationCount + '</p>';
+        '<p style="text-align: left;">' + t('calIntel.trendMetaFreqTol', { freq: trend.frequency, tol: escapeHtml(trend.tolerance) }) + '</p>' +
+        '<p style="text-align: left;">' + t('calIntel.trendMetaHistory', { hist: trend.historyCount, dev: trend.deviationCount }) + '</p>';
       
       if (trend.deviations && trend.deviations.length > 0) {
         html += '<div class="table-wrapper" style="margin-top: 16px;"><table><thead><tr>' +
-          '<th>Date</th>' +
-          '<th>Deviation</th>' +
-          '<th>Measured Value</th>' +
-          '<th>Expected Value</th>' +
-          '<th>Result</th>' +
-          '<th>Tolerance</th>' +
+          '<th>' + t('calIntel.colDate') + '</th>' +
+          '<th>' + t('calIntel.colDeviation') + '</th>' +
+          '<th>' + t('calIntel.colMeasured') + '</th>' +
+          '<th>' + t('calIntel.colExpected') + '</th>' +
+          '<th>' + t('calIntel.colResult') + '</th>' +
+          '<th>' + t('calIntel.colTolerance') + '</th>' +
           '</tr></thead><tbody>';
         
         for (var i = 0; i < trend.deviations.length; i++) {
@@ -1322,17 +1324,17 @@
             toleranceDisplay = parseFloat(d.tolerance).toFixed(2);
           }
           html += '<tr>' +
-            '<td>' + new Date(d.date).toLocaleDateString() + '</td>' +
+            '<td>' + new Date(d.date).toLocaleDateString(I18n.getLocale()) + '</td>' +
             '<td class="trend-deviation">' + (d.deviation !== null ? d.deviation.toFixed(4) : '—') + '</td>' +
             '<td>' + (d.measuredValue !== null ? d.measuredValue : '—') + '</td>' +
             '<td>' + (d.expectedValue !== null ? d.expectedValue : '—') + '</td>' +
-            '<td style="' + resultClass + '">' + escapeHtml(d.result || '—') + '</td>' +
+            '<td style="' + resultClass + '">' + escapeHtml(d.result ? tStatus(d.result) : '—') + '</td>' +
             '<td>' + escapeHtml(toleranceDisplay || '—') + '</td>' +
             '</tr>';
         }
         html += '</tbody></table></div>';
       } else {
-        html += '<p>📊 No deviation data available for this instrument.</p>';
+        html += '<p>' + t('calIntel.noDeviationData') + '</p>';
       }
       
       var alertClass = trend.trend === 'drifting' ? 'alert-critical' : (trend.trend === 'stable' ? 'alert-safe' : 'alert-warning');
@@ -1342,7 +1344,7 @@
       hideLoading();
     } catch (error) {
       hideLoading();
-      document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">Error: ' + error.message + '</div>';
+      document.getElementById('trendResult').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('common.error') + ': ' + error.message + '</div>';
       showToast(error.message, 'error');
     }
   }
@@ -1358,12 +1360,12 @@
       var statsContent = document.querySelector('.stats-grid').innerHTML;
       
       if (!dashboardContent || dashboardContent.indexOf('Error') !== -1) {
-          showToast('No data to print', 'error');
+          showToast(t('calIntel.noDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1378,16 +1380,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('calIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewCAL()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('calIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">CALIBRATION AUDIT REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('calIntel.auditReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('calIntel.reportGenerated', { date: now })}</div>
               
               <!-- Stats -->
               <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
@@ -1400,7 +1402,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  CAL Foresight - Adkintor EAMS
+                  ${t('calIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1423,7 +1425,7 @@
   function printTrend() {
       var trendResult = document.getElementById('trendResult');
       if (!trendResult || !trendResult.innerHTML || trendResult.innerHTML.indexOf('Select an instrument') !== -1) {
-          showToast('Please select an instrument and analyze the trend first.', 'error');
+          showToast(t('calIntel.selectAndAnalyzeFirst'), 'error');
           return;
       }
       
@@ -1433,16 +1435,16 @@
       var table = tempDiv.querySelector('table');
       
       if (!table) {
-          showToast('No trend data to print. Please analyze a trend first.', 'error');
+          showToast(t('calIntel.noTrendDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Obtener el nombre del instrumento seleccionado
       var select = document.getElementById('trendSelect');
-      var instrumentName = select ? select.options[select.selectedIndex]?.text || 'Selected Instrument' : 'Selected Instrument';
+      var instrumentName = select ? select.options[select.selectedIndex]?.text || t('calIntel.selectedInstrumentFallback') : t('calIntel.selectedInstrumentFallback');
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1457,16 +1459,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('calIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewCAL()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('calIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">CALIBRATION TREND REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Instrument: ${instrumentName} | Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('calIntel.trendReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('calIntel.trendReportMeta', { instrument: instrumentName, date: now })}</div>
               
               <!-- Tabla de trend -->
               <div style="overflow-x: auto;">
@@ -1474,7 +1476,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  CAL Foresight - Adkintor EAMS
+                  ${t('calIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1533,12 +1535,12 @@
   // ============================================
   async function init() {
       loadUser();
-      showLoading('Loading calibration data...');
+      showLoading(t('calIntel.loadingData'));
       loadApiUrl();
       
       if (!EAMS_API_URL) {
           hideLoading();
-          showToast('API URL not configured. Please login.', 'error');
+          showToast(t('common.apiNotConfigured'), 'error');
           return;
       }
       
@@ -1605,7 +1607,7 @@
           
       } catch(err) {
           hideLoading();
-          showToast('Error loading data: ' + err.message, 'error');
+          showToast(t('calIntel.errLoadData', { error: err.message }), 'error');
       }
   }
   
