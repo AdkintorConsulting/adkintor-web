@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - PVT Foresight</title>
+  <title data-i18n="pvtIntel.pageTitle">FORESIGHT - PVT Foresight</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/app/js/translations.js"></script>
+  <script src="/app/js/i18n.js"></script>
   
   <style>
     /* ============================================
@@ -787,7 +789,7 @@
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading PVT data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;" data-i18n="pvtIntel.loadingData">Loading PVT data...</div>
   </div>
 </div>
 
@@ -797,26 +799,26 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-calendar-alt"></i> PVT Foresight</span>
+      <span class="module-title"><i class="fas fa-calendar-alt"></i> <span data-i18n="pvtIntel.title">PVT Foresight</span></span>
     </div>
     <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
+      <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
       <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">PVT Foresight</span>
+    <span data-i18n="common.home">Home</span> &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current" data-i18n="pvtIntel.title">PVT Foresight</span>
   </div>
   
   <!-- CUERPO -->
   <div class="module-body">
       <div class="dashboard-container">
           <div class="tabs">
-              <button class="tab-btn active" data-tab="coverage">📊 Strategy Coverage</button>
-              <button class="tab-btn" data-tab="orphans">🗑️ Orphan Activities</button>
-              <button class="tab-btn" data-tab="alerts">🚨 Alerts</button>
+              <button class="tab-btn active" data-tab="coverage" data-i18n="pvtIntel.tabCoverage">📊 Strategy Coverage</button>
+              <button class="tab-btn" data-tab="orphans" data-i18n="pvtIntel.tabOrphans">🗑️ Orphan Activities</button>
+              <button class="tab-btn" data-tab="alerts" data-i18n="pvtIntel.tabAlerts">🚨 Alerts</button>
           </div>
 
           <!-- Refresh ahora está dentro de cada tab -->
@@ -826,20 +828,20 @@
               <!-- TAB 1: COVERAGE -->
               <div id="coverage-tab" class="tab-pane active">
                   <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end; flex-wrap: wrap;">
-                      <button id="printCoverageBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                      <button id="refreshBtnTab1" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                      <button id="printCoverageBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="pvtIntel.btnPrintPdf">📑 Print PDF</button>
+                      <button id="refreshBtnTab1" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="pvtIntel.btnRefresh">🔄 Refresh</button>
                   </div>
                   <!-- Tarjetas de conteo (5) -->
                   <div class="stats-grid">
-                      <div class="adk-card"><div class="label">Technical Locations</div><div class="value" id="tlCount">-</div></div>
-                      <div class="adk-card"><div class="label">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
-                      <div class="adk-card"><div class="label">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
-                      <div class="adk-card"><div class="label">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
-                      <div class="adk-card"><div class="label">Components</div><div class="value" id="componentCount">-</div></div>
+                      <div class="adk-card"><div class="label" data-i18n="pvtIntel.kpiTl">Technical Locations</div><div class="value" id="tlCount">-</div></div>
+                      <div class="adk-card"><div class="label" data-i18n="pvtIntel.kpiMainEquip">Main Equipment</div><div class="value" id="mainEquipCount">-</div></div>
+                      <div class="adk-card"><div class="label" data-i18n="pvtIntel.kpiSubAssembly">Sub-Assembly</div><div class="value" id="subAssemblyCount">-</div></div>
+                      <div class="adk-card"><div class="label" data-i18n="pvtIntel.kpiAuxiliary">Auxiliary</div><div class="value" id="auxiliaryCount">-</div></div>
+                      <div class="adk-card"><div class="label" data-i18n="pvtIntel.kpiComponents">Components</div><div class="value" id="componentCount">-</div></div>
                   </div>
 
                   <div class="card-container">
-                      <div class="card-header">📊 Strategy Coverage by Technical Location</div>
+                      <div class="card-header" data-i18n="pvtIntel.hdrStrategyCoverage">📊 Strategy Coverage by Technical Location</div>
                       <div class="card-body" id="coverageContent"></div>
                   </div>
               </div>
@@ -848,17 +850,17 @@
               <!-- TAB 2: ORPHANS -->
               <div id="orphans-tab" class="tab-pane">
                   <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: flex-end; flex-wrap: wrap;">
-                      <button id="printOrphansBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">📑 Print PDF</button>
-                      <button id="refreshBtnTab2" class="adk-btn adk-btn-secondary" style="white-space: nowrap;">🔄 Refresh</button>
+                      <button id="printOrphansBtn" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="pvtIntel.btnPrintPdf">📑 Print PDF</button>
+                      <button id="refreshBtnTab2" class="adk-btn adk-btn-secondary" style="white-space: nowrap;" data-i18n="pvtIntel.btnRefresh">🔄 Refresh</button>
                   </div>
                   <div id="duplicateWarning" class="adk-alert-warning" style="display: none;">
                       <span>⚠️</span>
                       <span id="duplicateWarningText"></span>
-                      <span class="link" id="viewDuplicatesLink">View details →</span>
+                      <span class="link" id="viewDuplicatesLink" data-i18n="pvtIntel.viewDetailsLink">View details →</span>
                   </div>
 
                   <div class="card-container">
-                      <div class="card-header">🗑️ Orphan Activities (No active strategy)</div>
+                      <div class="card-header" data-i18n="pvtIntel.hdrOrphanActivities">🗑️ Orphan Activities (No active strategy)</div>
                       <div class="card-body" id="orphansContent"></div>
                   </div>
               </div>
@@ -867,7 +869,7 @@
               <!-- TAB 3: ALERTS -->
               <div id="alerts-tab" class="tab-pane">
                 <div class="card-container">
-                  <div class="card-header">🚨 Recommendations</div>
+                  <div class="card-header" data-i18n="pvtIntel.hdrRecommendations">🚨 Recommendations</div>
                   <div class="card-body" id="recommendationsContent"></div>
                 </div>
               </div>
@@ -881,7 +883,7 @@
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
-      <span>Connected</span>
+      <span data-i18n="common.connected">Connected</span>
     </span>
     <span class="footer-version" id="eamsVersion">v1.0.0</span>
   </div>
@@ -953,7 +955,7 @@
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
     const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    if (msgSpan) msgSpan.textContent = msg || t('common.loading');
     overlay.classList.add('visible');
   }
   
@@ -982,24 +984,24 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || t('pvtIntel.userFallback');
         }
         // console.log('[PVT] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
         // console.error('[PVT] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
+        if (userDisplay) userDisplay.innerText = t('pvtIntel.userFallback');
       }
     } else {
       // console.warn('[PVT] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
+      if (userDisplay) userDisplay.innerText = t('pvtIntel.guestFallback');
     }
   }
   
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
+      throw new Error(t('common.apiNotConfigured'));
     }
     
     // console.log('[PVT] Calling API:', action, args);  // COMENTADO
@@ -1070,12 +1072,12 @@
     
     // Cargar datos según tab con overlay completo
     if (tabId === 'orphans' && !cachedData.orphansLoaded) {
-      showLoading('Loading orphan activities...');
+      showLoading(t('pvtIntel.loadingOrphans'));
       loadOrphans().finally(function() {
         hideLoading();
       });
     } else if (tabId === 'alerts' && !cachedData.alertsLoaded) {
-      showLoading('Loading alerts...');
+      showLoading(t('pvtIntel.loadingAlerts'));
       loadAlerts().finally(function() {
         hideLoading();
       });
@@ -1088,20 +1090,20 @@
       renderRecommendations(Array.isArray(recommendations) ? recommendations : []);
       cachedData.alertsLoaded = true;
     } catch (error) {
-      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading recommendations: ' + error.message + '</div>';
-      showToast('Error loading recommendations', 'error');
+      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">' + t('pvtIntel.errLoadRecommendations', { error: error.message }) + '</div>';
+      showToast(t('pvtIntel.errLoadRecommendationsToast'), 'error');
     }
   }
 
   function renderRecommendations(data) {
     var container = document.getElementById('recommendationsContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div style="padding: 20px;">✅ No recommendations at this time</div>';
+      container.innerHTML = '<div style="padding: 20px;">' + t('pvtIntel.noRecommendations') + '</div>';
       return;
     }
     
     var html = '<div class="table-wrapper"><table><thead><tr>';
-    html += '<th>Priority</th><th>Component</th><th>TL</th><th>Criticality</th><th>Issue</th><th>Recommendation</th><th>Failures (90d)</th>';
+    html += '<th>' + t('pvtIntel.colPriority') + '</th><th>' + t('pvtIntel.colComponent') + '</th><th>' + t('pvtIntel.colTl') + '</th><th>' + t('pvtIntel.colCriticality') + '</th><th>' + t('pvtIntel.colIssue') + '</th><th>' + t('pvtIntel.colRecommendation') + '</th><th>' + t('pvtIntel.colFailures90d') + '</th>';
     html += '</tr></thead><tbody>';
     
     for (var i = 0; i < data.length; i++) {
@@ -1117,10 +1119,10 @@
       else if (item.criticality === 'B - IMPORTANT') critClass = 'adk-badge-warning';
       
       html += '<tr>';
-      html += '<td><span class="badge ' + priorityClass + '">' + escapeHtml(item.priority) + '</span></td>';
+      html += '<td><span class="badge ' + priorityClass + '">' + escapeHtml(tStatus(item.priority)) + '</span></td>';
       html += '<td class="col-code">' + escapeHtml(item.componentName) + '</td>';
       html += '<td class="col-code">' + escapeHtml(item.tlId) + '</td>';
-      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td>';
+      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(tStatus(item.criticality || 'C')) + '</span></td>';
       html += '<td>' + escapeHtml(item.issueType) + '</td>';
       html += '<td class="col-suggestion">' + escapeHtml(item.recommendation) + '</td>';
       html += '<td><span class="badge adk-badge-warning">' + item.failures + '</span></td>';
@@ -1182,8 +1184,8 @@
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('PVT_INTEL', 'loadCoverage', error.message).catch(function(e) { console.warn('[PVT] Error log failed:', e); });
       }
-      document.getElementById('coverageContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">❌ Error loading coverage data: ' + error.message + '</div>';
-      showToast('Error loading coverage data', 'error');
+      document.getElementById('coverageContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('pvtIntel.errLoadCoverage', { error: error.message }) + '</div>';
+      showToast(t('pvtIntel.errLoadCoverageToast'), 'error');
     }
   }
   
@@ -1199,7 +1201,7 @@
       if (warningDiv) {
         if (duplicateData.length > 0) {
           warningDiv.style.display = 'flex';
-          document.getElementById('duplicateWarningText').innerHTML = duplicateData.length + ' duplicate activities detected.';
+          document.getElementById('duplicateWarningText').innerHTML = t('pvtIntel.duplicatesDetected', { count: duplicateData.length });
         } else {
           warningDiv.style.display = 'none';
         }
@@ -1208,8 +1210,8 @@
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('PVT_INTEL', 'loadOrphans', error.message).catch(function(e) { console.warn('[PVT] Error log failed:', e); });
       }
-      document.getElementById('orphansContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">❌ Error loading orphan activities: ' + error.message + '</div>';
-      showToast('Error loading orphan activities', 'error');
+      document.getElementById('orphansContent').innerHTML = '<div class="adk-card" style="color: var(--danger); padding: 20px;">' + t('pvtIntel.errLoadOrphans', { error: error.message }) + '</div>';
+      showToast(t('pvtIntel.errLoadOrphansToast'), 'error');
     }
   }
   
@@ -1217,7 +1219,7 @@
   async function refreshAll() {
     await logForesight('PVT', 'OPEN_DASHBOARD', 'User accessed PVT Foresight Dashboard');
     
-    showLoading('Loading PVT data...');
+    showLoading(t('pvtIntel.loadingData'));
     try {
       await loadCoverage();
       
@@ -1237,10 +1239,10 @@
       }
       
       hideLoading();
-      showToast('Data updated successfully', 'success');
+      showToast(t('pvtIntel.dataUpdated'), 'success');
     } catch(err) {
       hideLoading();
-      showToast('Error loading data: ' + err.message, 'error');
+      showToast(t('pvtIntel.errLoadData', { error: err.message }), 'error');
     }
   }
   
@@ -1250,12 +1252,12 @@
   function renderCoverage(data) {
     var container = document.getElementById('coverageContent');
     if (!data || data.length === 0) {
-      container.innerHTML = '<div class="adk-card" style="padding: 20px;">✅ No TLs found</div>';
+      container.innerHTML = '<div class="adk-card" style="padding: 20px;">' + t('pvtIntel.noTlsFound') + '</div>';
       return;
     }
     
     var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Technical Location</th><th>Criticality</th><th>Components</th><th>Strategies</th><th>Coverage</th></tr>';
+    html += '<tr><th>' + t('pvtIntel.colTechLocation') + '</th><th>' + t('pvtIntel.colCriticality') + '</th><th>' + t('pvtIntel.colComponents') + '</th><th>' + t('pvtIntel.colStrategies') + '</th><th>' + t('pvtIntel.colCoverage') + '</th></tr>';
     html += '</thead><tbody>';
     
     for (var i = 0; i < data.length; i++) {
@@ -1271,7 +1273,7 @@
       var displayName = item.tlId + ' - ' + escapeHtml(item.tlName);
       
       html += '<tr><td>' + escapeHtml(displayName) + '</td>';
-      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(item.criticality || 'C') + '</span></td>';
+      html += '<td><span class="badge ' + critClass + '">' + escapeHtml(tStatus(item.criticality || 'C')) + '</span></td>';
       html += '<td>' + item.coveredComponents + '/' + item.totalComponents + '</td>';
       html += '<td>' + item.coveredStrategies + '/' + item.totalStrategies + '</td>';
       html += '<td><div class="progress-container"><div class="progress-fill ' + progressClass + '" style="width: ' + item.percent + '%;">' + item.percent + '%</div></div></td>';
@@ -1285,12 +1287,12 @@
   function renderOrphans(data) {
     var container = document.getElementById('orphansContent');
     if (!data.orphans || data.orphans.length === 0) {
-      container.innerHTML = '<div style="padding: 20px;">✅ No orphan activities found</div>';
+      container.innerHTML = '<div style="padding: 20px;">' + t('pvtIntel.noOrphansFound') + '</div>';
       return;
     }
     
     var html = '<div class="table-wrapper"><table><thead>';
-    html += '<tr><th>Asset ID</th><th>TL</th><th>Strategy ID</th><th>Frequency</th><th>Task</th></tr>';
+    html += '<tr><th>' + t('pvtIntel.colAssetId') + '</th><th>' + t('pvtIntel.colTl') + '</th><th>' + t('pvtIntel.colStrategyId') + '</th><th>' + t('pvtIntel.colFrequency') + '</th><th>' + t('pvtIntel.colTask') + '</th></tr>';
     html += '</thead><tbody>';
     
     var limit = Math.min(data.orphans.length, 50);
@@ -1298,15 +1300,15 @@
       var item = data.orphans[i];
       html += '<tr>';
       html += '<td class="col-code">' + escapeHtml(item.assetId + ' - ' + item.assetName) + '</td>';
-      html += '<td class="col-code">' + escapeHtml(item.tlId || 'Unknown') + '</td>';
+      html += '<td class="col-code">' + escapeHtml(item.tlId || t('pvtIntel.unknownTl')) + '</td>';
       html += '<td><span class="badge adk-badge-primary">' + escapeHtml(item.strategyId) + '</span></td>';
-      html += '<td>' + escapeHtml(item.frequency) + '</td>';
+      html += '<td>' + escapeHtml(tStatus(item.frequency)) + '</td>';
       html += '<td class="col-task">' + escapeHtml(item.task) + '</td>';
       html += '</tr>';
     }
     
     if (data.orphans.length > 50) {
-      html += '<tr><td colspan="5" style="padding: 10px; text-align: center;">... and ' + (data.orphans.length - 50) + ' more</td></tr>';
+      html += '<tr><td colspan="5" style="padding: 10px; text-align: center;">' + t('pvtIntel.andMoreOrphans', { count: data.orphans.length - 50 }) + '</td></tr>';
     }
     
     html += '</tbody></table></div>';
@@ -1320,8 +1322,8 @@
       renderRecommendations(Array.isArray(recommendations) ? recommendations : []);
       cachedData.alertsLoaded = true;
     } catch (error) {
-      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">❌ Error loading recommendations: ' + error.message + '</div>';
-      showToast('Error loading recommendations', 'error');
+      document.getElementById('recommendationsContent').innerHTML = '<div style="padding: 20px; color: var(--danger);">' + t('pvtIntel.errLoadRecommendations', { error: error.message }) + '</div>';
+      showToast(t('pvtIntel.errLoadRecommendationsToast'), 'error');
     }
   }
 
@@ -1336,13 +1338,13 @@
       var coverageContent = document.getElementById('coverageContent').innerHTML;
       var statsContent = document.querySelector('.stats-grid').innerHTML;
       
-      if (!coverageContent || coverageContent.indexOf('No TLs found') !== -1) {
-          showToast('No data to print', 'error');
+      if (!coverageContent || coverageContent.indexOf(t('pvtIntel.noTlsFound')) !== -1) {
+          showToast(t('pvtIntel.noDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1357,16 +1359,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('pvtIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewPVT()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('pvtIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">STRATEGY COVERAGE REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('pvtIntel.coverageReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('pvtIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- Stats -->
               <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">
@@ -1379,7 +1381,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  PVT Foresight - Adkintor EAMS
+                  ${t('pvtIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1402,13 +1404,13 @@
   function printOrphans() {
       var orphansContent = document.getElementById('orphansContent').innerHTML;
       
-      if (!orphansContent || orphansContent.indexOf('No orphan activities found') !== -1) {
-          showToast('No data to print', 'error');
+      if (!orphansContent || orphansContent.indexOf(t('pvtIntel.noOrphansFound')) !== -1) {
+          showToast(t('pvtIntel.noDataToPrint'), 'error');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       
       // Crear vista previa
       var previewContainer = document.createElement('div');
@@ -1423,16 +1425,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('pvtIntel.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewPVT()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('pvtIntel.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">ORPHAN ACTIVITIES REPORT</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('pvtIntel.orphansReportTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('pvtIntel.reportGeneratedLabel')} ${now}</div>
               
               <!-- Tabla -->
               <div style="overflow-x: auto;">
@@ -1440,7 +1442,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  PVT Foresight - Adkintor EAMS
+                  ${t('pvtIntel.reportFooter')}
               </div>
           </div>
       `;
@@ -1486,23 +1488,23 @@
       
       logForesight('PVT', 'VIEW_DUPLICATES', 'User viewed ' + duplicateData.length + ' duplicate activities');
       
-      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; width: 95%;"><div class="modal-header"><span>⚠️ Duplicate Activities (' + duplicateData.length + ')</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">Same task found multiple times:</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>Severity</th><th>Asset ID</th><th>TL</th><th>Task</th><th>Frequency</th><th>Count</th></tr></thead><tbody>';
+      var modalHtml = '<div class="modal-overlay" id="duplicateModal" onclick="closeDuplicatesModal(event)"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1000px; width: 95%;"><div class="modal-header"><span>' + t('pvtIntel.dupModalTitle', { count: duplicateData.length }) + '</span><span class="close-btn" onclick="closeDuplicatesModal()">&times;</span></div><div class="modal-body"><p style="margin-bottom: 16px;">' + t('pvtIntel.dupModalSubtitle') + '</p><div class="table-wrapper"><table style="width: 100%;"><thead><tr><th>' + t('pvtIntel.colSeverity') + '</th><th>' + t('pvtIntel.colAssetId') + '</th><th>' + t('pvtIntel.colTl') + '</th><th>' + t('pvtIntel.colTask') + '</th><th>' + t('pvtIntel.colFrequency') + '</th><th>' + t('pvtIntel.colCount') + '</th></tr></thead><tbody>';
       
       for (var i = 0; i < duplicateData.length; i++) {
           var d = duplicateData[i];
           
           // Determinar color de fondo según severidad
           var severityLabel = d.severity === '🔴' 
-              ? '<span style="color: #ef4444; font-weight: bold;">🔴 Duplicate</span>' 
-              : '<span style="color: #f59e0b; font-weight: bold;">🟡 Redundant</span>';
+              ? '<span style="color: #ef4444; font-weight: bold;">' + t('pvtIntel.sevDuplicate') + '</span>' 
+              : '<span style="color: #f59e0b; font-weight: bold;">' + t('pvtIntel.sevRedundant') + '</span>';
           
           // ✅ Ahora frequency es un string simple
-          var freqDisplay = d.frequency || '-';
+          var freqDisplay = d.frequency ? tStatus(d.frequency) : '-';
           
           modalHtml += '<tr>' +
               '<td>' + severityLabel + '</td>' +
               '<td class="col-code">' + escapeHtml(d.assetId) + '</td>' +
-              '<td class="col-code">' + escapeHtml(d.tlId || 'Unknown') + '</td>' +
+              '<td class="col-code">' + escapeHtml(d.tlId || t('pvtIntel.unknownTl')) + '</td>' +
               '<td class="col-task">' + escapeHtml(d.task) + '</td>' +
               '<td><span class="badge adk-badge-primary">' + escapeHtml(freqDisplay) + '</span></td>' +
               '<td><span class="badge adk-badge-warning">' + d.count + 'x</span></td>' +
@@ -1513,11 +1515,11 @@
       
       // Agregar leyenda de colores (simplificada)
       modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.05); border-radius: 8px; border: 1px solid #334155; display: flex; gap: 20px; flex-wrap: wrap;">';
-      modalHtml += '<div><span style="color: #ef4444;">🔴</span> <strong>Duplicate:</strong> Same task, same asset, same frequency</div>';
-      modalHtml += '<div><span style="color: #f59e0b;">🟡</span> <strong>Redundant:</strong> Same task, same asset, different frequencies or strategies</div>';
+      modalHtml += '<div><span style="color: #ef4444;">🔴</span> ' + t('pvtIntel.legendDuplicate') + '</div>';
+      modalHtml += '<div><span style="color: #f59e0b;">🟡</span> ' + t('pvtIntel.legendRedundant') + '</div>';
       modalHtml += '</div>';
       
-      modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">💡 <strong>Suggestion:</strong> Review and remove duplicate/redundant tasks. Keep only one version.</div>';
+      modalHtml += '<div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px;">' + t('pvtIntel.dupSuggestion') + '</div>';
       
       modalHtml += '</div></div></div>';
       
@@ -1547,12 +1549,12 @@
   // ============================================
   async function init() {
       loadUser();
-      showLoading('Loading PVT Foresight...');
+      showLoading(t('pvtIntel.loadingModule'));
       loadApiUrl();
       
       if (!EAMS_API_URL) {
           hideLoading();
-          showToast('API URL not configured. Please login.', 'error');
+          showToast(t('common.apiNotConfigured'), 'error');
           return;
       }
       
@@ -1615,7 +1617,7 @@
           
       } catch(err) {
           hideLoading();
-          showToast('Error loading data: ' + err.message, 'error');
+          showToast(t('pvtIntel.errLoadData', { error: err.message }), 'error');
       }
   }
   
