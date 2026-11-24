@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Layout - ADKINTOR EAMS</title>
+    <title data-i18n="plantLayout.pageTitle">Plant Layout - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/app/css/print.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -396,7 +398,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading plant layout...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="plantLayout.loadingLayout">Loading plant layout...</span>
 </div>
 
 <!-- TOAST -->
@@ -408,27 +410,27 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Plant Layout</span>
+            <span class="module-title" data-i18n="plantLayout.title">Plant Layout</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PLANT LAYOUT</span>
+        <span data-i18n="common.home">Home</span> &gt; <span class="current" data-i18n="plantLayout.breadcrumb">PLANT LAYOUT</span>
     </div>
     
     <!-- CUERPO -->
     <div class="module-body">
         <!-- Layout Viewer -->
         <div class="layout-header">
-            <h2><i class="fas fa-draw-polygon"></i> PLANT LAYOUT</h2>
+            <h2><i class="fas fa-draw-polygon"></i> <span data-i18n="plantLayout.breadcrumb">PLANT LAYOUT</span></h2>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button onclick="printReport()" style="background: white; color: #004a99; border: none; padding: 4px 16px; border-radius: 20px; font-weight: 600; font-size: 12px; cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
-                    <i class="fas fa-print"></i> Print
+                    <i class="fas fa-print"></i> <span data-i18n="plantLayout.btnPrint">Print</span>
                 </button>
                 <div class="zoom-controls">
                     <button id="zoomOutBtn">−</button>
@@ -452,7 +454,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -531,7 +533,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -578,7 +580,7 @@
             const hasPermission = await callApi('hasPermission', [modalName, userRole]);
             
             if (!hasPermission) {
-                showToast('⛔ You do not have permission to view Plant Layout.', 'error');
+                showToast(t('plantLayout.noPermission'), 'error');
                 setTimeout(function() {
                     window.parent.postMessage('closeIframe', '*');
                 }, 2000);
@@ -586,7 +588,7 @@
             }
             return true;
         } catch (e) {
-            showToast('Error validating permissions: ' + e.message, 'error');
+            showToast(t('plantLayout.errValidatingPerms', { error: e.message }), 'error');
             return false;
         }
     }
@@ -598,13 +600,13 @@
     // FUNCIÓN DE IMPRESIÓN CON VISTA PREVIA
     // ============================================
     function printReport() {
-        const title = 'Plant Layout';
+        const title = t('plantLayout.title');
         const mode = 'eams';
         
         // Obtener la imagen actual
         var img = document.getElementById('plantImage');
         if (!img || !img.src) {
-            showToast('No image to print', 'error');
+            showToast(t('plantLayout.noImageToPrint'), 'error');
             return;
         }
         
@@ -639,18 +641,18 @@
                 <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                     <div style="display:flex; gap:10px;">
                         <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-times"></i> CLOSE
+                            <i class="fas fa-times"></i> ${t('common.close')}
                         </button>
                         <button class="btn-outline" onclick="printPreviewPlant('portrait')" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-print"></i> PRINT PORTRAIT
+                            <i class="fas fa-print"></i> ${t('plantLayout.printPortrait')}
                         </button>
                         <button class="btn-outline" onclick="printPreviewPlant('landscape')" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <i class="fas fa-print"></i> PRINT LANDSCAPE
+                            <i class="fas fa-print"></i> ${t('plantLayout.printLandscape')}
                         </button>
                     </div>
                 </div>
                 
-                <h1 style="font-size: 20px; margin-bottom: 16px; color: #1a1a2e;">PLANT LAYOUT</h1>
+                <h1 style="font-size: 20px; margin-bottom: 16px; color: #1a1a2e;">${t('plantLayout.breadcrumb')}</h1>
                 
                 <!-- Imagen -->
                 <div style="display: flex; justify-content: center; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; min-height: 400px;">
@@ -658,7 +660,7 @@
                 </div>
                 
                 <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                    Generated: ${new Date().toLocaleString()} | EAMS Plant Layout System
+                    ${t('plantLayout.generatedLabel')}: ${new Date().toLocaleString(I18n.getLocale())} | ${t('plantLayout.reportFooter')}
                 </div>
             </div>
         `;
@@ -715,21 +717,21 @@
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('plantLayout.userFallback');
                 // console.log('API URL loaded:', EAMS_API_URL);  // COMENTADO
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
             // console.error('No session found');  // COMENTADO
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
     
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -744,7 +746,7 @@
         const result = await response.json();
         
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         
         return result.data;
@@ -813,7 +815,7 @@
     // ============================================
     
     async function loadImage() {
-        showLoading('Loading plant layout...');
+        showLoading(t('plantLayout.loadingLayout'));
         
         try {
             const url = await callApi('getPlantLayoutImageUrlForFrontend', []);
@@ -827,7 +829,7 @@
             
             img.onerror = function() {
                 hideLoading();
-                showToast('Could not load plant layout image', 'error');
+                showToast(t('plantLayout.couldNotLoadImage'), 'error');
                 img.src = 'https://i.imgur.com/aQol7vU.png';
                 img.style.opacity = '1';
             };
@@ -847,7 +849,7 @@
             
         } catch (error) {
             hideLoading();
-            showToast('Error loading image: ' + error.message, 'error');
+            showToast(t('plantLayout.errLoadingImage', { error: error.message }), 'error');
             const img = document.getElementById('plantImage');
             img.src = 'https://i.imgur.com/aQol7vU.png';
             img.style.opacity = '1';
@@ -910,7 +912,7 @@
         if (EAMS_API_URL) {
             loadImage();
         } else {
-            showToast('API URL not configured. Please log in first.', 'error');
+            showToast(t('plantLayout.apiNotConfiguredFirst'), 'error');
         }
     }
     
