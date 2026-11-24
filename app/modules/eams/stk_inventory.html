@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Inventory Hub - ADKINTOR EAMS</title>
+    <title data-i18n="stk.inventory.pageTitle">Inventory Hub - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -719,7 +721,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Inventory Hub...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="stk.inventory.loadingHub">Loading Inventory Hub...</span>
 </div>
 
 <!-- TOAST -->
@@ -731,17 +733,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Inventory Hub</span>
+            <span class="module-title" data-i18n="stk.inventory.title">Inventory Hub</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>INVENTORY</span> &gt; <span class="current">Inventory Hub</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="stk.breadcrumb">INVENTORY</span> &gt; <span class="current" data-i18n="stk.inventory.title">Inventory Hub</span>
     </div>
     
     <!-- CUERPO -->
@@ -750,39 +752,39 @@
         <div class="kpi-container">
             <div class="kpi-card">
                 <div class="kpi-value" id="totalSKUs">--</div>
-                <div class="kpi-label">Total SKUs</div>
+                <div class="kpi-label" data-i18n="stk.inventory.kpiTotalSkus">Total SKUs</div>
             </div>
             <div class="kpi-card low">
                 <div class="kpi-value" id="lowStockCount">--</div>
-                <div class="kpi-label">Low Stock (Below Min)</div>
+                <div class="kpi-label" data-i18n="stk.inventory.kpiLowStock">Low Stock (Below Min)</div>
             </div>
             <div class="kpi-card critical">
                 <div class="kpi-value" id="outOfStockCount">--</div>
-                <div class="kpi-label">Out of Stock</div>
+                <div class="kpi-label" data-i18n="stk.inventory.kpiOutOfStock">Out of Stock</div>
             </div>
         </div>
 
         <!-- FILTERS + ACTIONS -->
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description, Part Number..." onkeyup="filterAndRender()">
-            <select id="categoryFilter" onchange="filterAndRender()"><option value="">All Categories</option></select>
-            <select id="locationFilter" onchange="filterAndRender()"><option value="">All Locations</option></select>
-            <button class="btn-secondary" onclick="clearFilters()"><i class="fas fa-eraser"></i> Clear</button>
-            <button class="btn-success" onclick="showAllCatalog()"><i class="fas fa-list"></i> Show All</button>
-            <button class="btn-primary" onclick="openNewSkuModal()"><i class="fas fa-plus-circle"></i> NEW SKU</button>
+            <input type="text" id="searchInput" placeholder="🔍 Search by SKU, Description, Part Number..." data-i18n-placeholder="stk.inventory.searchPlaceholder" onkeyup="filterAndRender()">
+            <select id="categoryFilter" onchange="filterAndRender()"><option value="" data-i18n="stk.inventory.allCategories">All Categories</option></select>
+            <select id="locationFilter" onchange="filterAndRender()"><option value="" data-i18n="stk.inventory.allLocations">All Locations</option></select>
+            <button class="btn-secondary" onclick="clearFilters()" data-i18n-html="stk.inventory.btnClear"><i class="fas fa-eraser"></i> Clear</button>
+            <button class="btn-success" onclick="showAllCatalog()" data-i18n-html="stk.inventory.btnShowAll"><i class="fas fa-list"></i> Show All</button>
+            <button class="btn-primary" onclick="openNewSkuModal()" data-i18n-html="stk.inventory.btnNewSku"><i class="fas fa-plus-circle"></i> NEW SKU</button>
         </div>
 
         <!-- TABLE -->
         <div class="datagrid-container">
-            <div class="datagrid-header"><strong id="resultCount">0</strong> items</div>
+            <div class="datagrid-header"><strong id="resultCount">0</strong> <span data-i18n="stk.inventory.itemsWord">items</span></div>
             <div style="overflow-x: auto; max-height: 420px;" class="custom-scroll">
                 <table class="datagrid-table" id="inventoryTable">
                     <thead>
                         <tr>
-                            <th>SKU</th><th>Description</th><th>Category</th><th>Current Stock</th><th>Min Stock</th><th>Location</th><th>Unit Price</th><th>ACTIONS</th>
+                            <th data-i18n="stk.inventory.colSku">SKU</th><th data-i18n="stk.inventory.colDescription">Description</th><th data-i18n="stk.inventory.colCategory">Category</th><th data-i18n="stk.inventory.colCurrentStock">Current Stock</th><th data-i18n="stk.inventory.colMinStock">Min Stock</th><th data-i18n="stk.inventory.colLocation">Location</th><th data-i18n="stk.inventory.colUnitPrice">Unit Price</th><th data-i18n="stk.inventory.colActions">ACTIONS</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody"><tr><td colspan="8" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-boxes fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading inventory data...</td></tr></tbody>
+                    <tbody id="tableBody"><tr><td colspan="8" style="text-align:center; padding:40px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="stk.inventory.loadingTable"><i class="fas fa-boxes fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> Loading inventory data...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -792,7 +794,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -803,7 +805,7 @@
 <div id="skuModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4 id="skuModalTitle">Create New SKU</h4>
+            <h4 id="skuModalTitle" data-i18n="stk.inventory.modalCreateSkuTitle">Create New SKU</h4>
             <button class="btn-close-modal" onclick="closeSkuModal()">&times;</button>
         </div>
         <div class="modal-body">
@@ -811,63 +813,63 @@
                 <input type="hidden" id="editSkuId">
                 <div class="form-grid">
                     <div class="full-width">
-                        <label class="field-label">SKU</label>
-                        <input type="text" id="skuDisplay" class="readonly-field" readonly placeholder="Will be auto-generated">
+                        <label class="field-label" data-i18n="stk.inventory.lblSku">SKU</label>
+                        <input type="text" id="skuDisplay" class="readonly-field" readonly placeholder="Will be auto-generated" data-i18n-placeholder="stk.inventory.phSkuAuto">
                     </div>
                     <div class="full-width">
-                        <label class="field-label">Description *</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblDescriptionReq">Description *</label>
                         <input type="text" id="skuDescription" required autocomplete="off">
                         <div id="skuDescription_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
-                        <label class="field-label">Category</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblCategory">Category</label>
                         <select id="skuCategory"></select>
                     </div>
                     <div>
-                        <label class="field-label">Storage Location</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblStorageLocation">Storage Location</label>
                         <select id="skuLocation"></select>
                     </div>
                     <div class="full-width relative">
-                        <label class="field-label">Asset Linkage (Technical Location)</label>
-                        <input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)" autocomplete="off">
+                        <label class="field-label" data-i18n="stk.inventory.lblAssetLinkage">Asset Linkage (Technical Location)</label>
+                        <input type="text" id="skuAssetId" placeholder="Type TL ID or name (min 3 chars)" data-i18n-placeholder="stk.inventory.phAssetSearch" autocomplete="off">
                         <div id="assetSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     </div>
                     <div>
-                        <label class="field-label">Manufacturer</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblManufacturer">Manufacturer</label>
                         <input type="text" id="skuManufacturer">
                         <div id="skuManufacturer_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
-                        <label class="field-label">Model / Part #</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblModelPart">Model / Part #</label>
                         <input type="text" id="skuModel">
                         <div id="skuModel_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                     <div>
-                        <label class="field-label">Unit Price</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblUnitPrice">Unit Price</label>
                         <input type="number" id="skuPrice" step="0.01">
                     </div>
                     <div>
-                        <label class="field-label">Currency</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblCurrency">Currency</label>
                         <select id="skuCurrency"></select>
                     </div>
                     <div>
-                        <label class="field-label">Unit of Measure</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblUnitMeasure">Unit of Measure</label>
                         <select id="skuUnit"></select>
                     </div>
                     <div>
-                        <label class="field-label">Min Stock</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblMinStock">Min Stock</label>
                         <input type="number" id="skuMinStock" step="1">
                     </div>
                     <div class="full-width relative">
-                        <label class="field-label">Vendor Name</label>
-                        <input type="text" id="skuVendor" placeholder="Type vendor name (min 3 chars)" autocomplete="off">
+                        <label class="field-label" data-i18n="stk.inventory.lblVendorName">Vendor Name</label>
+                        <input type="text" id="skuVendor" placeholder="Type vendor name (min 3 chars)" data-i18n-placeholder="stk.inventory.phVendorSearch" autocomplete="off">
                         <div id="vendorSuggestions" style="position:absolute; background:white; border:1px solid #cbd5e1; border-radius:6px; max-height:150px; overflow-y:auto; z-index:10060; width:100%; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                         <div id="skuVendor_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="closeSkuModal()"><i class="fas fa-times"></i> CANCEL</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> SAVE SKU</button>
+                    <button type="button" class="btn-secondary" onclick="closeSkuModal()" data-i18n-html="stk.inventory.btnCancel"><i class="fas fa-times"></i> CANCEL</button>
+                    <button type="submit" class="btn-primary" data-i18n-html="stk.inventory.btnSaveSku"><i class="fas fa-save"></i> SAVE SKU</button>
                 </div>
             </form>
         </div>
@@ -878,32 +880,32 @@
 <div id="adjustModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4>Adjust Stock</h4>
+            <h4 data-i18n="stk.inventory.modalAdjustTitle">Adjust Stock</h4>
             <button class="btn-close-modal" onclick="closeAdjustModal()">&times;</button>
         </div>
         <div class="modal-body">
             <form id="adjustForm" onsubmit="applyStockAdjustment(event)">
                 <div class="form-grid">
                     <div class="full-width">
-                        <label class="field-label">SKU</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblSku">SKU</label>
                         <input type="text" id="adjustSku" class="readonly-field" readonly>
                     </div>
                     <div class="full-width">
-                        <label class="field-label">Current Stock</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblCurrentStock">Current Stock</label>
                         <input type="text" id="adjustCurrentStock" class="readonly-field" readonly>
                     </div>
                     <div>
-                        <label class="field-label">Adjustment Quantity *</label>
-                        <input type="number" id="adjustQty" step="1" placeholder="+ for add, - for subtract" required>
+                        <label class="field-label" data-i18n="stk.inventory.lblAdjustQtyReq">Adjustment Quantity *</label>
+                        <input type="number" id="adjustQty" step="1" placeholder="+ for add, - for subtract" data-i18n-placeholder="stk.inventory.phAdjustQty" required>
                     </div>
                     <div>
-                        <label class="field-label">Reason *</label>
+                        <label class="field-label" data-i18n="stk.inventory.lblReasonReq">Reason *</label>
                         <select id="adjustReason" required></select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="closeAdjustModal()"><i class="fas fa-times"></i> CANCEL</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-check"></i> APPLY ADJUSTMENT</button>
+                    <button type="button" class="btn-secondary" onclick="closeAdjustModal()" data-i18n-html="stk.inventory.btnCancel"><i class="fas fa-times"></i> CANCEL</button>
+                    <button type="submit" class="btn-primary" data-i18n-html="stk.inventory.btnApplyAdjust"><i class="fas fa-check"></i> APPLY ADJUSTMENT</button>
                 </div>
             </form>
         </div>
@@ -914,12 +916,12 @@
 <div id="historyModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h4 id="historyModalTitle">Transaction History</h4>
+            <h4 id="historyModalTitle" data-i18n="stk.inventory.historyModalTitle">Transaction History</h4>
             <button class="btn-close-modal" onclick="closeHistoryModal()">&times;</button>
         </div>
-        <div class="modal-body" id="historyContent"><p style="text-align:center; padding:20px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</p></div>
+        <div class="modal-body" id="historyContent"><p style="text-align:center; padding:20px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="common.loading">Loading...</p></div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeHistoryModal()"><i class="fas fa-times"></i> CLOSE</button>
+            <button class="btn-secondary" onclick="closeHistoryModal()" data-i18n-html="stk.inventory.btnClose"><i class="fas fa-times"></i> CLOSE</button>
         </div>
     </div>
 </div>
@@ -978,7 +980,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -1008,21 +1010,21 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('stk.common.userFallback');
             } catch(e) { /* console.error('Session parse error', e); */ }  // COMENTADO
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
-        if (!EAMS_API_URL) throw new Error('API URL not configured. Please login.');
+        if (!EAMS_API_URL) throw new Error(t('common.apiNotConfigured'));
         const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ targetUrl: EAMS_API_URL, payload: { action: action, args: args } })
         });
         const result = await response.json();
-        if (!result.success) throw new Error(result.error || 'API call failed');
+        if (!result.success) throw new Error(result.error || t('stk.common.apiCallFailed'));
         return result.data;
     }
 
@@ -1045,7 +1047,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -1151,10 +1153,10 @@
             var locSelect = document.getElementById('locationFilter');
             var skuCatSelect = document.getElementById('skuCategory');
             var skuLocSelect = document.getElementById('skuLocation');
-            catSelect.innerHTML = '<option value="">All Categories</option>';
-            locSelect.innerHTML = '<option value="">All Locations</option>';
-            skuCatSelect.innerHTML = '<option value="">-- Select --</option>';
-            skuLocSelect.innerHTML = '<option value="">-- Select --</option>';
+            catSelect.innerHTML = '<option value="">' + t('stk.inventory.allCategories') + '</option>';
+            locSelect.innerHTML = '<option value="">' + t('stk.inventory.allLocations') + '</option>';
+            skuCatSelect.innerHTML = '<option value="">' + t('common.selectPlaceholder') + '</option>';
+            skuLocSelect.innerHTML = '<option value="">' + t('common.selectPlaceholder') + '</option>';
             for (var i = 0; i < categoriesList.length; i++) {
                 var cat = categoriesList[i];
                 catSelect.innerHTML += '<option value="' + cat + '">' + cat + '</option>';
@@ -1169,7 +1171,7 @@
             // ✅ Cargar Locations desde SETUP_STK col D (ya están en locationsList)
             // No hace falta cambiar nada porque locationsList ya viene de SETUP_STK
             
-        } catch(e) { showToast('Error loading filters', 'error'); }
+        } catch(e) { showToast(t('stk.inventory.errLoadFilters'), 'error'); }
     }
 
     async function loadAdjustmentReasons() {
@@ -1179,19 +1181,19 @@
             // Las razones de ajuste vienen en adjustmentReasons desde el backend
             adjustmentReasons = filterData.adjustmentReasons || [];
             var reasonSelect = document.getElementById('adjustReason');
-            reasonSelect.innerHTML = '<option value="">-- Select a reason --</option>';
+            reasonSelect.innerHTML = '<option value="">' + t('stk.inventory.selectReason') + '</option>';
             for (var i = 0; i < adjustmentReasons.length; i++) {
                 reasonSelect.innerHTML += '<option value="' + adjustmentReasons[i] + '">' + adjustmentReasons[i] + '</option>';
             }
             
             // ✅ Si no hay razones, mostrar mensaje
             if (adjustmentReasons.length === 0) {
-                reasonSelect.innerHTML = '<option value="">No reasons configured in SETUP_STK</option>';
+                reasonSelect.innerHTML = '<option value="">' + t('stk.inventory.noReasonsConfigured') + '</option>';
             }
         } catch(e) { 
             //console.warn('Error loading adjustment reasons:', e);
             var reasonSelect = document.getElementById('adjustReason');
-            reasonSelect.innerHTML = '<option value="">Error loading reasons</option>';
+            reasonSelect.innerHTML = '<option value="">' + t('stk.inventory.errLoadReasons') + '</option>';
         }
     }
 
@@ -1199,7 +1201,7 @@
         try {
             unitsList = await callApi('STK_getSetupUnits', []);
             var unitSelect = document.getElementById('skuUnit');
-            unitSelect.innerHTML = '<option value="">Select Unit...</option>';
+            unitSelect.innerHTML = '<option value="">' + t('stk.inventory.selectUnit') + '</option>';
             for (var i = 0; i < unitsList.length; i++) {
                 unitSelect.innerHTML += '<option value="' + unitsList[i] + '">' + unitsList[i] + '</option>';
             }
@@ -1210,7 +1212,7 @@
         try {
             currenciesList = await callApi('STK_getSetupCurrencies', []);
             var currencySelect = document.getElementById('skuCurrency');
-            currencySelect.innerHTML = '<option value="">Select Currency...</option>';
+            currencySelect.innerHTML = '<option value="">' + t('stk.inventory.selectCurrency') + '</option>';
             for (var i = 0; i < currenciesList.length; i++) {
                 currencySelect.innerHTML += '<option value="' + currenciesList[i] + '">' + currenciesList[i] + '</option>';
             }
@@ -1220,23 +1222,23 @@
     async function refreshCatalog(showAll) {
         if (showAll === undefined) showAll = false;
         var action = showAll ? 'STK_getFullCatalogDynamic' : 'STK_getCatalogCurrentMonth';
-        showLoading('Loading inventory...');
+        showLoading(t('stk.inventory.loadingInventory'));
         try {
             var response = await callApi(action, []);
             if (response.mode === 'empty' && response.message) {
                 catalogData = [];
                 renderTable([]);
                 document.getElementById('resultCount').innerText = '0';
-                showToast(response.message + ' Click "Show All"', 'warning');
+                showToast(response.message + ' ' + t('stk.inventory.clickShowAllHint'), 'warning');
                 hideLoading(); return;
             }
             catalogData = response.data;
-            if (response.mode === 'month') showToast('📊 Showing ' + response.count + ' SKUs with activity this month', 'info');
+            if (response.mode === 'month') showToast(t('stk.inventory.showingMonthSkus', { count: response.count }), 'info');
             filterAndRender();
             hideLoading();
         } catch(err) {
             hideLoading();
-            showToast('Failed to load catalog: ' + err.message, 'error');
+            showToast(t('stk.inventory.errLoadCatalog', { error: err.message }), 'error');
         }
     }
 
@@ -1265,7 +1267,7 @@
     function renderTable(data) {
         var tbody = document.getElementById('tableBody');
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> No items found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-inbox fa-2x" style="opacity:0.3; display:block; margin-bottom:8px;"></i> ' + t('stk.inventory.noItemsFound') + '</td></tr>';
             return;
         }
         var html = '';
@@ -1284,12 +1286,12 @@
                 '<td>' + escapeHtml(item.Category || '') + '</td>' +
                 '<td><span class="stock-badge ' + stockClass + '">' + stockIcon + ' ' + stock + ' ' + (item.Unit || '') + '</span></td>' +
                 '<td>' + min + '</td>' +
-                '<td>' + escapeHtml(item['Storage Location'] || 'N/A') + '</td>' +
-                '<td>' + (parseFloat(item['Unit Price']) || 0).toLocaleString() + ' ' + (item.Currency || 'CAD') + '</td>' +
+                '<td>' + escapeHtml(item['Storage Location'] || t('stk.common.na')) + '</td>' +
+                '<td>' + (parseFloat(item['Unit Price']) || 0).toLocaleString(I18n.getLocale()) + ' ' + (item.Currency || 'CAD') + '</td>' +
                 '<td>' +
-                    '<button class="btn-edit" onclick="openEditSkuModal(\'' + sku + '\')"><i class="fas fa-edit"></i> EDIT</button>' +
-                    '<button class="btn-adjust" onclick="openAdjustStockModal(\'' + sku + '\')"><i class="fas fa-boxes"></i> ADJUST</button>' +
-                    '<button class="btn-history" onclick="showSkuHistory(\'' + sku + '\')"><i class="fas fa-history"></i> HISTORY</button>' +
+                    '<button class="btn-edit" onclick="openEditSkuModal(\'' + sku + '\')"><i class="fas fa-edit"></i> ' + t('common.edit') + '</button>' +
+                    '<button class="btn-adjust" onclick="openAdjustStockModal(\'' + sku + '\')"><i class="fas fa-boxes"></i> ' + t('stk.inventory.btnAdjust') + '</button>' +
+                    '<button class="btn-history" onclick="showSkuHistory(\'' + sku + '\')"><i class="fas fa-history"></i> ' + t('stk.inventory.btnHistory') + '</button>' +
                 '</td>' +
             '</tr>';
         }
@@ -1311,9 +1313,9 @@
     // SKU MODAL
     // ============================================
     function openNewSkuModal() {
-        document.getElementById('skuModalTitle').innerText = '📦 CREATE NEW SKU';
+        document.getElementById('skuModalTitle').innerText = t('stk.inventory.modalNewSkuTitle');
         document.getElementById('editSkuId').value = '';
-        document.getElementById('skuDisplay').value = 'NEW SKU (auto-generated)';
+        document.getElementById('skuDisplay').value = t('stk.inventory.skuNewAuto');
         document.getElementById('skuDescription').value = '';
         document.getElementById('skuCategory').value = '';
         document.getElementById('skuLocation').value = '';
@@ -1341,7 +1343,7 @@
                 break;
             }
         }
-        if (!item) { showToast('SKU not found', 'error'); return; }
+        if (!item) { showToast(t('stk.inventory.skuNotFound'), 'error'); return; }
         
         window._originalSkuData = JSON.parse(JSON.stringify({
             description: item.Description,
@@ -1351,7 +1353,7 @@
             unitPrice: item['Unit Price']
         }));
         
-        document.getElementById('skuModalTitle').innerText = '✏️ EDIT SKU: ' + sku;
+        document.getElementById('skuModalTitle').innerText = t('stk.inventory.modalEditSkuTitle', { sku: sku });
         document.getElementById('editSkuId').value = sku;
         document.getElementById('skuDisplay').value = sku;
         document.getElementById('skuDescription').value = item.Description || '';
@@ -1415,8 +1417,8 @@
             vendorName: document.getElementById('skuVendor').value,
             userEmail: userEmail  // ✅ FORZADO
         };
-        if (!payload.description) { showToast('Description required', 'error'); return; }
-        showLoading(sku ? 'Updating SKU...' : 'Creating SKU...');
+        if (!payload.description) { showToast(t('stk.inventory.descRequired'), 'error'); return; }
+        showLoading(sku ? t('stk.inventory.updatingSku') : t('stk.inventory.creatingSku'));
         try {
             var res = await callApi('STK_updatePartMasterData', [payload]);
             
@@ -1444,7 +1446,7 @@
             refreshCatalog(false);
             loadKPI();
         } catch(err) { 
-            showToast('Error: ' + err.message, 'error');
+            showToast(t('common.error') + ': ' + err.message, 'error');
             if (window.Logger && typeof window.Logger.error === 'function') {
                 window.Logger.error('STK', 'saveSku', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
             }
@@ -1472,7 +1474,7 @@
                 break;
             }
         }
-        if (!item) { showToast('SKU not found', 'error'); return; }
+        if (!item) { showToast(t('stk.inventory.skuNotFound'), 'error'); return; }
         document.getElementById('adjustSku').value = sku;
         document.getElementById('adjustCurrentStock').value = parseFloat(item['Current Stock']) || 0;
         document.getElementById('adjustQty').value = '';
@@ -1503,9 +1505,9 @@
         var sku = document.getElementById('adjustSku').value;
         var qtyChange = parseFloat(document.getElementById('adjustQty').value) || 0;
         var reason = document.getElementById('adjustReason').value;
-        if (qtyChange === 0) { showToast('Quantity must be non-zero', 'error'); return; }
-        if (!reason && adjustmentReasons.length) { showToast('Select a reason', 'error'); return; }
-        showLoading('Adjusting stock...');
+        if (qtyChange === 0) { showToast(t('stk.inventory.qtyNonZero'), 'error'); return; }
+        if (!reason && adjustmentReasons.length) { showToast(t('stk.inventory.selectReasonErr'), 'error'); return; }
+        showLoading(t('stk.inventory.adjustingStock'));
         try {
             var res = await callApi('STK_adjustStock', [sku, qtyChange, reason, userEmail]);
             var oldStock = parseFloat(document.getElementById('adjustCurrentStock').value) || 0;
@@ -1517,7 +1519,7 @@
             refreshCatalog(false);
             loadKPI();
         } catch(err) { 
-            showToast('Error: ' + err.message, 'error');
+            showToast(t('common.error') + ': ' + err.message, 'error');
             if (window.Logger && typeof window.Logger.error === 'function') {
                 window.Logger.error('STK', 'applyStockAdjustment', err.message).catch(function(e) { /*console.warn('[STK] Error log failed:', e);*/ });
             }
@@ -1530,13 +1532,13 @@
     // HISTORY
     // ============================================
     async function showSkuHistory(sku) {
-        showLoading('Loading history...');
+        showLoading(t('stk.inventory.loadingHistory'));
         try {
             var history = await callApi('STK_VIEWER_getSkuHistory', [sku]);
             var container = document.getElementById('historyContent');
-            document.getElementById('historyModalTitle').innerText = 'Transaction History: ' + sku;
+            document.getElementById('historyModalTitle').innerText = t('stk.inventory.historyTitleWithSku', { sku: sku });
             if (history.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:20px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No transactions found.</p>';
+                container.innerHTML = '<p style="text-align:center; padding:20px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('stk.inventory.noTransactions') + '</p>';
             } else {
                 var html = '';
                 for (var i = 0; i < history.length; i++) {
@@ -1548,10 +1550,10 @@
                     else if (h.type === 'NEW_SKU_INITIALIZED') typeClass += ' NEW_SKU_INITIALIZED';
                     var qty = parseFloat(h.qty) || 0;
                     html += '<div class="history-item">' +
-                        '<div class="history-date">📅 ' + h.date + '</div>' +
-                        '<div><span class="' + typeClass + '">' + h.type + '</span> <span style="font-weight:600;">Qty: ' + (qty > 0 ? '+' + qty : qty) + '</span></div>' +
-                        (h.poNumber && h.poNumber !== 'N/A' ? '<div>📄 PO: ' + escapeHtml(h.poNumber) + '</div>' : '') +
-                        (h.woNumber && h.woNumber !== 'N/A' ? '<div>🔧 WO: ' + escapeHtml(h.woNumber) + '</div>' : '') +
+                        '<div class="history-date">📅 ' + I18n.formatDate(h.date) + '</div>' +
+                        '<div><span class="' + typeClass + '">' + escapeHtml(tStatus(h.type)) + '</span> <span style="font-weight:600;">' + t('stk.inventory.qtyPrefix') + ' ' + (qty > 0 ? '+' + qty : qty) + '</span></div>' +
+                        (h.poNumber && h.poNumber !== 'N/A' ? '<div>📄 ' + t('stk.inventory.poPrefix') + ' ' + escapeHtml(h.poNumber) + '</div>' : '') +
+                        (h.woNumber && h.woNumber !== 'N/A' ? '<div>🔧 ' + t('stk.inventory.woPrefix') + ' ' + escapeHtml(h.woNumber) + '</div>' : '') +
                         '<div>👤 ' + escapeHtml(h.responsible) + '</div>' +
                         '<div>💬 ' + escapeHtml(h.comments) + '</div>' +
                     '</div>';
@@ -1562,7 +1564,7 @@
             hideLoading();
         } catch(err) {
             hideLoading();
-            showToast('Failed to load history', 'error');
+            showToast(t('stk.inventory.errLoadHistory'), 'error');
         }
     }
 
@@ -1610,7 +1612,7 @@
                     suggestionsDiv.innerHTML = html;
                     suggestionsDiv.style.display = 'block';
                 } else {
-                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No vendors found</div>';
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('stk.inventory.noVendorsFound') + '</div>';
                     suggestionsDiv.style.display = 'block';
                 }
             } else {
@@ -1651,7 +1653,7 @@
             if (term.length >= 3) {
                 // Mostrar sugerencias
                 suggestionsDiv.style.display = 'block';
-                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">Searching...</div>';
+                suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('stk.inventory.searching') + '</div>';
                 
                 // Llamar a la API para buscar Technical Locations
                 callApi('STK_searchTechnicalLocations', [term]).then(function(assets) {
@@ -1664,12 +1666,12 @@
                         suggestionsDiv.innerHTML = html;
                         suggestionsDiv.style.display = 'block';
                     } else {
-                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">No Technical Locations found</div>';
+                        suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#94a3b8; font-size:0.7rem;">' + t('stk.inventory.noTlFound') + '</div>';
                         suggestionsDiv.style.display = 'block';
                     }
                 }).catch(function(err) {
                     // console.warn('[STK] Error searching assets:', err);  // COMENTADO
-                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">Error searching</div>';
+                    suggestionsDiv.innerHTML = '<div style="padding:6px 10px; color:#dc3545; font-size:0.7rem;">' + t('stk.inventory.errSearching') + '</div>';
                     suggestionsDiv.style.display = 'block';
                 });
             } else {
@@ -1719,18 +1721,18 @@
                 currentUser = session.email;
                 currentUserEmail = session.email;  // ✅ SINCRONIZAR AMBAS VARIABLES
             } else {
-                document.getElementById('userDisplay').innerText = 'No Session';
+                document.getElementById('userDisplay').innerText = t('stk.common.noSession');
                 currentUser = 'system';
                 currentUserEmail = 'system';
             }
         } catch(e) {
-            document.getElementById('userDisplay').innerText = 'Error';
+            document.getElementById('userDisplay').innerText = t('common.error');
             currentUser = 'system';
             currentUserEmail = 'system';
         }
         
         // 2. MOSTRAR SPINNER
-        showLoading('Loading Inventory Hub...');
+        showLoading(t('stk.inventory.loadingHub'));
         
         // 3. CARGAR API URL
         loadApiUrl();
@@ -1738,7 +1740,7 @@
         // 4. VALIDAR
         if (!EAMS_API_URL) {
             hideLoading();
-            showToast('Session error: missing API URL. Please login first.', 'error');
+            showToast(t('stk.inventory.errMissingApi'), 'error');
             return;
         }
         
@@ -1760,7 +1762,7 @@
             setupVendorSuggestions(); // ✅ Esta es la función que creamos
         } catch(err) {
             hideLoading();
-            showToast('Error loading data: ' + err.message, 'error');
+            showToast(t('stk.inventory.errLoadData', { error: err.message }), 'error');
         }
     }
     
