@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>System Sweeper Audit - ADKINTOR EAMS</title>
+    <title data-i18n="pvt.sweeper.pageTitle">System Sweeper Audit - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -718,7 +720,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Sweeper configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="pvt.sweeper.loadingConfig">Loading Sweeper configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -730,17 +732,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">System Sweeper Audit</span>
+            <span class="module-title" data-i18n="pvt.sweeper.title">System Sweeper Audit</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">System Sweeper</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="pvt.breadcrumb">PREVENTIVE</span> &gt; <span class="current" data-i18n="pvt.sweeper.breadcrumb">System Sweeper</span>
     </div>
     
     <!-- CUERPO -->
@@ -749,21 +751,21 @@
             <!-- Header Section -->
             <div class="page-header">
                 <div class="header-title">
-                    <h1>EAMS <span>Sweeper</span> Audit</h1>
-                    <p><i class="fas fa-microchip"></i> Maintenance Hygienics Module</p>
+                    <h1 data-i18n-html="pvt.sweeper.headerTitle">EAMS <span>Sweeper</span> Audit</h1>
+                    <p data-i18n-html="pvt.sweeper.headerSubtitle"><i class="fas fa-microchip"></i> Maintenance Hygienics Module</p>
                 </div>
                 
                 <div class="search-panel">
                     <div class="search-field">
-                        <label>Year</label>
+                        <label data-i18n="pvt.sweeper.yearLabel">Year</label>
                         <input type="number" id="yearInput" value="2026">
                     </div>
                     <div class="divider"></div>
                     <div class="search-field">
-                        <label>Week</label>
+                        <label data-i18n="pvt.sweeper.weekLabel">Week</label>
                         <input type="number" id="weekInput" value="1" min="1" max="52">
                     </div>
-                    <button class="btn-search" onclick="searchLogs()"><i class="fas fa-search"></i> SEARCH</button>
+                    <button class="btn-search" onclick="searchLogs()" data-i18n-html="pvt.sweeper.searchBtn"><i class="fas fa-search"></i> SEARCH</button>
                 </div>
             </div>
 
@@ -772,23 +774,23 @@
                 <div class="stat-card expired">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-label expired">Expired Plans</div>
+                            <div class="stat-label expired" data-i18n="pvt.sweeper.expiredPlans">Expired Plans</div>
                             <div class="stat-value" id="summaryExpired">0</div>
                         </div>
                         <i class="fas fa-calendar-times stat-icon"></i>
                     </div>
-                    <div class="stat-footer">Schedules not released before grace period.</div>
+                    <div class="stat-footer" data-i18n="pvt.sweeper.expiredFooter">Schedules not released before grace period.</div>
                 </div>
                 
                 <div class="stat-card closed">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-label closed">Auto-Closed WOs</div>
+                            <div class="stat-label closed" data-i18n="pvt.sweeper.autoClosedWOs">Auto-Closed WOs</div>
                             <div class="stat-value" id="summaryClosed">0</div>
                         </div>
                         <i class="fas fa-ghost stat-icon"></i>
                     </div>
-                    <div class="stat-footer">Released OTs force-closed by the sweeper.</div>
+                    <div class="stat-footer" data-i18n="pvt.sweeper.closedFooter">Released OTs force-closed by the sweeper.</div>
                 </div>
                 
                 <div class="force-sweep-card" onclick="runManualSweep()">
@@ -797,8 +799,8 @@
                             <i class="fas fa-bolt"></i>
                         </div>
                         <div class="force-text">
-                            <p>Emergency Protocol</p>
-                            <span>FORCE SWEEP NOW</span>
+                            <p data-i18n="pvt.sweeper.emergencyProtocol">Emergency Protocol</p>
+                            <span data-i18n="pvt.sweeper.forceSweepNow">FORCE SWEEP NOW</span>
                         </div>
                     </div>
                 </div>
@@ -807,25 +809,25 @@
             <!-- Log Table -->
             <div class="log-container">
                 <div class="log-header">
-                    <h3><i class="fas fa-clipboard-list"></i> Transaction Audit Trail</h3>
-                    <span class="record-badge" id="recordCount">0 records</span>
+                    <h3 data-i18n-html="pvt.sweeper.auditTrailTitle"><i class="fas fa-clipboard-list"></i> Transaction Audit Trail</h3>
+                    <span class="record-badge" id="recordCount" data-i18n="pvt.sweeper.recordsInitial">0 records</span>
                 </div>
                 <div class="log-table-wrapper custom-scroll">
                     <table class="log-table">
                         <thead>
                             <tr>
-                                <th>Timestamp</th>
-                                <th>Process Type</th>
-                                <th>ID / Folio</th>
-                                <th>Origin Status</th>
-                                <th>Outcome</th>
+                                <th data-i18n="pvt.sweeper.colTimestamp">Timestamp</th>
+                                <th data-i18n="pvt.sweeper.colProcessType">Process Type</th>
+                                <th data-i18n="pvt.sweeper.colIdFolio">ID / Folio</th>
+                                <th data-i18n="pvt.sweeper.colOriginStatus">Origin Status</th>
+                                <th data-i18n="pvt.sweeper.colOutcome">Outcome</th>
                             </tr>
                         </thead>
                         <tbody id="logTableBody">
                             <tr>
                                 <td colspan="5" class="empty-state">
                                     <i class="fas fa-search"></i>
-                                    Select a week to begin system audit.
+                                    <span data-i18n="pvt.sweeper.selectWeekEmpty">Select a week to begin system audit.</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -839,7 +841,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -900,7 +902,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -930,20 +932,20 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('pvt.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -957,7 +959,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -1015,14 +1017,14 @@
         if (EAMS_API_URL) {
             loadInitialData();
         } else {
-            showToast('API URL not configured. Please log in first.', 'error');
+            showToast(t('pvt.sweeper.apiNotConfiguredFirst'), 'error');
             // ✅ Eliminar - el elemento no existe
             // document.getElementById('footer-status').innerText = 'Not Configured';
         }
     }
 
     async function loadInitialData() {
-        showLoading('Loading Sweeper configuration...');
+        showLoading(t('pvt.sweeper.loadingConfig'));
         
         try {
             const response = await callApi('PVT_getSweeperInitialData', []);
@@ -1051,7 +1053,7 @@
                 document.getElementById('weekInput').value = currentWeek;
                 document.getElementById('yearInput').value = currentYear;
                 await searchLogs();
-                showToast('Using fallback date', 'warning');
+                showToast(t('pvt.sweeper.usingFallbackDate'), 'warning');
             }
         } catch (e) {
             // console.error('Error loading initial data:', e);  // COMENTADO
@@ -1063,7 +1065,7 @@
             document.getElementById('weekInput').value = currentWeek;
             document.getElementById('yearInput').value = currentYear;
             await searchLogs();
-            showToast('Error loading initial data, using fallback: ' + e.message, 'error');
+            showToast(t('pvt.sweeper.errInitialFallback', { error: e.message }), 'error');
         } finally {
             hideLoading();
             // ✅ Eliminar - el elemento no existe
@@ -1079,11 +1081,11 @@
         const week = sanitizeInput(document.getElementById('weekInput').value);
         
         if (!year || !week) {
-            showToast('Please enter valid year and week', 'error');
+            showToast(t('pvt.sweeper.enterValidYearWeek'), 'error');
             return;
         }
         
-        showLoading('Scanning database integrity...');
+        showLoading(t('pvt.sweeper.scanningDb'));
         
         try {
             const data = await callApi('PVT_getSweeperLogs', [parseInt(week), parseInt(year)]);
@@ -1091,14 +1093,14 @@
             hideLoading();
         } catch (e) {
             hideLoading();
-            showToast('Protocol Error: ' + e.message, 'error');
+            showToast(t('pvt.sweeper.protocolError', { error: e.message }), 'error');
         }
     }
 
     function renderData(summary) {
         document.getElementById('summaryExpired').innerText = summary.expiredPlanner || 0;
         document.getElementById('summaryClosed').innerText = summary.autoClosedWOs || 0;
-        document.getElementById('recordCount').innerText = (summary.details?.length || 0) + ' records in audit trail';
+        document.getElementById('recordCount').innerText = t('pvt.sweeper.recordsCount', { count: summary.details?.length || 0 });
         
         const tbody = document.getElementById('logTableBody');
         
@@ -1107,7 +1109,7 @@
                 '<tr>' +
                     '<td colspan="5" class="empty-state">' +
                         '<i class="fas fa-check-circle"></i>' +
-                        'Clean Records: No auto-expirations found.' +
+                        t('pvt.sweeper.cleanRecords') +
                     '</td>' +
                 '</tr>';
             return;
@@ -1118,7 +1120,7 @@
             var log = summary.details[i];
             var isExpired = log.type === 'PLANNER_EXPIRATION';
             var badgeClass = isExpired ? 'badge-orange' : 'badge-red';
-            var typeLabel = isExpired ? 'PLANNER EXPIRATION' : 'WO AUTO CLOSE';
+            var typeLabel = isExpired ? t('pvt.sweeper.typePlannerExpiration') : t('pvt.sweeper.typeWoAutoClose');
             
             html += 
                 '<tr style="border-bottom: 1px solid #f1f5f9;">' +
@@ -1127,10 +1129,10 @@
                         '<span class="status-badge ' + badgeClass + '">' + escapeHtml(typeLabel) + '</span>' +
                     '</td>' +
                     '<td style="padding: 10px 14px; font-weight: 700; color: #1e293b; font-size: 0.7rem;">' + escapeHtml(log.id) + '</td>' +
-                    '<td style="padding: 10px 14px; color: #94a3b8; font-style: italic; font-size: 0.65rem;">' + escapeHtml(log.prev) + '</td>' +
+                    '<td style="padding: 10px 14px; color: #94a3b8; font-style: italic; font-size: 0.65rem;">' + escapeHtml(tStatus(log.prev)) + '</td>' +
                     '<td style="padding: 10px 14px;">' +
                         '<span style="color: #3b82f6; font-weight: 700; font-size: 0.65rem;">' +
-                            '<i class="fas fa-check-circle"></i> ' + escapeHtml(log.result) +
+                            '<i class="fas fa-check-circle"></i> ' + escapeHtml(tStatus(log.result)) +
                         '</span>' +
                     '</td>' +
                 '</tr>';
@@ -1145,11 +1147,11 @@
                     '<div class="modal-icon">' +
                         '<i class="fas fa-exclamation-triangle"></i>' +
                     '</div>' +
-                    '<h3>⚠️ Confirm Force Sweep</h3>' +
-                    '<p>You are about to force a system-wide sweep.<br>All unreleased plans and old OTs will be CLOSED/EXPIRED.<br>Continue?</p>' +
+                    '<h3>' + t('pvt.sweeper.confirmForceTitle') + '</h3>' +
+                    '<p>' + t('pvt.sweeper.confirmForceMsg') + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeSweeperConfirmModal()">Cancel</button>' +
-                        '<button class="btn-modal-danger" id="confirmSweeperBtn">Continue</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeSweeperConfirmModal()">' + t('pvt.sweeper.btnCancel') + '</button>' +
+                        '<button class="btn-modal-danger" id="confirmSweeperBtn">' + t('pvt.sweeper.btnContinue') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1158,7 +1160,7 @@
         
         document.getElementById('confirmSweeperBtn').onclick = async function() {
             closeSweeperConfirmModal();
-            showLoading('Executing system hygiene protocol...');
+            showLoading(t('pvt.sweeper.executingProtocol'));
             
             try {
                 // ✅ Obtener userEmail de la sesión
@@ -1196,7 +1198,7 @@
                     showToast(response.message, 'success');
                     await searchLogs();
                 } else {
-                    showToast('Error: ' + response.message, 'error');
+                    showToast(t('common.error') + ': ' + response.message, 'error');
                 }
             } catch (e) {
                 if (window.Logger && typeof window.Logger.error === 'function') {
@@ -1204,7 +1206,7 @@
                 }
                 
                 hideLoading();
-                showToast('Error: ' + e.message, 'error');
+                showToast(t('common.error') + ': ' + e.message, 'error');
             }
         };
     }
