@@ -1009,7 +1009,7 @@
                 const sessionData = JSON.parse(session);
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('wo.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
                 showToast(t('common.sessionError'), 'error');
@@ -1364,8 +1364,8 @@
                         '<td>' + escapeHtml(inst.name) + '</td>' +
                         '<td>' + escapeHtml(inst.type || '-') + '</td>' +
                         '<td>' + escapeHtml(inst.area || '-') + '</td>' +
-                        '<td>' + (inst.lastCal || '-') + '</td>' +
-                        '<td>' + (inst.nextCal || '-') + '</td>' +
+                        '<td>' + (inst.lastCal ? I18n.formatDate(inst.lastCal) : '-') + '</td>' +
+                        '<td>' + (inst.nextCal ? I18n.formatDate(inst.nextCal) : '-') + '</td>' +
                         '<td><span class="status-badge ' + daysClass + '">' + daysLeft + ' ' + t('common.days') + '</span></td>' +
                         '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(tStatus(inst.status || 'Active')) + '</span></td>' +
                         '<td>' +
@@ -1818,7 +1818,7 @@
                         var h = history[i];
                         html += 
                             '<div class="history-item">' +
-                                '<div class="history-date">📅 ' + h.date + '</div>' +
+                                '<div class="history-date">📅 ' + I18n.formatDate(h.date) + '</div>' +
                                 '<div>👤 ' + escapeHtml(h.performedBy) + ' | ' + escapeHtml(tStatus(h.result)) + '</div>' +
                                 '<div class="history-cert">📄 ' + t('cal.certificatePrefix') + ' ' + escapeHtml(h.certificate || t('cal.na')) + '</div>' +
                                 '<div class="small text-muted mt-1">💬 ' + escapeHtml(h.comments || t('cal.noComments')) + '</div>' +
