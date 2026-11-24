@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Activity Master Builder - ADKINTOR EAMS</title>
+    <title data-i18n="pvt.activity.pageTitle">Activity Master Builder - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -861,7 +863,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Activity Builder...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="pvt.activity.loadingModule">Loading Activity Builder...</span>
 </div>
 
 <!-- TOAST -->
@@ -873,17 +875,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Activity Master Builder</span>
+            <span class="module-title" data-i18n="pvt.activity.title">Activity Master Builder</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Activity Builder</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="pvt.breadcrumb">PREVENTIVE</span> &gt; <span class="current" data-i18n="pvt.activity.breadcrumb">Activity Builder</span>
     </div>
     
     <!-- CUERPO -->
@@ -892,14 +894,14 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <div class="stats-card">
-                    <div class="stats-label"><i class="fas fa-chart-line"></i> Strategy Progress</div>
+                    <div class="stats-label" data-i18n-html="pvt.activity.strategyProgress"><i class="fas fa-chart-line"></i> Strategy Progress</div>
                     <div class="stats-numbers"><span id="stat-done">0</span> / <span id="stat-total">0</span></div>
                     <div class="progress-bar"><div id="stat-bar" class="progress-fill"></div></div>
-                    <div style="font-size: 0.7rem; margin-top: 4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><span id="stat-perc">0</span>% Complete</div>
+                    <div style="font-size: 0.7rem; margin-top: 4px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><span id="stat-perc">0</span>% <span data-i18n="pvt.activity.completeWord">Complete</span></div>
                 </div>
                 
                 <div class="tree-container custom-scroll">
-                    <div class="tree-header"><i class="fas fa-sitemap"></i> Asset Hierarchy</div>
+                    <div class="tree-header" data-i18n-html="pvt.activity.assetHierarchy"><i class="fas fa-sitemap"></i> Asset Hierarchy</div>
                     <div id="hierarchy-tree"></div>
                 </div>
             </div>
@@ -907,11 +909,11 @@
             <!-- Main Content -->
             <div class="main-content">
                 <div class="top-panel">
-                    <h2><i class="fas fa-tools"></i> Activity Master Builder</h2>
+                    <h2 data-i18n-html="pvt.activity.topTitle"><i class="fas fa-tools"></i> Activity Master Builder</h2>
                     <div class="search-container">
-                        <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." autocomplete="off">
-                        <button class="btn-build" onclick="executeSearch()"><i class="fas fa-search"></i> Search</button>
-                        <button class="btn-build" onclick="refreshModule()" style="background: #6c757d;"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <input type="text" id="search-input" placeholder="Search TL Name or ID (min. 3 chars)..." data-i18n-placeholder="pvt.activity.searchPlaceholder" autocomplete="off">
+                        <button class="btn-build" onclick="executeSearch()" data-i18n-html="pvt.activity.searchBtn"><i class="fas fa-search"></i> Search</button>
+                        <button class="btn-build" onclick="refreshModule()" style="background: #6c757d;" data-i18n-html="pvt.activity.refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
                         <div id="suggestions" class="custom-scroll"></div>
                     </div>
                 </div>
@@ -922,13 +924,13 @@
                         <div class="results-card">
                             <table class="results-table" id="resultsTable" style="display: none;">
                                 <thead>
-                                    <tr><th>Asset ID</th><th>Technical Location</th><th>Strategy ID</th><th>Frequency</th><th></th></tr>
+                                    <tr><th data-i18n="pvt.activity.colAssetId">Asset ID</th><th data-i18n="pvt.activity.colTechLoc">Technical Location</th><th data-i18n="pvt.activity.colStrategyId">Strategy ID</th><th data-i18n="pvt.activity.colFrequency">Frequency</th><th></th></tr>
                                 </thead>
                                 <tbody id="resultsBody"></tbody>
                             </table>
                             <div id="noResultsMsg" class="empty-state" style="display: none;">
                                 <i class="fas fa-search"></i>
-                                <p>No strategies found for this Technical Location.</p>
+                                <p data-i18n="pvt.activity.noStrategiesFound">No strategies found for this Technical Location.</p>
                             </div>
                         </div>
                     </div>
@@ -937,36 +939,36 @@
                     <div id="editorView" style="display: none;">
                         <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 16px 20px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-                                <button class="btn-secondary" onclick="backToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button>
+                                <button class="btn-secondary" onclick="backToResults()" data-i18n-html="pvt.activity.backToResults"><i class="fas fa-arrow-left"></i> Back to Results</button>
                                 <div style="display: flex; gap: 8px;">
-                                    <button class="btn-secondary" onclick="openOrphanModal()" style="background: #f59e0b; color: white;"><i class="fas fa-trash-alt"></i> Orphan Activities</button>
-                                    <button class="btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Activity</button>
+                                    <button class="btn-secondary" onclick="openOrphanModal()" style="background: #f59e0b; color: white;" data-i18n-html="pvt.activity.orphanActivitiesBtn"><i class="fas fa-trash-alt"></i> Orphan Activities</button>
+                                    <button class="btn-primary" onclick="openCreateModal()" data-i18n-html="pvt.activity.createActivityBtn"><i class="fas fa-plus"></i> Create New Activity</button>
                                 </div>
                             </div>
                             
                             <div class="info-card">
-                                <div><i class="fas fa-fingerprint"></i> <strong>ID:</strong> <span id="head-id"></span></div>
-                                <div><i class="fas fa-tag"></i> <strong>Name:</strong> <span id="head-name"></span></div>
-                                <div><i class="fas fa-clock"></i> <strong>Frequency:</strong> <span id="head-freq"></span></div>
+                                <div><i class="fas fa-fingerprint"></i> <strong data-i18n="pvt.activity.lblId">ID:</strong> <span id="head-id"></span></div>
+                                <div><i class="fas fa-tag"></i> <strong data-i18n="pvt.activity.lblName">Name:</strong> <span id="head-name"></span></div>
+                                <div><i class="fas fa-clock"></i> <strong data-i18n="pvt.activity.lblFrequency">Frequency:</strong> <span id="head-freq"></span></div>
                             </div>
                             
                             <div style="margin-bottom: 16px; margin-top: 16px;">
-                                <h3 style="margin: 0; font-size: 0.9rem; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"><i class="fas fa-list"></i> Existing Activities</h3>
+                                <h3 style="margin: 0; font-size: 0.9rem; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="pvt.activity.existingActivities"><i class="fas fa-list"></i> Existing Activities</h3>
                             </div>
                             
                             <div id="activitiesTableContainer" style="overflow-x: auto;">
                                 <table style="width: 100%; border-collapse: collapse; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
                                     <thead>
                                         <tr style="background: #f8fafc; border-bottom: 2px solid #1a1a2e;">
-                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Equipment</th>
-                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Instruction</th>
-                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Standard</th>
-                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Hours</th>
-                                            <th style="padding: 8px 12px; text-align: center; font-size:0.6rem; text-transform:uppercase; color:#64748b;">Actions</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;" data-i18n="pvt.activity.colEquipment">Equipment</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;" data-i18n="pvt.activity.colInstruction">Instruction</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;" data-i18n="pvt.activity.colStandard">Standard</th>
+                                            <th style="padding: 8px 12px; text-align: left; font-size:0.6rem; text-transform:uppercase; color:#64748b;" data-i18n="pvt.activity.colHours">Hours</th>
+                                            <th style="padding: 8px 12px; text-align: center; font-size:0.6rem; text-transform:uppercase; color:#64748b;" data-i18n="pvt.activity.colActions">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="activitiesTableBody">
-                                        <tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>
+                                        <tr><td colspan="5" class="empty-state" data-i18n="pvt.activity.noActivitiesEmpty">No activities found. Click "Create New Activity" to start.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -981,22 +983,22 @@
     <div id="orphanModal" class="modal-overlay" style="display: none;">
         <div class="modal-container" style="max-width: 900px;">
             <div class="modal-header">
-                <h3><i class="fas fa-trash-alt" style="color: #f59e0b;"></i> Orphan Activities</h3>
+                <h3 data-i18n-html="pvt.activity.orphanModalTitle"><i class="fas fa-trash-alt" style="color: #f59e0b;"></i> Orphan Activities</h3>
                 <span class="modal-close" onclick="closeOrphanModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;" data-i18n-html="pvt.activity.orphanModalDesc">
                     These activities have a <strong>Strategy ID</strong> that no longer exists in the active plan for this Technical Location.
                     <br>You can <strong>reassign</strong> them to an active strategy or <strong>delete</strong> them.
                 </p>
                 <div id="orphanListContainer">
-                    <div style="text-align: center; padding: 20px; color: #64748b;">
+                    <div style="text-align: center; padding: 20px; color: #64748b;" data-i18n-html="pvt.activity.loadingOrphans">
                         <i class="fas fa-spinner fa-pulse"></i> Loading orphan activities...
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeOrphanModal()">Close</button>
+                <button class="btn-secondary" onclick="closeOrphanModal()" data-i18n="pvt.activity.btnClose">Close</button>
             </div>
         </div>
     </div> 
@@ -1005,15 +1007,15 @@
     <div id="confirmModal" class="modal-overlay" style="display: none;">
         <div class="modal-container" style="max-width: 450px;">
             <div class="modal-header">
-                <h3 id="confirmTitle"><i class="fas fa-question-circle" style="color: #f59e0b;"></i> Confirm</h3>
+                <h3 id="confirmTitle" data-i18n-html="pvt.activity.confirmTitle"><i class="fas fa-question-circle" style="color: #f59e0b;"></i> Confirm</h3>
                 <span class="modal-close" onclick="closeConfirmModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <p id="confirmMessage" style="font-size: 0.9rem; color: #1e293b;"></p>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button>
-                <button class="btn-primary" id="confirmYesBtn" style="background: #dc3545;">Yes, Proceed</button>
+                <button class="btn-secondary" onclick="closeConfirmModal()" data-i18n="pvt.activity.btnCancel">Cancel</button>
+                <button class="btn-primary" id="confirmYesBtn" style="background: #dc3545;" data-i18n="pvt.activity.btnYesProceed">Yes, Proceed</button>
             </div>
         </div>
     </div>       
@@ -1022,7 +1024,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -1083,7 +1085,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -1113,20 +1115,20 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ NUEVA LÍNEA AQUÍ
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('pvt.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -1140,7 +1142,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -1174,7 +1176,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -1205,7 +1207,7 @@
     // ============================================
 async function init() {
     // ✅ PRIMERO: Mostrar el spinner
-    showLoading('Loading Activity Builder...');
+    showLoading(t('pvt.activity.loadingModule'));
     
     // ✅ Cargar todo antes de ocultar el spinner
     loadUser();
@@ -1219,8 +1221,8 @@ async function init() {
         // console.log('[Activity Builder] Ready');  // COMENTADO
     } else {
         hideLoading();
-        showToast('API URL not configured. Please log in first.', 'error');
-        document.getElementById('footer-status').innerText = 'Not Configured';
+        showToast(t('pvt.activity.apiNotConfiguredFirst'), 'error');
+        document.getElementById('footer-status').innerText = t('pvt.activity.notConfigured');
     }
 }
 
@@ -1253,10 +1255,10 @@ async function updateDashboard() {
                 }
                 html += '</div>';
             }
-            document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No active Technical Locations found.</div>';
+            document.getElementById('hierarchy-tree').innerHTML = html || '<div style="padding:16px; color:#64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.noActiveTls') + '</div>';
         } catch (e) {
             // console.error('Error loading hierarchy:', e);  // COMENTADO
-            document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading hierarchy</div>';
+            document.getElementById('hierarchy-tree').innerHTML = '<div style="padding:16px; color:#dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.errLoadingHierarchy') + '</div>';
         }
     }
 
@@ -1313,7 +1315,7 @@ async function updateDashboard() {
         var val = document.getElementById('search-input').value;
         if (!val) return;
         
-        showLoading('Searching strategies...');
+        showLoading(t('pvt.activity.searchingStrategies'));
         try {
             var res = await callApi('PVT_searchUniqueStrategies', [val]);
             hideLoading();
@@ -1333,20 +1335,20 @@ async function updateDashboard() {
                         '<td>' + escapeHtml(row.assetId) + '</td>' +
                         '<td>' + escapeHtml(row.tlName) + '</td>' +
                         '<td><strong>' + escapeHtml(row.strategyId) + '</strong></td>' +
-                        '<td>' + escapeHtml(row.frequency) + '</td>' +
-                        '<td><button class="btn-build" onclick="loadStrategy(\'' + escapeHtml(row.strategyId) + '\',\'' + escapeHtml(row.assetId) + '\',\'' + escapeHtml(row.frequency) + '\',\'' + escapeHtml(row.tlName) + '\')">BUILD</button></td>' +
+                        '<td>' + escapeHtml(tStatus(row.frequency)) + '</td>' +
+                        '<td><button class="btn-build" onclick="loadStrategy(\'' + escapeHtml(row.strategyId) + '\',\'' + escapeHtml(row.assetId) + '\',\'' + escapeHtml(row.frequency) + '\',\'' + escapeHtml(row.tlName) + '\')">' + t('pvt.activity.buildBtn') + '</button></td>' +
                     '</tr>';
                 }
                 tbody.innerHTML = html;
-                showToast('Found ' + res.data.length + ' strategies', 'success');
+                showToast(t('pvt.activity.foundStrategies', { count: res.data.length }), 'success');
             } else {
                 table.style.display = 'none';
                 noResults.style.display = 'block';
-                showToast('No strategies found for this Technical Location.', 'error');
+                showToast(t('pvt.activity.noStrategiesFound'), 'error');
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
@@ -1354,11 +1356,11 @@ async function updateDashboard() {
     // LOAD STRATEGY
     // ============================================
     async function loadStrategy(sid, aid, freq, name) {
-        showLoading('Loading strategy...');
+        showLoading(t('pvt.activity.loadingStrategy'));
         currentContext = { strategyId: sid, assetId: aid, frequency: freq, tlName: name };
         document.getElementById('head-id').innerText = aid;
         document.getElementById('head-name').innerText = name;
-        document.getElementById('head-freq').innerText = freq;
+        document.getElementById('head-freq').innerText = tStatus(freq);
         
         try {
             var res = await callApi('PVT_getStrategyContent', [sid, aid]);
@@ -1379,13 +1381,13 @@ async function updateDashboard() {
                 
                 renderActivitiesTable();
             } else {
-                showToast('Error: ' + res.message, 'error');
+                showToast(t('common.error') + ': ' + res.message, 'error');
                 // ✅ AGREGAR ESTO: Volver a resultados si falla
                 backToResults();
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
             // ✅ AGREGAR ESTO: Volver a resultados si hay error
             backToResults();
             console.error('loadStrategy error:', e);
@@ -1397,7 +1399,7 @@ async function updateDashboard() {
         if (!tbody) return;
         
         if (!existingTasks || existingTasks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No activities found. Click "Create New Activity" to start.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">' + t('pvt.activity.noActivitiesEmpty') + '</td></tr>';
             return;
         }
         
@@ -1411,8 +1413,8 @@ async function updateDashboard() {
                 '<td style="padding: 8px 12px;">' + (task.timeHr || '') + '</td>' +
                 '<td style="padding: 8px 12px; text-align: center;">' +
                     '<div style="display: flex; gap: 6px; justify-content: center;">' +
-                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify({assetId: task.assetId || currentContext.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="Edit"><i class="fas fa-edit"></i></button>' +
-                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify({assetId: task.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="Delete"><i class="fas fa-trash-alt"></i></button>' +
+                        '<button class="icon-btn icon-btn-edit" onclick=\'openEditModal(' + JSON.stringify({assetId: task.assetId || currentContext.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="' + t('pvt.activity.titleEdit') + '"><i class="fas fa-edit"></i></button>' +
+                        '<button class="icon-btn icon-btn-delete" onclick=\'openDeleteModal(' + JSON.stringify({assetId: task.assetId, equipment: task.equipment, instruction: task.instruction, standard: task.standard, timeHr: task.timeHr, activityId: task.activityId || ''}).replace(/'/g, "&#39;") + ')\' title="' + t('pvt.activity.titleDelete') + '"><i class="fas fa-trash-alt"></i></button>' +
                     '</div>' +
                 '</td>' +
             '</tr>';
@@ -1449,40 +1451,40 @@ async function updateDashboard() {
             '<div class="modal-overlay" id="createModal">' +
                 '<div class="modal-container">' +
                     '<div class="modal-header">' +
-                        '<h3><i class="fas fa-plus-circle"></i> Create New Activity</h3>' +
+                        '<h3><i class="fas fa-plus-circle"></i> ' + t('pvt.activity.createModalTitle') + '</h3>' +
                         '<span class="modal-close" onclick="closeCreateModal()">&times;</span>' +
                     '</div>' +
                     '<div class="modal-body">' +
                         '<div class="form-group">' +
-                            '<label>Equipment *</label>' +
+                            '<label>' + t('pvt.activity.fldEquipmentReq') + '</label>' +
                             '<select id="create-equipment" onchange="onCreateEquipmentChange()">' +
-                                '<option value="">Select equipment...</option>' +
+                                '<option value="">' + t('pvt.activity.selectEquipment') + '</option>' +
                                 equipOptions +
                             '</select>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Instruction *</label>' +
-                            '<textarea id="create-instruction" rows="2" placeholder="Describe the activity..."></textarea>' +
+                            '<label>' + t('pvt.activity.fldInstructionReq') + '</label>' +
+                            '<textarea id="create-instruction" rows="2" placeholder="' + t('pvt.activity.phInstruction') + '"></textarea>' +
                             '<div id="create-instruction_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Acceptance Standard</label>' +
-                            '<textarea id="create-standard" rows="2" placeholder="What does success look like?"></textarea>' +
+                            '<label>' + t('pvt.activity.fldStandard') + '</label>' +
+                            '<textarea id="create-standard" rows="2" placeholder="' + t('pvt.activity.phStandard') + '"></textarea>' +
                             '<div id="create-standard_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Est. Time (Hours) *</label>' +
+                            '<label>' + t('pvt.activity.fldEstTimeReq') + '</label>' +
                             '<input type="number" id="create-time" step="0.25" min="0.25" max="24" value="0.5">' +
                         '</div>' +
                         '<div id="create-clone-section" class="clone-section" style="display: none;">' +
-                            '<h4><i class="fas fa-copy"></i> Clone this activity to:</h4>' +
+                            '<h4><i class="fas fa-copy"></i> ' + t('pvt.activity.cloneToTitle') + '</h4>' +
                             '<div id="create-clone-list"></div>' +
                         '</div>' +
                         '<div id="create-summary" class="summary-badge"></div>' +
                     '</div>' +
                     '<div class="modal-footer">' +
-                        '<button class="btn-secondary" onclick="closeCreateModal()">Cancel</button>' +
-                        '<button class="btn-primary" onclick="submitCreate()">Create Activity</button>' +
+                        '<button class="btn-secondary" onclick="closeCreateModal()">' + t('pvt.activity.btnCancel') + '</button>' +
+                        '<button class="btn-primary" onclick="submitCreate()">' + t('pvt.activity.btnCreateSubmit') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1517,7 +1519,7 @@ async function updateDashboard() {
         }
         
         var cloneDiv = document.getElementById('create-clone-list');
-        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching...</div>';
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> ' + t('pvt.activity.searching') + '</div>';
         document.getElementById('create-clone-section').style.display = 'block';
         
         try {
@@ -1527,7 +1529,7 @@ async function updateDashboard() {
             updateCreateSummary();
         } catch (e) {
             // console.error('Error loading clones:', e);  // COMENTADO
-            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.errLoadingClones') + '</div>';
         }
     }
 
@@ -1536,27 +1538,27 @@ async function updateDashboard() {
         if (!container) return;
         
         if (!targets || targets.length === 0) {
-            container.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No similar equipment found.</div>';
+            container.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.noSimilarEquip') + '</div>';
             return;
         }
         
         // ✅ Determinar qué función de resumen llamar según el modo
         var summaryFn = mode === 'create' ? 'updateCreateSummary()' : 'updateEditSummary()';
         
-        var sameTL = targets.filter(function(t) { return t.isSameTL; });
-        var otherTLs = targets.filter(function(t) { return !t.isSameTL; });
+        var sameTL = targets.filter(function(item) { return item.isSameTL; });
+        var otherTLs = targets.filter(function(item) { return !item.isSameTL; });
         
         var html = '';
         
         if (sameTL.length > 0) {
             html += '<div class="clone-group">' +
-                '<div class="clone-group-title">📌 Same TL (' + escapeHtml(currentContext.assetId) + ')</div>';
+                '<div class="clone-group-title">' + t('pvt.activity.sameTlGroup', { id: escapeHtml(currentContext.assetId) }) + '</div>';
             for (var i = 0; i < sameTL.length; i++) {
-                var t = sameTL[i];
-                var globalIdx = targets.indexOf(t);
+                var item = sameTL[i];
+                var globalIdx = targets.indexOf(item);
                 html += '<div class="clone-item">' +
-                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" data-activity-id="' + (t.activityId || '') + '" onchange="' + summaryFn + '">' +
-                    '<span>' + escapeHtml(t.name) + '</span>' +
+                    '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(item.id) + '" data-tl-id="' + escapeHtml(item.tlId) + '" data-strategy="' + escapeHtml(item.strategyId) + '" data-equip="' + escapeHtml(item.name) + '" data-activity-id="' + (item.activityId || '') + '" onchange="' + summaryFn + '">' +
+                    '<span>' + escapeHtml(item.name) + '</span>' +
                 '</div>';
             }
             html += '</div>';
@@ -1565,9 +1567,9 @@ async function updateDashboard() {
         if (otherTLs.length > 0) {
             var tlGroups = {};
             for (var i = 0; i < otherTLs.length; i++) {
-                var t = otherTLs[i];
-                if (!tlGroups[t.tlId]) tlGroups[t.tlId] = { tlName: t.tlName, equipments: [] };
-                tlGroups[t.tlId].equipments.push(t);
+                var item = otherTLs[i];
+                if (!tlGroups[item.tlId]) tlGroups[item.tlId] = { tlName: item.tlName, equipments: [] };
+                tlGroups[item.tlId].equipments.push(item);
             }
             
             var tlKeys = Object.keys(tlGroups);
@@ -1577,12 +1579,12 @@ async function updateDashboard() {
                 html += '<div class="clone-group">' +
                     '<div class="clone-group-title">🏭 ' + escapeHtml(group.tlName) + ' (' + escapeHtml(tlId) + ')</div>';
                 for (var j = 0; j < group.equipments.length; j++) {
-                    var t = group.equipments[j];
-                    var globalIdx = targets.indexOf(t);
+                    var item = group.equipments[j];
+                    var globalIdx = targets.indexOf(item);
                     html += '<div class="clone-item">' +
                         // ✅ AQUÍ ESTÁ LA CORRECCIÓN - AGREGADO data-activity-id
-                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(t.id) + '" data-tl-id="' + escapeHtml(t.tlId) + '" data-strategy="' + escapeHtml(t.strategyId) + '" data-equip="' + escapeHtml(t.name) + '" data-activity-id="' + (t.activityId || '') + '" onchange="' + summaryFn + '">' +
-                        '<span>' + escapeHtml(t.id) + ' (' + escapeHtml(t.name) + ')</span>' +
+                        '<input type="checkbox" class="' + mode + '-clone-check" data-index="' + globalIdx + '" data-asset-id="' + escapeHtml(item.id) + '" data-tl-id="' + escapeHtml(item.tlId) + '" data-strategy="' + escapeHtml(item.strategyId) + '" data-equip="' + escapeHtml(item.name) + '" data-activity-id="' + (item.activityId || '') + '" onchange="' + summaryFn + '">' +
+                        '<span>' + escapeHtml(item.id) + ' (' + escapeHtml(item.name) + ')</span>' +
                     '</div>';
                 }
                 html += '</div>';
@@ -1603,7 +1605,7 @@ async function updateDashboard() {
         if (!summary) return;
         if (selectedCount > 0) {
             summary.style.display = 'block';
-            summary.innerHTML = '📊 Summary: Will create 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
+            summary.innerHTML = selectedCount === 1 ? t('pvt.activity.createSummaryOne') : t('pvt.activity.createSummaryMany', { count: selectedCount });
         } else {
             summary.style.display = 'none';
         }
@@ -1618,9 +1620,9 @@ async function updateDashboard() {
         var standard = sanitizeInput(document.getElementById('create-standard').value);
         var timeHr = document.getElementById('create-time').value;
         
-        if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
-        if (!instruction) { showToast('Please enter instruction', 'error'); return; }
-        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
+        if (!selectedEquipmentId) { showToast(t('pvt.activity.reqEquipment'), 'error'); return; }
+        if (!instruction) { showToast(t('pvt.activity.reqInstruction'), 'error'); return; }
+        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast(t('pvt.activity.valTimeRange'), 'error'); return; }
         
         var selectedEquipment = null;
         for (var i = 0; i < equipmentList.length; i++) {
@@ -1656,7 +1658,7 @@ async function updateDashboard() {
             userEmail: currentUserEmail || 'system'  // ✅ AÑADIR
         };
         
-        showLoading('Creating activity...');
+        showLoading(t('pvt.activity.creatingActivity'));
         try {
             var res = await callApi('PVT_createActivity', [payload]);
             hideLoading();
@@ -1665,11 +1667,11 @@ async function updateDashboard() {
                 closeCreateModal();
                 loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
             } else {
-                showToast('Error: ' + res.message, 'error');
+                showToast(t('common.error') + ': ' + res.message, 'error');
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
@@ -1695,39 +1697,39 @@ async function updateDashboard() {
             '<div class="modal-overlay" id="editModal">' +
                 '<div class="modal-container">' +
                     '<div class="modal-header">' +
-                        '<h3><i class="fas fa-edit"></i> Edit Activity</h3>' +
+                        '<h3><i class="fas fa-edit"></i> ' + t('pvt.activity.editModalTitle') + '</h3>' +
                         '<span class="modal-close" onclick="closeEditModal()">&times;</span>' +
                     '</div>' +
                     '<div class="modal-body">' +
                         '<div class="form-group">' +
-                            '<label>Equipment *</label>' +
+                            '<label>' + t('pvt.activity.fldEquipmentReq') + '</label>' +
                             '<select id="edit-equipment" disabled>' +
                                 equipOptions +
                             '</select>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Instruction *</label>' +
+                            '<label>' + t('pvt.activity.fldInstructionReq') + '</label>' +
                             '<textarea id="edit-instruction" rows="2">' + escapeHtml(task.instruction) + '</textarea>' +
                             '<div id="edit-instruction_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Acceptance Standard</label>' +
+                            '<label>' + t('pvt.activity.fldStandard') + '</label>' +
                             '<textarea id="edit-standard" rows="2">' + escapeHtml(task.standard || '') + '</textarea>' +
                             '<div id="edit-standard_Warning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;"></div>' +
                         '</div>' +
                         '<div class="form-group">' +
-                            '<label>Est. Time (Hours) *</label>' +
+                            '<label>' + t('pvt.activity.fldEstTimeReq') + '</label>' +
                             '<input type="number" id="edit-time" step="0.25" min="0.25" max="24" value="' + task.timeHr + '">' +
                         '</div>' +
                         '<div id="edit-clone-section" class="clone-section" style="display: none;">' +
-                            '<h4><i class="fas fa-copy"></i> Propagate this change to:</h4>' +
+                            '<h4><i class="fas fa-copy"></i> ' + t('pvt.activity.propagateToTitle') + '</h4>' +
                             '<div id="edit-clone-list"></div>' +
                         '</div>' +
                         '<div id="edit-summary" class="summary-badge"></div>' +
                     '</div>' +
                     '<div class="modal-footer">' +
-                        '<button class="btn-secondary" onclick="closeEditModal()">Cancel</button>' +
-                        '<button class="btn-primary" onclick="submitEdit()">Save Changes</button>' +
+                        '<button class="btn-secondary" onclick="closeEditModal()">' + t('pvt.activity.btnCancel') + '</button>' +
+                        '<button class="btn-primary" onclick="submitEdit()">' + t('pvt.activity.btnSaveChanges') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1753,7 +1755,7 @@ async function updateDashboard() {
 
     async function onEditEquipmentChange() {
         var cloneDiv = document.getElementById('edit-clone-list');
-        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div>';
+        cloneDiv.innerHTML = '<div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> ' + t('pvt.activity.searchingClones') + '</div>';
         document.getElementById('edit-clone-section').style.display = 'block';
         
         try {
@@ -1769,7 +1771,7 @@ async function updateDashboard() {
             renderCloneList('edit-clone-list', currentEditCloneTargets, 'edit');
             updateEditSummary();
         } catch (e) {
-            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+            cloneDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.errLoadingClones') + '</div>';
         }
     }
 
@@ -1784,7 +1786,7 @@ async function updateDashboard() {
         if (!summary) return;
         if (selectedCount > 0) {
             summary.style.display = 'block';
-            summary.innerHTML = '📊 Summary: Will update 1 original + ' + selectedCount + ' clone' + (selectedCount !== 1 ? 's' : '');
+            summary.innerHTML = selectedCount === 1 ? t('pvt.activity.editSummaryOne') : t('pvt.activity.editSummaryMany', { count: selectedCount });
         } else {
             summary.style.display = 'none';
         }
@@ -1797,9 +1799,9 @@ async function updateDashboard() {
         var standard = sanitizeInput(document.getElementById('edit-standard').value);
         var timeHr = document.getElementById('edit-time').value;
         
-        if (!selectedEquipmentId) { showToast('Please select equipment', 'error'); return; }
-        if (!instruction) { showToast('Please enter instruction', 'error'); return; }
-        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast('Time must be between 0.25 and 24 hours', 'error'); return; }
+        if (!selectedEquipmentId) { showToast(t('pvt.activity.reqEquipment'), 'error'); return; }
+        if (!instruction) { showToast(t('pvt.activity.reqInstruction'), 'error'); return; }
+        if (!timeHr || timeHr < 0.25 || timeHr > 24) { showToast(t('pvt.activity.valTimeRange'), 'error'); return; }
         
         var propagateTo = [];
         var checkboxes = document.querySelectorAll('#edit-clone-list input[type="checkbox"]');
@@ -1836,7 +1838,7 @@ async function updateDashboard() {
             userEmail: currentUserEmail || 'system'
         };
         
-        showLoading('Updating activity...');
+        showLoading(t('pvt.activity.updatingActivity'));
         try {
             var res = await callApi('PVT_updateActivity', [payload]);
             hideLoading();
@@ -1848,11 +1850,11 @@ async function updateDashboard() {
                     loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
                 }, 500);
             } else {
-                showToast('Error: ' + res.message, 'error');
+                showToast(t('common.error') + ': ' + res.message, 'error');
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
             // ✅ SI FALLA, VOLVER A RESULTADOS
             backToResults();
             console.error('submitEdit error:', e);
@@ -1875,7 +1877,7 @@ async function updateDashboard() {
         if (!modal) return;
         
         modal.style.display = 'flex';
-        document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Loading orphan activities...</div>';
+        document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">' + t('pvt.activity.loadingOrphans') + '</div>';
         
         try {
             var result = await callApi('PVT_getOrphanActivitiesForTL', [currentContext.assetId]);
@@ -1884,16 +1886,16 @@ async function updateDashboard() {
                 var activeStrategies = result.activeStrategies || [];
                 
                 if (orphanData.length === 0) {
-                    document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 30px; color: #22c55e;"><i class="fas fa-check-circle" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i> No orphan activities found for this TL.</div>';
+                    document.getElementById('orphanListContainer').innerHTML = '<div style="text-align: center; padding: 30px; color: #22c55e;"><i class="fas fa-check-circle" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i> ' + t('pvt.activity.noOrphansFound') + '</div>';
                     return;
                 }
                 
                 renderOrphanList(orphanData, activeStrategies);
             } else {
-                document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">Error: ' + escapeHtml(result.message || 'Unknown error') + '</div>';
+                document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">' + escapeHtml(t('common.error') + ': ' + (result.message || t('common.unknownError'))) + '</div>';
             }
         } catch (e) {
-            document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">Error: ' + escapeHtml(e.message) + '</div>';
+            document.getElementById('orphanListContainer').innerHTML = '<div style="color: #dc3545; padding: 12px;">' + escapeHtml(t('common.error') + ': ' + e.message) + '</div>';
         }
     }
 
@@ -1902,11 +1904,11 @@ async function updateDashboard() {
         
         var html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">';
         html += '<thead><tr style="background: #f8fafc; border-bottom: 2px solid #1a1a2e;">' +
-            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Asset</th>' +
-            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Instruction</th>' +
-            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Current Strategy</th>' +
-            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Reassign To</th>' +
-            '<th style="padding: 8px 10px; text-align: center; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">Actions</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">' + t('pvt.activity.colOrphanAsset') + '</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">' + t('pvt.activity.colOrphanInstruction') + '</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">' + t('pvt.activity.colOrphanCurrStrat') + '</th>' +
+            '<th style="padding: 8px 10px; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">' + t('pvt.activity.colOrphanReassignTo') + '</th>' +
+            '<th style="padding: 8px 10px; text-align: center; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.6rem;">' + t('pvt.activity.colOrphanActions') + '</th>' +
         '</tr></thead><tbody>';
         
         for (var i = 0; i < orphans.length; i++) {
@@ -1927,7 +1929,7 @@ async function updateDashboard() {
                     '</select>' +
                 '</td>' +
                 '<td style="padding: 8px 10px; text-align: center;">' +
-                    '<button class="btn-primary" style="font-size:0.6rem; padding:4px 10px; background:#1a1a2e;" onclick="reassignOrphan(' + i + ')"><i class="fas fa-check"></i> Reassign</button> ' +
+                    '<button class="btn-primary" style="font-size:0.6rem; padding:4px 10px; background:#1a1a2e;" onclick="reassignOrphan(' + i + ')"><i class="fas fa-check"></i> ' + t('pvt.activity.btnReassign') + '</button> ' +
                     '<button class="btn-danger" style="font-size:0.6rem; padding:4px 10px;" onclick="deleteOrphan(' + i + ')"><i class="fas fa-trash"></i></button>' +
                 '</td>' +
             '</tr>';
@@ -1946,14 +1948,14 @@ async function updateDashboard() {
         
         var newStrategyId = select.value;
         if (newStrategyId === orphan.strategyId) {
-            showToast('Same strategy selected. No changes made.', 'warning');
+            showToast(t('pvt.activity.sameStrategyWarn'), 'warning');
             return;
         }
         
         // ✅ Mostrar confirmación PRIMERO
         showConfirmModal(
-            'Reassign "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.strategyId + ' to ' + newStrategyId + '?',
-            '⚠️ Reassign Activity',
+            t('pvt.activity.confirmReassignMsg', { instr: orphan.instruction.substring(0, 40), oldStrat: orphan.strategyId, newStrat: newStrategyId }),
+            t('pvt.activity.confirmReassignTitle'),
             function() {
                 // ✅ Ejecutar acción SOLO después de confirmar
                 performReassign(orphan, newStrategyId);
@@ -1962,7 +1964,7 @@ async function updateDashboard() {
     }
 
     function performReassign(orphan, newStrategyId) {
-        showLoading('Reassigning activity...');
+        showLoading(t('pvt.activity.reassigningActivity'));
         
         var payload = {
             assetId: orphan.assetId,
@@ -1982,12 +1984,12 @@ async function updateDashboard() {
                     openOrphanModal();
                     loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
                 } else {
-                    showToast('Error: ' + result.message, 'error');
+                    showToast(t('common.error') + ': ' + result.message, 'error');
                 }
             })
             .catch(function(e) {
                 hideLoading();
-                showToast('Error: ' + e.message, 'error');
+                showToast(t('common.error') + ': ' + e.message, 'error');
             });
     }
 
@@ -1997,8 +1999,8 @@ async function updateDashboard() {
         
         // ✅ Mostrar confirmación PRIMERO
         showConfirmModal(
-            'Delete orphan activity: "' + orphan.instruction.substring(0, 40) + '..." from ' + orphan.assetId + '?',
-            '⚠️ Delete Activity',
+            t('pvt.activity.confirmDeleteOrphanMsg', { instr: orphan.instruction.substring(0, 40), assetId: orphan.assetId }),
+            t('pvt.activity.confirmDeleteTitle'),
             function() {
                 // ✅ Ejecutar acción SOLO después de confirmar
                 performDelete(orphan);
@@ -2007,7 +2009,7 @@ async function updateDashboard() {
     }
 
     function performDelete(orphan) {
-        showLoading('Deleting activity...');
+        showLoading(t('pvt.activity.deletingActivity'));
         
         var payload = {
             assetId: orphan.assetId,
@@ -2029,17 +2031,17 @@ async function updateDashboard() {
                         loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
                     }, 300);
                 } else {
-                    showToast('Error: ' + result.message, 'error');
+                    showToast(t('common.error') + ': ' + result.message, 'error');
                 }
             })
             .catch(function(e) {
                 hideLoading();
-                showToast('Error: ' + e.message, 'error');
+                showToast(t('common.error') + ': ' + e.message, 'error');
             });
     }
 
     function performReassign(orphan, newStrategyId) {
-        showLoading('Reassigning activity...');
+        showLoading(t('pvt.activity.reassigningActivity'));
         
         var payload = {
             assetId: orphan.assetId,
@@ -2063,12 +2065,12 @@ async function updateDashboard() {
                         loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
                     }, 300);
                 } else {
-                    showToast('Error: ' + result.message, 'error');
+                    showToast(t('common.error') + ': ' + result.message, 'error');
                 }
             })
             .catch(function(e) {
                 hideLoading();
-                showToast('Error: ' + e.message, 'error');
+                showToast(t('common.error') + ': ' + e.message, 'error');
             });
     }
 
@@ -2087,7 +2089,7 @@ async function updateDashboard() {
         var modal = document.getElementById('confirmModal');
         if (!modal) return;
         
-        document.getElementById('confirmMessage').innerText = message || 'Are you sure?';
+        document.getElementById('confirmMessage').innerText = message || t('pvt.activity.areYouSure');
         if (title) document.getElementById('confirmTitle').innerHTML = title;
         
         confirmCallback = callback;
@@ -2130,22 +2132,22 @@ async function updateDashboard() {
             '<div class="modal-overlay" id="deleteModal">' +
                 '<div class="modal-container">' +
                     '<div class="modal-header">' +
-                        '<h3><i class="fas fa-trash-alt" style="color: #dc3545;"></i> Delete Activity</h3>' +
+                        '<h3><i class="fas fa-trash-alt" style="color: #dc3545;"></i> ' + t('pvt.activity.deleteModalTitle') + '</h3>' +
                         '<span class="modal-close" onclick="closeDeleteModal()">&times;</span>' +
                     '</div>' +
                     '<div class="modal-body">' +
                         '<div style="background: #fef2f2; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif; font-size:0.8rem;">' +
-                            '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Are you sure you want to delete:<br>' +
-                            '<strong>' + escapeHtml(task.equipment) + ' | ' + escapeHtml(task.instruction) + ' | ' + task.timeHr + ' hrs</strong>' +
+                            '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> ' + t('pvt.activity.confirmDeleteLabel') + '<br>' +
+                            '<strong>' + escapeHtml(task.equipment) + ' | ' + escapeHtml(task.instruction) + ' | ' + task.timeHr + ' ' + t('pvt.activity.hrsUnit') + '</strong>' +
                         '</div>' +
                         '<div id="delete-clone-section" class="clone-section">' +
-                            '<h4><i class="fas fa-copy"></i> Also delete from:</h4>' +
-                            '<div id="delete-clone-list"><div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> Searching for clones...</div></div>' +
+                            '<h4><i class="fas fa-copy"></i> ' + t('pvt.activity.alsoDeleteFrom') + '</h4>' +
+                            '<div id="delete-clone-list"><div class="loading-clones"><i class="fas fa-spinner fa-pulse"></i> ' + t('pvt.activity.searchingClones') + '</div></div>' +
                         '</div>' +
                     '</div>' +
                     '<div class="modal-footer">' +
-                        '<button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>' +
-                        '<button class="btn-danger" onclick="submitDelete()">Delete Activity</button>' +
+                        '<button class="btn-secondary" onclick="closeDeleteModal()">' + t('pvt.activity.btnCancel') + '</button>' +
+                        '<button class="btn-danger" onclick="submitDelete()">' + t('pvt.activity.btnDeleteSubmit') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -2165,7 +2167,7 @@ async function updateDashboard() {
                 renderCloneList('delete-clone-list', currentDeleteCloneTargets, 'delete');
             } catch (e) {
                 var container = document.getElementById('delete-clone-list');
-                if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Error loading clones.</div>';
+                if (container) container.innerHTML = '<div style="padding: 15px; text-align: center; color: #dc3545; font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('pvt.activity.errLoadingClones') + '</div>';
             }
         })();
     }
@@ -2176,14 +2178,14 @@ async function updateDashboard() {
     function refreshModule() {
         if (isInEditorMode) {
             showConfirmModal(
-                'You are currently editing an activity. Refreshing will take you back to the results view. Continue?',
-                '⚠️ Refresh',
+                t('pvt.activity.refreshConfirmMsg'),
+                t('pvt.activity.refreshConfirmTitle'),
                 function() {
                     backToResults();
                     loadHierarchyTree();
                     updateDashboard();
                     document.getElementById('search-input').value = '';
-                    showToast('Module refreshed successfully ✅', 'success');
+                    showToast(t('pvt.activity.moduleRefreshedToast'), 'success');
                 }
             );
         } else {
@@ -2194,7 +2196,7 @@ async function updateDashboard() {
             // Ocultar resultados
             document.getElementById('resultsTable').style.display = 'none';
             document.getElementById('noResultsMsg').style.display = 'block';
-            showToast('Module refreshed successfully ✅', 'success');
+            showToast(t('pvt.activity.moduleRefreshedToast'), 'success');
         }
     }
 
@@ -2227,7 +2229,7 @@ async function updateDashboard() {
             userEmail: currentUserEmail || 'system'
         };
         
-        showLoading('Deleting activity...');
+        showLoading(t('pvt.activity.deletingActivity'));
         try {
             var res = await callApi('PVT_deleteActivity', [payload]);
             hideLoading();
@@ -2238,12 +2240,12 @@ async function updateDashboard() {
                     loadStrategy(currentContext.strategyId, currentContext.assetId, currentContext.frequency, currentContext.tlName);
                 }, 500);
             } else {
-                showToast('Error: ' + res.message, 'error');
+                showToast(t('common.error') + ': ' + res.message, 'error');
                 backToResults();
             }
         } catch (e) {
             hideLoading();
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
             backToResults();
             console.error('submitDelete error:', e);
         }
