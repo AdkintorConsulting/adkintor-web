@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Strategic Planner - ADKINTOR EAMS</title>
+    <title data-i18n="pvt.planner.pageTitle">Strategic Planner - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -742,7 +744,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="pvt.planner.loadingConfig">Loading configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -754,17 +756,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Strategic Planner</span>
+            <span class="module-title" data-i18n="pvt.planner.title">Strategic Planner</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Strategic Planner</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="pvt.breadcrumb">PREVENTIVE</span> &gt; <span class="current" data-i18n="pvt.planner.breadcrumb">Strategic Planner</span>
     </div>
     
     <!-- CUERPO -->
@@ -773,14 +775,14 @@
         <div class="planner-nav">
             <div class="nav-title">
                 <i class="fas fa-microchip"></i>
-                <h2>STRATEGIC PLANNER ENGINE</h2>
+                <h2 data-i18n="pvt.planner.engineTitle">STRATEGIC PLANNER ENGINE</h2>
             </div>
             <div class="nav-controls">
                 <select id="yearSelect"></select>
-                <button id="btnLoad" class="btn-nav btn-secondary-nav" onclick="loadPlan()"><i class="fas fa-eye"></i> VIEW</button>
-                <button id="btnGen" class="btn-nav btn-warning-nav" onclick="generatePlan()"><i class="fas fa-cogs"></i> GENERATE</button>
-                <button id="btnSave" class="btn-nav btn-success-nav" onclick="savePlan('UNLOCKED')"><i class="fas fa-save"></i> DRAFT</button>
-                <button id="btnLock" class="btn-nav btn-danger-nav" onclick="savePlan('LOCKED')"><i class="fas fa-lock"></i> LOCK</button>
+                <button id="btnLoad" class="btn-nav btn-secondary-nav" onclick="loadPlan()" data-i18n-html="pvt.planner.btnView"><i class="fas fa-eye"></i> VIEW</button>
+                <button id="btnGen" class="btn-nav btn-warning-nav" onclick="generatePlan()" data-i18n-html="pvt.planner.btnGenerate"><i class="fas fa-cogs"></i> GENERATE</button>
+                <button id="btnSave" class="btn-nav btn-success-nav" onclick="savePlan('UNLOCKED')" data-i18n-html="pvt.planner.btnDraft"><i class="fas fa-save"></i> DRAFT</button>
+                <button id="btnLock" class="btn-nav btn-danger-nav" onclick="savePlan('LOCKED')" data-i18n-html="pvt.planner.btnLock"><i class="fas fa-lock"></i> LOCK</button>
             </div>
         </div>
 
@@ -794,11 +796,11 @@
             <!-- Panel lateral -->
             <div class="side-panel" id="sidePanel">
                 <div class="panel-header">
-                    <h6><i class="fas fa-tasks"></i> WEEK LOAD</h6>
+                    <h6 data-i18n-html="pvt.planner.weekLoad"><i class="fas fa-tasks"></i> WEEK LOAD</h6>
                     <span class="week-badge" id="weekLabel">--</span>
                 </div>
                 <div class="task-list custom-scroll" id="taskList">
-                    <div class="empty-state"><i class="fas fa-calendar-week"></i> Select a week to view tasks</div>
+                    <div class="empty-state" data-i18n-html="pvt.planner.selectWeekEmpty"><i class="fas fa-calendar-week"></i> Select a week to view tasks</div>
                 </div>
             </div>
         </div>
@@ -808,7 +810,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -869,7 +871,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -882,7 +884,7 @@
     // ============================================
     function closeModal() {
         if (isDirty) {
-            if (confirm('Unsaved changes will be lost. Continue?')) {
+            if (confirm(t('pvt.planner.unsavedConfirm'))) {
                 window.parent.postMessage('closeIframe', '*');
             }
         } else {
@@ -905,19 +907,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR ESTA LÍNEA
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('pvt.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -931,7 +933,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -1035,11 +1037,11 @@
         loadApiUrl();
         
         if (!EAMS_API_URL) {
-            showToast('API URL not configured. Please log in first.', 'error');
+            showToast(t('pvt.planner.apiNotConfiguredFirst'), 'error');
             return;
         }
         
-        showLoading('Loading configuration...');
+        showLoading(t('pvt.planner.loadingConfig'));
         
         try {
             var yearsData = await callApi('PVT_getAvailableYears', []);
@@ -1070,9 +1072,9 @@
                 // ✅ SOLO mostrar mensaje si está bloqueado, NO deshabilitar botones
                 var isLocked = lockedYears.indexOf(this.value) !== -1;
                 if (isLocked) {
-                    showToast('⚠️ This year is LOCKED. Click VIEW to load in read-only mode.', 'warning');
+                    showToast(t('pvt.planner.yearLockedViewToast'), 'warning');
                 } else {
-                    showToast('📅 Year selected. Click VIEW to load the plan.', 'info');
+                    showToast(t('pvt.planner.yearSelectedToast'), 'info');
                 }
             });
             // console.log('[PVT] Ready');  // COMENTADO
@@ -1084,7 +1086,7 @@
         } catch (e) {
             hideLoading();
             // console.error('Error initializing:', e);  // COMENTADO
-            showToast('Error loading configuration: ' + e.message, 'error');
+            showToast(t('pvt.planner.errLoadConfig', { error: e.message }), 'error');
             
             var currentYear = new Date().getFullYear();
             allYears = [currentYear, currentYear + 1, currentYear + 2];
@@ -1123,7 +1125,7 @@
         // ✅ NO deshabilitar botones aquí - solo mostrar mensaje si está bloqueado
         
         if (isLocked && showMessage) {
-            showToast('⚠️ YEAR LOCKED - READ ONLY MODE', 'warning');
+            showToast(t('pvt.planner.yearLockedReadOnly'), 'warning');
         }
         
         // ✅ Retornar el estado para que otros lo usen si es necesario
@@ -1155,11 +1157,11 @@
     async function generatePlan() {
         var year = document.getElementById('yearSelect').value;
         if (!year) {
-            showToast('Please select a year', 'error');
+            showToast(t('pvt.planner.selectYear'), 'error');
             return;
         }
         
-        showLoading('EXECUTING BALANCING ALGORITHM...');
+        showLoading(t('pvt.planner.executingBalancing'));
         
         try {
             // ✅ Añadir userEmail al payload
@@ -1174,7 +1176,7 @@
             var data = await callApi('PVT_executeAutoPlanning', [parseInt(year), currentUser]);
             
             if (!data || data.length === 0) {
-                showToast('No data generated. Check assets and strategy configuration.', 'error');
+                showToast(t('pvt.planner.noDataGenerated'), 'error');
                 hideLoading();
                 return;
             }
@@ -1199,23 +1201,23 @@
             // ✅ ACTUALIZAR BOTONES DESPUÉS DE GENERAR
             updateButtonsState();
             hideLoading();
-            showToast('✅ Generated ' + data.length + ' tasks', 'success');
+            showToast(t('pvt.planner.generatedTasks', { count: data.length }), 'success');
             
         } catch (e) {
             hideLoading();
             // console.error('Generation error:', e);  // COMENTADO
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
     async function loadPlan() {
         var year = document.getElementById('yearSelect').value;
         if (!year) {
-            showToast('Please select a year', 'error');
+            showToast(t('pvt.planner.selectYear'), 'error');
             return;
         }
         
-        showLoading('LOADING MASTER PLAN...');
+        showLoading(t('pvt.planner.loadingMasterPlan'));
         
         try {
             var data = await callApi('PVT_loadExistingPlan', [parseInt(year)]);
@@ -1225,20 +1227,20 @@
             isDirty = false;
             renderHeatmap();
             hideLoading();
-            showToast('📋 Loaded ' + currentPlan.length + ' tasks', 'success');
+            showToast(t('pvt.planner.loadedTasks', { count: currentPlan.length }), 'success');
             
             // ✅ ACTUALIZAR BOTONES DESPUÉS DE CARGAR EL PLAN
             updateButtonsState();
             
             // ✅ Mostrar mensaje si está bloqueado
             if (currentLockStatus) {
-                showToast('⚠️ YEAR LOCKED - READ ONLY MODE', 'warning');
+                showToast(t('pvt.planner.yearLockedReadOnly'), 'warning');
             }
             
         } catch (e) {
             hideLoading();
             // console.error('Load error:', e);  // COMENTADO
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
@@ -1294,7 +1296,7 @@
             }
             
             html += '<div class="week-card" style="background: ' + bg + '; color: ' + textColor + ';" onclick="showWeek(' + i + ', this)">' +
-                '<div class="week-number">W' + i + '</div>' +
+                '<div class="week-number">' + t('pvt.planner.weekPrefix') + i + '</div>' +
                 '<div class="week-count">' + count + '</div>' +
             '</div>';
         }
@@ -1314,7 +1316,7 @@
         if (element) element.classList.add('active');
         
         activeWeek = week;
-        document.getElementById('weekLabel').innerHTML = 'WEEK ' + week;
+        document.getElementById('weekLabel').innerHTML = t('pvt.planner.weekBadge', { week: week });
         
         var tasks = currentPlan ? currentPlan.filter(function(p) { return p.week == week; }) : [];
         
@@ -1322,7 +1324,7 @@
         if (!container) return;
         
         if (tasks.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-clipboard-list fa-2x" style="opacity: 0.3; margin-bottom: 12px; display: block;"></i>No tasks scheduled for this week</div>';
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-clipboard-list fa-2x" style="opacity: 0.3; margin-bottom: 12px; display: block;"></i>' + t('pvt.planner.noTasksWeek') + '</div>';
             return;
         }
         
@@ -1330,22 +1332,22 @@
         var html = '';
         
         for (var i = 0; i < tasks.length; i++) {
-            var t = tasks[i];
+            var task = tasks[i];
             
             var moveButton = isLocked 
-                ? '<button class="icon-btn icon-btn-move" disabled title="Year is locked"><i class="fas fa-arrows-alt"></i></button>'
-                : '<button class="icon-btn icon-btn-move" onclick="openMoveModal(\'' + escapeHtml(t.pmCode) + '\')" title="Move to different week"><i class="fas fa-arrows-alt"></i></button>';
+                ? '<button class="icon-btn icon-btn-move" disabled title="' + t('pvt.planner.titleYearLocked') + '"><i class="fas fa-arrows-alt"></i></button>'
+                : '<button class="icon-btn icon-btn-move" onclick="openMoveModal(\'' + escapeHtml(task.pmCode) + '\')" title="' + t('pvt.planner.titleMoveWeek') + '"><i class="fas fa-arrows-alt"></i></button>';
             
             var deleteButton = isLocked
-                ? '<button class="icon-btn icon-btn-delete" disabled title="Year is locked"><i class="fas fa-trash-alt"></i></button>'
-                : '<button class="icon-btn icon-btn-delete" onclick="confirmDelete(\'' + escapeHtml(t.pmCode) + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>';
+                ? '<button class="icon-btn icon-btn-delete" disabled title="' + t('pvt.planner.titleYearLocked') + '"><i class="fas fa-trash-alt"></i></button>'
+                : '<button class="icon-btn icon-btn-delete" onclick="confirmDelete(\'' + escapeHtml(task.pmCode) + '\')" title="' + t('pvt.planner.titleDeleteTask') + '"><i class="fas fa-trash-alt"></i></button>';
             
             html += 
                 '<div class="task-item">' +
                     '<div class="task-info">' +
-                        '<strong>' + escapeHtml(t.assetName || t.assetId) + '</strong>' +
-                        '<small>' + escapeHtml(t.assetId) + ' | ' + t.frequency + '</small>' +
-                        '<div><span class="task-code">' + t.pmCode + '</span></div>' +
+                        '<strong>' + escapeHtml(task.assetName || task.assetId) + '</strong>' +
+                        '<small>' + escapeHtml(task.assetId) + ' | ' + escapeHtml(tStatus(task.frequency)) + '</small>' +
+                        '<div><span class="task-code">' + task.pmCode + '</span></div>' +
                     '</div>' +
                     '<div class="task-actions">' +
                         moveButton +
@@ -1369,12 +1371,12 @@
                     '<div class="modal-icon" style="color: #1a1a2e;">' +
                         '<i class="fas fa-arrows-alt"></i>' +
                     '</div>' +
-                    '<h3>Move Task</h3>' +
-                    '<p>Enter target week (1-52):</p>' +
-                    '<input type="number" id="newWeekInput" min="1" max="52" placeholder="Week number">' +
+                    '<h3>' + t('pvt.planner.moveModalTitle') + '</h3>' +
+                    '<p>' + t('pvt.planner.moveModalPrompt') + '</p>' +
+                    '<input type="number" id="newWeekInput" min="1" max="52" placeholder="' + t('pvt.planner.moveModalPlaceholder') + '">' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeMoveModal()">Cancel</button>' +
-                        '<button class="btn-modal-primary" onclick="confirmMove()">Move</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeMoveModal()">' + t('pvt.planner.btnCancel') + '</button>' +
+                        '<button class="btn-modal-primary" onclick="confirmMove()">' + t('pvt.planner.btnMove') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1393,7 +1395,7 @@
         var newWeek = parseInt(sanitizeInput(input ? input.value : ''));
         
         if (isNaN(newWeek) || newWeek < 1 || newWeek > 52) {
-            showToast('Invalid week (1-52)', 'error');
+            showToast(t('pvt.planner.invalidWeek'), 'error');
             return;
         }
         
@@ -1409,7 +1411,7 @@
             currentPlan[taskIndex].week = newWeek;
             isDirty = true;
             renderHeatmap();
-            showToast('Moved from Week ' + oldWeek + ' to Week ' + newWeek, 'success');
+            showToast(t('pvt.planner.movedToast', { oldWeek: oldWeek, newWeek: newWeek }), 'success');
         }
         
         closeMoveModal();
@@ -1427,11 +1429,11 @@
                     '<div class="modal-icon" style="color: #f59e0b;">' +
                         '<i class="fas fa-exclamation-triangle"></i>' +
                     '</div>' +
-                    '<h3>Confirm Deletion</h3>' +
-                    '<p>Delete this task permanently? This action cannot be undone.</p>' +
+                    '<h3>' + t('pvt.planner.deleteModalTitle') + '</h3>' +
+                    '<p>' + t('pvt.planner.deleteModalMsg') + '</p>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">Cancel</button>' +
-                        '<button class="btn-modal-danger" id="confirmActionBtn">Delete</button>' +
+                        '<button class="btn-modal-secondary" onclick="closeConfirmModal()">' + t('pvt.planner.btnCancel') + '</button>' +
+                        '<button class="btn-modal-danger" id="confirmActionBtn">' + t('pvt.planner.btnDelete') + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1449,7 +1451,7 @@
             isDirty = true;
             closeConfirmModal();
             renderHeatmap();
-            showToast('Task deleted successfully', 'success');
+            showToast(t('pvt.planner.deletedToast'), 'success');
             pendingMoveCode = null;
         };
     }
@@ -1465,7 +1467,7 @@
     // ============================================
     async function savePlan(lockStatus) {
         if (!currentPlan || currentPlan.length === 0) {
-            showToast('No data to save', 'error');
+            showToast(t('pvt.planner.noDataToSave'), 'error');
             return;
         }
         
@@ -1475,7 +1477,7 @@
         
         if (lockStatus === 'LOCKED') {
             if (isLocked) {
-                showToast('Year ' + year + ' is already locked.', 'error');
+                showToast(t('pvt.planner.yearAlreadyLocked', { year: year }), 'error');
                 return;
             }
             
@@ -1485,11 +1487,11 @@
                         '<div class="modal-icon" style="color: #dc3545;">' +
                             '<i class="fas fa-lock"></i>' +
                         '</div>' +
-                        '<h3>Confirm Lock</h3>' +
-                        '<p>⚠️ LOCK year ' + year + ' permanently?<br>No further edits will be allowed.</p>' +
+                        '<h3>' + t('pvt.planner.lockModalTitle') + '</h3>' +
+                        '<p>' + t('pvt.planner.lockModalMsg', { year: year }) + '</p>' +
                         '<div class="modal-buttons">' +
-                            '<button class="btn-modal-secondary" onclick="closeLockConfirmModal()">Cancel</button>' +
-                            '<button class="btn-modal-danger" id="lockConfirmBtn">Lock Year</button>' +
+                            '<button class="btn-modal-secondary" onclick="closeLockConfirmModal()">' + t('pvt.planner.btnCancel') + '</button>' +
+                            '<button class="btn-modal-danger" id="lockConfirmBtn">' + t('pvt.planner.btnLockYear') + '</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -1512,7 +1514,7 @@
     }
 
     async function executeSave(lockStatus) {
-        showLoading('SAVING TO DATABASE...');
+        showLoading(t('pvt.planner.savingDb'));
         
         try {
             // ✅ Añadir userEmail al payload
@@ -1560,18 +1562,18 @@
                     checkLockState();
                     currentLockStatus = true;
                     renderHeatmap();
-                    showToast('🔒 Year locked successfully', 'success');
+                    showToast(t('pvt.planner.yearLockedSuccess'), 'success');
                 } else {
                     await loadPlan();
                 }
             } else {
-                var errorMsg = response && response.message ? response.message : 'Unknown error';
-                showToast('Error: ' + errorMsg, 'error');
+                var errorMsg = response && response.message ? response.message : t('common.unknownError');
+                showToast(t('common.error') + ': ' + errorMsg, 'error');
             }
         } catch (e) {
             hideLoading();
             // console.error('Save error:', e);  // COMENTADO
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
