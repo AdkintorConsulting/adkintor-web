@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Procurement Hub - ADKINTOR EAMS</title>
+    <title data-i18n="stk.procurement.pageTitle">Procurement Hub - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -844,7 +846,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading Procurement Hub...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="stk.procurement.loadingHub">Loading Procurement Hub...</span>
 </div>
 
 <!-- TOAST -->
@@ -856,17 +858,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Procurement Hub</span>
+            <span class="module-title" data-i18n="stk.procurement.title">Procurement Hub</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>INVENTORY</span> &gt; <span class="current">Procurement Hub</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="stk.breadcrumb">INVENTORY</span> &gt; <span class="current" data-i18n="stk.procurement.title">Procurement Hub</span>
     </div>
     
     <!-- CUERPO -->
@@ -875,54 +877,54 @@
             <!-- LEFT PANEL: TRACKER -->
             <div class="tracker-panel">
                 <div class="tracker-header">
-                    <h3><i class="fas fa-list-ul"></i> Procurement Tracker</h3>
+                    <h3 data-i18n-html="stk.procurement.trackerTitle"><i class="fas fa-list-ul"></i> Procurement Tracker</h3>
                     <div class="filter-bar">
                         <div style="display:flex; gap:6px;">
-                            <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." style="flex:1;">
+                            <input type="text" id="searchInput" placeholder="🔍 Search PO # or Vendor..." data-i18n-placeholder="stk.procurement.searchPoPlaceholder" style="flex:1;">
                             <button class="btn-primary" onclick="applySearchFilter()" style="padding:6px 12px; font-size:0.65rem; background:#64748b;"><i class="fas fa-search"></i></button>
                             <button class="btn-secondary" onclick="clearSearchFilter()" style="padding:6px 12px; font-size:0.65rem;"><i class="fas fa-times"></i></button>
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <select id="monthsFilter" onchange="refreshTracker()" style="flex:1;">
-                                <option value="1">Last Month</option>
-                                <option value="6" selected>Last 6 Months</option>
-                                <option value="12">Last 12 Months</option>
-                                <option value="24">Last 24 Months</option>
-                                <option value="0">All Time</option>
+                                <option value="1" data-i18n="stk.procurement.lastMonth">Last Month</option>
+                                <option value="6" selected data-i18n="stk.procurement.last6Months">Last 6 Months</option>
+                                <option value="12" data-i18n="stk.procurement.last12Months">Last 12 Months</option>
+                                <option value="24" data-i18n="stk.procurement.last24Months">Last 24 Months</option>
+                                <option value="0" data-i18n="stk.procurement.allTime">All Time</option>
                             </select>
                             <select id="statusFilter" onchange="refreshTracker()" style="flex:1;">
-                                <option value="ALL">All Status</option>
+                                <option value="ALL" data-i18n="stk.procurement.allStatus">All Status</option>
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="tracker-list custom-scroll" id="trackerList"><div style="text-align:center;padding:40px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Loading...</div></div>
+                <div class="tracker-list custom-scroll" id="trackerList"><div style="text-align:center;padding:40px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="common.loading">Loading...</div></div>
             </div>
 
             <!-- RIGHT PANEL -->
             <div class="action-panel">
                 <div class="action-tabs">
-                    <div class="action-tab active" data-tab="new" onclick="activateTab('new')"><i class="fas fa-pen"></i> New Request</div>
-                    <div class="action-tab" data-tab="receive" onclick="activateTab('receive')"><i class="fas fa-boxes"></i> Process Receipt</div>
+                    <div class="action-tab active" data-tab="new" onclick="activateTab('new')" data-i18n-html="stk.procurement.tabNewRequest"><i class="fas fa-pen"></i> New Request</div>
+                    <div class="action-tab" data-tab="receive" onclick="activateTab('receive')" data-i18n-html="stk.procurement.tabProcessReceipt"><i class="fas fa-boxes"></i> Process Receipt</div>
                 </div>
                 <div class="action-content custom-scroll">
-                    <div id="empty-state" class="empty-state" style="display:none;"><i class="fas fa-hand-pointer fa-2x" style="opacity:0.3; margin-bottom:12px;"></i><p>Select a tab above to start</p></div>
+                    <div id="empty-state" class="empty-state" style="display:none;"><i class="fas fa-hand-pointer fa-2x" style="opacity:0.3; margin-bottom:12px;"></i><p data-i18n="stk.procurement.selectTabHint">Select a tab above to start</p></div>
                     
                     <!-- TAB: NEW REQUEST -->
                     <div id="tab-new">
-                        <h4>Create Requisition / PO</h4>
+                        <h4 data-i18n="stk.procurement.createReqTitle">Create Requisition / PO</h4>
                         <form id="reqForm">
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Payment Method *</label>
+                                    <label data-i18n="stk.procurement.lblPaymentMethodReq">Payment Method *</label>
                                     <select id="paymentMethod" required>
-                                        <option value="">-- Select one --</option>
+                                        <option value="" data-i18n="stk.procurement.selectOne">-- Select one --</option>
                                     </select>
                                 </div>                              
                                 <div class="form-group">
-                                    <label>Vendor / Supplier *</label>
+                                    <label data-i18n="stk.procurement.lblVendorReq">Vendor / Supplier *</label>
                                     <div style="position:relative">
-                                        <input type="text" id="vendor" required autocomplete="off" placeholder="Type vendor name...">
+                                        <input type="text" id="vendor" required autocomplete="off" placeholder="Type vendor name..." data-i18n-placeholder="stk.procurement.phVendor">
                                         <div id="vendorSuggestions" class="custom-suggestions" style="display:none;"></div>
                                         <div id="vendorSpinner" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#64748b; font-size:0.8rem;">
                                             <i class="fas fa-spinner fa-spin"></i>
@@ -932,133 +934,133 @@
                             </div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Reference number</label>
-                                    <input type="text" id="reqId" placeholder="Optional internal reference">
+                                    <label data-i18n="stk.procurement.lblRefNumber">Reference number</label>
+                                    <input type="text" id="reqId" placeholder="Optional internal reference" data-i18n-placeholder="stk.procurement.phRefNumber">
                                 </div>
                                 <div class="form-group">
-                                    <label>PO Number</label>
-                                    <input type="text" id="poNumber" placeholder="PO number">
-                                    <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" id="poNumberHint">Only for Purchase Order payment method</div>
+                                    <label data-i18n="stk.procurement.lblPoNumber">PO Number</label>
+                                    <input type="text" id="poNumber" placeholder="PO number" data-i18n-placeholder="stk.procurement.phPoNumber">
+                                    <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" id="poNumberHint" data-i18n="stk.procurement.poHintDefault">Only for Purchase Order payment method</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Issue Date</label>
+                                    <label data-i18n="stk.procurement.lblIssueDate">Issue Date</label>
                                     <input type="date" id="issueDate">
                                 </div>
                                 <div class="form-group">
-                                    <label>Expected Delivery Date</label>
+                                    <label data-i18n="stk.procurement.lblExpectedDate">Expected Delivery Date</label>
                                     <input type="date" id="expectedDeliveryDate">
                                 </div>
                             </div>
-                            <div style="font-size:0.65rem;color:#666;padding-bottom:12px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                            <div style="font-size:0.65rem;color:#666;padding-bottom:12px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n-html="stk.procurement.issueDateHint">
                                 <i class="fas fa-info-circle"></i> Leave issue date empty for today. Expected delivery date is optional.
                             </div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Budget Area *</label>
+                                    <label data-i18n="stk.procurement.lblBudgetAreaReq">Budget Area *</label>
                                     <select id="budgetArea">
-                                        <option value="">-- Select area --</option>
+                                        <option value="" data-i18n="stk.procurement.selectArea">-- Select area --</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>General Ledger</label>
-                                    <input type="text" id="budgetCode" readonly placeholder="Auto-filled">
+                                    <label data-i18n="stk.procurement.lblGeneralLedger">General Ledger</label>
+                                    <input type="text" id="budgetCode" readonly placeholder="Auto-filled" data-i18n-placeholder="stk.procurement.phAutoFilled">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Items</label>
+                                <label data-i18n="stk.procurement.lblItems">Items</label>
                                 <table class="items-table" id="reqItemsTable">
                                     <thead>
                                         <tr>
-                                            <th style="width:80px">Type</th>
-                                            <th style="width:120px">SKU/Code</th>
-                                            <th style="width:180px">Description</th>
-                                            <th style="width:60px">Qty</th>
-                                            <th style="width:120px">Unit Price</th>
+                                            <th style="width:80px" data-i18n="stk.procurement.colType">Type</th>
+                                            <th style="width:120px" data-i18n="stk.procurement.colSkuCode">SKU/Code</th>
+                                            <th style="width:180px" data-i18n="stk.procurement.colDescription">Description</th>
+                                            <th style="width:60px" data-i18n="stk.procurement.colQty">Qty</th>
+                                            <th style="width:120px" data-i18n="stk.procurement.colUnitPrice">Unit Price</th>
                                             <th style="width:30px"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="reqItemsBody"></tbody>
                                 </table>
-                                <button type="button" class="btn-add" onclick="addReqItem()"><i class="fas fa-plus"></i> Add Item</button>
+                                <button type="button" class="btn-add" onclick="addReqItem()" data-i18n-html="stk.procurement.btnAddItem"><i class="fas fa-plus"></i> Add Item</button>
                             </div>
                             <div class="form-group">
-                                <label>Notes / Justification</label>
+                                <label data-i18n="stk.procurement.lblNotesJustification">Notes / Justification</label>
                                 <textarea id="reqNotes" rows="2"></textarea>
                                 <div id="reqNotesWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                             </div>
                             <div class="btn-container">
-                                <button type="button" class="btn-secondary" onclick="clearReqForm()"><i class="fas fa-eraser"></i> Clear</button>
-                                <button type="button" class="btn-primary" onclick="submitRequisition()"><i class="fas fa-save"></i> Save Requisition</button>
+                                <button type="button" class="btn-secondary" onclick="clearReqForm()" data-i18n-html="stk.procurement.btnClear"><i class="fas fa-eraser"></i> Clear</button>
+                                <button type="button" class="btn-primary" onclick="submitRequisition()" data-i18n-html="stk.procurement.btnSaveReq"><i class="fas fa-save"></i> Save Requisition</button>
                             </div>
                         </form>
                     </div>
                     
                     <!-- TAB: PROCESS RECEIPT -->
                     <div id="tab-receive" style="display:none;">
-                        <h4>Process Material Receipt</h4>
+                        <h4 data-i18n="stk.procurement.processReceiptTitle">Process Material Receipt</h4>
                         <div class="po-search-container">
-                            <input type="text" id="poSearchInput" placeholder="Search by PO Number...">
-                            <button class="btn-primary" onclick="searchPOForReceipt()"><i class="fas fa-search"></i> Search</button>
-                            <button class="btn-secondary" onclick="clearReceiptSearch()"><i class="fas fa-eraser"></i> Clear</button>
+                            <input type="text" id="poSearchInput" placeholder="Search by PO Number..." data-i18n-placeholder="stk.procurement.phSearchPo">
+                            <button class="btn-primary" onclick="searchPOForReceipt()" data-i18n-html="stk.procurement.btnSearch"><i class="fas fa-search"></i> Search</button>
+                            <button class="btn-secondary" onclick="clearReceiptSearch()" data-i18n-html="stk.procurement.btnClear"><i class="fas fa-eraser"></i> Clear</button>
                         </div>
-                        <div id="receiveSelectionMsg" class="receive-summary">Enter a PO number above.</div>
+                        <div id="receiveSelectionMsg" class="receive-summary" data-i18n="stk.procurement.enterPoAbove">Enter a PO number above.</div>
                         <div id="tempPoSection" style="display:none; background:#fef3c7; padding:10px 14px; border-radius:6px; margin-bottom:12px; border-left:4px solid #f59e0b;">
-                            <strong><i class="fas fa-exclamation-triangle"></i> TEMPORARY PO DETECTED</strong>
+                            <strong data-i18n-html="stk.procurement.tempPoDetected"><i class="fas fa-exclamation-triangle"></i> TEMPORARY PO DETECTED</strong>
                             <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; align-items:center;">
                                 <span style="font-size:0.8rem; font-weight:600; font-family:'Courier New',monospace; color:#92400e;" id="tempPoNumberDisplay">TEMP-XXXX</span>
-                                <input type="text" id="updatePoNumberInput" placeholder="Enter new PO number..." style="padding:6px 10px; border:1px solid #e2e8f0; border-radius:4px; font-size:0.75rem; flex:1; min-width:150px;">
-                                <button class="btn-primary" onclick="updateTempPoNumber()" style="background:#d97706;"><i class="fas fa-pen"></i> UPDATE PO</button>
+                                <input type="text" id="updatePoNumberInput" placeholder="Enter new PO number..." data-i18n-placeholder="stk.procurement.phNewPo" style="padding:6px 10px; border:1px solid #e2e8f0; border-radius:4px; font-size:0.75rem; flex:1; min-width:150px;">
+                                <button class="btn-primary" onclick="updateTempPoNumber()" style="background:#d97706;" data-i18n-html="stk.procurement.btnUpdatePo"><i class="fas fa-pen"></i> UPDATE PO</button>
                             </div>
-                            <div style="font-size:0.65rem; color:#92400e; margin-top:4px;">
+                            <div style="font-size:0.65rem; color:#92400e; margin-top:4px;" data-i18n-html="stk.procurement.tempPoHint">
                                 <i class="fas fa-info-circle"></i> Replace the temporary PO number with the actual PO number from your supplier.
                             </div>
                         </div>
                         <form id="receiptForm" style="display:none">
                             <div class="row">
                                 <div class="form-group">
-                                    <label>PO Number</label>
+                                    <label data-i18n="stk.procurement.lblPoNumber">PO Number</label>
                                     <input type="text" id="receiptPONumber" readonly>
                                 </div>
                                 <div class="form-group">
-                                    <label>Vendor</label>
+                                    <label data-i18n="stk.procurement.lblVendor">Vendor</label>
                                     <input type="text" id="receiptVendor" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Payment Method</label>
+                                    <label data-i18n="stk.procurement.lblPaymentMethod">Payment Method</label>
                                     <input type="text" id="receiptPaymentMethod" readonly>
                                 </div>
                                 <div class="form-group">
-                                    <label>Status</label>
+                                    <label data-i18n="stk.procurement.lblStatus">Status</label>
                                     <input type="text" id="receiptStatus" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group">
-                                    <label>Receipt Date</label>
+                                    <label data-i18n="stk.procurement.lblReceiptDate">Receipt Date</label>
                                     <input type="date" id="receiptDate">
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
-                                    <div style="font-size:0.65rem;color:#666;padding-top:6px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">Leave empty for today</div>
+                                    <div style="font-size:0.65rem;color:#666;padding-top:6px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;" data-i18n="stk.procurement.leaveEmptyToday">Leave empty for today</div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Items Received</label>
+                                <label data-i18n="stk.procurement.lblItemsReceived">Items Received</label>
                                 <div id="receiptItemsContainer"></div>
                             </div>
                             <div class="form-group">
-                                <label>Delivery Note / Comments</label>
+                                <label data-i18n="stk.procurement.lblDeliveryNote">Delivery Note / Comments</label>
                                 <textarea id="receiptNotes" rows="2"></textarea>
                                 <div id="receiptNotesWarning" style="display:none; margin-top:6px; padding:8px 12px; background:#fff3cd; border-left:3px solid #f59e0b; border-radius:4px; font-size:11px; color:#856404; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;"></div>
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
-                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;"><i class="fas fa-times"></i> Cancel PO</button>
-                                <button type="button" class="btn-secondary" onclick="closeCurrentPO()" style="display:none;"><i class="fas fa-check-circle"></i> Close PO</button>
-                                <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;"><i class="fas fa-check"></i> Confirm Receipt</button>
+                                <button type="button" class="btn-danger" onclick="cancelCurrentPO()" style="display:none;" data-i18n-html="stk.procurement.btnCancelPo"><i class="fas fa-times"></i> Cancel PO</button>
+                                <button type="button" class="btn-secondary" onclick="closeCurrentPO()" style="display:none;" data-i18n-html="stk.procurement.btnClosePo"><i class="fas fa-check-circle"></i> Close PO</button>
+                                <button type="button" class="btn-primary" onclick="submitReceipt()" style="display:none;" data-i18n-html="stk.procurement.btnConfirmReceipt"><i class="fas fa-check"></i> Confirm Receipt</button>
                             </div>
                             </div>
                         </form>
@@ -1072,7 +1074,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -1083,12 +1085,12 @@
 <div id="detailModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice"></i> PO Details</h3>
+            <h3 data-i18n-html="stk.procurement.modalPoDetailsTitle"><i class="fas fa-file-invoice"></i> PO Details</h3>
             <button class="btn-close-modal" onclick="closeModal('detailModal')">&times;</button>
         </div>
         <div class="modal-body" id="detailModalContent"></div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeModal('detailModal')"><i class="fas fa-times"></i> CLOSE</button>
+            <button class="btn-secondary" onclick="closeModal('detailModal')" data-i18n-html="stk.procurement.btnCloseUpper"><i class="fas fa-times"></i> CLOSE</button>
         </div>
     </div>
 </div>
@@ -1096,18 +1098,18 @@
 <div id="modalHasProduct" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-box" style="color:#f59e0b;"></i> INVENTORY RECEIPT</h3>
+            <h3 data-i18n-html="stk.procurement.modalHasProdTitle"><i class="fas fa-box" style="color:#f59e0b;"></i> INVENTORY RECEIPT</h3>
             <button class="btn-close-modal" onclick="closeModal('modalHasProduct')">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="modalHasProductMsg" style="font-size:0.9rem; margin-bottom:12px;">Do you already have the product physically?</p>
+            <p id="modalHasProductMsg" style="font-size:0.9rem; margin-bottom:12px;" data-i18n="stk.procurement.modalHasProdMsg">Do you already have the product physically?</p>
             <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔹 YES</strong> → Product is in hand. Stock will be updated now.</p>
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔹 NO</strong> → Product will arrive later. A temporary PO will be created.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalHasProdYesDesc"><strong>🔹 YES</strong> → Product is in hand. Stock will be updated now.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalHasProdNoDesc"><strong>🔹 NO</strong> → Product will arrive later. A temporary PO will be created.</p>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
-                <button class="btn-secondary" onclick="resolveModal('modalHasProduct', 'NO')"><i class="fas fa-clock"></i> NOT YET</button>
-                <button class="btn-primary" onclick="resolveModal('modalHasProduct', 'YES')"><i class="fas fa-check"></i> YES, RECEIVE NOW</button>
+                <button class="btn-secondary" onclick="resolveModal('modalHasProduct', 'NO')" data-i18n-html="stk.procurement.btnNotYet"><i class="fas fa-clock"></i> NOT YET</button>
+                <button class="btn-primary" onclick="resolveModal('modalHasProduct', 'YES')" data-i18n-html="stk.procurement.btnYesReceiveNow"><i class="fas fa-check"></i> YES, RECEIVE NOW</button>
             </div>
         </div>
     </div>
@@ -1116,18 +1118,18 @@
 <div id="modalUsageType" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-warehouse"></i> DESTINATION</h3>
+            <h3 data-i18n-html="stk.procurement.modalDestTitle"><i class="fas fa-warehouse"></i> DESTINATION</h3>
             <button class="btn-close-modal" onclick="closeModal('modalUsageType')">&times;</button>
         </div>
         <div class="modal-body">
-            <p style="font-size:0.9rem; margin-bottom:12px;">Where is this item going?</p>
+            <p style="font-size:0.9rem; margin-bottom:12px;" data-i18n="stk.procurement.modalDestMsg">Where is this item going?</p>
             <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>📦 STOCK</strong> → Stored in warehouse. Inventory will increase.</p>
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>⚡ CONSUME</strong> → Used immediately. No inventory change.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalDestStockDesc"><strong>📦 STOCK</strong> → Stored in warehouse. Inventory will increase.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalDestConsumeDesc"><strong>⚡ CONSUME</strong> → Used immediately. No inventory change.</p>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalUsageType', 'CONSUME')"><i class="fas fa-bolt"></i> CONSUME</button>
-                <button class="btn-primary" onclick="resolveModal('modalUsageType', 'STOCK')"><i class="fas fa-warehouse"></i> ADD TO STOCK</button>
+                <button class="btn-secondary" onclick="resolveModal('modalUsageType', 'CONSUME')" data-i18n-html="stk.procurement.btnConsume"><i class="fas fa-bolt"></i> CONSUME</button>
+                <button class="btn-primary" onclick="resolveModal('modalUsageType', 'STOCK')" data-i18n-html="stk.procurement.btnAddToStock"><i class="fas fa-warehouse"></i> ADD TO STOCK</button>
             </div>
         </div>
     </div>
@@ -1136,18 +1138,18 @@
 <div id="modalHasWO" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-clipboard-list"></i> WORK ORDER</h3>
+            <h3 data-i18n-html="stk.procurement.modalWoTitle"><i class="fas fa-clipboard-list"></i> WORK ORDER</h3>
             <button class="btn-close-modal" onclick="closeModal('modalHasWO')">&times;</button>
         </div>
         <div class="modal-body">
-            <p style="font-size:0.9rem; margin-bottom:12px;">Is this consumption associated with a Work Order?</p>
+            <p style="font-size:0.9rem; margin-bottom:12px;" data-i18n="stk.procurement.modalWoMsg">Is this consumption associated with a Work Order?</p>
             <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>🔧 YES</strong> → Select a Work Order. Must be IN PROGRESS or COMPLETED.</p>
-                <p style="margin:4px 0; font-size:0.8rem;"><strong>📋 NO</strong> → Recorded as administrative consumption.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalWoYesDesc"><strong>🔧 YES</strong> → Select a Work Order. Must be IN PROGRESS or COMPLETED.</p>
+                <p style="margin:4px 0; font-size:0.8rem;" data-i18n-html="stk.procurement.modalWoNoDesc"><strong>📋 NO</strong> → Recorded as administrative consumption.</p>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalHasWO', 'NO')"><i class="fas fa-times"></i> ADMIN CONSUMPTION</button>
-                <button class="btn-primary" onclick="resolveModal('modalHasWO', 'YES')"><i class="fas fa-check"></i> ASSOCIATE TO WO</button>
+                <button class="btn-secondary" onclick="resolveModal('modalHasWO', 'NO')" data-i18n-html="stk.procurement.btnAdminConsumption"><i class="fas fa-times"></i> ADMIN CONSUMPTION</button>
+                <button class="btn-primary" onclick="resolveModal('modalHasWO', 'YES')" data-i18n-html="stk.procurement.btnAssociateWo"><i class="fas fa-check"></i> ASSOCIATE TO WO</button>
             </div>
         </div>
     </div>
@@ -1156,16 +1158,16 @@
 <div id="modalWONumber" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-clipboard-list"></i> SELECT WORK ORDER</h3>
+            <h3 data-i18n-html="stk.procurement.modalSelectWoTitle"><i class="fas fa-clipboard-list"></i> SELECT WORK ORDER</h3>
             <button class="btn-close-modal" onclick="closeModal('modalWONumber')">&times;</button>
         </div>
         <div class="modal-body">
             <select id="woNumberSelect" style="width:100%;padding:8px 10px;margin-bottom:16px;border:1px solid #e2e8f0;border-radius:6px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
-                <option value="">-- Loading --</option>
+                <option value="" data-i18n="stk.procurement.loadingOpt">-- Loading --</option>
             </select>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalWONumber', null)"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn-primary" onclick="resolveModalWO()"><i class="fas fa-check"></i> Confirm</button>
+                <button class="btn-secondary" onclick="resolveModal('modalWONumber', null)" data-i18n-html="stk.procurement.btnCancel"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-primary" onclick="resolveModalWO()" data-i18n-html="stk.procurement.btnConfirm"><i class="fas fa-check"></i> Confirm</button>
             </div>
         </div>
     </div>
@@ -1174,14 +1176,14 @@
 <div id="modalCancelPO" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> CANCEL PO</h3>
+            <h3 data-i18n-html="stk.procurement.modalCancelPoTitle"><i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> CANCEL PO</h3>
             <button class="btn-close-modal" onclick="closeModal('modalCancelPO')">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="modalCancelPOMsg">Are you sure you want to cancel this Purchase Order? This action cannot be undone.</p>
+            <p id="modalCancelPOMsg" data-i18n="stk.procurement.modalCancelPoMsg">Are you sure you want to cancel this Purchase Order? This action cannot be undone.</p>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalCancelPO', false)"><i class="fas fa-times"></i> No, Keep it</button>
-                <button class="btn-danger" onclick="resolveModal('modalCancelPO', true)"><i class="fas fa-check"></i> Yes, Cancel PO</button>
+                <button class="btn-secondary" onclick="resolveModal('modalCancelPO', false)" data-i18n-html="stk.procurement.btnKeepPo"><i class="fas fa-times"></i> No, Keep it</button>
+                <button class="btn-danger" onclick="resolveModal('modalCancelPO', true)" data-i18n-html="stk.procurement.btnYesCancelPo"><i class="fas fa-check"></i> Yes, Cancel PO</button>
             </div>
         </div>
     </div>
@@ -1190,14 +1192,14 @@
 <div id="modalClosePO" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3><i class="fas fa-check-circle" style="color:#22c55e;"></i> CLOSE PO</h3>
+            <h3 data-i18n-html="stk.procurement.modalClosePoTitle"><i class="fas fa-check-circle" style="color:#22c55e;"></i> CLOSE PO</h3>
             <button class="btn-close-modal" onclick="closeModal('modalClosePO')">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="modalClosePOMsg">Are you sure you want to close this Purchase Order? This will mark it as CLOSED.</p>
+            <p id="modalClosePOMsg" data-i18n="stk.procurement.modalClosePoMsg">Are you sure you want to close this Purchase Order? This will mark it as CLOSED.</p>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <button class="btn-secondary" onclick="resolveModal('modalClosePO', false)"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn-primary" onclick="resolveModal('modalClosePO', true)"><i class="fas fa-check"></i> Confirm</button>
+                <button class="btn-secondary" onclick="resolveModal('modalClosePO', false)" data-i18n-html="stk.procurement.btnCancel"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-primary" onclick="resolveModal('modalClosePO', true)" data-i18n-html="stk.procurement.btnConfirm"><i class="fas fa-check"></i> Confirm</button>
             </div>
         </div>
     </div>
@@ -1257,7 +1259,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -1287,21 +1289,21 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('stk.common.userFallback');
             } catch(e) { /* console.error(e); */ }  // COMENTADO
         }
     }
 
     async function callApi(action, args) {
         if (args === undefined) args = [];
-        if (!EAMS_API_URL) throw new Error('API URL not configured');
+        if (!EAMS_API_URL) throw new Error(t('common.apiNotConfigured'));
         const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ targetUrl: EAMS_API_URL, payload: { action: action, args: args } })
         });
         const result = await response.json();
-        if (!result.success) throw new Error(result.error || 'API call failed');
+        if (!result.success) throw new Error(result.error || t('stk.common.apiCallFailed'));
         return result.data;
     }
 
@@ -1324,7 +1326,7 @@
                     unique.push(matches[i]);
                 }
             }
-            warningEl.innerHTML = '⚠️ <strong>Special characters detected:</strong> <code style="background:#fff; padding:1px 5px; border-radius:3px; font-family:monospace;">' + unique.join(' ') + '</code> will be automatically removed when saved.';
+            warningEl.innerHTML = t('validation.specialCharsWarning', { chars: unique.join(' ') });
             warningEl.style.display = 'block';
         } else {
             warningEl.style.display = 'none';
@@ -1450,7 +1452,7 @@
         var status = document.getElementById('statusFilter').value;
         var months = document.getElementById('monthsFilter').value;
         // ✅ Limpiar cache forzando recarga completa
-        showLoading('Loading tracker...');
+        showLoading(t('stk.procurement.loadingTracker'));
         try {
             var data = await callApi('STK_getProcurementTracker', [{ status: status, months: parseInt(months), ignoreDateFilter: searchTerm !== '' }]);
             currentTrackerData = data || [];
@@ -1458,7 +1460,7 @@
             hideLoading();
         } catch(err) {
             hideLoading();
-            showToast('Failed: ' + err.message, 'error');
+            showToast(t('stk.procurement.errFailed', { error: err.message }), 'error');
         }
     }
 
@@ -1476,7 +1478,7 @@
             }
         }
         if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#64748b;">No records found.</div>';
+            container.innerHTML = '<div style="text-align:center;padding:40px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#64748b;">' + t('common.noData') + '</div>';
             return;
         }
         var html = '';
@@ -1485,26 +1487,26 @@
             html += '<div class="tracker-card">' +
                 // PRIMERA FILA: PO Number en negrita y grande
                 '<div class="tracker-row">' +
-                    '<div><span class="tracker-po-number" style="font-size:1rem; font-weight:700; color:#1a1a2e;">' + escapeHtml(item.poNumber || 'NOT ISSUED') + '</span></div>' +
+                    '<div><span class="tracker-po-number" style="font-size:1rem; font-weight:700; color:#1a1a2e;">' + escapeHtml(item.poNumber || t('stk.procurement.notIssued')) + '</span></div>' +
                     '<div class="tracker-actions">' +
-                        '<button onclick="copyToClipboard(\'' + escapeHtml(item.poNumber) + '\')" title="Copy PO"><i class="fas fa-copy"></i></button>' +
-                        (item.poNumber && item.poNumber !== 'N/A' ? '<button onclick="viewPODetails(\'' + escapeHtml(item.poNumber) + '\')" title="View Details"><i class="fas fa-eye"></i></button>' : '') +
+                        '<button onclick="copyToClipboard(\'' + escapeHtml(item.poNumber) + '\')" title="' + t('stk.procurement.copyPoTitle') + '"><i class="fas fa-copy"></i></button>' +
+                        (item.poNumber && item.poNumber !== 'N/A' ? '<button onclick="viewPODetails(\'' + escapeHtml(item.poNumber) + '\')" title="' + t('stk.procurement.viewDetailsTitle') + '"><i class="fas fa-eye"></i></button>' : '') +
                     '</div>' +
                 '</div>' +
                 // SEGUNDA FILA: Vendor | Date
                 '<div class="tracker-row" style="margin-top:2px;">' +
-                    '<span class="tracker-vendor" style="font-size:0.75rem; color:#475569;">' + escapeHtml(item.vendor || 'N/A') + '</span>' +
-                    '<span class="tracker-date" style="font-size:0.7rem; color:#94a3b8;">' + escapeHtml(item.date || 'N/A') + '</span>' +
+                    '<span class="tracker-vendor" style="font-size:0.75rem; color:#475569;">' + escapeHtml(item.vendor || t('stk.common.na')) + '</span>' +
+                    '<span class="tracker-date" style="font-size:0.7rem; color:#94a3b8;">' + escapeHtml(item.date ? I18n.formatDate(item.date) : t('stk.common.na')) + '</span>' +
                 '</div>' +
                 // TERCERA FILA: Req # | Total
                 '<div class="tracker-row" style="margin-top:4px;">' +
-                    '<span style="font-size:0.7rem; color:#64748b;">' + escapeHtml(item.reqNumber || item.id || 'N/A') + '</span>' +
-                    '<span style="font-size:0.75rem; font-weight:600; color:#1a1a2e;">$' + (item.total || 0).toLocaleString() + '</span>' +
+                    '<span style="font-size:0.7rem; color:#64748b;">' + escapeHtml(item.reqNumber || item.id || t('stk.common.na')) + '</span>' +
+                    '<span style="font-size:0.75rem; font-weight:600; color:#1a1a2e;">$' + (item.total || 0).toLocaleString(I18n.getLocale()) + '</span>' +
                 '</div>' +
                 // CUARTA FILA: Received | Status
                 '<div class="tracker-row" style="margin-top:4px;">' +
-                    '<span style="font-size:0.7rem; font-weight:500; color:#475569;">' + (((item.status || '').toUpperCase() === 'CLOSED' || (item.status || '').toUpperCase() === 'CANCELLED') ? '' : '📦 Rec: ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0)) + '</span>' +
-                    '<span class="tracker-status ' + (item.status || '') + '">' + escapeHtml(item.status || 'N/A') + '</span>' +
+                    '<span style="font-size:0.7rem; font-weight:500; color:#475569;">' + (((item.status || '').toUpperCase() === 'CLOSED' || (item.status || '').toUpperCase() === 'CANCELLED') ? '' : '📦 ' + t('stk.procurement.recPrefix') + ' ' + (item.totalQtyReceived || 0) + '/' + (item.totalQtyOrdered || 0)) + '</span>' +
+                    '<span class="tracker-status ' + (item.status || '') + '">' + escapeHtml(item.status ? tStatus(item.status) : t('stk.common.na')) + '</span>' +
                 '</div>' +
             '</div>';
         }
@@ -1512,7 +1514,7 @@
     }
 
     async function viewPODetails(poNumber) {
-        showLoading('Loading PO details...');
+        showLoading(t('stk.procurement.loadingPoDetails'));
         try {
             var result = await callApi('STK_getPOFullDetails_V2', [poNumber]);
             if (result && result.success) {
@@ -1534,15 +1536,17 @@
                 // SEPARAR NOTAS POR TIPO
                 // ============================================
                 // 1. EMITTED NOTE: usar directamente header.notes (comentario EMITTED original)
-                var emittedNote = header.notes && header.notes.trim() !== '' ? header.notes : 'No notes';
+                var emittedNote = header.notes && header.notes.trim() !== '' ? header.notes : t('stk.procurement.noNotes');
                 
                 // 2. EVENT NOTE: detectar según el status
                 var specialEvent = '';
+                var isCancelledEvent = false;
                 var specialEventDate = header.issueDate || '';
                 var cleanEventNote = '';
 
                 if (header.status === 'CANCELLED') {
-                    specialEvent = '🚫 CANCELLED';
+                    specialEvent = '🚫 ' + tStatus('CANCELLED');
+                    isCancelledEvent = true;
                     // Buscar nota de cancelación
                     if (header.notes && header.notes.includes('CANCEL NOTE:')) {
                         cleanEventNote = header.notes;
@@ -1557,7 +1561,7 @@
                         }
                     }
                 } else if (header.status === 'CLOSED') {
-                    specialEvent = '✅ CLOSED';
+                    specialEvent = '✅ ' + tStatus('CLOSED');
                     // Buscar CLOSE NOTE: primero en items, luego en header, luego en receiptHistory
                     var foundInItems = false;
                     for (var i = 0; i < items.length; i++) {
@@ -1586,7 +1590,8 @@
                 if (!cleanEventNote && header.eventNote) {
                     var eventNoteUpper = header.eventNote.toUpperCase();
                     if (eventNoteUpper.includes('CANCEL NOTE:') || eventNoteUpper.includes('CANCELLED BY USER')) {
-                        specialEvent = '🚫 CANCELLED';
+                        specialEvent = '🚫 ' + tStatus('CANCELLED');
+                        isCancelledEvent = true;
                         cleanEventNote = header.eventNote;
                     }
                 }  // ✅ Cerrar este if
@@ -1608,22 +1613,22 @@
                 // CABECERA
                 // ============================================
                 html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;font-size:0.8rem;background:#f8fafc;padding:12px;border-radius:8px;">';
-                html += '<div><strong>PO:</strong> ' + escapeHtml(header.poNumber) + '</div>';
-                html += '<div><strong>Vendor:</strong> ' + escapeHtml(header.vendor) + '</div>';
-                html += '<div><strong>Status:</strong> <span style="font-weight:700;color:' + (header.status === 'CLOSED' ? '#22c55e' : header.status === 'PARTIAL' ? '#f59e0b' : header.status === 'CANCELLED' ? '#dc3545' : '#64748b') + ';">' + escapeHtml(header.status) + '</span></div>';
-                html += '<div><strong>Date:</strong> ' + escapeHtml(header.issueDate) + '</div>';
-                html += '<div><strong>Req #:</strong> ' + escapeHtml(header.reqNumber) + '</div>';
-                html += '<div><strong>Payment:</strong> ' + escapeHtml(header.paymentMethod) + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detPo') + '</strong> ' + escapeHtml(header.poNumber) + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detVendor') + '</strong> ' + escapeHtml(header.vendor) + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detStatus') + '</strong> <span style="font-weight:700;color:' + (header.status === 'CLOSED' ? '#22c55e' : header.status === 'PARTIAL' ? '#f59e0b' : header.status === 'CANCELLED' ? '#dc3545' : '#64748b') + ';">' + escapeHtml(tStatus(header.status)) + '</span></div>';
+                html += '<div><strong>' + t('stk.procurement.detDate') + '</strong> ' + escapeHtml(header.issueDate ? I18n.formatDate(header.issueDate) : '') + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detReqNum') + '</strong> ' + escapeHtml(header.reqNumber) + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detPayment') + '</strong> ' + escapeHtml(tStatus(header.paymentMethod)) + '</div>';
                 // ✅ Budget Area y GL Code (una sola vez)
-                var budgetAreaName = header.budgetAreaName || 'N/A';
-                var budgetCode = header.budgetCode || 'N/A';
-                html += '<div><strong>Budget Area:</strong> ' + escapeHtml(budgetAreaName) + '</div>';
-                html += '<div><strong>GL Code:</strong> ' + escapeHtml(budgetCode) + '</div>';
-                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>Notes:</strong> ' + escapeHtml(emittedNote) + '</div>';
+                var budgetAreaName = header.budgetAreaName || t('stk.common.na');
+                var budgetCode = header.budgetCode || t('stk.common.na');
+                html += '<div><strong>' + t('stk.procurement.detBudgetArea') + '</strong> ' + escapeHtml(budgetAreaName) + '</div>';
+                html += '<div><strong>' + t('stk.procurement.detGlCode') + '</strong> ' + escapeHtml(budgetCode) + '</div>';
+                html += '<div style="grid-column:span 2;margin-top:6px;border-top:1px solid #e2e8f0;padding-top:6px;"><strong>' + t('stk.procurement.detNotes') + '</strong> ' + escapeHtml(emittedNote) + '</div>';
                 
                 if (specialEvent) {
-                    html += '<div style="grid-column:span 2;margin-top:4px;padding:6px 10px;border-radius:4px;background:' + (specialEvent.includes('CANCELLED') ? '#fef2f2' : '#fef3c7') + ';border-left:4px solid ' + (specialEvent.includes('CANCELLED') ? '#dc3545' : '#f59e0b') + ';">';
-                    html += '<span style="font-weight:700;">⚠️ Event:</span> ' + specialEvent;
+                    html += '<div style="grid-column:span 2;margin-top:4px;padding:6px 10px;border-radius:4px;background:' + (isCancelledEvent ? '#fef2f2' : '#fef3c7') + ';border-left:4px solid ' + (isCancelledEvent ? '#dc3545' : '#f59e0b') + ';">';
+                    html += '<span style="font-weight:700;">' + t('stk.procurement.detEvent') + '</span> ' + specialEvent;
                     // ✅ Fecha removida - solo muestra el evento (CLOSED, CANCELLED, etc.)
                     if (cleanEventNote) {
                         html += '<br><span style="font-size:0.75rem;color:#64748b;">' + escapeHtml(cleanEventNote) + '</span>';
@@ -1636,16 +1641,16 @@
                 // ============================================
                 // TABLA DE ITEMS
                 // ============================================
-                html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📦 ITEMS</h4>';
+                html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">' + t('stk.procurement.detItemsHeader') + '</h4>';
                 html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;margin-bottom:16px;">';
                 html += '<thead><tr style="background:#f1f5f9;">';
-                html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
-                html += '<th style="padding:6px 8px;text-align:left;">Description</th>';
-                html += '<th style="padding:6px 8px;text-align:center;">Ordered</th>';
-                html += '<th style="padding:6px 8px;text-align:center;">Received</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Unit Price</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total (Global)</th>';
-                html += '<th style="padding:6px 8px;text-align:right;">Total (Received)</th>';
+                html += '<th style="padding:6px 8px;text-align:left;">' + t('stk.procurement.colSku') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:left;">' + t('stk.procurement.colDescription') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:center;">' + t('stk.procurement.colOrdered') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:center;">' + t('stk.procurement.colReceived') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:right;">' + t('stk.procurement.colUnitPrice') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:right;">' + t('stk.procurement.colTotalGlobal') + '</th>';
+                html += '<th style="padding:6px 8px;text-align:right;">' + t('stk.procurement.colTotalReceived') + '</th>';
                 html += '</tr></thead><tbody>';
                 
                 var totalFijoGeneral = 0;
@@ -1675,7 +1680,7 @@
                 }
                 
                 html += '<tr style="background:#f8fafc;font-weight:700;">';
-                html += '<td colspan="2" style="padding:6px 8px;text-align:right;">TOTAL</td>';
+                html += '<td colspan="2" style="padding:6px 8px;text-align:right;">' + t('stk.procurement.detTotal') + '</td>';
                 html += '<td style="padding:6px 8px;text-align:center;">' + totalOrdered + '</td>';
                 html += '<td style="padding:6px 8px;text-align:center;">' + totalReceived + '</td>';
                 html += '<td style="padding:6px 8px;text-align:right;"></td>';
@@ -1688,14 +1693,14 @@
                 // HISTORIAL DE RECEPCIONES
                 // ============================================
                 if (receiptHistory && receiptHistory.length > 0) {
-                    html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">📜 RECEIPT HISTORY</h4>';
+                    html += '<h4 style="font-size:0.8rem;margin-bottom:8px;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;color:#1a1a2e;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">' + t('stk.procurement.detReceiptHistory') + '</h4>';
                     html += '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">';
                     html += '<thead><tr style="background:#f1f5f9;">';
-                    html += '<th style="padding:6px 8px;text-align:left;">Date</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">SKU</th>';
-                    html += '<th style="padding:6px 8px;text-align:center;">Qty</th>';
-                    html += '<th style="padding:6px 8px;text-align:right;">Amount</th>';
-                    html += '<th style="padding:6px 8px;text-align:left;">Notes</th>';
+                    html += '<th style="padding:6px 8px;text-align:left;">' + t('stk.procurement.colDate') + '</th>';
+                    html += '<th style="padding:6px 8px;text-align:left;">' + t('stk.procurement.colSku') + '</th>';
+                    html += '<th style="padding:6px 8px;text-align:center;">' + t('stk.procurement.colQty') + '</th>';
+                    html += '<th style="padding:6px 8px;text-align:right;">' + t('stk.procurement.colAmount') + '</th>';
+                    html += '<th style="padding:6px 8px;text-align:left;">' + t('stk.procurement.colNotes') + '</th>';
                     html += '</tr></thead><tbody>';
                     
                     for (var i = 0; i < receiptHistory.length; i++) {
@@ -1714,7 +1719,7 @@
                         }
                         
                         html += '<tr style="border-bottom:1px solid #e2e8f0;">';
-                        html += '<td style="padding:6px 8px;">' + escapeHtml(r.date || '') + '</td>';
+                        html += '<td style="padding:6px 8px;">' + escapeHtml(r.date ? I18n.formatDate(r.date) : '') + '</td>';
                         html += '<td style="padding:6px 8px;">' + escapeHtml(r.sku || '') + '</td>';
                         html += '<td style="padding:6px 8px;text-align:center;font-weight:600;">' + (r.qty || 0) + '</td>';
                         html += '<td style="padding:6px 8px;text-align:right;">$' + (r.total || 0).toFixed(2) + '</td>';
@@ -1723,13 +1728,13 @@
                     }
                     html += '</tbody></table>';
                 } else {
-                    html += '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:0.75rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">No receipt history found.</div>';
+                    html += '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:0.75rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('stk.procurement.noReceiptHistory') + '</div>';
                 }
                 
                 document.getElementById('detailModalContent').innerHTML = html;
                 document.getElementById('detailModal').classList.add('active');
             } else {
-                showToast('PO not found', 'error');
+                showToast(t('stk.procurement.poNotFound'), 'error');
             }
             hideLoading();
         } catch(err) {
@@ -1741,7 +1746,7 @@
     function copyToClipboard(text) {
         if (text && text !== 'N/A') {
             navigator.clipboard.writeText(text);
-            showToast('Copied: ' + text, 'success');
+            showToast(t('stk.procurement.copiedToast', { text: text }), 'success');
         }
     }
 
@@ -1766,20 +1771,20 @@
     async function updateTempPoNumber() {
         var newPoNumber = document.getElementById('updatePoNumberInput').value.trim();
         if (!newPoNumber) {
-            showToast('Please enter a new PO number', 'error');
+            showToast(t('stk.procurement.enterNewPoErr'), 'error');
             return;
         }
         if (newPoNumber.startsWith('TEMP-')) {
-            showToast('Cannot use TEMP- prefix. Use a real PO number.', 'error');
+            showToast(t('stk.procurement.cannotUseTempErr'), 'error');
             return;
         }
         if (!currentTempPoNumber) {
-            showToast('No temporary PO detected', 'error');
+            showToast(t('stk.procurement.noTempPoErr'), 'error');
             return;
         }
         
         // ✅ VERIFICAR DUPLICADO ANTES DE ACTUALIZAR
-        showLoading('Verifying PO number...');
+        showLoading(t('stk.procurement.verifyingPo'));
         try {
             // Buscar si el nuevo PO ya existe
             var checkResult = await callApi('STK_searchPOs', [newPoNumber]);
@@ -1791,12 +1796,12 @@
                 
                 if (existingStatus.toUpperCase() !== 'CLOSED' && existingStatus.toUpperCase() !== 'CANCELLED') {
                     hideLoading();
-                    showToast('PO Number ' + newPoNumber + ' already exists with status: ' + existingStatus + '. Please use a different number.', 'error');
+                    showToast(t('stk.procurement.poExistsStatus', { po: newPoNumber, status: tStatus(existingStatus) }), 'error');
                     return;
                 }
                 
                 // Si está CLOSED o CANCELLED, preguntar si quiere continuar
-                var confirmMsg = 'PO Number ' + newPoNumber + ' already exists but is ' + existingStatus + '. Do you want to continue?';
+                var confirmMsg = t('stk.procurement.poExistsConfirm', { po: newPoNumber, status: tStatus(existingStatus) });
                 if (!confirm(confirmMsg)) {
                     hideLoading();
                     return;
@@ -1804,7 +1809,7 @@
             }
             
             // ✅ Actualizar PO number
-            showLoading('Updating PO number...');
+            showLoading(t('stk.procurement.updatingPo'));
             var res = await callApi('STK_updatePONumber', [currentTempPoNumber, newPoNumber, currentUser || 'system']);  // ✅ P-14 FIX
             showToast(res.message, 'success');
             document.getElementById('tempPoSection').style.display = 'none';
@@ -1822,7 +1827,7 @@
     function clearReceiptSearch() {
         document.getElementById('poSearchInput').value = '';
         document.getElementById('receiptForm').style.display = 'none';
-        document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+        document.getElementById('receiveSelectionMsg').innerHTML = t('stk.procurement.enterPoAbove');
         document.getElementById('tempPoSection').style.display = 'none';
         document.getElementById('receiptNotes').value = '';
         document.getElementById('receiptDate').value = '';  // ✅ Limpiar Receipt Date
@@ -1840,9 +1845,9 @@
         var tr = document.createElement('tr');
         tr.id = rowId;
         tr.innerHTML = 
-            '<td><select class="type-select" onchange="toggleItemType(this,\'' + rowId + '\')"><option value="inventory">Inventory</option><option value="service">Service</option></select></td>' +
-            '<td style="position:relative"><input type="text" placeholder="SKU" class="sku-input" style="width:110px"></td>' +
-            '<td style="position:relative"><input type="text" placeholder="Description" class="desc-input" style="width:170px"></td>' +
+            '<td><select class="type-select" onchange="toggleItemType(this,\'' + rowId + '\')"><option value="inventory">' + t('stk.procurement.typeInventory') + '</option><option value="service">' + t('stk.procurement.typeService') + '</option></select></td>' +
+            '<td style="position:relative"><input type="text" placeholder="' + t('stk.procurement.colSku') + '" class="sku-input" style="width:110px"></td>' +
+            '<td style="position:relative"><input type="text" placeholder="' + t('stk.procurement.colDescription') + '" class="desc-input" style="width:170px"></td>' +
             '<td><input type="number" value="1" min="1" class="qty-input" style="width:55px"></td>' +
             '<td><input type="number" step="0.01" placeholder="0.00" class="price-input" style="width:115px"></td>' +
             '<td><button type="button" class="btn-remove" onclick="this.closest(\'tr\').remove()"><i class="fas fa-times"></i></button></td>';
@@ -1928,7 +1933,7 @@
         for (var i = 0; i < filtered.length; i++) {
             var item = filtered[i];
             var opt = document.createElement('div');
-            opt.innerHTML = '<strong>' + escapeHtml(item.description.substring(0, 50)) + '</strong><br><small>SKU: ' + escapeHtml(item.sku) + '</small>';
+            opt.innerHTML = '<strong>' + escapeHtml(item.description.substring(0, 50)) + '</strong><br><small>' + t('stk.procurement.skuPrefix') + ' ' + escapeHtml(item.sku) + '</small>';
             opt.onclick = function(sku, desc, price) {
                 return function() {
                     input.value = desc;
@@ -1951,7 +1956,7 @@
         var qtyInp = row.querySelector('.qty-input');
         if (select.value === 'service') {
             skuInp.readOnly = true;
-            skuInp.placeholder = 'Auto-generated';
+            skuInp.placeholder = t('stk.procurement.autoGenerated');
             qtyInp.disabled = true;
             qtyInp.value = 1;
             callApi('STK_generateServiceCode').then(function(code) {
@@ -1959,7 +1964,7 @@
             }).catch(function(e) { /* console.error(e); */ });
         } else {
             skuInp.readOnly = false;
-            skuInp.placeholder = 'SKU';
+            skuInp.placeholder = t('stk.procurement.colSku');
             skuInp.value = '';
             qtyInp.disabled = false;
             qtyInp.value = 1;
@@ -2030,9 +2035,9 @@
         var notes = document.getElementById('reqNotes').value;
         var issueDate = document.getElementById('issueDate').value;
         
-        if (!vendor) { showToast('Vendor required', 'error'); return; }
-        if (!budgetAreaName) { showToast('Budget Area required', 'error'); return; }
-        if (!paymentType) { showToast('Payment Method required', 'error'); return; }
+        if (!vendor) { showToast(t('stk.procurement.errVendorReq'), 'error'); return; }
+        if (!budgetAreaName) { showToast(t('stk.procurement.errBudgetReq'), 'error'); return; }
+        if (!paymentType) { showToast(t('stk.procurement.errPaymentReq'), 'error'); return; }
         
         var items = [];
         var rows = document.querySelectorAll('#reqItemsBody tr');
@@ -2046,7 +2051,7 @@
             
             if (type === 'inventory') {
                 if (!sku) {
-                    showToast('SKU is required for inventory items', 'error');
+                    showToast(t('stk.procurement.errSkuReq'), 'error');
                     return;
                 }
                 var found = false;
@@ -2056,23 +2061,23 @@
                         // ✅ También verificar que la descripción coincida
                         var catDesc = catalog[j].description || '';
                         if (desc && catDesc.toUpperCase() !== desc.toUpperCase()) {
-                            showToast('Description mismatch for SKU ' + sku + '. Expected: "' + catDesc + '"', 'error');
+                            showToast(t('stk.procurement.errDescMismatch', { sku: sku, expected: catDesc }), 'error');
                             return;
                         }
                         break;
                     }
                 }
                 if (!found) { 
-                    showToast('SKU "' + sku + '" not found in SPARE_PARTS_CATALOG. Please check the SKU code.', 'error'); 
+                    showToast(t('stk.procurement.errSkuNotFound', { sku: sku }), 'error'); 
                     return; 
                 }
             }
-            if (!desc) { showToast('Description required', 'error'); return; }
-            if (qty <= 0) { showToast('Qty >0 required', 'error'); return; }
-            if (price <= 0) { showToast('Unit price >0 required', 'error'); return; }
+            if (!desc) { showToast(t('stk.procurement.errDescReq'), 'error'); return; }
+            if (qty <= 0) { showToast(t('stk.procurement.errQtyReq'), 'error'); return; }
+            if (price <= 0) { showToast(t('stk.procurement.errPriceReq'), 'error'); return; }
             items.push({ type: type, sku: type === 'inventory' ? sku.toUpperCase() : 'SERVICE', description: desc, qty: qty, unitPrice: price });
         }
-        if (items.length === 0) { showToast('Add at least one item', 'error'); return; }
+        if (items.length === 0) { showToast(t('stk.procurement.errAtLeastOneItem'), 'error'); return; }
 
         var isDirectPurchase = (paymentType !== 'Purchase Order') && (poNumber === '');
         if (isDirectPurchase) {
@@ -2086,7 +2091,7 @@
                     if (hasWO === 'YES') {
                         // ✅ Primero mostrar spinner en el modal
                         var sel = document.getElementById('woNumberSelect');
-                        sel.innerHTML = '<option value="">⏳ Loading WOs...</option>';
+                        sel.innerHTML = '<option value="">' + t('stk.procurement.loadingWosOpt') + '</option>';
                         
                         // ✅ Cargar las WO ANTES de abrir el modal
                         await loadWOsForModal();
@@ -2118,14 +2123,14 @@
         }
 
         if (paymentType === 'Purchase Order' && !reqId && !poNumber) {
-            showToast('Requisition ID or PO Number required', 'error');
+            showToast(t('stk.procurement.errReqOrPo'), 'error');
             return;
         }
         
         var expectedDeliveryDate = document.getElementById('expectedDeliveryDate').value;
         
         var payload = { reqId: reqId, poNumber: poNumber, vendor: vendor, paymentType: paymentType, budgetAreaName: budgetAreaName, budgetAreas: budgetAreas, notes: notes, items: items, issueDate: issueDate, expectedDeliveryDate: expectedDeliveryDate, userEmail: currentUser || 'system' };
-        showLoading('Saving...');
+        showLoading(t('stk.procurement.saving'));
         try {
             var res = await callApi('STK_saveProcurementRequisition', [payload]);
             var totalAmount = 0;
@@ -2163,7 +2168,7 @@
             woNumber: woNumber,
             userEmail: currentUser || 'system'  // ✅ CORREGIDO
         };
-        showLoading('Processing...');
+        showLoading(t('stk.procurement.processing'));
         try {
             var res = await callApi('STK_saveDirectPurchase', [payload]);
             showToast(res.message, 'success');
@@ -2190,7 +2195,7 @@
             createPO: true,
             userEmail: currentUser || 'system'  // ✅ CORREGIDO
         };
-        showLoading('Creating temp PO...');
+        showLoading(t('stk.procurement.creatingTempPo'));
         try {
             var res = await callApi('STK_saveProcurementRequisition', [payload]);
             showToast(res.message, 'success');
@@ -2208,19 +2213,19 @@
             var wos = await callApi('STK_getActiveWorkOrders');
             var sel = document.getElementById('woNumberSelect');
             if (wos.length) {
-                var html = '<option value="">-- Select WO --</option>';
+                var html = '<option value="">' + t('stk.procurement.selectWoOpt') + '</option>';
                 for (var i = 0; i < wos.length; i++) {
                     html += '<option value="' + escapeHtml(wos[i].number) + '">' + escapeHtml(wos[i].display) + '</option>';
                 }
                 sel.innerHTML = html;
             } else {
-                sel.innerHTML = '<option value="">-- No active WOs --</option>';
+                sel.innerHTML = '<option value="">' + t('stk.procurement.noActiveWos') + '</option>';
             }
             return wos;
         } catch(e) {
             /* console.error(e); */  // COMENTADO
             var sel = document.getElementById('woNumberSelect');
-            sel.innerHTML = '<option value="">-- Error loading WOs --</option>';
+            sel.innerHTML = '<option value="">' + t('stk.procurement.errLoadingWos') + '</option>';
             return [];
         }
     }
@@ -2243,8 +2248,8 @@
     // ============================================
     async function searchPOForReceipt() {
         var term = document.getElementById('poSearchInput').value.trim();
-        if (!term) { showToast('Enter PO number', 'error'); return; }
-        showLoading('Searching...');
+        if (!term) { showToast(t('stk.procurement.errEnterPo'), 'error'); return; }
+        showLoading(t('stk.procurement.searching'));
         try {
             var result = await callApi('STK_getPOFullDetails_V2', [term]);
             if (result && result.success) {
@@ -2252,12 +2257,12 @@
                 selectedPOFull = result;
                 // ✅ Verificar si es TEMP
                 checkIfTempPo(selectedPO.poNumber);
-                document.getElementById('receiveSelectionMsg').innerHTML = 'Ready to receive: <strong>' + escapeHtml(result.header.poNumber) + '</strong> from ' + escapeHtml(result.header.vendor);
+                document.getElementById('receiveSelectionMsg').innerHTML = t('stk.procurement.readyToReceive', { po: escapeHtml(result.header.poNumber), vendor: escapeHtml(result.header.vendor) });
                 document.getElementById('receiptForm').style.display = 'block';
                 document.getElementById('receiptPONumber').value = result.header.poNumber;
                 document.getElementById('receiptVendor').value = result.header.vendor;
-                document.getElementById('receiptPaymentMethod').value = result.header.paymentMethod || '';
-                document.getElementById('receiptStatus').value = result.header.status || '';
+                document.getElementById('receiptPaymentMethod').value = tStatus(result.header.paymentMethod || '') || '';
+                document.getElementById('receiptStatus').value = tStatus(result.header.status || '') || '';
                 
                 // ✅ VALIDAR STATUS PARA OCULTAR BOTONES
                 var status = (result.header.status || '').toUpperCase();
@@ -2284,12 +2289,12 @@
                     if (closeBtn) closeBtn.style.display = 'inline-block';
                 } else if (status === 'CLOSED' || status === 'CANCELLED') {
                     // CLOSED/CANCELLED: ningún botón
-                    showToast('⚠️ This PO is already ' + status + '. No further actions allowed.', 'warning');
+                    showToast(t('stk.procurement.poAlreadyStatus', { status: tStatus(status) }), 'warning');
                 }
                 
                 var items = result.items || [];
                 var itemsHtml = '<table style="width:100%;border-collapse:collapse;font-size:0.7rem;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' +
-                    '<thead><tr><th style="padding:6px;text-align:left;">SKU</th><th style="padding:6px;text-align:left;">Description</th><th style="padding:6px;text-align:center;">Ordered</th><th style="padding:6px;text-align:center;">Received</th><th style="padding:6px;text-align:center;">Pending</th><th style="padding:6px;text-align:center;">Receive Now</th><th style="padding:6px;text-align:right;">Unit Price</th></tr></thead><tbody>';
+                    '<thead><tr><th style="padding:6px;text-align:left;">' + t('stk.procurement.colSku') + '</th><th style="padding:6px;text-align:left;">' + t('stk.procurement.colDescription') + '</th><th style="padding:6px;text-align:center;">' + t('stk.procurement.colOrdered') + '</th><th style="padding:6px;text-align:center;">' + t('stk.procurement.colReceived') + '</th><th style="padding:6px;text-align:center;">' + t('stk.procurement.colPending') + '</th><th style="padding:6px;text-align:center;">' + t('stk.procurement.colReceiveNow') + '</th><th style="padding:6px;text-align:right;">' + t('stk.procurement.colUnitPrice') + '</th></tr></thead><tbody>';
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i];
                     var ordered = item.qtyOrdered || 0;
@@ -2307,7 +2312,7 @@
                         '<td style="text-align:right;padding:6px;">$' + price.toFixed(2) + '</td>' +
                     '</tr>';
                 }
-                itemsHtml += '</tbody></table><div style="text-align:right;margin-top:10px;font-weight:700;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">Total: $<span id="receiptTotal">0.00</span></div>';
+                itemsHtml += '</tbody></table><div style="text-align:right;margin-top:10px;font-weight:700;font-family:\'Segoe UI\',Tahoma,Geneva,Verdana,sans-serif;">' + t('stk.procurement.totalLabel') + ' $<span id="receiptTotal">0.00</span></div>';
                 document.getElementById('receiptItemsContainer').innerHTML = itemsHtml;
                 window.updateReceiptTotal = function() {
                     var total = 0;
@@ -2322,7 +2327,7 @@
                 hideLoading();
             } else {
                 hideLoading();
-                showToast('PO not found', 'error');
+                showToast(t('stk.procurement.poNotFound'), 'error');
             }
         } catch(err) {
             hideLoading();
@@ -2331,7 +2336,7 @@
     }
 
     async function submitReceipt() {
-        if (!selectedPO) { showToast('Search for a PO first', 'error'); return; }
+        if (!selectedPO) { showToast(t('stk.procurement.errSearchPoFirst'), 'error'); return; }
         
         // ✅ Validar que Receipt Date no sea anterior a la fecha de la PO
         var receiptDate = document.getElementById('receiptDate').value;
@@ -2341,7 +2346,7 @@
             var recDate = new Date(receiptDate);
             var poDateObj = new Date(poDate);
             if (!isNaN(recDate.getTime()) && !isNaN(poDateObj.getTime()) && recDate < poDateObj) {
-                showToast('Receipt date cannot be before PO creation date (' + poDate + ')', 'error');
+                showToast(t('stk.procurement.errReceiptBeforePo', { date: I18n.formatDate(poDate) }), 'error');
                 return;
             }
         }
@@ -2361,7 +2366,7 @@
                         var pending = ordered - received;
                         
                         if (qty > pending) {
-                            showToast('Invalid quantity for ' + (item.sku || 'item') + '. You are trying to receive ' + qty + ' but only ' + pending + ' unit(s) are pending. Please enter a quantity within the pending amount.', 'error');
+                            showToast(t('stk.procurement.errQtyExceedsPending', { sku: item.sku || t('stk.procurement.itemWord'), qty: qty, pending: pending }), 'error');
                             return;
                         }
                     }
@@ -2376,7 +2381,7 @@
                 }
             }
         }
-        if (items.length === 0) { showToast('Enter at least one quantity', 'error'); return; }
+        if (items.length === 0) { showToast(t('stk.procurement.errAtLeastOneQty'), 'error'); return; }
         
         var payload = {
             reqNumber: selectedPO.reqNumber,
@@ -2388,7 +2393,7 @@
             items: items,
             userEmail: currentUser || 'system'  // ✅ P-14 FIX
         };
-        showLoading('Processing receipt...');
+        showLoading(t('stk.procurement.processingReceipt'));
         try {
             var res = await callApi('STK_saveProcurementReceipt', [payload]);
             var totalReceived = 0;
@@ -2399,7 +2404,7 @@
             showToast(res.message, 'success');
             document.getElementById('receiptForm').style.display = 'none';
             document.getElementById('poSearchInput').value = '';
-            document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+            document.getElementById('receiveSelectionMsg').innerHTML = t('stk.procurement.enterPoAbove');
             document.getElementById('receiptNotes').value = '';  // ✅ Limpiar notas
             selectedPO = null;
             selectedPOFull = null;
@@ -2412,14 +2417,14 @@
     }
 
     async function cancelCurrentPO() {
-        if (!selectedPO) { showToast('No PO selected', 'error'); return; }
+        if (!selectedPO) { showToast(t('stk.procurement.errNoPoSelected'), 'error'); return; }
         var confirmed = await showModalPromise('modalCancelPO');
         if (confirmed) {
             // ✅ Obtener nota antes de cancelar
             var cancelNote = document.getElementById('receiptNotes').value.trim();
             var noteText = cancelNote ? 'CANCEL NOTE: ' + cancelNote : 'CANCELLED BY USER';
             
-            showLoading('Cancelling...');
+            showLoading(t('stk.procurement.cancelling'));
             try {
                 var res = await callApi('STK_cancelPurchaseOrder', [selectedPO.poNumber, noteText, currentUser || 'system']);  // ✅ P-14 FIX
                 logPOCancellation(selectedPO.poNumber, noteText, currentUser).catch(function(e) { /*console.warn('[STK] Cancel log failed:', e);*/ });
@@ -2427,7 +2432,7 @@
                 // ✅ Refrescar todo
                 document.getElementById('receiptForm').style.display = 'none';
                 document.getElementById('poSearchInput').value = '';
-                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                document.getElementById('receiveSelectionMsg').innerHTML = t('stk.procurement.enterPoAbove');
                 document.getElementById('receiptNotes').value = '';
                 selectedPO = null;
                 selectedPOFull = null;
@@ -2444,11 +2449,11 @@
     }
     
     async function closeCurrentPO() {
-        if (!selectedPO) { showToast('No PO selected', 'error'); return; }
+        if (!selectedPO) { showToast(t('stk.procurement.errNoPoSelected'), 'error'); return; }
         
         var status = (selectedPO.status || '').toUpperCase();
         if (status !== 'PARTIAL' && status !== 'RECEIVED') {
-            showToast('PO must be PARTIAL or RECEIVED to close.', 'error');
+            showToast(t('stk.procurement.errPoStatusToClose'), 'error');
             return;
         }
         
@@ -2458,13 +2463,13 @@
             var closeNote = document.getElementById('receiptNotes').value.trim();
             var noteText = closeNote ? 'CLOSE NOTE: ' + closeNote : 'CLOSE NOTE: No comments provided';
             
-            showLoading('Closing PO...');
+            showLoading(t('stk.procurement.closingPo'));
             try {
                 var res = await callApi('STK_closePurchaseOrder', [selectedPO.poNumber, noteText, currentUser || 'system']);  // ✅ P-14 FIX
                 showToast(res.message, 'success');
                 document.getElementById('receiptForm').style.display = 'none';
                 document.getElementById('poSearchInput').value = '';
-                document.getElementById('receiveSelectionMsg').innerHTML = 'Enter a PO number above.';
+                document.getElementById('receiveSelectionMsg').innerHTML = t('stk.procurement.enterPoAbove');
                 document.getElementById('receiptNotes').value = '';
                 selectedPO = null;
                 selectedPOFull = null;
@@ -2482,11 +2487,11 @@
     // ============================================
     async function init() {
         loadUser();
-        showLoading('Loading Procurement Hub...');
+        showLoading(t('stk.procurement.loadingHub'));
         loadApiUrl();
         if (!EAMS_API_URL) {
             hideLoading();
-            showToast('API URL not configured. Please login.', 'error');
+            showToast(t('stk.procurement.errApiNotConfigured'), 'error');
             return;
         }
         
@@ -2511,9 +2516,9 @@
             // Configurar payment methods
             var paymentSelect = document.getElementById('paymentMethod');
             if (config.paymentMethods) {
-                paymentSelect.innerHTML = '<option value="">-- Select one --</option>';
+                paymentSelect.innerHTML = '<option value="">' + t('stk.procurement.selectOne') + '</option>';
                 for (var i = 0; i < config.paymentMethods.length; i++) {
-                    paymentSelect.innerHTML += '<option value="' + escapeHtml(config.paymentMethods[i]) + '">' + escapeHtml(config.paymentMethods[i]) + '</option>';
+                    paymentSelect.innerHTML += '<option value="' + escapeHtml(config.paymentMethods[i]) + '">' + escapeHtml(tStatus(config.paymentMethods[i])) + '</option>';
                 }
             }
             
@@ -2525,16 +2530,16 @@
                 var isPurchaseOrder = paymentSelect.value === 'Purchase Order';
                 if (isPurchaseOrder) {
                     poNumberInput.disabled = false;
-                    poNumberInput.placeholder = 'PO number';
+                    poNumberInput.placeholder = t('stk.procurement.phPoNumber');
                     poNumberInput.style.background = 'white';
-                    poNumberHint.textContent = 'Optional - enter PO number or leave empty for auto-generation';
+                    poNumberHint.textContent = t('stk.procurement.poHintOptional');
                     poNumberHint.style.color = '#94a3b8';
                 } else {
                     poNumberInput.disabled = true;
                     poNumberInput.value = '';
-                    poNumberInput.placeholder = 'Not applicable';
+                    poNumberInput.placeholder = t('stk.procurement.phNotApplicable');
                     poNumberInput.style.background = '#f1f5f9';
-                    poNumberHint.textContent = 'Not required for ' + paymentSelect.value + ' payment method';
+                    poNumberHint.textContent = t('stk.procurement.poHintNotReq', { method: tStatus(paymentSelect.value) });
                     poNumberHint.style.color = '#94a3b8';
                 }
                 // ✅ Forzar limpieza del campo al cambiar
@@ -2550,7 +2555,7 @@
         
             // Configurar budget areas
             var budgetSelect = document.getElementById('budgetArea');
-            budgetSelect.innerHTML = '<option value="">-- Select area --</option>';
+            budgetSelect.innerHTML = '<option value="">' + t('stk.procurement.selectArea') + '</option>';
             for (var i = 0; i < budgetAreas.length; i++) {
                 budgetSelect.innerHTML += '<option value="' + escapeHtml(budgetAreas[i].name) + '" data-code="' + escapeHtml(budgetAreas[i].code) + '">' + escapeHtml(budgetAreas[i].name) + '</option>';
             }
@@ -2561,10 +2566,10 @@
             
             // Configurar status filter
             var statusFilter = document.getElementById('statusFilter');
-            statusFilter.innerHTML = '<option value="ALL">All Status</option>';
+            statusFilter.innerHTML = '<option value="ALL">' + t('stk.procurement.allStatus') + '</option>';
             if (config.statuses) {
                 for (var i = 0; i < config.statuses.length; i++) {
-                    statusFilter.innerHTML += '<option value="' + escapeHtml(config.statuses[i]) + '">' + escapeHtml(config.statuses[i]) + '</option>';
+                    statusFilter.innerHTML += '<option value="' + escapeHtml(config.statuses[i]) + '">' + escapeHtml(tStatus(config.statuses[i])) + '</option>';
                 }
             }
             
@@ -2616,7 +2621,7 @@
                         vendorDiv.innerHTML = html;
                         vendorDiv.style.display = 'block';
                     } else {
-                        vendorDiv.innerHTML = '<div style="padding:8px 12px; color:#94a3b8; font-size:0.75rem; font-style:italic;">No vendors found. Type to create new.</div>';
+                        vendorDiv.innerHTML = '<div style="padding:8px 12px; color:#94a3b8; font-size:0.75rem; font-style:italic;">' + t('stk.procurement.noVendorsCreate') + '</div>';
                         vendorDiv.style.display = 'block';
                     }
                 }, 300);
@@ -2655,7 +2660,7 @@
             
         } catch(err) {
             hideLoading();
-            showToast('Error loading data: ' + err.message, 'error');
+            showToast(t('stk.procurement.errLoadData', { error: err.message }), 'error');
             // console.error('Init error:', err);  // COMENTADO
         }
     }
