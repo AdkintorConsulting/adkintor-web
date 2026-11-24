@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Weekly Release Control - ADKINTOR EAMS</title>
+    <title data-i18n="pvt.release.pageTitle">Weekly Release Control - ADKINTOR EAMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/app/js/translations.js"></script>
+    <script src="/app/js/i18n.js"></script>
     <style>
         /* ============================================
            BASE
@@ -598,7 +600,7 @@
 <!-- LOADING -->
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    <span style="color: #666; font-size: 13px;">Loading configuration...</span>
+    <span style="color: #666; font-size: 13px;" data-i18n="pvt.release.loadingConfig">Loading configuration...</span>
 </div>
 
 <!-- TOAST -->
@@ -610,17 +612,17 @@
     <!-- CABECERA -->
     <div class="module-header">
         <div class="header-left">
-            <span class="module-title">Weekly Release Control</span>
+            <span class="module-title" data-i18n="pvt.release.title">Weekly Release Control</span>
         </div>
         <div class="header-right">
-            <span class="user-badge" id="userDisplay">Loading...</span>
+            <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
             <img class="company-logo" id="companyLogo" src="" alt="Logo">
         </div>
     </div>
     
     <!-- BREADCRUMBS -->
     <div class="breadcrumbs">
-        Home &gt; <span>PREVENTIVE</span> &gt; <span class="current">Weekly Release</span>
+        <span data-i18n="common.home">Home</span> &gt; <span data-i18n="pvt.breadcrumb">PREVENTIVE</span> &gt; <span class="current" data-i18n="pvt.release.breadcrumb">Weekly Release</span>
     </div>
     
     <!-- CUERPO -->
@@ -629,9 +631,9 @@
         <div class="controls-bar" id="controlsBar">
             <select id="weekSelector" style="width: 110px;"></select>
             <select id="yearSelector" style="width: 90px;"></select>
-            <button class="btn-main" onclick="loadWeek()" style="background: #64748b;"><i class="fas fa-sync-alt"></i> LOAD PLAN</button>
+            <button class="btn-main" onclick="loadWeek()" style="background: #64748b;" data-i18n-html="pvt.release.loadPlanBtn"><i class="fas fa-sync-alt"></i> LOAD PLAN</button>
             <div style="flex: 1;"></div>
-            <button id="releaseBtn" class="btn-main" onclick="openReleaseModal()" disabled><i class="fas fa-paper-plane"></i> RELEASE SELECTED</button>
+            <button id="releaseBtn" class="btn-main" onclick="openReleaseModal()" disabled data-i18n-html="pvt.release.releaseSelectedBtn"><i class="fas fa-paper-plane"></i> RELEASE SELECTED</button>
         </div>
 
         <!-- Main Layout -->
@@ -643,18 +645,18 @@
                         <thead>
                             <tr>
                                 <th width="36"><input type="checkbox" id="masterCheck" onchange="toggleAll(this)"></th>
-                                <th>ASSET ID</th>
-                                <th>EQUIPMENT NAME</th>
-                                <th>FREQUENCY</th>
-                                <th>EST. HOURS</th>
-                                <th>STATUS</th>
+                                <th data-i18n="pvt.release.colAssetId">ASSET ID</th>
+                                <th data-i18n="pvt.release.colEquipName">EQUIPMENT NAME</th>
+                                <th data-i18n="pvt.release.colFrequency">FREQUENCY</th>
+                                <th data-i18n="pvt.release.colEstHours">EST. HOURS</th>
+                                <th data-i18n="pvt.release.colStatus">STATUS</th>
                             </tr>
                         </thead>
                         <tbody id="tasksBody">
                             <tr>
                                 <td colspan="6" class="empty-state">
                                     <i class="fas fa-calendar-alt"></i>
-                                    Select a week to load maintenance tasks.
+                                    <span data-i18n="pvt.release.selectWeekEmpty">Select a week to load maintenance tasks.</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -664,22 +666,22 @@
 
             <!-- Side Panel -->
             <div class="side-panel">
-                <div class="panel-header">CAPACITY MONITOR - WEEK <span id="currentWeekLabel">--</span></div>
+                <div class="panel-header"><span data-i18n="pvt.release.capacityMonitorWeek">CAPACITY MONITOR - WEEK</span> <span id="currentWeekLabel">--</span></div>
                 
                 <div class="stat-card">
                     <div id="totalHours" class="stat-val">0.0</div>
-                    <div class="stat-label">Selected Labor Hours</div>
-                    <div id="overloadAlert" class="alert"><i class="fas fa-exclamation-triangle"></i> Exceeds 40-hour weekly capacity</div>
+                    <div class="stat-label" data-i18n="pvt.release.selectedHours">Selected Labor Hours</div>
+                    <div id="overloadAlert" class="alert" data-i18n-html="pvt.release.overloadAlert"><i class="fas fa-exclamation-triangle"></i> Exceeds 40-hour weekly capacity</div>
                 </div>
 
                 <div class="stat-card">
                     <div id="pendingCount" class="stat-val text-muted">0</div>
-                    <div class="stat-label">Tasks Pending Release</div>
+                    <div class="stat-label" data-i18n="pvt.release.tasksPending">Tasks Pending Release</div>
                 </div>
 
                 <div class="stat-card">
                     <div id="releasedCount" class="stat-val text-success">0</div>
-                    <div class="stat-label">Already Released</div>
+                    <div class="stat-label" data-i18n="pvt.release.alreadyReleased">Already Released</div>
                 </div>
             </div>
         </div>
@@ -689,7 +691,7 @@
     <div class="module-footer">
         <span>
             <span class="status-dot connected"></span>
-            <span>Connected</span>
+            <span data-i18n="common.connected">Connected</span>
         </span>
         <span class="footer-version" id="eamsVersion">v1.0.0</span>
     </div>
@@ -750,7 +752,7 @@
     function showLoading(msg) {
         const overlay = document.getElementById('loadingOverlay');
         const span = overlay.querySelector('span');
-        if (span) span.innerText = msg || 'Loading...';
+        if (span) span.innerText = msg || t('common.loading');
         overlay.classList.add('visible');
     }
     
@@ -781,19 +783,19 @@
                 EAMS_API_URL = sessionData.eamsApiUrl;
                 currentUserEmail = sessionData.email || '';  // ✅ AÑADIR
                 const userDisplay = document.getElementById('userDisplay');
-                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || 'User';
+                if (userDisplay) userDisplay.innerText = sessionData.email || sessionData.userName || t('pvt.common.userFallback');
             } catch(e) {
                 // console.error('Error parsing session:', e);  // COMENTADO
-                showToast('Session error. Please log in again.', 'error');
+                showToast(t('common.sessionError'), 'error');
             }
         } else {
-            showToast('Please log in to continue.', 'error');
+            showToast(t('common.pleaseLogin'), 'error');
         }
     }
 
     async function callApi(action, args = []) {
         if (!EAMS_API_URL) {
-            throw new Error('API URL not configured. Please log in.');
+            throw new Error(t('common.apiNotConfigured'));
         }
         
         const response = await fetch(PROXY_URL, {
@@ -807,7 +809,7 @@
         
         const result = await response.json();
         if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
+            throw new Error(result.error || t('common.unknownError'));
         }
         return result.data;
     }
@@ -860,7 +862,7 @@
     // INICIO
     // ============================================
     async function loadInitialData() {
-        showLoading('Loading configuration...');
+        showLoading(t('pvt.release.loadingConfig'));
         
         try {
             const response = await callApi('PVT_getReleaseInitialData', []);
@@ -869,7 +871,7 @@
                 availableYears = response.availableYears || [];
                 currentYear = response.currentYear || new Date().getFullYear();
             } else {
-                showToast('Error loading initial data: ' + (response.message || 'Unknown'), 'error');
+                showToast(t('pvt.release.errLoadInitial', { error: response.message || t('common.unknownError') }), 'error');
                 availableYears = [new Date().getFullYear()];
                 currentYear = new Date().getFullYear();
             }
@@ -881,7 +883,7 @@
         } catch (e) {
             hideLoading();
             // console.error('Error loading initial data:', e);  // COMENTADO
-            showToast('Error loading configuration: ' + e.message, 'error');
+            showToast(t('pvt.release.errLoadConfig', { error: e.message }), 'error');
             
             availableYears = [new Date().getFullYear()];
             currentYear = new Date().getFullYear();
@@ -896,7 +898,7 @@
         for (var i = 1; i <= 52; i++) {
             var opt = document.createElement('option');
             opt.value = i;
-            opt.text = 'Week ' + i.toString().padStart(2, '0');
+            opt.text = t('pvt.release.weekOpt', { week: i.toString().padStart(2, '0') });
             weekSel.appendChild(opt);
         }
         
@@ -930,7 +932,7 @@
     // ============================================
     async function loadWeek() {
         if (isProcessing) {
-            showToast('Please wait, currently processing...', 'warning');
+            showToast(t('pvt.release.pleaseWaitProcessing'), 'warning');
             return;
         }
         
@@ -940,7 +942,7 @@
         var weekLabel = document.getElementById('currentWeekLabel');
         if (weekLabel) weekLabel.innerText = week;
         
-        showLoading('Loading maintenance tasks...');
+        showLoading(t('pvt.release.loadingTasks'));
         
         try {
             var tasks = await callApi('PVT_getWeeklyTasks', [parseInt(week), parseInt(year)]);
@@ -950,7 +952,7 @@
             // console.log('[Release] Ready - Table refreshed');  // COMENTADO
         } catch (e) {
             hideLoading();
-            showToast('Error loading tasks: ' + e.message, 'error');
+            showToast(t('pvt.release.errLoadTasks', { error: e.message }), 'error');
             localTasks = [];
             renderTable();
         }
@@ -964,7 +966,7 @@
                 '<tr>' +
                     '<td colspan="6" class="empty-state">' +
                         '<i class="fas fa-check-circle"></i>' +
-                        'No pending tasks for this period.' +
+                        t('pvt.release.noPendingTasks') +
                     '</td>' +
                 '</tr>';
             document.getElementById('pendingCount').innerText = '0';
@@ -977,8 +979,8 @@
         var html = '';
         
         for (var i = 0; i < localTasks.length; i++) {
-            var t = localTasks[i];
-            var isReleased = t.plannerStatus === 'RELEASED';
+            var task = localTasks[i];
+            var isReleased = task.plannerStatus === 'RELEASED';
             if (isReleased) releasedCount++;
             
             html += 
@@ -986,11 +988,11 @@
                     '<td style="padding: 10px 14px;">' +
                         '<input type="checkbox" class="task-check" value="' + i + '" onchange="updateStats()" ' + (isReleased || isProcessing ? 'disabled' : '') + '>' +
                     '</td>' +
-                    '<td><strong>' + escapeHtml(t.assetId) + '</strong></td>' +
-                    '<td>' + escapeHtml(t.location) + '</td>' +
-                    '<td><span class="badge badge-secondary">' + escapeHtml(t.freq) + '</span></td>' +
-                    '<td class="hours-value">' + t.hours.toFixed(1) + ' h</td>' +
-                    '<td><span class="badge ' + (isReleased ? 'badge-secondary' : 'badge-success') + '">' + escapeHtml(t.plannerStatus) + '</span></td>' +
+                    '<td><strong>' + escapeHtml(task.assetId) + '</strong></td>' +
+                    '<td>' + escapeHtml(task.location) + '</td>' +
+                    '<td><span class="badge badge-secondary">' + escapeHtml(tStatus(task.freq)) + '</span></td>' +
+                    '<td class="hours-value">' + task.hours.toFixed(1) + ' h</td>' +
+                    '<td><span class="badge ' + (isReleased ? 'badge-secondary' : 'badge-success') + '">' + escapeHtml(tStatus(task.plannerStatus)) + '</span></td>' +
                 '</tr>';
         }
         
@@ -1066,28 +1068,28 @@
     // ============================================
     function openReleaseModal() {
         if (isProcessing) {
-            showToast('Please wait, currently processing...', 'warning');
+            showToast(t('pvt.release.pleaseWaitProcessing'), 'warning');
             return;
         }
         
         var modalHtml = 
             '<div class="modal-overlay" id="releaseModal">' +
                 '<div class="modal-container">' +
-                    '<h3><i class="fas fa-clipboard-check"></i> Release Confirmation</h3>' +
+                    '<h3><i class="fas fa-clipboard-check"></i> ' + t('pvt.release.modalTitle') + '</h3>' +
                     '<div class="modal-divider"></div>' +
                     '<div class="checklist-item">' +
                         '<input type="checkbox" id="chkSpareParts" onchange="validateChecklist()">' +
-                        '<label for="chkSpareParts">Are the required spare parts and materials available for the selected work orders?</label>' +
+                        '<label for="chkSpareParts">' + t('pvt.release.chkSpareParts') + '</label>' +
                     '</div>' +
                     '<div class="checklist-item">' +
                         '<input type="checkbox" id="chkProduction" onchange="validateChecklist()">' +
-                        '<label for="chkProduction">Has production been notified and downtime confirmed for the affected technical locations?</label>' +
+                        '<label for="chkProduction">' + t('pvt.release.chkProduction') + '</label>' +
                     '</div>' +
                     '<div class="modal-buttons">' +
-                        '<button class="btn-secondary" onclick="closeReleaseModal()" id="modalCancelBtn">CANCEL</button>' +
+                        '<button class="btn-secondary" onclick="closeReleaseModal()" id="modalCancelBtn">' + t('common.cancel') + '</button>' +
                         '<button id="confirmReleaseBtn" class="btn-main" onclick="executeRelease()" disabled style="flex: 1; justify-content: center;">' +
-                            '<span id="releaseBtnText">CONFIRM & RELEASE</span>' +
-                            '<span id="releaseBtnSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Processing...</span>' +
+                            '<span id="releaseBtnText">' + t('pvt.release.confirmReleaseBtn') + '</span>' +
+                            '<span id="releaseBtnSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i> ' + t('pvt.release.processing') + '</span>' +
                         '</button>' +
                     '</div>' +
                 '</div>' +
@@ -1124,7 +1126,7 @@
         });
         
         if (selectedData.length === 0) {
-            showToast('No tasks selected for release.', 'error');
+            showToast(t('pvt.release.noTasksSelected'), 'error');
             return;
         }
         
@@ -1199,7 +1201,7 @@
                 setTimeout(function() { loadWeek(); }, 200);
                 
             } else {
-                showToast('Error: ' + response.message, 'error');
+                showToast(t('common.error') + ': ' + response.message, 'error');
             }
         } catch (e) {
             // 🔓 DESBLOQUEAR EN CASO DE ERROR
@@ -1218,7 +1220,7 @@
                     console.warn('[PVT] Error log failed:', err);
                 });
             }
-            showToast('Error: ' + e.message, 'error');
+            showToast(t('common.error') + ': ' + e.message, 'error');
         }
     }
 
@@ -1242,7 +1244,7 @@
         if (EAMS_API_URL) {
             loadInitialData();
         } else {
-            showToast('Please login to access EAMS', 'error');
+            showToast(t('pvt.release.loginToAccess'), 'error');
             // console.log('[Release] Not Configured');  // COMENTADO
         }
     }
