@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FORESIGHT - Consulting Intelligence</title>
+  <title data-i18n="consulting.pageTitle">FORESIGHT - Consulting Intelligence</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/app/js/translations.js"></script>
+  <script src="/app/js/i18n.js"></script>
   
   <style>
     /* ============================================
@@ -911,7 +913,7 @@
 <div id="loadingOverlay">
   <div class="loading-content">
     <div class="loading-spinner"></div>
-    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;">Loading consulting data...</div>
+    <div id="loadingMessage" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;" data-i18n="consulting.loadingData">Loading consulting data...</div>
   </div>
 </div>
 
@@ -921,17 +923,17 @@
   <!-- HEADER - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="module-header">
     <div class="header-left">
-      <span class="module-title"><i class="fas fa-chalkboard-user"></i> Consulting Intelligence</span>
+      <span class="module-title"><i class="fas fa-chalkboard-user"></i> <span data-i18n="consulting.title">Consulting Intelligence</span></span>
     </div>
     <div class="header-right">
-      <span class="user-badge" id="userDisplay">Loading...</span>
+      <span class="user-badge" id="userDisplay" data-i18n="common.loading">Loading...</span>
       <img class="company-logo" id="companyLogo" src="" alt="Logo">
     </div>
   </div>
   
   <!-- BREADCRUMBS - ESTÁNDAR ADKINTOR (DARK) -->
   <div class="breadcrumbs">
-    Home &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current">Consulting Intelligence</span>
+    <span data-i18n="common.home">Home</span> &gt; <span class="foresight-tag">FORESIGHT</span> &gt; <span class="current" data-i18n="consulting.title">Consulting Intelligence</span>
   </div>
   
   <!-- CUERPO -->
@@ -940,27 +942,27 @@
       <!-- Hero -->
       <div class="consulting-hero">
         <div>
-          <h1>📊 Adkintor Consulting Intelligence</h1>
-          <p>Strategic Advisory Report · Data-Driven Insights for Decision Makers</p>
+          <h1 data-i18n="consulting.heroTitle">📊 Adkintor Consulting Intelligence</h1>
+          <p data-i18n="consulting.heroSubtitle">Strategic Advisory Report · Data-Driven Insights for Decision Makers</p>
         </div>
         <div class="hero-badge">
-          <i class="fas fa-star"></i> Premium Advisory
+          <i class="fas fa-star"></i> <span data-i18n="consulting.heroBadge">Premium Advisory</span>
         </div>
       </div>
       
       <!-- Controls -->
       <div class="controls">
         <div class="control-group">
-          <label><i class="far fa-calendar-alt"></i> Year</label>
+          <label><i class="far fa-calendar-alt"></i> <span data-i18n="consulting.yearLabel">Year</span></label>
           <select id="yearSelect">
-            <option value="">Loading years...</option>
+            <option value="" data-i18n="consulting.loadingYears">Loading years...</option>
           </select>
         </div>
         <div class="control-group">
-          <button id="generateBtn" class="adk-btn adk-btn-primary"><i class="fas fa-chart-line"></i> Generate Annual Report</button>
+          <button id="generateBtn" class="adk-btn adk-btn-primary" data-i18n-html="consulting.btnGenerateReport"><i class="fas fa-chart-line"></i> Generate Annual Report</button>
         </div>
         <div class="control-group">
-          <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled><i class="fas fa-file-pdf"></i> Export PDF</button>
+          <button id="exportPdfBtn" class="adk-btn adk-btn-success" disabled data-i18n-html="consulting.btnExportPdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
         </div>
       </div>
       
@@ -968,9 +970,9 @@
       <div id="reportContent">
         <div class="loading-placeholder">
           <i class="fas fa-file-alt icon-large"></i>
-          <p style="font-size: 18px; font-weight: 600; color: var(--text-primary);">Ready to Generate</p>
-          <p style="font-size: 14px;">Select a year and month, then click <strong>Generate Report</strong></p>
-          <p style="font-size: 12px; margin-top: 8px; color: var(--text-secondary);">For annual reports, select December. For quarterly, select March/June/September.</p>
+          <p style="font-size: 18px; font-weight: 600; color: var(--text-primary);" data-i18n="consulting.readyTitle">Ready to Generate</p>
+          <p style="font-size: 14px;" data-i18n-html="consulting.readyDesc">Select a year and month, then click <strong>Generate Report</strong></p>
+          <p style="font-size: 12px; margin-top: 8px; color: var(--text-secondary);" data-i18n="consulting.readyNote">For annual reports, select December. For quarterly, select March/June/September.</p>
         </div>
       </div>
     </div>
@@ -980,7 +982,7 @@
   <div class="module-footer">
     <span>
       <span class="status-dot connected"></span>
-      <span>Connected</span>
+      <span data-i18n="common.connected">Connected</span>
     </span>
     <span class="footer-version" id="eamsVersion">v1.0.0</span>
   </div>
@@ -1052,7 +1054,7 @@
   function showLoading(msg) {
     const overlay = document.getElementById('loadingOverlay');
     const msgSpan = document.getElementById('loadingMessage');
-    if (msgSpan) msgSpan.textContent = msg || 'Loading...';
+    if (msgSpan) msgSpan.textContent = msg || t('common.loading');
     overlay.classList.add('visible');
   }
   
@@ -1081,24 +1083,24 @@
         EAMS_API_URL = sessionData.intelligenceApiUrl || sessionData.eamsApiUrl;
         const userDisplay = document.getElementById('userDisplay');
         if (userDisplay) {
-          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || 'User';
+          userDisplay.innerText = sessionData.email || sessionData.userName || sessionData.user || t('consulting.userFallback');
         }
         // console.log('[CONSULTING] API URL loaded:', EAMS_API_URL);  // COMENTADO
       } catch(e) { 
         // console.error('[CONSULTING] Error parsing session:', e);  // COMENTADO
         const userDisplay = document.getElementById('userDisplay');
-        if (userDisplay) userDisplay.innerText = 'User';
+        if (userDisplay) userDisplay.innerText = t('consulting.userFallback');
       }
     } else {
       // console.warn('[CONSULTING] No session found');  // COMENTADO
       const userDisplay = document.getElementById('userDisplay');
-      if (userDisplay) userDisplay.innerText = 'Guest';
+      if (userDisplay) userDisplay.innerText = t('consulting.guestFallback');
     }
   }
   
   async function callApi(action, args = []) {
     if (!EAMS_API_URL) {
-      throw new Error('API URL not configured. Please check your session.');
+      throw new Error(t('consulting.errApiNotConfigured'));
     }
     
     // console.log('[CONSULTING] Calling API:', action, args);  // COMENTADO
@@ -1120,7 +1122,7 @@
     // console.log('[CONSULTING] API Response:', result);  // COMENTADO
     
     if (!result.success) {
-      throw new Error(result.error || 'API call failed');
+      throw new Error(result.error || t('consulting.apiCallFailed'));
     }
     
     return result.data;
@@ -1153,32 +1155,31 @@
   async function generateReport() {
     var year = parseInt(document.getElementById('yearSelect').value);
     if (!year) {
-      showToast('Please select a year', 'warning');
+      showToast(t('consulting.selectYear'), 'warning');
       return;
     }
     
     // ✅ MOSTRAR LOADING INMEDIATAMENTE
-    showLoading('Checking data availability...');
+    showLoading(t('consulting.checkingAvailability'));
     
     try {
       var availability = await callApi('checkYearAvailability', [year]);
       if (availability && availability.totalMonths < 3) {
         hideLoading();
-        var confirmMsg = '⚠️ Only ' + availability.totalMonths + ' months of data available for ' + year + 
-                        '. The report will be partial. Continue?';
+        var confirmMsg = t('consulting.confirmPartial', { months: availability.totalMonths, year: year });
         if (!confirm(confirmMsg)) {
-          showToast('Report generation cancelled', 'info');
+          showToast(t('consulting.reportCancelled'), 'info');
           return;
         }
-        showLoading('Generating partial report...');
+        showLoading(t('consulting.generatingPartial'));
       } else {
-        showLoading('Generating report...');
+        showLoading(t('consulting.generatingReport'));
       }
       
       await logForesight('CONSULTING', 'GENERATE_REPORT', 'Report generated for ' + year);
       
       var reportContainer = document.getElementById('reportContent');
-      reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">Loading report data...</p></div>';
+      reportContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin icon-large" style="color: var(--accent-color);"></i><p style="font-size: 16px; color: var(--text-primary);">' + t('consulting.loadingReportData') + '</p></div>';
       
       var data = await callApi('getConsultingReportData', [year, 12]);
       currentReportData = data;
@@ -1186,15 +1187,15 @@
       var exportBtn = document.getElementById('exportPdfBtn');
       if (exportBtn) exportBtn.disabled = false;
       hideLoading();
-      showToast('Report generated successfully', 'success');
+      showToast(t('consulting.reportGeneratedSuccess'), 'success');
       
     } catch (error) {
       hideLoading();
       if (window.Logger && typeof Logger.error === 'function') {
         Logger.error('CONSULTING', 'generateReport', error.message).catch(function(e) { console.warn('[CONSULTING] Error log failed:', e); });
       }
-      showToast('Error: ' + error.message, 'error');
-      document.getElementById('reportContent').innerHTML = '<div class="alert alert-critical"><i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + error.message + '</div>';
+      showToast(t('common.error') + ': ' + error.message, 'error');
+      document.getElementById('reportContent').innerHTML = '<div class="alert alert-critical"><i class="fas fa-exclamation-triangle"></i> <strong>' + t('common.error') + ':</strong> ' + error.message + '</div>';
     }
   }
   
@@ -1207,18 +1208,18 @@
   // ============================================
   function printConsultingReport() {
       if (!currentReportData) {
-          showToast('Please generate a report first', 'warning');
+          showToast(t('consulting.generateFirst'), 'warning');
           return;
       }
       
       var logoUrl = document.getElementById('companyLogo')?.src || '';
-      var now = new Date().toLocaleString();
+      var now = new Date().toLocaleString(I18n.getLocale());
       var period = (currentReportData.period?.month ? getMonthName(currentReportData.period.month) : '') + ' ' + (currentReportData.period?.year || '');
       
       // Obtener contenido del reporte
       var reportHTML = document.getElementById('reportContent').innerHTML;
-      if (!reportHTML || reportHTML.indexOf('Ready to Generate') !== -1) {
-          showToast('Please generate a report first', 'warning');
+      if (!reportHTML || reportHTML.indexOf(t('consulting.readyTitle')) !== -1) {
+          showToast(t('consulting.generateFirst'), 'warning');
           return;
       }
       
@@ -1238,16 +1239,16 @@
               <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
                   <div style="display:flex; gap:10px;">
                       <button class="btn-outline" onclick="closePreview()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-times"></i> CLOSE
+                          <i class="fas fa-times"></i> ${t('consulting.btnCloseUpper')}
                       </button>
                       <button class="btn-outline" onclick="printPreviewConsulting()" style="background: white; border: 1px solid #1a1a2e; color: #1a1a2e; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; font-family: 'Inter', sans-serif;">
-                          <i class="fas fa-print"></i> PRINT
+                          <i class="fas fa-print"></i> ${t('consulting.btnPrintUpper')}
                       </button>
                   </div>
               </div>
               
-              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">📊 ADKINTOR CONSULTING INTELLIGENCE</h1>
-              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">Strategic Advisory Report · Period: ${period} | Generated: ${now}</div>
+              <h1 style="font-size: 22px; margin-bottom: 4px; color: #1a1a2e;">${t('consulting.printTitle')}</h1>
+              <div style="font-size: 12px; color: #666; margin-bottom: 20px;">${t('consulting.printMeta', { period: period, date: now })}</div>
               
               <!-- Report Content -->
               <div style="overflow-x: auto;">
@@ -1255,7 +1256,7 @@
               </div>
               
               <div style="margin-top: 20px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-                  Consulting Intelligence - Adkintor EAMS
+                  ${t('consulting.reportFooter')}
               </div>
           </div>
       `;
@@ -1343,29 +1344,29 @@
     
     var html = '<div style="margin-bottom: 24px;">' +
       '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">' +
-        '<div><span style="color: var(--text-secondary); font-size: 13px;">Report Period:</span> <strong style="color: var(--accent-color);">' + periodText + '</strong></div>' +
-        '<div><span class="kpi-status status-good"><i class="fas fa-check-circle"></i> Data Verified</span></div>' +
+        '<div><span style="color: var(--text-secondary); font-size: 13px;">' + t('consulting.reportPeriod') + '</span> <strong style="color: var(--accent-color);">' + periodText + '</strong></div>' +
+        '<div><span class="kpi-status status-good"><i class="fas fa-check-circle"></i> ' + t('consulting.dataVerified') + '</span></div>' +
       '</div>' +
       '<div class="kpi-grid">' +
-        '<div class="kpi-card"><div class="kpi-value">' + summary.availability.value + '%</div><div class="kpi-label">Availability</div><div class="kpi-status ' + availabilityStatus + '">' + summary.availability.status + '</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + summary.pmCompliance.value + '%</div><div class="kpi-label">PM Compliance</div><div class="kpi-status ' + pmStatus + '">' + summary.pmCompliance.status + '</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + summary.mtbf.value + ' days</div><div class="kpi-label">MTBF (Class A)</div><div class="kpi-status ' + mtbfStatus + '">' + summary.mtbf.status + '</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + summary.totalWOs + '</div><div class="kpi-label">Total Work Orders</div><div class="kpi-status status-info">' + summary.correctiveWOs + ' Corrective</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.availability.value + '%</div><div class="kpi-label">' + t('consulting.lblAvailability') + '</div><div class="kpi-status ' + availabilityStatus + '">' + escapeHtml(tStatus(summary.availability.status)) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.pmCompliance.value + '%</div><div class="kpi-label">' + t('consulting.lblPmCompliance') + '</div><div class="kpi-status ' + pmStatus + '">' + escapeHtml(tStatus(summary.pmCompliance.status)) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.mtbf.value + ' ' + t('common.days') + '</div><div class="kpi-label">' + t('consulting.lblMtbfClassA') + '</div><div class="kpi-status ' + mtbfStatus + '">' + escapeHtml(tStatus(summary.mtbf.status)) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + summary.totalWOs + '</div><div class="kpi-label">' + t('consulting.lblTotalWos') + '</div><div class="kpi-status status-info">' + t('consulting.correctiveCount', { count: summary.correctiveWOs }) + '</div></div>' +
       '</div>';
     
     if (summary.topIssues && summary.topIssues.length > 0) {
-      html += '<div class="alert alert-critical"><strong>⚠️ Top Issues Impacting Performance</strong><br>';
+      html += '<div class="alert alert-critical"><strong>' + t('consulting.hdrTopIssues') + '</strong><br>';
       for (var i = 0; i < summary.topIssues.length; i++) {
         var issue = summary.topIssues[i];
-        html += '• ' + escapeHtml(issue.assetId + ' (' + (issue.name || issue.assetId) + ')') + ': ' + issue.failures + ' failures (' + escapeHtml(issue.criticality) + ')<br>';
+        html += '• ' + escapeHtml(issue.assetId + ' (' + (issue.name || issue.assetId) + ')') + ': ' + t('consulting.failuresCount', { count: issue.failures }) + ' (' + escapeHtml(tStatus(issue.criticality)) + ')<br>';
       }
       html += '</div>';
     } else {
-      html += '<div class="alert alert-good"><strong>✅ No Major Issues Detected</strong><br>All assets are performing within expected parameters.</div>';
+      html += '<div class="alert alert-good"><strong>' + t('consulting.hdrNoIssues') + '</strong><br>' + t('consulting.descNoIssues') + '</div>';
     }
     
     if (summary.topAchievements && summary.topAchievements.length > 0) {
-      html += '<div class="alert alert-good"><strong>✅ Key Achievements</strong><br>';
+      html += '<div class="alert alert-good"><strong>' + t('consulting.hdrKeyAchievements') + '</strong><br>';
       for (var i = 0; i < summary.topAchievements.length; i++) {
         html += '• ' + escapeHtml(summary.topAchievements[i]) + '<br>';
       }
@@ -1378,11 +1379,11 @@
   
   function renderTabs(data) {
     return '<div class="tabs">' +
-      '<div class="tab active" data-tab="financial"><i class="fas fa-coins"></i> Financial</div>' +
-      '<div class="tab" data-tab="staff"><i class="fas fa-users"></i> Staff</div>' +
-      '<div class="tab" data-tab="reliability"><i class="fas fa-chart-line"></i> Reliability</div>' +
-      '<div class="tab" data-tab="capex"><i class="fas fa-hard-hat"></i> CAPEX</div>' +
-      '<div class="tab" data-tab="recommendations"><i class="fas fa-lightbulb"></i> Recommendations</div>' +
+      '<div class="tab active" data-tab="financial">' + t('consulting.tabFinancial') + '</div>' +
+      '<div class="tab" data-tab="staff">' + t('consulting.tabStaff') + '</div>' +
+      '<div class="tab" data-tab="reliability">' + t('consulting.tabReliability') + '</div>' +
+      '<div class="tab" data-tab="capex">' + t('consulting.tabCapex') + '</div>' +
+      '<div class="tab" data-tab="recommendations">' + t('consulting.tabRecommendations') + '</div>' +
       '</div>' +
       '<div class="tab-content">' +
         '<div id="tab-financial" class="tab-pane active">' + renderFinancialTab(data.financialAnalysis) + '</div>' +
@@ -1392,7 +1393,7 @@
         '<div id="tab-recommendations" class="tab-pane">' + renderRecommendationsTab(data.recommendations) + '</div>' +
       '</div>' +
       '<div class="action-buttons">' +
-        '<button id="exportPdfBottomBtn" class="adk-btn adk-btn-success"><i class="fas fa-file-pdf"></i> Export PDF</button>' +
+        '<button id="exportPdfBottomBtn" class="adk-btn adk-btn-success">' + t('consulting.btnExportPdf') + '</button>' +
       '</div>';
   }
   
@@ -1400,27 +1401,27 @@
     var varianceStatusClass = financial.varianceStatus.includes('GOOD') ? 'status-good' : 'status-critical';
     var varianceIcon = financial.varianceStatus.includes('GOOD') ? '✅' : '⚠️';
     
-    var html = '<h3><i class="fas fa-coins"></i> Financial Analysis</h3>' +
+    var html = '<h3><i class="fas fa-coins"></i> ' + t('consulting.hdrFinancialAnalysis') + '</h3>' +
       '<div class="kpi-grid">' +
-        '<div class="kpi-card"><div class="kpi-value gold">$' + financial.totalSpend.toLocaleString() + '</div><div class="kpi-label">Total Spend</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">$' + financial.budgetAmount.toLocaleString() + '</div><div class="kpi-label">Budget</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value ' + (financial.variance > 0 ? 'danger' : 'success') + '">' + (financial.variance >= 0 ? '+' : '-') + '$' + Math.abs(financial.variance).toLocaleString() + '</div><div class="kpi-label">Variance</div><div class="kpi-status ' + varianceStatusClass + '">' + varianceIcon + ' ' + financial.varianceStatus + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value gold">$' + financial.totalSpend.toLocaleString() + '</div><div class="kpi-label">' + t('consulting.lblTotalSpend') + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">$' + financial.budgetAmount.toLocaleString() + '</div><div class="kpi-label">' + t('consulting.lblBudget') + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (financial.variance > 0 ? 'danger' : 'success') + '">' + (financial.variance >= 0 ? '+' : '-') + '$' + Math.abs(financial.variance).toLocaleString() + '</div><div class="kpi-label">' + t('consulting.lblVariance') + '</div><div class="kpi-status ' + varianceStatusClass + '">' + varianceIcon + ' ' + escapeHtml(tStatus(financial.varianceStatus)) + '</div></div>' +
       '</div>';
     
-    html += '<h4><i class="fas fa-trophy"></i> Top 5 Assets by Maintenance Cost</h4>' +
-      '<table class="data-table"><thead><tr><th>Asset</th><th>Cost</th><th>Criticality</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-trophy"></i> ' + t('consulting.hdrTop5Cost') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colAsset') + '</th><th>' + t('consulting.colCost') + '</th><th>' + t('consulting.colCriticality') + '</th></tr></thead><tbody>';
     if (financial.topCostAssets && financial.topCostAssets.length > 0) {
       for (var i = 0; i < financial.topCostAssets.length && i < 5; i++) {
         var asset = financial.topCostAssets[i];
-        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(asset.criticality) + '</td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>$' + asset.cost.toLocaleString() + '</td><td>' + escapeHtml(tStatus(asset.criticality)) + '</td></tr>';
       }
     } else {
-      html += '<tr><td colspan="3">No data available</td></tr>';
+      html += '<tr><td colspan="3">' + t('consulting.noDataAvailable') + '</td></tr>';
     }
     html += '</tbody></table>';
     
-    html += '<h4><i class="fas fa-pie-chart"></i> Spend by Category</h4>' +
-      '<table class="data-table"><thead><tr><th>Category</th><th>Amount</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-pie-chart"></i> ' + t('consulting.hdrSpendByCategory') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colCategory') + '</th><th>' + t('consulting.colAmount') + '</th></tr></thead><tbody>';
     if (financial.spendByCategory) {
       var categories = Object.keys(financial.spendByCategory);
       for (var i = 0; i < categories.length; i++) {
@@ -1428,7 +1429,7 @@
         html += '<tr><td>' + escapeHtml(cat) + '</td><td>$' + financial.spendByCategory[cat].toLocaleString() + '</td></tr>';
       }
     } else {
-      html += '<tr><td colspan="2">No data available</td></tr>';
+      html += '<tr><td colspan="2">' + t('consulting.noDataAvailable') + '</td></tr>';
     }
     html += '</tbody></table>';
     
@@ -1438,32 +1439,32 @@
   function renderStaffTab(staff) {
     var backlogStatusClass = staff.backlogStatus === '✅ GOOD' ? 'status-good' : 'status-warning';
     
-    var html = '<h3><i class="fas fa-users"></i> Staff & Organization Analysis</h3>' +
+    var html = '<h3><i class="fas fa-users"></i> ' + t('consulting.hdrStaffAnalysis') + '</h3>' +
       '<div class="kpi-grid">' +
-        '<div class="kpi-card"><div class="kpi-value">' + staff.staffCount + '</div><div class="kpi-label">Technicians</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value ' + (parseInt(staff.backlogWeeks) > 4 ? 'danger' : 'success') + '">' + staff.backlogWeeks + ' weeks</div><div class="kpi-label">Backlog</div><div class="kpi-status ' + backlogStatusClass + '">' + staff.backlogStatus + '</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + staff.totalOpenWOs + '</div><div class="kpi-label">Open Work Orders</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + staff.staffCount + '</div><div class="kpi-label">' + t('consulting.lblTechnicians') + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (parseInt(staff.backlogWeeks) > 4 ? 'danger' : 'success') + '">' + staff.backlogWeeks + ' ' + t('consulting.weeksUnit') + '</div><div class="kpi-label">' + t('consulting.lblBacklog') + '</div><div class="kpi-status ' + backlogStatusClass + '">' + escapeHtml(tStatus(staff.backlogStatus)) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + staff.totalOpenWOs + '</div><div class="kpi-label">' + t('consulting.lblOpenWos') + '</div></div>' +
       '</div>';
     
-    html += '<h4><i class="fas fa-user-check"></i> Technician Performance</h4>' +
-      '<table class="data-table"><thead><tr><th>Name</th><th>WOs</th><th>Completed</th><th>Hours</th><th>Productivity</th><th>Status</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-user-check"></i> ' + t('consulting.hdrTechPerformance') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colName') + '</th><th>' + t('consulting.colWos') + '</th><th>' + t('consulting.colCompleted') + '</th><th>' + t('consulting.colHours') + '</th><th>' + t('consulting.colProductivity') + '</th><th>' + t('consulting.colStatus') + '</th></tr></thead><tbody>';
     if (staff.staffList && staff.staffList.length > 0) {
       for (var i = 0; i < staff.staffList.length; i++) {
         var tech = staff.staffList[i];
         var techStatusClass = tech.status === '✅ GOOD' ? 'status-good' : (tech.status.includes('WARNING') ? 'status-warning' : 'status-critical');
-        html += '<tr><td><strong>' + escapeHtml(tech.name) + '</strong></td><td>' + tech.totalWOs + '</td><td>' + tech.completedWOs + '</td><td>' + tech.totalHours + '</td><td>' + tech.productivity + '%</td><td><span class="kpi-status ' + techStatusClass + '">' + tech.status + '</span></td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(tech.name) + '</strong></td><td>' + tech.totalWOs + '</td><td>' + tech.completedWOs + '</td><td>' + tech.totalHours + '</td><td>' + tech.productivity + '%</td><td><span class="kpi-status ' + techStatusClass + '">' + escapeHtml(tStatus(tech.status)) + '</span></td></tr>';
       }
     } else {
-      html += '<tr><td colspan="6">No data available</td></tr>';
+      html += '<tr><td colspan="6">' + t('consulting.noDataAvailable') + '</td></tr>';
     }
     html += '</tbody></table>';
     
-    html += '<h4><i class="fas fa-clock"></i> Backlog by Age</h4>' +
-      '<table class="data-table"><thead><tr><th>Age Category</th><th>Number of WOs</th><th>Recommendation</th></tr></thead><tbody>' +
-        '<tr><td>&lt;7 days</td><td>' + (staff.backlogByAge['<7d'] || 0) + '</td><td>Normal priority</td></tr>' +
-        '<tr><td>7-14 days</td><td>' + (staff.backlogByAge['7-14d'] || 0) + '</td><td>' + ((staff.backlogByAge['7-14d'] || 0) > 5 ? '⚠️ Monitor closely' : 'Normal') + '</td></tr>' +
-        '<tr><td>15-30 days</td><td>' + (staff.backlogByAge['15-30d'] || 0) + '</td><td>' + ((staff.backlogByAge['15-30d'] || 0) > 3 ? '🔴 Escalate' : '⚠️ Review') + '</td></tr>' +
-        '<tr><td>&gt;30 days</td><td>' + (staff.backlogByAge['>30d'] || 0) + '</td><td><span style="color: var(--danger); font-weight: 700;">🔴 URGENT - Escalate immediately</span></td></tr>' +
+    html += '<h4><i class="fas fa-clock"></i> ' + t('consulting.hdrBacklogByAge') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colAgeCategory') + '</th><th>' + t('consulting.colNumWos') + '</th><th>' + t('consulting.colRecommendation') + '</th></tr></thead><tbody>' +
+        '<tr><td>' + escapeHtml(t('consulting.ageLess7d')) + '</td><td>' + (staff.backlogByAge['<7d'] || 0) + '</td><td>' + t('consulting.recNormalPriority') + '</td></tr>' +
+        '<tr><td>' + escapeHtml(t('consulting.age7to14d')) + '</td><td>' + (staff.backlogByAge['7-14d'] || 0) + '</td><td>' + ((staff.backlogByAge['7-14d'] || 0) > 5 ? t('consulting.recMonitorClosely') : t('consulting.recNormal')) + '</td></tr>' +
+        '<tr><td>' + escapeHtml(t('consulting.age15to30d')) + '</td><td>' + (staff.backlogByAge['15-30d'] || 0) + '</td><td>' + ((staff.backlogByAge['15-30d'] || 0) > 3 ? t('consulting.recEscalate') : t('consulting.recReview')) + '</td></tr>' +
+        '<tr><td>' + escapeHtml(t('consulting.ageMore30d')) + '</td><td>' + (staff.backlogByAge['>30d'] || 0) + '</td><td><span style="color: var(--danger); font-weight: 700;">' + t('consulting.recUrgentEscalate') + '</span></td></tr>' +
       '</tbody></table>';
     
     return html;
@@ -1472,43 +1473,43 @@
   function renderReliabilityTab(reliability) {
     var mtbfStatusClass = reliability.mtbf.status === '✅ MEETS TARGET' ? 'status-good' : 'status-critical';
     
-    var html = '<h3><i class="fas fa-chart-line"></i> Reliability Analysis</h3>' +
+    var html = '<h3><i class="fas fa-chart-line"></i> ' + t('consulting.hdrReliabilityAnalysis') + '</h3>' +
       '<div class="kpi-grid">' +
-        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.A + ' days</div><div class="kpi-label">MTBF Class A (Critical)</div><div class="kpi-status ' + mtbfStatusClass + '">' + reliability.mtbf.status + '</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.B + ' days</div><div class="kpi-label">MTBF Class B (Important)</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.C + ' days</div><div class="kpi-label">MTBF Class C (Standard)</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.A + ' ' + t('common.days') + '</div><div class="kpi-label">' + t('consulting.lblMtbfA') + '</div><div class="kpi-status ' + mtbfStatusClass + '">' + escapeHtml(tStatus(reliability.mtbf.status)) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.B + ' ' + t('common.days') + '</div><div class="kpi-label">' + t('consulting.lblMtbfB') + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mtbf.C + ' ' + t('common.days') + '</div><div class="kpi-label">' + t('consulting.lblMtbfC') + '</div></div>' +
       '</div>';
     
     var pmPct = reliability.pmCompliance.percentage;
     var pmStatusClass = pmPct >= 85 ? 'status-good' : (pmPct >= 70 ? 'status-warning' : 'status-critical');
     html += '<div class="kpi-grid" style="grid-template-columns: 1fr 1fr;">' +
-        '<div class="kpi-card"><div class="kpi-value ' + (pmPct >= 85 ? 'success' : (pmPct >= 70 ? '' : 'danger')) + '">' + pmPct + '%</div><div class="kpi-label">PM Compliance</div><div class="kpi-status ' + pmStatusClass + '">' + reliability.pmCompliance.completed + '/' + reliability.pmCompliance.scheduled + ' completed</div></div>' +
-        '<div class="kpi-card"><div class="kpi-value">' + reliability.mttrTarget + ' hrs</div><div class="kpi-label">Target MTTR</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value ' + (pmPct >= 85 ? 'success' : (pmPct >= 70 ? '' : 'danger')) + '">' + pmPct + '%</div><div class="kpi-label">' + t('consulting.lblPmCompliance') + '</div><div class="kpi-status ' + pmStatusClass + '">' + t('consulting.completedOfScheduled', { completed: reliability.pmCompliance.completed, scheduled: reliability.pmCompliance.scheduled }) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-value">' + reliability.mttrTarget + ' ' + t('consulting.hrsUnit') + '</div><div class="kpi-label">' + t('consulting.lblTargetMttr') + '</div></div>' +
       '</div>';
     
-    html += '<h4><i class="fas fa-wrench"></i> MTTR by Technician</h4>' +
-      '<table class="data-table"><thead><tr><th>Technician</th><th>MTTR (hours)</th><th>vs Target (' + reliability.mttrTarget + 'h)</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-wrench"></i> ' + t('consulting.hdrMttrByTech') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colTechnician') + '</th><th>' + t('consulting.colMttrHours') + '</th><th>' + t('consulting.colVsTarget', { target: reliability.mttrTarget }) + '</th></tr></thead><tbody>';
     if (reliability.mttr && reliability.mttr.length > 0) {
       for (var i = 0; i < reliability.mttr.length; i++) {
         var m = reliability.mttr[i];
         var mttrStatusClass = m.status === '✅ GOOD' ? 'status-good' : 'status-critical';
-        html += '<tr><td><strong>' + escapeHtml(m.technician) + '</strong></td><td>' + m.mttr + '</td><td><span class="kpi-status ' + mttrStatusClass + '">' + m.status + '</span></td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(m.technician) + '</strong></td><td>' + m.mttr + '</td><td><span class="kpi-status ' + mttrStatusClass + '">' + escapeHtml(tStatus(m.status)) + '</span></td></tr>';
       }
     } else {
-      html += '<tr><td colspan="3">No data available</td></tr>';
+      html += '<tr><td colspan="3">' + t('consulting.noDataAvailable') + '</td></tr>';
     }
     html += '</tbody></table>';
     
-    html += '<h4><i class="fas fa-exclamation-triangle"></i> Top Failing Assets</h4>' +
-      '<table class="data-table"><thead><tr><th>Asset</th><th>Failures (Period)</th><th>Criticality</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-exclamation-triangle"></i> ' + t('consulting.hdrTopFailingAssets') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colAsset') + '</th><th>' + t('consulting.colFailuresPeriod') + '</th><th>' + t('consulting.colCriticality') + '</th></tr></thead><tbody>';
     if (reliability.topFailures && reliability.topFailures.length > 0) {
       for (var i = 0; i < reliability.topFailures.length; i++) {
         var asset = reliability.topFailures[i];
         var critClass = asset.criticality === 'A - CRITICAL' ? 'status-critical' : (asset.criticality === 'B - IMPORTANT' ? 'status-warning' : 'status-good');
-        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(asset.criticality) + '</span></td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(asset.assetId + ' (' + (asset.name || asset.assetId) + ')') + '</strong></td><td>' + asset.failures + '</td><td><span class="kpi-status ' + critClass + '">' + escapeHtml(tStatus(asset.criticality)) + '</span></td></tr>';
       }
     } else {
-      html += '<tr><td colspan="3">No failures recorded</td></tr>';
+      html += '<tr><td colspan="3">' + t('consulting.noFailuresRecorded') + '</td></tr>';
     }
     html += '</tbody></table>';
     
@@ -1516,19 +1517,19 @@
   }
   
   function renderCapexTab(capex) {
-    var html = '<h3><i class="fas fa-hard-hat"></i> CAPEX Proposal for Next Fiscal Year</h3>' +
-      '<div class="alert alert-info"><strong>📌 Note:</strong> The following are recommendations based on failure data. Detailed cost estimates require internal evaluation.</div>';
+    var html = '<h3><i class="fas fa-hard-hat"></i> ' + t('consulting.hdrCapexProposal') + '</h3>' +
+      '<div class="alert alert-info">' + t('consulting.capexNote') + '</div>';
     
-    html += '<h4><i class="fas fa-list-check"></i> Recommended Actions to Evaluate</h4>' +
-      '<table class="data-table"><thead><tr><th>Recommendation</th><th>Priority</th><th>Justification</th></tr></thead><tbody>';
+    html += '<h4><i class="fas fa-list-check"></i> ' + t('consulting.hdrCapexActions') + '</h4>' +
+      '<table class="data-table"><thead><tr><th>' + t('consulting.colRecommendation') + '</th><th>' + t('consulting.colPriority') + '</th><th>' + t('consulting.colJustification') + '</th></tr></thead><tbody>';
     if (capex.proposals && capex.proposals.length > 0) {
       for (var i = 0; i < capex.proposals.length; i++) {
         var proj = capex.proposals[i];
         var priorityClass = proj.priority === 'HIGH' ? 'status-critical' : 'status-warning';
-        html += '<tr><td><strong>' + escapeHtml(proj.name) + '</strong></td><td><span class="kpi-status ' + priorityClass + '">' + proj.priority + '</span></td><td class="small-text">' + escapeHtml(proj.justification) + '</td></tr>';
+        html += '<tr><td><strong>' + escapeHtml(proj.name) + '</strong></td><td><span class="kpi-status ' + priorityClass + '">' + escapeHtml(tStatus(proj.priority)) + '</span></td><td class="small-text">' + escapeHtml(proj.justification) + '</td></tr>';
       }
     } else {
-      html += '<tr><td colspan="3">No CAPEX recommendations at this time. Continue monitoring asset performance.</td></tr>';
+      html += '<tr><td colspan="3">' + t('consulting.noCapexRecs') + '</td></tr>';
     }
     html += '</tbody></table>';
     
@@ -1537,10 +1538,10 @@
   
   function renderRecommendationsTab(recommendations) {
     if (!recommendations || recommendations.length === 0) {
-      return '<div class="alert alert-good"><strong>✅ No recommendations at this time.</strong> All metrics are within targets.</div>';
+      return '<div class="alert alert-good">' + t('consulting.noRecsAtTime') + '</div>';
     }
     
-    var html = '<h3><i class="fas fa-lightbulb"></i> Strategic Recommendations</h3>';
+    var html = '<h3><i class="fas fa-lightbulb"></i> ' + t('consulting.hdrStrategicRecs') + '</h3>';
     for (var i = 0; i < recommendations.length; i++) {
       var rec = recommendations[i];
       var alertClass = rec.priority === 'CRITICAL' ? 'alert-critical' : 'alert-warning';
@@ -1549,21 +1550,21 @@
         escapeHtml(rec.description) + '<br>' +
         '<table style="margin: 10px 0; width: auto; border: none; border-collapse: collapse;">' +
           '<tr style="border: none;">' +
-            '<td style="border: none; padding: 4px 8px 4px 0;"><strong>Estimated Cost:</strong></td>' +
+            '<td style="border: none; padding: 4px 8px 4px 0;"><strong>' + t('consulting.lblEstimatedCost') + '</strong></td>' +
             '<td style="border: none; padding: 4px;">$' + rec.estimatedCost.toLocaleString() + '</td>' +
-            '<td style="border: none; padding: 4px 8px 4px 20px;"><strong>Expected Savings:</strong></td>' +
+            '<td style="border: none; padding: 4px 8px 4px 20px;"><strong>' + t('consulting.lblExpectedSavings') + '</strong></td>' +
             '<td style="border: none; padding: 4px;">$' + rec.expectedSavings.toLocaleString() + '</td>' +
           '</tr>' +
         '</table>' +
-        '<strong>📋 Action Required:</strong> ' + escapeHtml(rec.action) +
+        '<strong>' + t('consulting.lblActionRequired') + '</strong> ' + escapeHtml(rec.action) +
       '</div>';
     }
     
     html += '<div class="alert alert-good">' +
-      '<strong>📋 Next Steps for Management:</strong><br>' +
-      '1. Review critical recommendations with leadership team<br>' +
-      '2. Prioritize actions based on ROI and operational impact<br>' +
-      '3. Assign owners to each approved recommendation' +
+      '<strong>' + t('consulting.hdrNextSteps') + '</strong><br>' +
+      t('consulting.nextStep1') + '<br>' +
+      t('consulting.nextStep2') + '<br>' +
+      t('consulting.nextStep3') +
     '</div>';
     
     return html;
@@ -1573,8 +1574,7 @@
   // UTILITIES
   // ============================================
   function getMonthName(month) {
-    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[month - 1] || month;
+    return t('consulting.month' + month) || month;
   }
   
   function attachTabListeners() {
@@ -1659,12 +1659,12 @@
   // ============================================
   async function init() {
     loadUser();
-    showLoading('Loading Consulting Intelligence...');
+    showLoading(t('consulting.loadingModule'));
     loadApiUrl();
     
     if (!EAMS_API_URL) {
       hideLoading();
-      showToast('API URL not configured. Please login.', 'error');
+      showToast(t('common.apiNotConfigured'), 'error');
       return;
     }
     
@@ -1702,11 +1702,11 @@
       }
       
       hideLoading();
-      showToast('Consulting Intelligence loaded successfully ✅', 'success');
+      showToast(t('consulting.loadedSuccess'), 'success');
       
     } catch(err) {
       hideLoading();
-      showToast('Error loading data: ' + err.message, 'error');
+      showToast(t('consulting.errLoadData', { error: err.message }), 'error');
     }
   }
   
